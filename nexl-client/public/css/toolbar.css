@@ -1,0 +1,78 @@
+#buttons-panel {
+    margin: 5px;
+    height: 37px;
+}
+
+#buttons-panel div {
+    width: 32px;
+    height: 32px;
+    margin: 5px;
+    float: left;
+}
+
+#buttons-panel div:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.new-file-button {
+    background-image: url("../images/buttons-panel/new-file.png");
+}
+
+.new-remote-button {
+    background-image: url("../images/buttons-panel/new-remote.png");
+}
+
+.open-file-button {
+    background-image: url("../images/buttons-panel/open-file.png");
+}
+
+.save-file-button {
+    background-image: url("../images/buttons-panel/save-file.png");
+}
+
+.save-file-button-baw {
+    background-image: url("../images/buttons-panel/save-file-baw.png");
+}
+
+.save-file-as-button {
+    background-image: url("../images/buttons-panel/save-file-as.png");
+}
+
+.save-file-as-button-baw {
+    background-image: url("../images/buttons-panel/save-file-as-baw.png");
+}
+
+
+.expose-file-baw {
+    background-image: url("../images/buttons-panel/expose-file-baw.png");
+}
+
+.expose-dir {
+    background-image: url("../images/buttons-panel/expose-dir.png");
+}
+
+.eval-button {
+    background-image: url("../images/buttons-panel/eval.png");
+}
+
+.eval-button-baw {
+    background-image: url("../images/buttons-panel/eval-baw.png");
+}
+
+.global-settings-button {
+    background-image: url("../images/buttons-panel/global-args.png");
+}
+
+.about-button {
+    background-image: url("../images/buttons-panel/about.png");
+}
+
+.separator-button {
+    background-image: url("../images/buttons-panel/separator.png");
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 5px;
+    float: left;
+}

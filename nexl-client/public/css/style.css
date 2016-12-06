@@ -1,0 +1,163 @@
+body {
+    font: 14px "Tahoma", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+a {
+    color: #00B7FF;
+}
+
+#output-area {
+    height: 30%;
+    width: 98%;
+}
+
+#args {
+    float: left;
+    width: calc(50% - 10px);
+    height: calc(100% - 10px);
+    padding: 4px;
+    border: 1px solid #D3D3D3;
+    margin-top: 3px;
+}
+
+#external-arguments-editor {
+    margin: auto;
+    padding-top: 3px;
+}
+
+#output {
+    height: calc(100% - 10px);
+    float: left;
+    width: calc(50% - 10px);
+    padding: 4px;
+    margin-top: 3px;
+    border: 1px solid #D3D3D3;
+}
+
+#output textarea {
+    width: 100%;
+    height: 89%;
+    resize: none;
+    border: none;
+}
+
+.frame {
+    width: 100%;
+    background: #D3D3D3;
+    border: 1px solid #696969;
+    height: 24px;
+}
+
+.frame div {
+    font-size: larger;
+    margin-left: 3px;
+}
+
+#args .frame div {
+    width: 150px;
+    float: left;
+}
+
+#output .frame div {
+    width: 53px;
+}
+
+#globalSettings:hover, #addExternalArg:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.output-buttons-panel div {
+    width: 16px;
+    height: 16px;
+    margin: 3px;
+    float: left;
+}
+
+#addExternalArg {
+    background: url("../images/external-args-panel/add.png");
+}
+
+#globalSettings {
+    background: url("../images/external-args-panel/global-settings.png");
+}
+
+#addExternalArg, #globalSettings {
+    display: block;
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin: 3px;
+}
+
+#explore-nexl-sources-container {
+    display: none;
+}
+
+/*--------------------------------------------------------------*/
+/*run nexl server dialog*/
+.run-server-dialog div {
+    clear: both;
+    margin: 5px;
+}
+
+.run-server-dialog div label {
+    width: 174px;
+    display: inline-block;
+}
+
+.run-server-dialog .dir {
+    width: 390px;
+}
+
+.run-server-dialog div .browse {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: url("../images/misc/browse.png");
+    top: 14px;
+    position: relative;
+    left: 3px;
+}
+
+.run-server-dialog div .browse:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.run-server-dialog div .port {
+    width: 40px;
+}
+
+.run-server-dialog div .dont-install {
+    /*width:300px;*/
+}
+
+/*--------------------------------------------------------------*/
+/*choose expression*/
+.choose-expression-dialog {
+}
+
+.choose-expression-dialog .expressions-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.choose-expression-dialog .expressions-list li {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+}
+
+.choose-expression-dialog .expressions-list li:hover {
+    background: #CCC;
+}

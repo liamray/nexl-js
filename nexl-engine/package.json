@@ -1,0 +1,32 @@
+{
+  "name": "nexl-engine",
+  "version": "1.4.3",
+  "description": "nexl expressions processor. Consider the following products which are based on nexl-engine : nexl-client, nexl-server",
+  "main": "nexl-engine.js",
+  "keywords": [
+    "nexl",
+    "nexl-js",
+    "nexl-client",
+    "nexl-server",
+    "nexl-engine",
+    "storage",
+    "config",
+    "external",
+    "javascript",
+    "js",
+    "expression",
+    "language",
+    "ide",
+    "editor"
+  ],
+  "license": "Apache 2.0",
+  "author": "Yevgeny Sergeyev",
+  "files": [
+    "nexl-engine.js"
+  ],
+  "dependencies": {
+    "esprima": "^3.1.0",
+    "path": "^0.12.7",
+    "util": "^0.10.3"
+  }
+}

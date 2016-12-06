@@ -1,0 +1,106 @@
+#tabs {
+    width: 98%;
+    height: 60%;
+}
+
+/* FILE TABS */
+
+#tabs .ace-tab-container {
+    height: calc(100% - 105px);
+    padding-bottom: 32px;
+}
+
+#tabs .ace-tab-content {
+    height: 100%;
+}
+
+#tabs .ace-tab-expression input {
+    width: 500px;
+    background: white;
+    padding:5px;
+}
+
+#tabs .ace-tab-expression {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+#tabs .ace-tab-expression .choose-expression-button:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+#tabs .ace-tab-expression .choose-expression-button {
+    display: inline-block;
+    position: relative;
+    left: 0;
+    top: 13px;
+    width: 32px;
+    height: 32px;
+    background: url("images/explore-sources.png");
+}
+
+/* REMOTE TABS */
+
+#tabs .remote-tab-container {
+    height: calc(100% - 87px);
+    padding-bottom: 32px;
+    background-color: #FAFAFA;
+}
+
+#tabs .remote-tab-content .explore-nexl-source-button:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+#tabs .remote-tab-content .explore-nexl-source-button {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    background: url("images/explore-sources.png");
+    top: 13px;
+    position: relative;
+    left: 3px;
+}
+
+#tabs .remote-tab-content input {
+    padding: 5px;
+    width: 500px;
+    background-color: white;
+}
+
+
+#tabs .remote-tab-content label {
+    width: 110px;
+    display: inline-block;
+}
+
+#tabs .remote-tab-container .remote-tab-expression {
+    margin: 0 3px 3px;
+}
+
+#tabs .remote-tab-expression .choose-expression-button {
+    display: inline-block;
+    position: relative;
+    left: 0;
+    top: 13px;
+    width: 32px;
+    height: 32px;
+    background: url("images/explore-sources.png");
+}
+
+#tabs .remote-tab-expression .choose-expression-button:hover {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+#tabs .remote-tab-container .remote-tab-expression input {
+    width: 501px;
+    padding:5px;
+}
+
+#tabs .remote-tab-container .remote-tab-expression label {
+    width: 102px;
+    display: inline-block;
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nexl-client</title>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="components/tabs/tabs.css"/>
+    <link rel="stylesheet" type="text/css" href="css/toolbar.css"/>
+    <link rel="stylesheet" type="text/css" href="components/file-dialog/file-dialog.css"/>
+    <link rel="stylesheet" type="text/css" href="components/key-value-editor/key-value-editor.css"/>
+    <link rel="stylesheet" type="text/css" href="jquery/jquery-ui/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="components/jquery-autocomplete/jquery-autocomplete.css"/>
+    <link rel="stylesheet" type="text/css" href="components/jstree/themes/default/style.min.css"/>
+
+    <script type="text/javascript" src="jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery-ui/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="util-functions/extended-js-api.js"></script>
+    <script type="text/javascript" src="util-functions/utils.js"></script>
+    <script type="text/javascript" src="util-functions/nexl-ui.js"></script>
+
+    <script type="text/javascript" src="components/tabs/tabs.js"></script>
+    <script type="text/javascript" src="components/file-dialog/file-dialog.js"></script>
+    <script type="text/javascript" src="components/key-value-editor/key-value-editor.js"></script>
+    <script type="text/javascript" src="components/jquery-autocomplete/jquery-autocomplete.js"></script>
+    <script type="text/javascript" src="components/jquery-resizable/jquery-e-resizable.js"></script>
+    <script type="text/javascript" src="components/ace/ace.js" charset="utf-8"></script>
+    <script type="text/javascript" src="components/jstree/jstree.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="components/dir-browser/dir-browser.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            module.nexlui.init();
+        });
+    </script>
+</head>
+<body>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- buttons panel -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="buttons-panel">
+    <div class="new-file-button" title="New nexl source file"></div>
+    <div class="open-file-button" title="Open existing nexl source file (Ctrl+O)"></div>
+
+    <div class="save-file-button" title="Save nexl source file  (Ctrl+S)" title-baw=""></div>
+    <div class="save-file-as-button" title="Save nexl source file as" title-baw=""></div>
+
+    <span class="separator-button"></span>
+
+    <div class="new-remote-button" title="New remote nexl source"></div>
+    <span class="separator-button"></span>
+
+    <div class="eval-button" title="Evaluate nexl expression (F9)"></div>
+
+    <span class="separator-button"></span>
+
+    <div class="about-button" title="About nexl-client"></div>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- tabs container -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="tabs">
+    <ul>
+    </ul>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- external args + output area -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="output-area">
+    <div id="args">
+        <div class="frame">
+            <div>External arguments</div>
+            <span style="display:none;" id="globalSettings" title="Open global settings editor"></span>
+            <span id="addExternalArg" title="Add key-value pair"></span>
+        </div>
+        <div id="external-arguments-editor" class="key-value-editor"></div>
+    </div>
+
+    <div id="output">
+        <div class="frame">
+            <div>Output</div>
+        </div>
+        <textarea readonly></textarea>
+    </div>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- container for file-dialog, jquery loads it from the template -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="file-dialog-container"></div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- popup messages container, confirm message container -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="popup-message"></div>
+
+<div id="dialog-confirm">
+    <p></p>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- global settings container -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="global-settings-container" style="display:none;">
+    <div id="global-settings" class="key-value-editor"></div>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- explore nexl source dialog -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="explore-nexl-sources-container">
+    <div class="explore-nexl-sources" style="width:100%; height:100%;"></div>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- dir browser -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="dir-browser-dialog" style="display: none;">
+    <div id="dir-browser" style="width:100%; height:100%; overflow-y: auto;"></div>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- run server dialog -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div class="run-server-dialog" style="display: none;" title="Run nexl server on this computer">
+    <div>
+        <label title="Empty dir = ~/nexl-sources">nexl sources directory</label><input type="text" class="dir"><span
+            class="browse"></span>
+    </div>
+
+    <div>
+        <label title="Empty port = use default port">nexl server port</label><input type="text" class="port">
+    </div>
+
+    <div>
+        <label title="To install nexl server manually write the following in the command line <br/><h4>npm i nexl-server -g</h4>">Do
+            not install nexl server</label><input type="checkbox" class="dont-install">
+    </div>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- choose expression dialog -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div class="choose-expression-dialog" style="display: none;" title="Choose expression">
+    <ul class="expressions-list">
+    </ul>
+</div>
+
+</body>
+</html>

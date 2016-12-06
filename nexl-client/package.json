@@ -1,0 +1,49 @@
+{
+  "name": "nexl-client",
+  "version": "1.0.33",
+  "description": "web-based GUI application for nexl-server",
+  "keywords": [
+    "nexl",
+    "nexl-js",
+    "nexl-client",
+    "nexl-server",
+    "nexl-engine",
+    "storage",
+    "config",
+    "external",
+    "javascript",
+    "js",
+    "expression",
+    "language",
+    "ide",
+    "editor"
+  ],
+  "license": "Apache 2.0",
+  "author": "Yevgeny Sergeyev",
+  "files": [
+    "app.js",
+    "bin",
+    "public",
+    "routes"
+  ],
+  "scripts": {
+    "start": "node ./bin/nexl-client"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "drivelist": "3.x.x",
+    "express": "~4.13.4",
+    "jade": "~1.11.0",
+    "morgan": "~1.7.0",
+    "openurl": "^1.1.1",
+    "path": "0.12.7",
+    "request": "^2.78.0",
+    "serve-favicon": "~2.3.0",
+    "nexl-engine": "^1.4.3"
+  },
+  "bin": {
+    "nexl": "bin/nexl-client"
+  }
+}
