@@ -1,6 +1,6 @@
 {
   "name": "nexl-client",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "web-based GUI application for nexl-server",
   "keywords": [
     "nexl",
