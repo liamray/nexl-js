@@ -59,7 +59,7 @@ Let&#39;s host a **DISTANCE\_TO\_MOON = 384400000** data element on nexl-server,
 
            var DISTANCE_TO_MOON = 384400000;
 
-- now you can access this data by the following web-service
+- now you can access this data element by the following web-service
 
            http://localhost:8080/interesting-facts.js?expression=${DISTANCE_TO_MOON}
 
@@ -334,7 +334,7 @@ Relative path will be calculated relatively to **$HOME/nexl-sources** directory
 * * *
 
 
-**External arguments**
+### External arguments
 
 You can provide an external arguments to nexl-server REST request. External arguments are key=value pairs which behave like javascript variables and accessed via nexl expressions. External arguments are passing by query param in URL. For example add the following to **interesting-facts.js** nexl source
 
