@@ -10,7 +10,7 @@
 
 ### Products
 
-nexl offers the following products : **nexl-server** and **nexl-client**
+nexl offers the following products : [nexl-server](https://www.npmjs.com/package/nexl-server) and [nexl-client](https://www.npmjs.com/package/nexl-client)
 
 
 ##### nexl-server :
