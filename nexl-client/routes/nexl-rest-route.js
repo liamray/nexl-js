@@ -10,6 +10,16 @@ var drivelist = require('drivelist');
 var nexlEngine = require('nexl-engine');
 var request = require('request');
 
+var serverInfo = {};
+
+// retrieves server info
+(function () {
+    try {
+        serverInfo.version = require('../package.json').version;
+    } catch (e) {
+        console.log("It's not fatal but failed to print a nexl-server version. Please open me a bug. Exception : " + e);
+    }
+})();
 
 function log(msg) {
     console.log(msg);
@@ -205,6 +215,10 @@ function resolveJsVariables(req, res) {
     }
 }
 
+function resolveServerInfo(req, res) {
+    res.send(serverInfo);
+}
+
 
 /**
  * -------------------------------------------------------------------------------------------------
@@ -245,6 +259,10 @@ router.post('/eval-nexl', function (req, res, next) {
 
 router.post('/resolve-js-variables', function (req, res, next) {
     resolveJsVariables(req, res);
+});
+
+router.post('/get-server-info', function (req, res, next) {
+    resolveServerInfo(req, res);
 });
 
 module.exports = router;

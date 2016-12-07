@@ -21,6 +21,8 @@ var module = (function (module) {
 
     const BAW = 1, COLOR = 0;
 
+    var serverInfo = {};
+
 
     function saveFileWrapper($tab, fileName) {
         var url = "/rest/save-file";
@@ -331,7 +333,14 @@ var module = (function (module) {
 
         // about
         $('.about-button').click(function () {
-            module.nexlui.popupMessage('Created by Yevgeny Sergeyev (c), 2016', 'About nexl-client');
+            var info = '';
+
+            info += 'Copyright (c) 2016 Yevgeny Sergeyev<br/><br/>';
+            info += 'email <a href="mailto:nexl.javascript@gmail.com">nexl.javascript@gmail.com</a><br/>';
+
+            info = String.format(info, serverInfo.version);
+
+            module.nexlui.popupMessage(info, 'About nexl-client [' + serverInfo.version + ']');
         });
 
         $('.run-server-dialog div .browse').click(function () {
@@ -493,6 +502,15 @@ var module = (function (module) {
     }
 
 
+    function getServerInfo() {
+        module.utils.restCall('/rest/get-server-info', {}, function (data) {
+            serverInfo = data;
+        }, function (err) {
+            module.nexlui.popupMessage('Failed to retireive server info. Reason : ' + err.statusText, 'Error');
+        });
+
+    }
+
     module.nexlui.init = function () {
         assignButtons();
         initTabs();
@@ -501,6 +519,7 @@ var module = (function (module) {
         interceptHotKeys();
         interceptBrowserClose();
         appyJQueryTooltips();
+        getServerInfo();
     };
 
     module.nexlui.popupMessage = function (outputMsg, titleMsg, onCloseCallback) {

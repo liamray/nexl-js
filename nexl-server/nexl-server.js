@@ -462,7 +462,16 @@
         app.use(errorHandler);
     }
 
+    function printCurrentVersion() {
+        try {
+            console.log(util.format('nexl-server version is [%s]\n', require('./package.json').version));
+        } catch (e) {
+            console.log("It's not fatal but failed to print a nexl-server version. Please open me a bug. Exception : " + e);
+        }
+    }
+
     function printStartupMessage() {
+        printCurrentVersion();
 
         figlet.defaults({fontPath: "assets/fonts"});
 

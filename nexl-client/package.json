@@ -26,6 +26,10 @@
     "public",
     "routes"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yevgeny-sergeyev/nexl-js.git"
+  },
   "scripts": {
     "start": "node ./bin/nexl-client"
   },
