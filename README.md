@@ -361,7 +361,7 @@ nexl-client has a graphical &quot;External Arguments&quot; section
 * * *
 
 
-### Examples of nexl expressions**<br/>
+### Examples of nexl expressions<br/>
 Will be available soon
 
 
