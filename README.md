@@ -33,7 +33,7 @@ nexl offers the following products : [nexl-server](https://www.npmjs.com/package
 
 * * *
 
-### How to install and run
+### How to install, run and update
 
 nexl is a nodejs based application. Therefore you have to download and install [nodejs](https://nodejs.org/en/download/) first.<br/>
 After that you can install and run nexl applications in command line
