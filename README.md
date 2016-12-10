@@ -17,7 +17,7 @@ nexl offers the following products : [nexl-server](https://www.npmjs.com/package
 
     - is a configuration data storage server
     - hosts a javascript files which are called nexl sources
-    - exposes all javascript variables from nexl sources via web services
+    - exposes all javascript variables from nexl sources via web services ( JSONP is supported )
 
 
 ##### nexl-client :
