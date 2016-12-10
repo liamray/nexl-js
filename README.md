@@ -38,11 +38,15 @@ nexl offers the following products : [nexl-server](https://www.npmjs.com/package
 nexl is a nodejs based application. Therefore you have to download and install [nodejs](https://nodejs.org/en/download/) first.<br/>
 After that you can install and run nexl applications in command line
 
-| PRODUCT | INSTALL | RUN |
-| --- | --- | --- |
-| nexl-server | npm i nexl-server -g | nexl-server |
-| nexl-client | npm i nexl-client -g | nexl |
+| PRODUCT | INSTALL | RUN | UPDATE
+| --- | --- | --- | --- |
+| nexl-server | npm i nexl-server -g | nexl-server | npm update nexl-server -g 
+| nexl-client | npm i nexl-client -g | nexl | npm i nexl-client -g
 
+
+Probably you have to use a **sudo** command in Unix-based OS when installing or updating a NPM packages like this
+
+        sudo npm i nexl-server -g
 
 
 

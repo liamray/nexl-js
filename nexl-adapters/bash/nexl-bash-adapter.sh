@@ -5,7 +5,7 @@
 # Copyright (c) 2016 Yevgeny Sergeyev
 # License : Apache 2.0
 
-# use nexlEval function to retrieve data items from remote nexl server
+# use a nexlEval function to retrieve data items from remote nexl server
 # See Readme.md for more information
 ########################################################################
 
