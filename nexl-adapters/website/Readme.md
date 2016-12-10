@@ -6,9 +6,9 @@ This adapter is based on JSONP technology to access a remote nexl server outside
 
 nexl web-site adapter is using a jQuery API ( must be included in web-page ) 
 
-Use the following function to access nexl server : module.nexlWebAdapter.evalNexl()
+Use the following function to access nexl server : module.nexlWebAdapter.nexlEval()
 
-Function definition : evalNexl(params, callback, errorCallback)
+Function definition : nexlEval(params, callback, errorCallback)
 
 - params is an object which should have the following : 
     - nexlServer
@@ -32,7 +32,7 @@ Function definition : evalNexl(params, callback, errorCallback)
         }
     };
 
-    module.nexlWebAdapter.evalNexl(params, function (data) {
+    module.nexlWebAdapter.nexlEval(params, function (data) {
         alert(data);
     }, function(x, opts, error) {
         // jquery error
