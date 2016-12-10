@@ -3,7 +3,7 @@
  * Copyright (c) 2016 Yevgeny Sergeyev
  * License : Apache 2.0
  *
- * use a module.nexlWebAdapter.evalNexl() function to retrieve data items from remote nexl server
+ * use a module.nexlWebAdapter.nexlEval() function to retrieve data items from remote nexl server
  * See Readme.md for more information
  * */
 
@@ -53,7 +53,7 @@ var module = (function (module) {
      * - nexlArgs ( is an object )( optional )
      * - httpTimeout ( optional )
      */
-    function evalNexl(params, callback, errorCallback) {
+    function nexlEval(params, callback, errorCallback) {
 
         var args = obj2Args(params.nexlArgs);
         var nexlSource = params.nexlSource;
@@ -82,7 +82,7 @@ var module = (function (module) {
         });
     }
 
-    module.nexlWebAdapter.evalNexl = evalNexl;
+    module.nexlWebAdapter.nexlEval = nexlEval;
 
     return module;
 

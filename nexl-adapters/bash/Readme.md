@@ -10,7 +10,7 @@ nexl bash adapter offers a nexlEval function to access data items on remote nexl
  
 This function performs a HTTP request to remote nexl server. To control a http timeout provide a NEXL_HTTP_TIMEOUT global variable. The default value is 10 seconds.
 
-You have to check the exit status of evalNexl function after execution ( $? ). Be sure you get a zero status. Otherwise check a stderr for error message
+You have to check the exit status of nexlEval function after execution ( $? ). Be sure you get a zero status. Otherwise check a stderr for error message
  
 Please pay attention ! You have to escape a $ sign for nexl expression, otherwise it will be treated as a shell variable
 
@@ -19,4 +19,4 @@ Please pay attention ! You have to escape a $ sign for nexl expression, otherwis
 ##### Usage example :
     #!/bin/bash
     ...
-    DTM=$( evalNexl "nexlserver:8181" "/misc/interesting-facts.js" "\${DISTANCE_TO_MOON}" "YEAR=1979" )
+    DTM=$( nexlEval "nexlserver:8181" "/misc/interesting-facts.js" "\${DISTANCE_TO_MOON}" "YEAR=1979" )
