@@ -72,7 +72,7 @@ function nexlEval {
 		return
 	fi
 
-	# error occured
+	# error occurred
 	echo -e "\n>>>>>>>>>>>>>>>>>>>>>>>>>> nexl is not available OR failed to evaluate a nexl expression <<<<<<<<<<<<<<<<<<<<<<<<<<\n" 1>&2
 	if [[ -n "${NEXL_RESULT:-}" ]]
 	then
@@ -81,4 +81,11 @@ function nexlEval {
 
 	echo "curl exit code = [${EXIT_CODE}], HTTP_STATUS = [${HTTP_STATUS}]" 1>&2
 	echo "nexl url = [${URL}]" 1>&2
+
+	if [[ "${EXIT_CODE}" != "0" ]]
+	then
+	    return ${EXIT_CODE}
+	else
+	    return 1
+	fi
 }
