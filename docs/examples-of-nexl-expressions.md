@@ -1,4 +1,4 @@
-### ( THIS ARTICLE HAS NOT FINISHED YET... )
+### ( this article is not finished yet... )
 ### Examples of nexl expressions
 
 
@@ -83,6 +83,8 @@ nexl source file
 | ${hostsByEnv~K} |  |
 | ${hostsByEnv~V} |  |
 | ${ENV~O} |  |
+| ${hostsByEnv.${ENV}} |  |
+| ${hostsByEnv.${ENV!C}} |  | If you don't provide a ENV variable, ...
 | ${hostsByEnv.${ENV}.${INSTANCE}} |  |
 | ${hostsByEnv.${ENV}.${INSTANCE}:${hostsByEnv.${ENV}}} |  |
 | ${hostsByEnv<${REVERSE_KEY}} |  |
