@@ -86,7 +86,7 @@ nexl source file
 | ${hostsByEnv.${ENV}} |  |
 | ${hostsByEnv.${ENV!C}} |  | If you don't provide a ENV variable, ...
 | ${hostsByEnv.${ENV}.${INSTANCE}} |  |
-| ${hostsByEnv.${ENV}.${INSTANCE}:${hostsByEnv.${ENV}}} |  |
+| ${hostsByEnv.${ENV!A}.${INSTANCE}:${hostsByEnv.${ENV}}} |  |
 | ${hostsByEnv<${REVERSE_KEY}} |  |
 | ${hostsByEnv<${REVERSE_KEY_MULTI}} |  |
 
