@@ -195,7 +195,7 @@
 
         // validating expression
         if (!input.expression) {
-            throw util.format("You trying to evaluate the following : [%s], method : [%s]. But you didn't provide a nexl expression", input.url, req.method);
+            throw util.format("You are trying to evaluate the following : [%s], method : [%s]. But you didn't provide a nexl expression", input.url, req.method);
         }
 
         return input;
