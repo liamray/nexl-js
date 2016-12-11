@@ -1,4 +1,4 @@
-### ( THIS ARTICLES HASN'T FINISHED YET... )
+### ( THIS ARTICLE HAS NOT FINISHED YET... )
 ### Examples of nexl expressions
 
 
