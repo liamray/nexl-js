@@ -195,7 +195,7 @@
 
         // validating expression
         if (!input.expression) {
-            throw util.format("You are trying to evaluate the following : [%s], method : [%s]. But you didn't provide a nexl expression", input.url, req.method);
+            throw util.format("nexl expression is not provided. nexl source : [%s], method : [%s]", input.url, req.method);
         }
 
         return input;
@@ -295,7 +295,7 @@
         try {
             cmdLineOpts = commandLineArgs(CMD_LINE_OPTS_DEF);
         } catch (e) {
-            console.log('You have specified wrong command line option(s)');
+            console.log('Wrong command line options');
             printHelp();
             throw e;
         }
