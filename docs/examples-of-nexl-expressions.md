@@ -85,7 +85,7 @@ nexl source file
         
         
         // play out with the following parameters
-        // you can also provide them as external args
+        // you can also provide them as an external args ( except REVERSE_KEY_MULTI )
         var ENV = 'PROD';
         var INSTANCE = 'SECOND';
         var REVERSE_KEY = 'qasrv2';
@@ -94,13 +94,14 @@ nexl source file
 
 | Expression | Result | Explanation
 | --- | --- | --- |
-| ${hostsByEnv} |  |
-| ${hostsByEnv~K} |  |
-| ${hostsByEnv~V} |  |
-| ${ENV~O} |  |
-| ${hostsByEnv.${ENV}} |  |
-| ${hostsByEnv.${ENV!C}} |  | If you don't provide a ENV variable, ...
-| ${hostsByEnv.${ENV}.${INSTANCE}} |  |
+| ${hostsByEnv} | hostsByEnv JSON | This is evaluating as a JSON object of hostsByEnv
+| ${hostsByEnv~K} | TEST<br/>QA<br/>PROD | Array of hostsByEnv's keys
+| ${hostsByEnv~K?,} | TEST,QA,PROD | The keys are joined with <b>,</b> symbol
+| ${hostsByEnv~V} | testsrv1<br/>qasrv1<br/>qasrv2<br/>Mercury<br/>Venus<br/>Earth<br/>Mars<br/>Jupiter<br/>Saturn<br/>Uranus<br/>Neptune | Array of hostsByEnv's values
+| ${ENV~O} | {"ENV":"QA"} | The <b>ENV</b> varaible is forced to convert to JSON object
+| ${hostsByEnv.${ENV}} | {"FIRST":["Mercury","Venus","Earth"],<br/>"SECOND":["Mars","Jupiter","Saturn"],<br/>"THIRD":["Uranus","Neptune"]} | The <b>ENV</b> variable is equals to <b>PROD</b> therefore nexl engine evaluates the the <b>${hostsByEnv.PROD}</b> expression which points to JSON object
+| ${hostsByEnv.${SPECIAL_ENV!C}} | hostsByEnv JSON | The <b>SPECIAL_ENV</b> variable is not defined and has a <b>!C</b> modifier. Therefore it is evaliating as empty string.<br/>Now we heave a <b>${hostsByEnv.}</b> expression. nexl engine skips unnecessary dots for sub expressions and this will be evaluated as <b>${hostsByEnv}</b> expression
+| ${hostsByEnv.${ENV}.${INSTANCE}} | Mars<br/>Jupiter<br/>Saturn | The <b>ENV</b> variable is equals to <b>PROD</b>, the <b>INSTANCE</b> variable is equals to <b>SECOND</b>. Therefore we have the following nexl expression to evaluate : <b>${hostsByEnv.PROD.SECOND}</b> which is points to the <b>[ 'Mars', 'Jupiter', 'Saturn' ]</b> array
 | ${hostsByEnv.${ENV!A}.${INSTANCE}:${hostsByEnv.${ENV}}} |  |
 | ${hostsByEnv<${REVERSE_KEY}} |  |
 | ${hostsByEnv<${REVERSE_KEY_MULTI}} |  |
