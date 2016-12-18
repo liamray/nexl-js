@@ -56,14 +56,14 @@ nexl source file
 
 nexl source file
 
-        var greeting = 'Hello,${person!C}';
+        var text = 'Hello,${person!C}';
         var fact = [ 'bear',  'has',  '${cnt!C}',  'teeth' ];
 
 | Expression | Result | Explanation
 | --- | --- | ---
-| ${greeting} | Hello, | This expression consists of <b>${person}</b> expression. The <b>person</b> variable is not defined therefore the <b>${person}</b> expression is treating as empty string
-| ${greeting-} |  | Sometimes we need to omit the whole expression if it contains an undefined variable. We can achieve it by adding the <b>-</b> modifier. This is evaluating as empty string
-| ${facts} | bear<br/>has<br/><br/>teeth | As you see the <b>${cnt}</b> expression from <b>facts</b> array is treating as empty string
+| ${text} | Hello, | This expression consists of <b>${person}</b> expression with <b>!C</b> modifier. The <b>person</b> variable is not defined therefore the <b>${person!C}</b> expression is treating as empty string
+| ${text-} |  | Sometimes we need to omit the whole expression if it contains an undefined variable. We can achieve it by adding the <b>-</b> modifier. This is evaluating to empty string due to <b>${text-}</b> expression has a subexpression <b>${person!C}</b> with undefined value
+| ${facts} | bear<br/>has<br/><br/>teeth | As you see the <b>${cnt!C}</b> expression from <b>facts</b> array is treating as empty string
 | ${facts-} | bear<br/>has<br/>teeth | By using the <b>-</b> modifier we are omitting the array element which points to undefined variable
 
 
