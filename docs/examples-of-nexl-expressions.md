@@ -3,7 +3,7 @@
 
 ***
 
-##### Simple expressions
+#### Simple expressions
 
 nexl source file
 
@@ -13,16 +13,16 @@ nexl source file
 | --- | --- | ---
 | ${x} | Hello,World! | nexl expression is referencing to <b>x</b> javascript variable from nexl source file
 | ${count} | - | This expression will be failed due to <b>count</b> variable is not defined in nexl source file<br/>( but if you provide the <b>count</b> variable as external it will be evaluated successfully )
-| ${count!C} |  | This expression is evaluating as empty string. The <b>count</b> variable is not defined, but here we have a <b>!C</b> modifier which tells us not to fail the expression
+| ${count!C} |  | This expression is evaluating to empty string. The <b>count</b> variable is not defined, but here we have a <b>!C</b> modifier which tells us not to fail the expression
 | ${count:10} | 10 | <b>count</b> variable is not defined, but default value is provided
 | ${count:${Y}} | - | <b>count</b> variable is not defined. Trying to apply a default value which is a <b>${Y}</b> expression.<br/><b>${Y}</b> expression will be failed due to <b>Y</b> javascript variable is also undefined.<br/>Whole expression fill be failed
-| ${count:${Y!C}:12} | 12 | Here we have two default values for <b>count</b> variable : <b>${Y!C}</b> and <b>12</b><br/><b>${Y!C}</b> expression tells us not to fail this expression if it is referencing to undefined variable<br/>Finally the <b>12</b> default value is applying for whole expression
+| ${count:${Y!C}:12} | 12 | Here we have two default values for <b>count</b> variable : <b>${Y!C}</b> and <b>12</b><br/>The <b>${Y!C}</b> is a nexl expression with <b>!C</b> modifier which tells us to continue expression evaluation even if the <b>Y</b> variable is not defined. In this case the <b>Y</b> variable is really undefined. Thus the next default value will be applied which is <b>12</b>
 
 ***
 
 
 
-##### Arrays 
+#### Arrays 
 
 nexl source file
 
