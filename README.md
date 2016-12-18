@@ -75,18 +75,15 @@ As you can see the URL consists of the following :
 
 - **interesting-facts.js** is a filename in URL path
 
-- **expression=${DISTANCE\_TO\_MOON}** is a query param which points to javascript variable from that file ( nexl source )
+- **expression=${DISTANCE\_TO\_MOON}** is a query param which points to a javascript variable from that file ( nexl source )
 
 <br />
 
 __${DISTANCE\_TO\_MOON}__ is called nexl expression
 
-nexl expressions are representing javascript variables from the nexl sources by wrapping variable name with **${...}** characters
+nexl expressions are javascript variables wrapped with <b>${...}</b> characters. You can perform different kind of manipulations with javascript variables by using nexl expressions.
 
-nexl expressions allow to perform certain kind manipulations of variable&#39;s value. For example when you are trying to get a variable which was not declared you can apply a default value by using nexl expression.
-
-nexl expressions will be discussed later.
-
+[Learn more about nexl expression](docs/nexl-expressions.md)
 <br />
 
 Let&#39;s access our **DISTANCE\_TO\_MOON** variable in nexl-client
@@ -201,4 +198,4 @@ Will be available soon
 
 ### nexl adapters
 
-[nexl adapters](nexl-adapters) are wrappers in different languages to access data items on remote nexl server
+[nexl adapters](nexl-adapters) are wrappers for web-service in different languages to access a data items on remote nexl server

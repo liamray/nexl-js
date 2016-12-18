@@ -1,33 +1,41 @@
 ### nexl expressions
 
-nexl expressions are representing javascript variables declared in nexl sources by wrapping variable name with **${...}** characters
+##### Introduction
 
-nexl expressions can have a modifiers to perform an additional tuning for their values. They are optional but very useful. 
+nexl expressions are javascript variables wrapped with <b>${...}</b> characters.<br/>
+The <b>${DISTANCE_TO_MOON}</b> expression evaluates to the value of <b>DISTANCE_TO_MOON</b> javascript variable declared in nexl source file.
 
+By using of nexl expression you can access properties of javascript objects.<br/>
+The <b>${Person.age}</b> expression accesses the <b>age</b> property from <b>Person</b> object.<br/>
+
+Expressions are dynamic, everything is being evaluated.<br/>
+Consider the following expression <b>${Person.${property}}</b> . The <b>${property}</b> is an expression itself. First nexl engine substitutes the value of <b>property</b> variable and the whole expression will be evaluated.<br/> 
+
+Additionally nexl expressions allow to perform different kind of manipulations with a javascript variables. For example to apply a default value for undefined variable.<br/>
+The <b>${DISTANCE_TO_MOON:384400}</b> expression evaluates to <b>384400</b> value if the <b>DISTANCE_TO_MOON</b> variable is not defined in nexl source file.<br/> 
+It's called default value modifier.
+The <b>:</b> character is a modifier id and the <b>384400</b> is a modifier value.<br/>
 <br/>
 
 ##### nexl expression definition
 
         ${JS_VAR_NAME[modifier_id[modifier_value]][modifier_id[modifier_value]]...}
 
-nexl suggests the following modifiers :
 
-- Default value modifier
-- Concat array elements modifier
-- Object reverse resolution modifier
-- Undefined variables control modifier
-- Omit expression modifier
-- Treat as modifier
+##### modifiers
+| Modifier id | Modifier name
+| --- | --- |
+| : | Default value modifier |
+| ? | Concat array elements modifier |
+| < | Object reverse resolution modifier |
+| ! | Undefined variables control modifier |
+| -<br/>+ | Omit expression modifier |
+| ~ | Treat as modifier |
 
 <br />
 
-For example let&#39;s consider a default value modifier which is applied when you are trying to get an undefined variable
 
-           ${HOSTS_COUNT:10}
 
-If the **HOSTS\_COUNT** variable is not defined, the **10** value will be applied as a default value. The **:** character is a modifier\_id and **10** is a modifier\_value
-
-<br/>
 
 **Default value modifier**
 
@@ -173,27 +181,4 @@ If the **HOSTS\_COUNT** variable is not defined, the **10** value will be applie
 ***
 <br/>
 
-nexl expressions can be nested with unlimited depth. For example :
-
-${hosts.${domain}.${env}}
-
-First nexl assembles a value for hosts.${domain}.${env} . Then this value will be substituted as a javascript variable ${...}
-
-<br />
-
-nexl expressions are viral with unlimited nested level. They can point to another nexl expression(s) in string javascript variables, in javascript arrays, in javascript objects. Even it can be applied as a key in a javascript object. Everything will be evaluated by nexl engine. For example :
-
-            var PORT = 8080;
-            
-            var URL = "http://localhost:${PORT}/service";
-            
-            var urlsArray = [ "${URL}", "http://google.com" ];
-            
-            var urlsArrayConcatenated = "${urlsArray?,}";
-            
-            var obj = {
-              length: "20",
-              "${PORT}": "second"
-            };
-
-Try those examples in a nexl-client
+[Examples of nexl expressions](examples-of-nexl-expressions.md)
