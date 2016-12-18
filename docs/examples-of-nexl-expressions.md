@@ -73,7 +73,7 @@ nexl source file
 
 nexl source file
 
-        var hostsByEnv = {
+        var hosts = {
             TEST: 'testsrv1',
             QA: [ 'qasrv1', 'qasrv2' ],
             PROD: {
@@ -87,21 +87,26 @@ nexl source file
         // play out with the following parameters
         // you can also provide them as an external args ( you can't provide an array in external arguments )
         var ENV = 'PROD';
-        var INSTANCE = 'SECOND';
+        var NUM = 'SECOND';
         var REVERSE_KEY = 'qasrv2';
         var REVERSE_KEY_MULTI = [ 'qasrv2', 'Neptune' ] ;
 
 
 | Expression | Result | Explanation
 | --- | --- | --- |
-| ${hostsByEnv} | hostsByEnv JSON | This is evaluating to a JSON object of hostsByEnv
-| ${hostsByEnv~K} | TEST<br/>QA<br/>PROD | Array of hostsByEnv's keys
-| ${hostsByEnv~K?,} | TEST,QA,PROD | The keys are joined with <b>comma</b>
-| ${hostsByEnv~V} | testsrv1<br/>qasrv1<br/>qasrv2<br/>Mercury<br/>Venus<br/>Earth<br/>Mars<br/>Jupiter<br/>Saturn<br/>Uranus<br/>Neptune | Array of hostsByEnv's values
+| ${hosts} | hosts JSON | This is evaluating to a JSON object of hosts
+| ${hosts~K} | TEST<br/>QA<br/>PROD | Array of hosts's keys
+| ${hosts~K?,} | TEST,QA,PROD | The keys are joined with <b>comma</b>
+| ${hosts~V} | testsrv1<br/>qasrv1<br/>qasrv2<br/>Mercury<br/>Venus<br/>Earth<br/>Mars<br/>Jupiter<br/>Saturn<br/>Uranus<br/>Neptune | Array of hosts's values
 | ${ENV~O} | {"ENV":"QA"} | The <b>ENV</b> varaible is forced to convert to a JSON object
-| ${hostsByEnv.PROD~K} | FIRST<br/>SECOND<br/>THIRD | Array of hostsByEnv.PROD's keys
-| ${hostsByEnv.${ENV}} | {"FIRST":["Mercury","Venus","Earth"],<br/>"SECOND":["Mars","Jupiter","Saturn"],<br/>"THIRD":["Uranus","Neptune"]} | The <b>ENV</b> variable is equals to <b>PROD</b> therefore nexl engine evaluates the the <b>${hostsByEnv.PROD}</b> expression which points to JSON object
-| ${hostsByEnv.${SPECIAL_ENV!C}} | hostsByEnv JSON | The <b>SPECIAL_ENV</b> variable is not defined and has a <b>!C</b> modifier. Therefore it is evaliating to an empty string.<br/>Now we heave a <b>${hostsByEnv.}</b> expression. nexl engine eliminates unnecessary dots for sub expressions and finally it will be evaluated as <b>${hostsByEnv}</b> expression
+| ${hosts.PROD~K} | FIRST<br/>SECOND<br/>THIRD | Array of hosts.PROD's keys
+| ${hosts.${ENV}} | {"FIRST":["Mercury","Venus","Earth"],<br/>"SECOND":["Mars","Jupiter","Saturn"],<br/>"THIRD":["Uranus","Neptune"]} | The <b>ENV</b> variable is equals to <b>PROD</b> therefore nexl engine evaluates the the <b>${hosts.PROD}</b> expression which points to JSON object
+| ${hosts.${SPECIAL_ENV!C}} | hosts JSON | The <b>SPECIAL_ENV</b> variable is not defined and has a <b>!C</b> modifier. Therefore it is evaliating to an empty string.<br/>Now we heave a <b>${hosts.}</b> expression. nexl engine eliminates unnecessary dots for sub expressions and finally it will be evaluated as <b>${hosts}</b> expression
+| ${hosts.${ENV}.${NUM}} | Mars<br/>Jupiter<br/>Saturn | The <b>ENV</b> variable equals to <b>PROD</b>, the <b>NUM</b> variable equals to <b>SECOND</b>. Therefore we have the following nexl expression to evaluate : <b>${hosts.PROD.SECOND}</b> which is points to the <b>[ 'Mars', 'Jupiter', 'Saturn' ]</b> array<br/><br/> Let's say the <b>ENV</b> variable equals to <b>TEST</b>. nexl engine will try to evaluate the following <b>${hosts.TEST.SECOND}</b><br/>If you take a look to a <b>hosts</b> object you will figure you that <b>TEST</b> doesn't have the <b>SECOND</b> property. Therefore this expression will be failed. We have to improve our expression to solve this problem. See next example
+| ${hosts.${NEW_ENV}.${NUM}<b>:${dv}</b>}<br/><br/>// where ${dv} is<br/>var dv='${hosts.${NEW_ENV}}' | depends on NEW_ENV | In this example the expression has a calculable default value <b>${dv}</b>.<br/><br/>If the <b>NEW_ENV</b> equals to <b>TEST</b> the <b>${hosts.${NEW_ENV}.${NUM}}</b> will failed due to <b>hosts</b> object doesn't have a <b>TEST.SECOND</b> property. At this point nexl engine will try to apply a default value which is the <b>${dv}</b> expression.<br/><br/>Hence if the <b>NEW_ENV</b> equals to <b>TEST</b> the default value will be calculated as <b>${hosts.TEST}</b> expression whihch is equals to <b>testsrv1</b> value
+| ${hosts<testsrv1} | TEST | This expressions performs property reverse resolution in <b>hosts</b> object. I.e. resolves object's KEY by a property
+| ${hosts<${REVERSE_KEY}} | QA | Same as previous example but the property is a nexl expression itself
+| ${hosts<${REVERSE_KEY_MULTI}} | QA<br/>PROD | Similar to previous example but the <b>${REVERSE_KEY_MULTI}</b> expression is evaluating to array <b>[ 'qasrv2', 'Neptune' ]</b> Therefore nexl engine searches a multiple keys which contains those values
 
 
 
@@ -127,4 +132,4 @@ nexl source file
 
 js function evaluation
 <br/>
-nexl engine instance
+nexl engine NUM
