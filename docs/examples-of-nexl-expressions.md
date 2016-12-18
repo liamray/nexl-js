@@ -94,14 +94,15 @@ nexl source file
 
 | Expression | Result | Explanation
 | --- | --- | --- |
-| ${hostsByEnv} | hostsByEnv JSON | This is evaluating as a JSON object of hostsByEnv
+| ${hostsByEnv} | hostsByEnv JSON | This is evaluating to a JSON object of hostsByEnv
 | ${hostsByEnv~K} | TEST<br/>QA<br/>PROD | Array of hostsByEnv's keys
-| ${hostsByEnv~K?,} | TEST,QA,PROD | The keys are joined with <b>,</b> symbol
+| ${hostsByEnv~K?,} | TEST,QA,PROD | The keys are joined with <b>comma</b>
 | ${hostsByEnv~V} | testsrv1<br/>qasrv1<br/>qasrv2<br/>Mercury<br/>Venus<br/>Earth<br/>Mars<br/>Jupiter<br/>Saturn<br/>Uranus<br/>Neptune | Array of hostsByEnv's values
-| ${ENV~O} | {"ENV":"QA"} | The <b>ENV</b> varaible is forced to convert to JSON object
+| ${ENV~O} | {"ENV":"QA"} | The <b>ENV</b> varaible is forced to convert to a JSON object
+| ${hostsByEnv.PROD~K} | FIRST<br/>SECOND<br/>THIRD | Array of hostsByEnv.PROD's keys
 | ${hostsByEnv.${ENV}} | {"FIRST":["Mercury","Venus","Earth"],<br/>"SECOND":["Mars","Jupiter","Saturn"],<br/>"THIRD":["Uranus","Neptune"]} | The <b>ENV</b> variable is equals to <b>PROD</b> therefore nexl engine evaluates the the <b>${hostsByEnv.PROD}</b> expression which points to JSON object
-| ${hostsByEnv.${SPECIAL_ENV!C}} | hostsByEnv JSON | The <b>SPECIAL_ENV</b> variable is not defined and has a <b>!C</b> modifier. Therefore it is evaliating as empty string.<br/>Now we heave a <b>${hostsByEnv.}</b> expression. nexl engine eliminates unnecessary dots for sub expressions and this will be evaluated as <b>${hostsByEnv}</b> expression
-| ${hostsByEnv.${ENV}.${INSTANCE}} | Mars<br/>Jupiter<br/>Saturn | The <b>ENV</b> variable is equals to <b>PROD</b>, the <b>INSTANCE</b> variable is equals to <b>SECOND</b>. Therefore we have the following nexl expression to evaluate : <b>${hostsByEnv.PROD.SECOND}</b> which is points to the <b>[ 'Mars', 'Jupiter', 'Saturn' ]</b> array<br/><br/>This expression has a problem. Saying the <b>ENV</b> variable is equals to TEST. nexl engine will try to evaluate the following : <b>${hostsByEnv.TEST.SECOND}</b> . If you take a look to a <b>hostsByEnv</b> object you will figure you that <b>TEST</b> doesn't have the <b>SECOND</b> property. Therefore this expression will be failed. We have to improve our expression to solve this problem. See next example
+| ${hostsByEnv.${SPECIAL_ENV!C}} | hostsByEnv JSON | The <b>SPECIAL_ENV</b> variable is not defined and has a <b>!C</b> modifier. Therefore it is evaliating to an empty string.<br/>Now we heave a <b>${hostsByEnv.}</b> expression. nexl engine eliminates unnecessary dots for sub expressions and finally it will be evaluated as <b>${hostsByEnv}</b> expression
+
 
 
 <br/>
