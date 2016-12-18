@@ -29,30 +29,30 @@ nexl source file
         var devHosts = [ 'test', 'qa' ];
         var prodHosts = [ 'prod' ];
         
-        var allHosts = [ '${devHosts}', '${prodHosts}' ]; // joining devHosts and prodHosts arrays into new allHosts array
-        var mixedHosts = [ '${devHosts?,}', '${prodHosts}' ]; // joining the concatenated elements of devHosts array and prodHosts array into new mixedHosts array
+        var allHosts = [ '${devHosts}', '${prodHosts}' ]; // joining the devHosts and prodHosts arrays
+        var mixedHosts = [ '${devHosts?,}', '${prodHosts}' ]; // joining the concatenated elements of devHosts array and prodHosts
         
         var port = 3915;
         var portsCollection = [ 8080, 3000 ];
         
-        var urls = 'http://${allHosts}:${port}/rest'; // assembling url of allHosts array and port
-        var urlsMultiple = 'http://${allHosts}:${portsCollection}/rest'; // cartesian product of allHosts array and portsCollection array
+        var urls = 'http://${allHosts}:${port}/rest'; // assembling url of allHosts array and port ( explaining below )
+        var urlsMultiple = 'http://${allHosts}:${portsCollection}/rest'; // cartesian product of allHosts array and portsCollection array ( explaining below )
 
 
 | Expression | Result | Explanation
 | --- | --- | --- |
-| ${devHosts} | test<br/>qa | Reference to javascript array. By default all elements on a new line
+| ${devHosts} | test<br/>qa | Referencing to a javascript array. By default all elements on a new line
 | ${devHosts?,} | test,qa | Concatenating array elements with <b>comma</b>
 | ${allHosts} | test<br/>qa<br/>prod | Is a join of devHosts and prodHosts array 
 | ${mixedHosts} | test,qa<br/>prod | Is a join of concatenated elements of devHosts array and prodHosts array 
-| ${mixedHosts?;} | test,qa;prod | All arrays elements are concatenated with <b>;</b> symbol
+| ${mixedHosts?;} | test,qa;prod | All arrays elements are concatenated with <b>;</b> symbol ( the elements are : 'test,qa' and 'prod' )
 | ${urls} | http://test:3915/rest<br/>http://qa:3915/rest<br/>http://prod:3915/rest | <b>urls</b> variable contains two nexl expressions : <b>${allHosts}</b> and <b>${port}</b> . The first expression points to array therefore we have an array as a result
 | ${urls?;} | http://test:3915/rest;http://qa:3915/rest;http://prod:3915/rest | Array elements are concatenated with <b>;</b> symbol
 | ${urlsMultiple} | http://test:8080/rest<br/>http://test:3000/rest<br/>http://qa:8080/rest<br/>http://qa:3000/rest<br/>http://prod:8080/rest<br/>http://prod:3000/rest |  <b>urlsMultiple</b> variable contains two nexl expressions <b>${allHosts}</b> and <b>${portsCollection}</b> where each expression is array. Therefore we get a cartesian product of two arrays
 
 ***
 
-##### Omit whole expression modifier
+#### Omit whole expression modifier
 
 nexl source file
 
