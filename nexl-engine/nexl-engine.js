@@ -392,14 +392,21 @@ module.exports = (function () {
             }
 
             // retrieving value from external args
-            // todo : this has a bug, HOSTS doesn't override HOSTS.A.C
             var result = externalArgs[jsVariable];
 
+	        // still doesn't have a value ?
             if (!isValSet(result)) {
                 result = evalNative(jsVariable);
             }
 
-            return result;
+	        // got an external argument
+	        // preventing arguments to be evaluated ( i.e. preventing code injection in external arguments )
+	        // nexl engine evaluates nexl expressions, checking is the result a nexl expression ?
+	        if (hasFirstLevelVars(result)) {
+		        throw "You can't pass a nexl expression in external arguments. Escape a $ sign in your argument if you didn't intend to pass an expression";
+	        }
+
+	        return result;
         }
 
         function evalNexlVariable(varName) {
@@ -708,6 +715,10 @@ module.exports = (function () {
             }
             return result;
         }
+
+	    function hasFirstLevelVars(str) {
+		    return extractFirstLevelVars(str).length > 0;
+	    }
 
         function whereIsVariableEnds(str, index) {
             if (str.length < index + 4) {
