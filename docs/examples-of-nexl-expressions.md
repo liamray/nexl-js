@@ -1,11 +1,29 @@
-### ( this article is not finished yet... )
 ### Examples of nexl expressions
+
+***
+
+#### How to test nexl expressions
+
+- <b>install</b> and <b>run</b> nexl-client
+    - nexl-client is a nodejs application, therefore download and install [nodejs](https://nodejs.org/en/download/) first
+    - open command line
+    - enter the following installation command <b>npm i nexl-client -g</b>
+    - run nexl-client by entering the following command <b>nexl</b>
+    - this will open your default browser with nexl-client in it
+- click on <b>New nexl source file</b> button to create a new empty file
+- for each example copy and paste everything under the <b>nexl source file</b> section into the text editor
+- copy and paste every expression example into <b>Expression</b> field in nexl-client
+- click <b>F9</b> button to evaluate the expression
+
+<br/>
+
+![alt text](examples.png "nexl-client")
 
 ***
 
 #### Simple expressions
 
-nexl source file
+<b>nexl source file</b>
 
         var x = 'Hello,World!';
 
@@ -24,7 +42,7 @@ nexl source file
 
 #### Arrays 
 
-nexl source file
+<b>nexl source file</b>
 
         var devHosts = [ 'test', 'qa' ];
         var prodHosts = [ 'prod' ];
@@ -54,7 +72,7 @@ nexl source file
 
 #### Omit whole expression modifier
 
-nexl source file
+<b>nexl source file</b>
 
         var text = 'Hello,${person!C}';
         var fact = [ 'bear',  'has',  '${cnt!C}',  'teeth' ];
@@ -71,7 +89,7 @@ nexl source file
 #### Objects
 
 
-nexl source file
+<b>nexl source file</b>
 
         var hosts = {
             TEST: 'testsrv1',
@@ -91,6 +109,13 @@ nexl source file
         var REVERSE_KEY = 'qasrv2';
         var REVERSE_KEY_MULTI = [ 'qasrv2', 'Neptune' ] ;
 
+        // VALUE -> KEY resolution with computable KEY
+        var liveKeyValueDemo = {
+            '${key}': 'resolveMe'
+        };
+        
+        var key = 'Hello World !';
+
 
 | Expression | Result | Explanation
 | --- | --- | --- |
@@ -107,29 +132,21 @@ nexl source file
 | ${hosts<testsrv1} | TEST | This expressions performs property reverse resolution in <b>hosts</b> object. I.e. resolves object's KEY by a property
 | ${hosts<${REVERSE_KEY}} | QA | Same as previous example but the property is a nexl expression itself
 | ${hosts<${REVERSE_KEY_MULTI}} | QA<br/>PROD | Similar to previous example but the <b>${REVERSE_KEY_MULTI}</b> expression is evaluating to array <b>[ 'qasrv2', 'Neptune' ]</b> Therefore nexl engine searches a multiple keys which contains those values
+| ${liveKeyValueDemo<resolveMe} | Hello World ! | Performs a <b>KEY</b> resolution by <b>resolveMe</b> value in <b>liveKeyValueDemo</b> object where the <b>KEY</b> is a nexl expression itself <b>${key}</b> which is evaluating to <b>Hello World !</b>
 
 
+***
 
-<br/>
-<br/>
-nexl source file
+#### Evaluating javascript functions ( to be continued )
 
-        var liveKeyValueDemo = {
-            '${key}': '${value}'
-        };
-        
-        
-        var key = 'Hello World !';
-        var value = 'resolveMe';
+<b>nexl source file</b>
+
+        // function
+        // function with nexl engine's instance
         
         
 | Expression | Result | Explanation
 | --- | --- | --- |
-| ${liveKeyValueDemo<resolveMe} |  |
         
 
 ***
-
-js function evaluation
-<br/>
-nexl engine NUM
