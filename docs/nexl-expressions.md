@@ -2,7 +2,8 @@
 
 ##### Introduction
 
-nexl expressions are javascript variables wrapped with <b>${...}</b> characters.<br/>
+nexl expressions are javascript variables or functions wrapped with <b>${...}</b> characters.<br/>
+nexl expressions give you an access to a javascript variables and functions located in nexl source file.<br/> 
 The <b>${DISTANCE_TO_MOON}</b> expression evaluates to the value of <b>DISTANCE_TO_MOON</b> javascript variable declared in nexl source file.
 
 By using of nexl expression you can access properties of javascript objects.<br/>
@@ -11,7 +12,11 @@ The <b>${Person.age}</b> expression accesses the <b>age</b> property from <b>Per
 Expressions are dynamic, everything is being evaluated.<br/>
 Consider the following expression <b>${Person.${property}}</b> . The <b>${property}</b> is an expression itself. First nexl engine substitutes the value of <b>property</b> variable and the whole expression will be evaluated.<br/> 
 
-Additionally nexl expressions allow to perform different kind of manipulations with a javascript variables. For example to apply a default value for undefined variable.<br/>
+To evaluate a javascript function wrap function name with <b>${...}</b> characters.<br/>
+The <b>${testFunc()}</b> expression runs the <b>testFunc()</b> function and evaluates to a value which that function returns.<br/>
+Expression with parametrized function <b>${testFunc('${param1}')}</b>. nexl engine will evaluate a <b>${param1}</b> expression first and then it will be passed to the function.
+
+Additionally nexl expressions allow to perform different kind of manipulations with a javascript variables ( and functions ). For example to apply a default value for undefined variable.<br/>
 The <b>${DISTANCE_TO_MOON:384400}</b> expression evaluates to <b>384400</b> value if the <b>DISTANCE_TO_MOON</b> variable is not defined in nexl source file.<br/> 
 It's called default value modifier.
 The <b>:</b> character is a modifier id and the <b>384400</b> is a modifier value.<br/>
@@ -19,7 +24,7 @@ The <b>:</b> character is a modifier id and the <b>384400</b> is a modifier valu
 
 ##### nexl expression definition
 
-        ${JS_VAR_NAME[modifier_id[modifier_value]][modifier_id[modifier_value]]...}
+        ${JS_VAR_NAME|JS_FUNCTION(FUNC_PARAMS)[modifier_id[modifier_value]][modifier_id[modifier_value]]...}
 
 
 ##### modifiers

@@ -81,7 +81,7 @@ As you can see the URL consists of the following :
 
 __${DISTANCE\_TO\_MOON}__ is called nexl expression
 
-nexl expressions are javascript variables wrapped with <b>${...}</b> characters. You can perform different kind of manipulations with javascript variables by using nexl expressions.
+nexl expressions are javascript variables ( in general ) wrapped with <b>${...}</b> characters. You can perform different kind of manipulations with javascript variables by using nexl expressions.
 
 [Learn more about nexl expression](docs/nexl-expressions.md)
 <br />
@@ -111,7 +111,7 @@ Now let&#39;s consider how to simulate nexl-server&#39;s work locally
 
 ### nexl expressions
 
-nexl expression definition
+nexl expression definition ( [full definition is here](docs/nexl-expressions.md) )
 
         ${JS_VAR_NAME[modifier_id[modifier_value]][modifier_id[modifier_value]]...}
 
@@ -133,8 +133,6 @@ For example let&#39;s consider a default value modifier which is applied when yo
            ${HOSTS_COUNT:10}
 
 If the **HOSTS\_COUNT** variable is not defined, the **10** value will be applied as a default value. The **:** character is a modifier\_id and **10** is a modifier\_value
-
-[More about expression](docs/nexl-expressions.md)
 
 * * *
 
