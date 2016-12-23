@@ -807,28 +807,16 @@ module.exports = (function () {
 				break;
 			}
 
-			var bracketsCnt = 1;
-			// iterating over characters after start position and counting the brackets to find the close bracket
-			for (var i = start + 2; i < str.length; i++) {
-				var ch = str[i];
-				if (ch == "}") {
-					bracketsCnt--;
-				}
-				if (ch == "{") {
-					bracketsCnt++;
-				}
-
-				// is found the a close bracket at i position ?
-				if (bracketsCnt <= 0) {
-					var extractedVar = str.substr(start, i - start + 1);
-					str = str.substr(i);
-					// returning the first level variable and the of str
-					return {flvName: extractedVar, restStr: str};
-				}
+			var closeBracketPos = findCloseBracketPos(str, start + 1);
+			if (closeBracketPos < 0) {
+				// there no first level variables
+				return {};
 			}
 
-			// there no first level variables
-			return {};
+			var extractedVar = str.substr(start, closeBracketPos - start + 1);
+			str = str.substr(closeBracketPos);
+			// returning the first level variable and the of str
+			return {flvName: extractedVar, restStr: str};
 		}
 
 		function extractFirstLevelVars(str) {
@@ -877,19 +865,13 @@ module.exports = (function () {
 			if (str.charAt(index + 1) != '{') {
 				throw "Bad expression. In the [" + str + "] at the " + index + " position should be an open bracket";
 			}
-			var bracketsCnt = 0;
-			for (var i = index + 1; i < str.length; i++) {
-				if (isCharAt(str, '}', i)) {
-					bracketsCnt--;
-				}
-				if (isCharAt(str, '{', i)) {
-					bracketsCnt++;
-				}
-				if (bracketsCnt <= 0) {
-					return i;
-				}
+
+			var closeBracketPos = findCloseBracketPos(str, index + 1);
+			if (closeBracketPos < 0) {
+				throw "Variable [" + str + "] is not closed with right bracket";
 			}
-			throw "Variable [" + str + "] is not closed with right bracket";
+
+			return closeBracketPos;
 		}
 
 		function addFirstLevelVars(nexlVar, varStuff) {
