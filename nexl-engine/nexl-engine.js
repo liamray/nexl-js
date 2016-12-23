@@ -59,9 +59,15 @@ module.exports = (function () {
 		'[': ']'
 	};
 
+	var MODIFIERS_ESCAPE_REGEX;
+
 
 	function isString(obj) {
 		return Object.prototype.toString.call(obj) === "[object String]";
+	}
+
+	function isInt(obj) {
+		return Object.prototype.toString.call(obj) === "[object Number]";
 	}
 
 	function isArray(obj) {
@@ -282,6 +288,7 @@ module.exports = (function () {
 			if ((index > 0) && (str[index - 1] == '\\')) {
 				return false;
 			}
+
 			return true;
 		}
 
@@ -292,10 +299,10 @@ module.exports = (function () {
 			if (isArray(obj) && obj.length == 1) {
 				obj = obj[0];
 			}
-			if (isString(obj)) {
+			if (isString(obj) || isInt(obj)) {
 				for (var i = 0; i < reversedKey.length; i++) {
 					var item = unescape(reversedKey[i]);
-					if (item === obj) {
+					if (item == obj) {
 						return true;
 					}
 				}
@@ -364,47 +371,136 @@ module.exports = (function () {
 			assembleModifiersRegex();
 		}
 
-		function abortErrMsg(varStuff) {
+		function abortErrMsg(varStuff, originalVal) {
 			var varName = varStuff.varName;
-			var msg = "It seems the [" + varName + "] variable is not defined.";
+			var msg;
+
+			// was it because of reverse resolution ?
+			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && isObject(originalVal)) {
+				var value = assembleExpressionWrapper(varStuff.MODIFIERS.REVERSE_RESOLUTION);
+				return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
+			}
+
+			msg = "It seems the [" + varName + "] variable is not defined.";
 			if (lastEvalError) {
 				msg += "\nlastEvalError = " + lastEvalError;
 			}
-			if (varStuff.MODIFIERS.REVERSE_RESOLUTION) {
-				msg += ". Or reverse resolution is failed ( key not found )";
-			}
+
 			return msg;
 		}
 
-		function evalNative(expression) {
-			try {
-				var splitted = expression.split(".");
-				var evalExpression = splitted[0];
-				for (var i = 1; i < splitted.length; i++) {
-					var item = splitted[i];
-					if (item == "") {
-						continue;
-					}
-					item = unescape(item);
-					evalExpression += ("[\"" + item + "\"]");
+		function processIdentifier(identifierInfo) {
+			var item;
+			var dotPos = identifierInfo.identifier.indexOf('.', identifierInfo.start);
+			var bracketPos = identifierInfo.identifier.indexOf('(', identifierInfo.start);
+
+			// 1) no dots no brackets
+			if (dotPos < 0 && bracketPos < 0) {
+				// cutting the item for resolving from start till the end
+				item = identifierInfo.identifier.substr(identifierInfo.start);
+				item = unescapeString(item);
+				// resolving
+				identifierInfo.value = identifierInfo.value[item];
+				identifierInfo.start = identifierInfo.identifier.length;
+				return;
+			}
+
+			// 2) dotPos is positive and before bracketPos
+			if (dotPos >= identifierInfo.start && (bracketPos < 0 || dotPos < bracketPos)) {
+				// is empty identifier ?
+				if (dotPos == identifierInfo.start) {
+					// skipping the dot
+					identifierInfo.start++;
+					return;
 				}
-				return eval(evalExpression);
-			} catch (e) {
-				lastEvalError = e;
+
+				// cutting the item for resolving from start till dotPos
+				item = identifierInfo.identifier.substring(identifierInfo.start, dotPos);
+				item = unescapeString(item);
+				identifierInfo.value = identifierInfo.value[item];
+				identifierInfo.start = dotPos + 1;
+				return;
+			}
+
+			// 3) bracketPos is positive and before dotPos
+			if (bracketPos >= identifierInfo.start && ( dotPos < 0 || bracketPos < dotPos )) {
+				// probably it's a function call
+				// cutting the item from start till bracketPos
+				var funcName = identifierInfo.identifier.substring(identifierInfo.start, bracketPos);
+				funcName = unescapeString(funcName);
+				var resolution = identifierInfo.value[funcName];
+				// is it not function ?
+				if (!isFunction(resolution)) {
+					dotPos = dotPos < 0 ? identifierInfo.identifier.length : dotPos;
+					item = identifierInfo.identifier.substring(identifierInfo.start, dotPos);
+					item = unescapeString(item);
+					identifierInfo.value = identifierInfo.value[item];
+					identifierInfo.start = dotPos + 1;
+					return;
+				}
+
+				// omg ! it's function !
+				// searching for close bracket
+				var closeBracket = findCloseBracketPos(identifierInfo.identifier, identifierInfo.start + funcName.length);
+
+				// didn't find a close bracket ?
+				if (closeBracket < 0) {
+					identifierInfo.value = null;
+					identifierInfo.start = identifierInfo.identifier.length;
+					lastEvalError = util.format('The [%s] function doesn\'t have a close bracket', funcName);
+					return;
+				}
+
+				var functionCall = identifierInfo.identifier.substring(identifierInfo.start, closeBracket + 1);
+
+				// evaluating the function
+				try {
+					identifierInfo.value = vm.runInNewContext(functionCall, identifierInfo.value);
+					identifierInfo.start += functionCall.length;
+					identifierInfo.start++;
+				} catch (e) {
+					lastEvalError = util.format('Failed to evaluate the [%s] function. Reason : %s', functionCall, e);
+					identifierInfo.value = null;
+					identifierInfo.start = identifierInfo.identifier.length;
+				}
+
+				return;
+			}
+
+			throw 'You should not achieve this code';
+		}
+
+		function resolveJSIdentifierValueWrapper(identifier) {
+			var identifierInfo = {
+				identifier: identifier,
+				value: context,
+				start: 0
+			};
+
+			// processing identifier
+			while (identifierInfo.start < identifier.length && isValSet(identifierInfo.value)) {
+				processIdentifier(identifierInfo);
+			}
+
+			// has it never been in last WHILE cycle ?
+			if (identifierInfo.value === context) {
+				lastEvalError = 'It seems you are trying to evaluate zero length variable';
 				return null;
 			}
+
+			return identifierInfo.value;
 		}
 
 		// jsVariable can point to object's property, for example : x.y.z
-		function evalNativeWrapper(jsVariable) {
+		function resolveJSIdentifierValue(jsVariable) {
 			// if externalArgs is not provided, just evaluate jsVariable
 			if (!externalArgs) {
-				return evalNative(jsVariable);
+				return resolveJSIdentifierValueWrapper(jsVariable);
 			}
 
 			// are external arguments weaker than source ?
 			if (!retrieveBoolSettings('ARGS_ARE_OVERRIDING_SRC')) {
-				return evalNative(jsVariable);
+				return resolveJSIdentifierValueWrapper(jsVariable);
 			}
 
 			// retrieving value from external args
@@ -412,13 +508,13 @@ module.exports = (function () {
 
 			// still doesn't have a value ?
 			if (!isValSet(result)) {
-				return evalNative(jsVariable);
+				return resolveJSIdentifierValueWrapper(jsVariable);
 			}
 
 			// got an external argument
 			// preventing arguments to be evaluated ( i.e. preventing code injection in external arguments )
 			// nexl engine evaluates nexl expressions, checking is the result a nexl expression ?
-			if (hasFirstLevelVars(result)) {
+			if (isString(result) && hasFirstLevelVars(result)) {
 				throw "You can't pass a nexl expression in external arguments. Escape a $ sign in your argument if you didn't intend to pass an expression";
 			}
 
@@ -442,7 +538,7 @@ module.exports = (function () {
 				var variable = variables[i];
 
 				// evaluating javascript variable
-				var evaluatedValue = evalNativeWrapper(variable);
+				var evaluatedValue = resolveJSIdentifierValue(variable);
 
 				// applying related modifiers
 				var values = applyModifiers(evaluatedValue, varStuff);
@@ -524,10 +620,12 @@ module.exports = (function () {
 			return JSON.stringify(objCandidate);
 		}
 
-		function applyModifiers(result, varStuff) {
+		function applyModifiers(value, varStuff) {
+			var result = value;
+
 			// apply json reverse resolution is present
-			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && isObject(result)) {
-				result = jsonReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
+			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && isObject(value)) {
+				result = jsonReverseResolution(value, varStuff.MODIFIERS.REVERSE_RESOLUTION);
 			}
 
 			// apply default value if value not set
@@ -536,7 +634,7 @@ module.exports = (function () {
 			}
 
 			// abort script execution if value still not set and [!C] modifier is not applied
-			abortScriptIfNeeded(result, varStuff);
+			abortScriptIfNeeded(value, result, varStuff);
 
 			result = applyTreatAsModifier(result, varStuff.MODIFIERS.TREAT_AS, varStuff);
 
@@ -544,20 +642,21 @@ module.exports = (function () {
 			return result;
 		}
 
-		function abortScriptIfNeeded(val, varStuff) {
-			if (isValSet(val)) {
+		function abortScriptIfNeeded(originalVal, result, varStuff) {
+			if (isValSet(result)) {
 				return;
 			}
+
 			var is2Abort = varStuff.MODIFIERS.ABORT_ON_UNDEF_VAR;
 			if (is2Abort == "A") {
-				throw abortErrMsg(varStuff);
+				throw abortErrMsg(varStuff, originalVal);
 			}
 			if (is2Abort == "C") {
 				return;
 			}
 
 			if (retrieveBoolSettings('ABORT_ON_UNDEFINED_VAR')) {
-				throw abortErrMsg(varStuff);
+				throw abortErrMsg(varStuff, originalVal);
 			}
 		}
 
@@ -693,12 +792,13 @@ module.exports = (function () {
 		// extracts the first level variable ( only first item )
 		function extractFirstLevelVarWrapper(str) {
 			var start = 0;
+
 			// searching for not escaped ${ characters, saving the position in start variable
 			while (true) {
 				start = str.indexOf("${", start);
 				if (start < 0) {
 					// there no first level variables
-					return [null, null];
+					return {};
 				}
 				if (( start > 0 ) && ( str.charAt(start - 1) == '\\' )) {
 					start++;
@@ -706,6 +806,7 @@ module.exports = (function () {
 				}
 				break;
 			}
+
 			var bracketsCnt = 1;
 			// iterating over characters after start position and counting the brackets to find the close bracket
 			for (var i = start + 2; i < str.length; i++) {
@@ -716,32 +817,57 @@ module.exports = (function () {
 				if (ch == "{") {
 					bracketsCnt++;
 				}
+
 				// is found the a close bracket at i position ?
 				if (bracketsCnt <= 0) {
 					var extractedVar = str.substr(start, i - start + 1);
 					str = str.substr(i);
 					// returning the first level variable and the of str
-					return [extractedVar, str];
+					return {flvName: extractedVar, restStr: str};
 				}
 			}
+
 			// there no first level variables
-			return [null, null];
+			return {};
 		}
 
 		function extractFirstLevelVars(str) {
 			var result = [];
-			// multiResult is an array of two items : 1) extracted variable name 2)
-			var multiResult = extractFirstLevelVarWrapper(str);
-			while (multiResult[0]) {
-				result.push(multiResult[0]);
-				str = multiResult[1];
-				multiResult = extractFirstLevelVarWrapper(str);
+			// oneFlv is an object which contains the following : flvName ( first level variable name ), restStr ( the rest of str after flvName )
+			var oneFlv = extractFirstLevelVarWrapper(str);
+			while (oneFlv.flvName != null) {
+				result.push(oneFlv.flvName);
+				str = oneFlv.restStr;
+				oneFlv = extractFirstLevelVarWrapper(str);
 			}
 			return result;
 		}
 
 		function hasFirstLevelVars(str) {
-			return extractFirstLevelVars(str).length > 0;
+			return extractFirstLevelVarWrapper(str).flvName != null;
+		}
+
+		function findCloseBracketPos(str, start) {
+			var openBracket = str.charAt(start);
+			var closeBracket = KNOWN_BRACKETS[openBracket];
+			if (!closeBracket) {
+				return -1;
+			}
+
+			var bracketCount = 1;
+			for (var i = start + 1; i < str.length; i++) {
+				if (str.charAt(i) == openBracket) {
+					bracketCount++;
+				}
+				if (str.charAt(i) == closeBracket) {
+					bracketCount--;
+				}
+				if (bracketCount < 1) {
+					return i;
+				}
+			}
+
+			return -1;
 		}
 
 		function whereIsVariableEnds(str, index) {
@@ -903,11 +1029,17 @@ module.exports = (function () {
 
 		var sourceCode = assembleSourceCode(nexlSource);
 
+		context = {};
+		context.evalNexlExpression = assembleExpressionWrapper;
+
 		try {
-			eval(sourceCode);
+			vm.runInNewContext(sourceCode, context);
 		} catch (e) {
 			throw "Got a problem with a source script: " + e;
 		}
+
+		// attaching a assembleExpressionWrapper() function to a context
+		context.evalNexlExpression = assembleExpressionWrapper;
 
 		// initializing
 		init();
