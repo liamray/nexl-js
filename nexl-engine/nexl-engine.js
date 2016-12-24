@@ -798,7 +798,7 @@ module.exports = (function () {
 				start = str.indexOf("${", start);
 				if (start < 0) {
 					// there no first level variables
-					return {};
+					return null;
 				}
 				if (( start > 0 ) && ( str.charAt(start - 1) == '\\' )) {
 					start++;
@@ -810,7 +810,7 @@ module.exports = (function () {
 			var closeBracketPos = findCloseBracketPos(str, start + 1);
 			if (closeBracketPos < 0) {
 				// there no first level variables
-				return {};
+				return null;
 			}
 
 			var extractedVar = str.substr(start, closeBracketPos - start + 1);
@@ -823,7 +823,7 @@ module.exports = (function () {
 			var result = [];
 			// oneFlv is an object which contains the following : flvName ( first level variable name ), restStr ( the rest of str after flvName )
 			var oneFlv = extractFirstLevelVarWrapper(str);
-			while (oneFlv.flvName != null) {
+			while (oneFlv != null) {
 				result.push(oneFlv.flvName);
 				str = oneFlv.restStr;
 				oneFlv = extractFirstLevelVarWrapper(str);
@@ -832,7 +832,7 @@ module.exports = (function () {
 		}
 
 		function hasFirstLevelVars(str) {
-			return extractFirstLevelVarWrapper(str).flvName != null;
+			return extractFirstLevelVarWrapper(str) != null;
 		}
 
 		function findCloseBracketPos(str, start) {
