@@ -29,3 +29,5 @@ var testExpression006 = 'KEYS=[${obj1~K?,}] VALUES=[${obj1~V?,}]';
 var testExpression007 = '${obj1.price}    ${..obj1....beneficial...}    ${obj1.pack~K?,}    ${obj1.pack~V?,}    ${obj1.${undefinedVariable!C}~V?,}    ${obj1.${obj1PropName}}';
 // reverse resolution
 var testExpression008 = '${obj1<true}    ${obj1<${strItem}}    ${obj1<${undefinedVariable!C}:undefined}    ';
+
+// omit whole expression modifier
