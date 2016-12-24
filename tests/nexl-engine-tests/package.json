@@ -1,0 +1,20 @@
+{
+  "name": "nexl-engine-tests",
+  "version": "1.0.0",
+  "description": "tests for nexl-engine",
+  "main": "nexl-engine-tests.js",
+  "license": "Apache 2.0",
+  "author": "Yevgeny Sergeyev",
+  "files": [
+    "nexl-engine-tests.js",
+    "nexl-sources-4-tests/data.js",
+    "nexl-sources-4-tests/expressions.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yevgeny-sergeyev/nexl-js.git"
+  },
+  "dependencies": {
+    "nexl-engine": "1.4.31"
+  }
+}
