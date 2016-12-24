@@ -5,7 +5,17 @@
 
 
 	function test(mustFail, expression, args) {
-		return nexlEngine.evalNexlExpression(nexlSource, expression, args);
+		if (!mustFail) {
+			return nexlEngine.evalNexlExpression(nexlSource, expression, args);
+		}
+
+		try {
+			nexlEngine.evalNexlExpression(nexlSource, expression, args);
+		} catch (e) {
+			return;
+		}
+
+		throw 'The [' + expression + '] expression would had been fail';
 	}
 
 	function compare() {
@@ -39,8 +49,13 @@
 	function start() {
 		automaticTest();
 
-		// testing variable resolution failure
+		// attempt to resolve undefined variable
+		test(true, '${undefinedVariable}}');
+		test(true, '${undefinedVariable!A}');
+
 		// testing object reverse resolution failure
+		test(true, '${obj1<undefinedVariable}}');
+
 		// testing external args override js vars
 		// testing function call
 
