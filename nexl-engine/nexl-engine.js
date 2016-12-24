@@ -1067,24 +1067,3 @@ module.exports = (function () {
 		resolveJsVariables: resolveJsVariables
 	};
 }());
-
-
-var nexlSource = {
-	asFile: {
-		// fileName: 'C:\\WORKSPACES\\nexl-sources\\ws\\ws.js'
-		// fileName: 'E:\\ENTER\\IT\\nexl-sources\\ws\\ws.js'
-		// fileName: 'E:\\ENTER\\IT\\nexl-sources\\jvm-opts\\app-server.js'
-		fileName: 'E:\\ENTER\\IT\\nexl-js\\tests\\nexl-engine-tests\\nexl-sources-4-tests\\expressions.js'
-	}
-};
-
-var nexlExpression = '${obj1<true}';
-
-var result = module.exports.evalNexlExpression(nexlSource, nexlExpression, {
-	IFC: 'j1prod2',
-	ENV: 'TEST',
-	_JIDI_INSTANCE: 'FIRST',
-	y: 'IFC'
-});
-
-console.log(result);
