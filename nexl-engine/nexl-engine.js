@@ -70,6 +70,10 @@ module.exports = (function () {
 		return Object.prototype.toString.call(obj) === "[object Number]";
 	}
 
+	function isBool(obj) {
+		return Object.prototype.toString.call(obj) === "[object Boolean]";
+	}
+
 	function isArray(obj) {
 		return Object.prototype.toString.call(obj) === "[object Array]";
 	}
@@ -299,10 +303,10 @@ module.exports = (function () {
 			if (isArray(obj) && obj.length == 1) {
 				obj = obj[0];
 			}
-			if (isString(obj) || isInt(obj)) {
+			if (isString(obj) || isInt(obj) || isBool(obj)) {
 				for (var i = 0; i < reversedKey.length; i++) {
 					var item = unescape(reversedKey[i]);
-					if (item == obj) {
+					if (item == obj.toString()) {
 						return true;
 					}
 				}
@@ -1063,3 +1067,24 @@ module.exports = (function () {
 		resolveJsVariables: resolveJsVariables
 	};
 }());
+
+
+var nexlSource = {
+	asFile: {
+		// fileName: 'C:\\WORKSPACES\\nexl-sources\\ws\\ws.js'
+		// fileName: 'E:\\ENTER\\IT\\nexl-sources\\ws\\ws.js'
+		// fileName: 'E:\\ENTER\\IT\\nexl-sources\\jvm-opts\\app-server.js'
+		fileName: 'E:\\ENTER\\IT\\nexl-js\\tests\\nexl-engine-tests\\nexl-sources-4-tests\\expressions.js'
+	}
+};
+
+var nexlExpression = '${obj1<true}';
+
+var result = module.exports.evalNexlExpression(nexlSource, nexlExpression, {
+	IFC: 'j1prod2',
+	ENV: 'TEST',
+	_JIDI_INSTANCE: 'FIRST',
+	y: 'IFC'
+});
+
+console.log(result);
