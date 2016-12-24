@@ -14,15 +14,6 @@ var fs = require('fs');
 var vm = require('vm');
 
 module.exports = (function () {
-
-	/**
-	 * modifiers change the expression's behaviour
-	 * modifiers apply at the end of expression
-	 * you can specify multiply modifiers for single expression
-	 * even you can specify the same modifier many times for single expression ( doesn't work for all modifiers )
-	 * for example : ${JS_VARIABLE:10}
-	 * which means if JS_VARIABLE is not defined, engine will apply the default value 10 for this expression
-	 */
 	var MODIFIERS = {
 		"DELIMITER": "?",
 		"DEF_VALUE": ":",
