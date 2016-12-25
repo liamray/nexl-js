@@ -27,6 +27,12 @@ obj1 = {
 	'${intItem}': '${strItem}'
 };
 
+UNITED_KEY_DEF = {
+	'price': ['price', 'disturbed', 'beneficial']
+};
+
+unitedKey = '${UNITED_KEY_DEF<${KEY}:${KEY}}';
+
 var omitArr1 = ['disconnect', false, 24, '${undefinedVariable!C}', null];
 omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar!C}';
 

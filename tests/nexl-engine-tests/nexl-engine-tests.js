@@ -18,6 +18,12 @@
 		throw 'The [' + expression + '] expression would had been fail';
 	}
 
+	function testRawExpressionAndAccumulate(rawEpression, args) {
+		var expression = '${' + rawEpression + '}';
+		var result = test(false, expression, args);
+		accumulate(rawEpression, result);
+	}
+
 	function compare() {
 		console.log(expectedResult);
 	}
@@ -48,6 +54,10 @@
 
 	function start() {
 		automaticTest();
+
+		// testing united key
+		testRawExpressionAndAccumulate('unitedKey', {KEY:'disturbed'});
+		testRawExpressionAndAccumulate('unitedKey', {KEY:'()'});
 
 		// attempt to resolve undefined variable
 		test(true, '${undefinedVariable}}');
