@@ -13,8 +13,8 @@
 var testExpression001 = 'no expression';
 
 // simple resolution
-var testExpression002a = '${intItem}    ${strItem}    ${boolItem}    empty=[${undefinedVariable!C}]    ${intItem~O}';
-var testExpression002b = '${undefinedVariable!C}';
+//var testExpression002a = '${intItem}    ${strItem}    ${boolItem}    empty=[${undefinedVariable!C}]    ${intItem~O}';
+var testExpression002b = '1[${undefinedVariable!C}]    2[${undefinedVariable2:]}    3[${undefinedVariable:111}]    4[${aaa:${bbb!C}:222}]';
 
 // cartesian product
 var testExpression003 = '${intItem} ${strItem} ${boolItem} ${arr1}';
