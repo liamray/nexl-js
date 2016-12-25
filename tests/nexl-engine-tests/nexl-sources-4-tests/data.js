@@ -8,7 +8,9 @@ strItem = 'berry';
 
 var boolItem = true;
 
-var arr1 = ['queen', 'muscle', 56, false];
+var arr1 = ['queen', 'muscle', 79, false];
+var arr2 = ['air', 16, 99, true, 'smooth'];
+var arr3 = ['${arr1}', '${arr2}'];
 
 obj1PropName = '()';
 
@@ -24,3 +26,6 @@ obj1 = {
 	},
 	'${intItem}': '${strItem}'
 };
+
+var omitArr1 = ['disconnect', false, 24, '${undefinedVariable!C}', null];
+omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar!C}';
