@@ -29,3 +29,11 @@ obj1 = {
 
 var omitArr1 = ['disconnect', false, 24, '${undefinedVariable!C}', null];
 omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar!C}';
+
+function reverseArray(arr) {
+	return arr.reverse();
+}
+
+obj1.pack.wrapWithBrackets = function (str) {
+	return '{' + str + '}';
+};

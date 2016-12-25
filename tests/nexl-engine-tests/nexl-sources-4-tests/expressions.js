@@ -36,3 +36,7 @@ var testExpression005d = '${obj1<true}    ${obj1<${strItem}}    ${obj1<${undefin
 // omit whole expression modifier
 var testExpression006a = '${omitArr1-?,}    ${omitArr1+?,}    ${omitArr1?,}';
 var testExpression006b = '[${omitStr1-}] | ${omitStr1+} | ${omitStr1}';
+
+// functions
+var testExpression007a = '${reverseArray([1, 2, 3])}';
+var testExpression007b = '${obj1.pack.wrapWithBrackets("1")}';
