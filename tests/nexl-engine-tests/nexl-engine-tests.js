@@ -68,6 +68,9 @@
 
 		// testing external args override js vars
 		// testing function call
+		// testing standard functions call like Math.random()
+		// testing function call when function gets a object/array and returns object/array/array of objects
+		// test array ob objects resolution like a.arrOfObjs.b.c
 
 		compare();
 	}
