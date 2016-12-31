@@ -3,6 +3,9 @@
   "version": "1.4.31",
   "description": "nexl expressions processor. Consider the following products which are based on nexl-engine : nexl-client, nexl-server",
   "main": "nexl-engine.js",
+  "scripts": {
+    "test": "cd tests && node nexl-engine-tests.js"
+  },
   "keywords": [
     "nexl",
     "nexl-js",
