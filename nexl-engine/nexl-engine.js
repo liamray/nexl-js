@@ -7,11 +7,12 @@
  nexl expressions processor
  **************************************************************************************/
 
-var esprima = require('esprima');
-var path = require('path');
-var util = require('util');
-var fs = require('fs');
-var vm = require('vm');
+const esprima = require('esprima');
+const path = require('path');
+const util = require('util');
+const fs = require('fs');
+const vm = require('vm');
+const j79 = require('j79-utils');
 
 module.exports = (function () {
 	var MODIFIERS = {
@@ -51,76 +52,6 @@ module.exports = (function () {
 	};
 
 	var MODIFIERS_ESCAPE_REGEX;
-
-
-	function isString(obj) {
-		return Object.prototype.toString.call(obj) === "[object String]";
-	}
-
-	function isInt(obj) {
-		return Object.prototype.toString.call(obj) === "[object Number]";
-	}
-
-	function isBool(obj) {
-		return Object.prototype.toString.call(obj) === "[object Boolean]";
-	}
-
-	function isArray(obj) {
-		return Object.prototype.toString.call(obj) === "[object Array]";
-	}
-
-	function isObject(obj) {
-		return Object.prototype.toString.call(obj) === "[object Object]";
-	}
-
-	function isFunction(obj) {
-		return Object.prototype.toString.call(obj) === "[object Function]";
-	}
-
-	function wrapWithArrayIfNeeded(obj) {
-		return isArray(obj) ? obj : [obj];
-	}
-
-	function wrapWithObjIfNeeded(obj, key) {
-		if (isObject(obj)) {
-			return obj;
-		}
-		var result = {};
-		result[key] = obj;
-		return result;
-	}
-
-	function concatArrays(arr1, arr2) {
-		for (var i = 0; i < arr2.length; i++) {
-			arr1.push(arr2[i]);
-		}
-	}
-
-	function obj2ArrayIfNeeded(obj) {
-		if (!isObject(obj)) {
-			return obj;
-		}
-		var result = [];
-		for (var field in obj) {
-			var value = obj[field];
-			value = obj2ArrayIfNeeded(value);
-			value = wrapWithArrayIfNeeded(value);
-			concatArrays(result, value);
-		}
-		return result;
-	}
-
-	function isValSet(val) {
-		return (val != null) && ( val != undefined );
-	}
-
-	function replaceAll(str, searchVal, replaceVal) {
-		var result = str;
-		while (result.indexOf(searchVal) >= 0) {
-			result = result.replace(searchVal, replaceVal);
-		}
-		return result;
-	}
 
 	function resolveIncludeDirectiveDom(item) {
 		if (!item.expression || item.expression["type"] != "Literal") {
@@ -288,13 +219,13 @@ module.exports = (function () {
 		}
 
 		function isContainsValue(obj, reversedKey) {
-			if (isString(obj)) {
+			if (j79.isString(obj)) {
 				obj = assembleExpressionWrapper(obj);
 			}
-			if (isArray(obj) && obj.length == 1) {
+			if (j79.isArray(obj) && obj.length == 1) {
 				obj = obj[0];
 			}
-			if (isString(obj) || isInt(obj) || isBool(obj)) {
+			if (j79.isString(obj) || j79.isInt(obj) || j79.isBool(obj)) {
 				for (var i = 0; i < reversedKey.length; i++) {
 					var item = unescape(reversedKey[i]);
 					if (item == obj.toString()) {
@@ -302,14 +233,14 @@ module.exports = (function () {
 					}
 				}
 			}
-			if (isArray(obj)) {
+			if (j79.isArray(obj)) {
 				for (var i = 0; i < obj.length; i++) {
 					if (isContainsValue(obj[i], reversedKey)) {
 						return true;
 					}
 				}
 			}
-			if (isObject(obj)) {
+			if (j79.isObject(obj)) {
 				for (var key in obj) {
 					if (isContainsValue(obj[key], reversedKey)) {
 						return true;
@@ -325,10 +256,10 @@ module.exports = (function () {
 		}
 
 		function unescape(item) {
-			if (isString(item)) {
+			if (j79.isString(item)) {
 				return unescapeString(item);
 			}
-			if (isArray(item)) {
+			if (j79.isArray(item)) {
 				for (var i = 0; i < item.length; i++) {
 					item[i] = unescape(item[i]);
 				}
@@ -371,7 +302,7 @@ module.exports = (function () {
 			var msg;
 
 			// was it because of reverse resolution ?
-			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && isObject(originalVal)) {
+			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(originalVal)) {
 				var value = assembleExpressionWrapper(varStuff.MODIFIERS.REVERSE_RESOLUTION);
 				return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
 			}
@@ -425,7 +356,7 @@ module.exports = (function () {
 				funcName = unescapeString(funcName);
 				var resolution = identifierInfo.value[funcName];
 				// is it not function ?
-				if (!isFunction(resolution)) {
+				if (!j79.isFunction(resolution)) {
 					dotPos = dotPos < 0 ? identifierInfo.identifier.length : dotPos;
 					item = identifierInfo.identifier.substring(identifierInfo.start, dotPos);
 					item = unescapeString(item);
@@ -473,7 +404,7 @@ module.exports = (function () {
 			};
 
 			// processing identifier
-			while (identifierInfo.start < identifier.length && isValSet(identifierInfo.value)) {
+			while (identifierInfo.start < identifier.length && j79.isValSet(identifierInfo.value)) {
 				processIdentifier(identifierInfo);
 			}
 
@@ -502,14 +433,14 @@ module.exports = (function () {
 			var result = externalArgs[jsVariable];
 
 			// still doesn't have a value ?
-			if (!isValSet(result)) {
+			if (!j79.isValSet(result)) {
 				return resolveJSIdentifierValueWrapper(jsVariable);
 			}
 
 			// got an external argument
 			// preventing arguments to be evaluated ( i.e. preventing code injection in external arguments )
 			// nexl engine evaluates nexl expressions, checking is the result a nexl expression ?
-			if (isString(result) && hasFirstLevelVars(result)) {
+			if (j79.isString(result) && hasFirstLevelVars(result)) {
 				throw "You can't pass a nexl expression in external arguments. Escape a $ sign in your argument if you didn't intend to pass an expression";
 			}
 
@@ -560,7 +491,7 @@ module.exports = (function () {
 					}
 
 					// accumulating result in [result]
-					concatArrays(result, items);
+					result = result.concat(items);
 				}
 			}
 
@@ -587,11 +518,11 @@ module.exports = (function () {
 		function applyTreatAsModifier(objCandidate, treatAs, varStuff) {
 			// force make object
 			if (treatAs === 'O') {
-				var result = wrapWithObjIfNeeded(objCandidate, varStuff.varName);
+				var result = j79.wrapWithObjIfNeeded(objCandidate, varStuff.varName);
 				return JSON.stringify(result);
 			}
 
-			if (!isObject(objCandidate)) {
+			if (!j79.isObject(objCandidate)) {
 				return objCandidate;
 			}
 
@@ -603,7 +534,7 @@ module.exports = (function () {
 
 				// values
 				case 'V': {
-					return obj2ArrayIfNeeded(objCandidate);
+					return j79.obj2ArrayIfNeeded(objCandidate);
 				}
 
 				// as xml
@@ -619,12 +550,12 @@ module.exports = (function () {
 			var result = value;
 
 			// apply json reverse resolution is present
-			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && isObject(value)) {
+			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(value)) {
 				result = jsonReverseResolution(value, varStuff.MODIFIERS.REVERSE_RESOLUTION);
 			}
 
 			// apply default value if value not set
-			if (!isValSet(result)) {
+			if (!j79.isValSet(result)) {
 				result = retrieveDefaultValue(varStuff.MODIFIERS.DEF_VALUE);
 			}
 
@@ -633,12 +564,12 @@ module.exports = (function () {
 
 			result = applyTreatAsModifier(result, varStuff.MODIFIERS.TREAT_AS, varStuff);
 
-			result = wrapWithArrayIfNeeded(result);
+			result = j79.wrapWithArrayIfNeeded(result);
 			return result;
 		}
 
 		function abortScriptIfNeeded(originalVal, result, varStuff) {
-			if (isValSet(result)) {
+			if (j79.isValSet(result)) {
 				return;
 			}
 
@@ -660,7 +591,7 @@ module.exports = (function () {
 				return false;
 			}
 
-			if (isArray(value)) {
+			if (j79.isArray(value)) {
 				if (value.length > 1) {
 					return true;
 				}
@@ -670,7 +601,7 @@ module.exports = (function () {
 				return value[0] != null;
 			}
 
-			if (isObject(value)) {
+			if (j79.isObject(value)) {
 				for (var key in value) {
 					return true;
 				}
@@ -727,7 +658,7 @@ module.exports = (function () {
 			preResult = preResult.join(delimiter);
 
 			// substituted values with [delimiter]
-			preResult = replaceAll(expression, searchVal, preResult);
+			preResult = j79.replaceAll(expression, searchVal, preResult);
 
 			// adding to [result]
 			result.push(preResult);
@@ -749,7 +680,7 @@ module.exports = (function () {
 				item = (item == null) ? "" : item;
 
 				// substituting
-				item = replaceAll(expression, searchVal, item);
+				item = j79.replaceAll(expression, searchVal, item);
 
 				result.push(item);
 			}
@@ -761,10 +692,10 @@ module.exports = (function () {
 			// discovering delimiter
 			var delimiter = varStuff.MODIFIERS.DELIMITER;
 			delimiter = unescape(delimiter);
-			delimiter = isValSet(delimiter) ? delimiter : retrieveSettings('DEFAULT_DELIMITER');
+			delimiter = j79.isValSet(delimiter) ? delimiter : retrieveSettings('DEFAULT_DELIMITER');
 
 			// preparing replaceVal
-			var replaceVal = isVarStuffEmpty(varStuff) ? [null] : wrapWithArrayIfNeeded(varStuff.value);
+			var replaceVal = isVarStuffEmpty(varStuff) ? [null] : j79.wrapWithArrayIfNeeded(varStuff.value);
 
 			// iterating over expression ( expression can be array ) and substituting [replaceVal]
 			for (var i = 0; i < expression.length; i++) {
@@ -975,7 +906,7 @@ module.exports = (function () {
 
 		function assembleExpressionWrapper(expression, isOmitWholeExpression) {
 			// converting expression to string if needed
-			if (!isString(expression)) {
+			if (!j79.isString(expression)) {
 				expression = expression.toString();
 			}
 

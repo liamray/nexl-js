@@ -1,5 +1,5 @@
 (function () {
-	var nexlEngine = require('nexl-engine');
+	var nexlEngine = require('../nexl-engine');
 	var expectedResult = '';
 	var nexlSource = {asFile: {fileName: 'nexl-sources-4-tests/expressions.js'}};
 
