@@ -184,6 +184,7 @@ function assembleSourceCode(nexlSource) {
 
 	throw "nexlSource is empty ( doesn't contain asText or asFile )";
 }
+module.exports.assembleSourceCode = assembleSourceCode;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -214,12 +215,14 @@ function resolveJsVariables(nexlSource) {
 	return result.sort();
 }
 
+module.exports.resolveJsVariables = resolveJsVariables;
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// extracts the first level variable ( only first item )
-function extractFirstLevelVarWrapper(str) {
+// extracts the first level variable ( only the first item )
+function extractFirstLevelVar(str) {
 	var start = 0;
 
 	// searching for not escaped ${ characters, saving the position in start variable
@@ -251,17 +254,17 @@ function extractFirstLevelVarWrapper(str) {
 function extractFirstLevelVars(str) {
 	var result = [];
 	// oneFlv is an object which contains the following : flvName ( first level variable name ), restStr ( the rest of str after flvName )
-	var oneFlv = extractFirstLevelVarWrapper(str);
+	var oneFlv = extractFirstLevelVar(str);
 	while (oneFlv != null) {
 		result.push(oneFlv.flvName);
 		str = oneFlv.restStr;
-		oneFlv = extractFirstLevelVarWrapper(str);
+		oneFlv = extractFirstLevelVar(str);
 	}
 	return result;
 }
 
 function hasFirstLevelVars(str) {
-	return extractFirstLevelVarWrapper(str) != null;
+	return extractFirstLevelVar(str) != null;
 }
 
 function findClosestBracketPos(str, start) {
@@ -288,9 +291,12 @@ function findClosestBracketPos(str, start) {
 }
 
 function whereIsVariableEnds(str, index) {
+	// nexl variable consist at least of 4 characters like ${x}
 	if (str.length < index + 4) {
 		throw "Invalid variable declaration. Variable length seems to short. Variable is [" + str + "]";
 	}
+
+	// checking for open bracket
 	if (str.charAt(index + 1) != '{') {
 		throw "Bad expression. In the [" + str + "] at the " + index + " position should be an open bracket";
 	}
@@ -303,7 +309,27 @@ function whereIsVariableEnds(str, index) {
 	return closeBracketPos;
 }
 
+module.exports.whereIsVariableEnds = whereIsVariableEnds;
+module.exports.hasFirstLevelVars = hasFirstLevelVars;
+module.exports.extractFirstLevelVars = extractFirstLevelVars;
+module.exports.findClosestBracketPos = findClosestBracketPos;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var MODIFIERS_ESCAPE_REGEX;
+
+function assembleModifiersRegex() {
+	MODIFIERS_ESCAPE_REGEX = "";
+	for (var key in MODIFIERS) {
+		var val = MODIFIERS[key];
+		val = val.replace(/(\?)|(\+)/, "\\\\$&");
+		var item = "|\\\\(" + val + ")";
+		MODIFIERS_ESCAPE_REGEX += item;
+	}
+	if (MODIFIERS_ESCAPE_REGEX.length > 0) {
+		MODIFIERS_ESCAPE_REGEX = MODIFIERS_ESCAPE_REGEX.replace(/^./, "");
+	}
+}
 
 
 function unescapeString(str) {
@@ -323,18 +349,11 @@ function unescape(item) {
 	return item;
 }
 
-function assembleModifiersRegex() {
-	MODIFIERS_ESCAPE_REGEX = "";
-	for (var key in MODIFIERS) {
-		var val = MODIFIERS[key];
-		val = val.replace(/(\?)|(\+)/, "\\\\$&");
-		var item = "|\\\\(" + val + ")";
-		MODIFIERS_ESCAPE_REGEX += item;
-	}
-	if (MODIFIERS_ESCAPE_REGEX.length > 0) {
-		MODIFIERS_ESCAPE_REGEX = MODIFIERS_ESCAPE_REGEX.replace(/^./, "");
-	}
-}
+module.exports.unescapeString = unescapeString;
+module.exports.unescape = unescape;
+assembleModifiersRegex();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 function obj2Xml(objCandidate) {
@@ -475,3 +494,9 @@ function extractVarStuff(nexlVar) {
 	addModifiers(modifiers, varStuff);
 	return varStuff;
 }
+
+
+module.exports.isVarStuffEmpty = isVarStuffEmpty;
+module.exports.isDefValueSet = isDefValueSet;
+module.exports.obj2Xml = obj2Xml;
+module.exports.extractVarStuff = extractVarStuff;
