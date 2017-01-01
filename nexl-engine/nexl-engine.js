@@ -206,18 +206,6 @@ module.exports = (function () {
 		var lastEvalError;
 		var context;
 
-		function isCharAt(str, char, index) {
-			if (str[index] != char) {
-				return false;
-			}
-
-			if ((index > 0) && (str[index - 1] == '\\')) {
-				return false;
-			}
-
-			return true;
-		}
-
 		function isContainsValue(obj, reversedKey) {
 			if (j79.isString(obj)) {
 				obj = assembleExpressionWrapper(obj);
@@ -806,7 +794,7 @@ module.exports = (function () {
 				if (isModifierAt(nexlVar, index)) {
 					return index;
 				}
-				if (!isCharAt(nexlVar, '$', index)) {
+				if (!j79.isUnescapedCharAt(nexlVar, '$', index)) {
 					index++;
 					continue;
 				}
@@ -820,7 +808,7 @@ module.exports = (function () {
 		function isModifierAt(str, index) {
 			for (var modifierName in MODIFIERS) {
 				var modifierChar = MODIFIERS[modifierName];
-				if (isCharAt(str, modifierChar, index)) {
+				if (j79.isUnescapedCharAt(str, modifierChar, index)) {
 					return {"name": modifierName, "index": index};
 				}
 			}
@@ -830,7 +818,7 @@ module.exports = (function () {
 		function findNexlModifier(str, fromIndex) {
 			var i = fromIndex;
 			while (i < str.length) {
-				if (isCharAt(str, '$', i)) {
+				if (j79.isUnescapedCharAt(str, '$', i)) {
 					i = whereIsVariableEnds(str, i) + 1;
 					continue;
 				}
