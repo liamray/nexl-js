@@ -466,7 +466,7 @@ function addModifiers(str, varStuff) {
 	}
 }
 
-function addFirstLevelVars(nexlVar, varStuff) {
+function findFirstNexlModifierPos(nexlVar) {
 	var index = 0;
 	while (index < nexlVar.length) {
 		if (isModifierAt(nexlVar, index)) {
@@ -477,20 +477,19 @@ function addFirstLevelVars(nexlVar, varStuff) {
 			continue;
 		}
 		var varEndIndex = whereIsVariableEnds(nexlVar, index);
-		var varName = nexlVar.substring(index, varEndIndex + 1);
-		varStuff.FIRST_LEVEL_VARS.push(varName);
 		index = varEndIndex + 1;
 	}
+
+	return nexlVar.length;
 }
 
 function extractVarStuff(nexlVar) {
 	nexlVar = nexlVar.replace(/^(\${)|}$/g, "");
 	var varStuff = {};
 	varStuff.MODIFIERS = {};
-	varStuff.FIRST_LEVEL_VARS = [];
-	var lastIndex = addFirstLevelVars(nexlVar, varStuff);
-	varStuff.varName = nexlVar.substring(0, lastIndex);
-	var modifiers = nexlVar.substr(lastIndex);
+	var firstModifierPos = findFirstNexlModifierPos(nexlVar);
+	varStuff.varName = nexlVar.substring(0, firstModifierPos);
+	var modifiers = nexlVar.substr(firstModifierPos);
 	addModifiers(modifiers, varStuff);
 	return varStuff;
 }

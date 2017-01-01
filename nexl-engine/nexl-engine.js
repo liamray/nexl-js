@@ -37,7 +37,6 @@ module.exports = (function () {
 	};
 
 
-
 	/**
 	 * nexlSource is a javascript which describes you data model
 	 * can be provided as text or file ( nexlSource is object )
@@ -515,22 +514,26 @@ module.exports = (function () {
 			return result;
 		}
 
-		var sourceCode = neu.assembleSourceCode(nexlSource);
+		function start() {
+			var sourceCode = neu.assembleSourceCode(nexlSource);
 
-		context = {};
-		context.evalNexlExpression = assembleExpressionWrapper;
+			context = {};
+			context.evalNexlExpression = assembleExpressionWrapper;
 
-		try {
-			vm.runInNewContext(sourceCode, context);
-		} catch (e) {
-			throw "Got a problem with a source script: " + e;
+			try {
+				vm.runInNewContext(sourceCode, context);
+			} catch (e) {
+				throw "Got a problem with a source script: " + e;
+			}
+
+			// attaching a assembleExpressionWrapper() function to a context
+			context.evalNexlExpression = assembleExpressionWrapper;
+
+			// assembling
+			return assembleExpressionWrapper(nexlExpression, false);
 		}
 
-		// attaching a assembleExpressionWrapper() function to a context
-		context.evalNexlExpression = assembleExpressionWrapper;
-
-		// assembling
-		return assembleExpressionWrapper(nexlExpression, false);
+		return start();
 	}
 
 	return {
