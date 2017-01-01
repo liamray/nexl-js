@@ -52,39 +52,6 @@ module.exports = (function () {
 		var lastEvalError;
 		var context;
 
-		function isContainsValue(obj, reversedKey) {
-			if (j79.isString(obj)) {
-				obj = assembleExpressionWrapper(obj);
-			}
-			if (j79.isArray(obj) && obj.length == 1) {
-				obj = obj[0];
-			}
-			if (j79.isString(obj) || j79.isInt(obj) || j79.isBool(obj)) {
-				for (var i = 0; i < reversedKey.length; i++) {
-					var item = neu.unescape(reversedKey[i]);
-					if (item == obj.toString()) {
-						return true;
-					}
-				}
-			}
-			if (j79.isArray(obj)) {
-				for (var i = 0; i < obj.length; i++) {
-					if (isContainsValue(obj[i], reversedKey)) {
-						return true;
-					}
-				}
-			}
-			if (j79.isObject(obj)) {
-				for (var key in obj) {
-					if (isContainsValue(obj[key], reversedKey)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-
 		function retrieveSettings(name) {
 			if (!externalArgs || !externalArgs.hasOwnProperty(name)) {
 				return GLOBAL_SETTINGS[name];
@@ -98,22 +65,14 @@ module.exports = (function () {
 			return val.toString() == "true";
 		}
 
-		function abortErrMsg(varStuff, originalVal) {
-			var varName = varStuff.varName;
-			var msg;
-
-			// was it because of reverse resolution ?
-			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(originalVal)) {
-				var value = assembleExpressionWrapper(varStuff.MODIFIERS.REVERSE_RESOLUTION);
-				return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
+		function retrieveOmitWholeExpression(varStuff) {
+			if (varStuff.MODIFIERS.OMIT_WHOLE_EXPRESSION != null) {
+				return true;
 			}
-
-			msg = "It seems the [" + varName + "] variable is not defined.";
-			if (lastEvalError) {
-				msg += "\nlastEvalError = " + lastEvalError;
+			if (varStuff.MODIFIERS.DONT_OMIT_WHOLE_EXPRESSION != null) {
+				return false;
 			}
-
-			return msg;
+			return retrieveBoolSettings('SKIP_UNDEFINED_VARS');
 		}
 
 		function processIdentifier(identifierInfo) {
@@ -248,56 +207,36 @@ module.exports = (function () {
 			return result;
 		}
 
-		function evalNexlVariable(varName) {
-			var result = [];
-
-			// extracting variable stuff ( modifiers, var name, ... )
-			var varStuff = neu.extractVarStuff(varName);
-
-			// varName can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
-			var variables = assembleExpressionWrapper(varStuff.varName, false);
-
-			// retrieving the OMIT_WHOLE_EXPRESSION/DONT_OMIT_WHOLE_EXPRESSION modifier value
-			var isOmitWholeExpression = retrieveOmitWholeExpression(varStuff);
-
-			// iterating over variables ( previous iteration in assembleExpression() can bring more that 1 result )
-			for (var i = 0; i < variables.length; i++) {
-				var variable = variables[i];
-
-				// evaluating javascript variable
-				var evaluatedValue = resolveJSIdentifierValue(variable);
-
-				// applying related modifiers
-				var values = applyModifiers(evaluatedValue, varStuff);
-
-				// iterating over values and accumulating result in [result]
-				for (var j = 0; j < values.length; j++) {
-					var item = values[j];
-
-					if (item == null) {
-						if (!isOmitWholeExpression) {
-							result.push(null);
-						}
-						continue;
+		function isContainsValue(obj, reversedKey) {
+			if (j79.isString(obj)) {
+				obj = assembleExpressionWrapper(obj);
+			}
+			if (j79.isArray(obj) && obj.length == 1) {
+				obj = obj[0];
+			}
+			if (j79.isString(obj) || j79.isInt(obj) || j79.isBool(obj)) {
+				for (var i = 0; i < reversedKey.length; i++) {
+					var item = neu.unescape(reversedKey[i]);
+					if (item == obj.toString()) {
+						return true;
 					}
-
-					// value can contain sub-variables, so assembling them
-					var items = assembleExpressionWrapper(item, isOmitWholeExpression);
-
-					if (items.length == 1 && items[0] == null) {
-						if (!isOmitWholeExpression) {
-							result.push(null);
-						}
-						continue;
-					}
-
-					// accumulating result in [result]
-					result = result.concat(items);
 				}
 			}
-
-			varStuff.value = result;
-			return varStuff;
+			if (j79.isArray(obj)) {
+				for (var i = 0; i < obj.length; i++) {
+					if (isContainsValue(obj[i], reversedKey)) {
+						return true;
+					}
+				}
+			}
+			if (j79.isObject(obj)) {
+				for (var key in obj) {
+					if (isContainsValue(obj[key], reversedKey)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		function jsonReverseResolution(json, reversedKey) {
@@ -310,6 +249,56 @@ module.exports = (function () {
 				}
 			}
 			return result.length < 1 ? null : result;
+		}
+
+		function retrieveDefaultValue(defValue) {
+			if (!defValue) {
+				return null;
+			}
+			for (var i = 0; i < defValue.length; i++) {
+				var item = defValue[i];
+				var value = assembleExpressionWrapper(item);
+				if (neu.isDefValueSet(value)) {
+					return neu.unescape(value);
+				}
+			}
+			return null;
+		}
+
+		function abortErrMsg(varStuff, originalVal) {
+			var varName = varStuff.varName;
+			var msg;
+
+			// was it because of reverse resolution ?
+			if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(originalVal)) {
+				var value = assembleExpressionWrapper(varStuff.MODIFIERS.REVERSE_RESOLUTION);
+				return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
+			}
+
+			msg = "It seems the [" + varName + "] variable is not defined.";
+			if (lastEvalError) {
+				msg += "\nlastEvalError = " + lastEvalError;
+			}
+
+			return msg;
+		}
+
+		function abortScriptIfNeeded(originalVal, result, varStuff) {
+			if (j79.isValSet(result)) {
+				return;
+			}
+
+			var is2Abort = varStuff.MODIFIERS.ABORT_ON_UNDEF_VAR;
+			if (is2Abort == "A") {
+				throw abortErrMsg(varStuff, originalVal);
+			}
+			if (is2Abort == "C") {
+				return;
+			}
+
+			if (retrieveBoolSettings('ABORT_ON_UNDEFINED_VAR')) {
+				throw abortErrMsg(varStuff, originalVal);
+			}
 		}
 
 		function applyTreatAsModifier(objCandidate, treatAs, varStuff) {
@@ -365,46 +354,56 @@ module.exports = (function () {
 			return result;
 		}
 
-		function abortScriptIfNeeded(originalVal, result, varStuff) {
-			if (j79.isValSet(result)) {
-				return;
-			}
+		function evalNexlVariable(varName) {
+			var result = [];
 
-			var is2Abort = varStuff.MODIFIERS.ABORT_ON_UNDEF_VAR;
-			if (is2Abort == "A") {
-				throw abortErrMsg(varStuff, originalVal);
-			}
-			if (is2Abort == "C") {
-				return;
-			}
+			// extracting variable stuff ( modifiers, var name, ... )
+			var varStuff = neu.extractVarStuff(varName);
 
-			if (retrieveBoolSettings('ABORT_ON_UNDEFINED_VAR')) {
-				throw abortErrMsg(varStuff, originalVal);
-			}
-		}
+			// varName can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
+			var variables = assembleExpressionWrapper(varStuff.varName, false);
 
-		function retrieveDefaultValue(defValue) {
-			if (!defValue) {
-				return null;
-			}
-			for (var i = 0; i < defValue.length; i++) {
-				var item = defValue[i];
-				var value = assembleExpressionWrapper(item);
-				if (neu.isDefValueSet(value)) {
-					return neu.unescape(value);
+			// retrieving the OMIT_WHOLE_EXPRESSION/DONT_OMIT_WHOLE_EXPRESSION modifier value
+			var isOmitWholeExpression = retrieveOmitWholeExpression(varStuff);
+
+			// iterating over variables ( previous iteration in assembleExpression() can bring more that 1 result )
+			for (var i = 0; i < variables.length; i++) {
+				var variable = variables[i];
+
+				// evaluating javascript variable
+				var evaluatedValue = resolveJSIdentifierValue(variable);
+
+				// applying related modifiers
+				var values = applyModifiers(evaluatedValue, varStuff);
+
+				// iterating over values and accumulating result in [result]
+				for (var j = 0; j < values.length; j++) {
+					var item = values[j];
+
+					if (item == null) {
+						if (!isOmitWholeExpression) {
+							result.push(null);
+						}
+						continue;
+					}
+
+					// value can contain sub-variables, so assembling them
+					var items = assembleExpressionWrapper(item, isOmitWholeExpression);
+
+					if (items.length == 1 && items[0] == null) {
+						if (!isOmitWholeExpression) {
+							result.push(null);
+						}
+						continue;
+					}
+
+					// accumulating result in [result]
+					result = result.concat(items);
 				}
 			}
-			return null;
-		}
 
-		function retrieveOmitWholeExpression(varStuff) {
-			if (varStuff.MODIFIERS.OMIT_WHOLE_EXPRESSION != null) {
-				return true;
-			}
-			if (varStuff.MODIFIERS.DONT_OMIT_WHOLE_EXPRESSION != null) {
-				return false;
-			}
-			return retrieveBoolSettings('SKIP_UNDEFINED_VARS');
+			varStuff.value = result;
+			return varStuff;
 		}
 
 		// when items are joined into one string separated by [delimiter]
