@@ -43,3 +43,7 @@ function reverseArray(arr) {
 obj1.pack.wrapWithBrackets = function (str) {
 	return '{' + str + '}';
 };
+
+function nexlEngineInternalCall() {
+	return evalNexlExpression('${arr1?,}');
+}
