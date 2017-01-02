@@ -30,7 +30,6 @@ function testExpression(expression, exprDef) {
 	} catch (e) {
 		if (exprDef.result) {
 			throw util.format("The [%s] expression is failed. Reason : [%s]", expression, e);
-			return;
 		}
 
 		printOkExpression(expression);
