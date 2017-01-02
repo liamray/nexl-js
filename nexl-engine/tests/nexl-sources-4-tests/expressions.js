@@ -40,3 +40,4 @@ var testExpression006b = '[${omitStr1-}] | ${omitStr1+} | ${omitStr1}';
 // functions
 var testExpression007a = '${reverseArray([1, 2, 3])}';
 var testExpression007b = '${obj1.pack.wrapWithBrackets("1")}';
+var testExpression007c = '${nexlEngineInternalCall()}';
