@@ -1,41 +1,119 @@
-var expressions = {};
+var expressions = [];
 
 // no expression test
-expressions['no expression'] = {
+expressions.push({
+	expression: 'no expression',
 	result: 'no expression'
-};
+});
 
 // simple variable resolution
-expressions['1[${undefinedVariable!C}] 2[${undefinedVariable2:]} 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]'] = {
+expressions.push({
+	expression: '1[${undefinedVariable!C}] 2[${undefinedVariable2:]} 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]',
 	result: '1[] 2[] 3[111] 4[222]'
-};
+});
 
 // cartesian product
-expressions['${intItem} ${strItem} ${boolItem} ${arr1}'] = {
+expressions.push({
+	expression: '${intItem} ${strItem} ${boolItem} ${arr1}',
 	result: ['71 berry true queen', '71 berry true muscle', '71 berry true 79', '71 berry true false']
-};
+});
 
 // undefined variable
-expressions['${undefinedVariable} ${undefinedVariable!A}'] = {};
+expressions.push({
+	expression: '${undefinedVariable} ${undefinedVariable!A}'
+});
 
 // unitedKey
-expressions['${unitedKey}'] = {
+expressions.push({
+	expression: '${unitedKey}',
 	result: 'price',
-
 	args: {
 		KEY: 'disturbed'
 	}
-};
+});
 
-expressions['${unitedKey}'] = {
+expressions.push({
+	expression: '${unitedKey}',
 	result: '()',
 	args: {
 		KEY: '()'
 	}
-};
+});
+
 
 // object reverse resolution
-expressions['${obj1<undefinedVariable}}'] = {};
+expressions.push({
+	expression: '${obj1<undefinedVariable}}'
+});
+
+////////////////////////////////////// ALL_PROD_INTERFACES //////////////////////////////////////
+// ENV = DEV
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV'
+	}
+});
+
+// ENV = DEV, INSTANCE = FIRST
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV',
+		INSTANCE: 'FIRST'
+	}
+});
+
+// ENV = DEV, INSTANCE = THIRD
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV',
+		INSTANCE: 'THIRD'
+	}
+});
+
+// ENV = QA
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['autonomous1', 'criminal1', 'adrenaline2', 'prophetic2'],
+	args: {
+		ENV: 'QA'
+	}
+});
+
+// ENV = PROD
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
+	args: {
+		ENV: 'PROD'
+	}
+});
+
+// ENV = PROD, INSTANCE = SECOND
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
+	args: {
+		ENV: 'PROD',
+		INSTANCE: 'SECOND'
+	}
+});
+
+// ENV = PROD, INSTANCE = XXX
+expressions.push({
+	expression: '${ALL_PROD_INTERFACES}',
+	result: ['drp-prod'],
+	args: {
+		ENV: 'PROD',
+		INSTANCE: 'xxx'
+	}
+});
+
 
 module.exports = expressions;
 

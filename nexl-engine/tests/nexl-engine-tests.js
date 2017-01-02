@@ -18,39 +18,44 @@ function compare(result, expectedResult) {
 	return s1 === s2;
 }
 
+// exprDef -> to string
+function exprDefVerbally(exprDef) {
+	return util.format("expression = [%s], args = %s", exprDef.expression, JSON.stringify(exprDef.args))
+}
+
 // prints OK message for expression
-function printOkExpression(expression) {
-	console.log(util.format("OK for [%s] expression", expression));
+function printOkExpression(exprDef) {
+	console.log('OK for ', exprDefVerbally(exprDef));
 }
 
 // tests the expression
-function testExpression(expression, exprDef) {
+function testExpression(exprDef) {
 	try {
-		var result = nexlEngine.evalNexlExpression(nexlSource, expression, exprDef.args);
+		var result = nexlEngine.evalNexlExpression(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
 		if (exprDef.result) {
-			throw util.format("The [%s] expression is failed. Reason : [%s]", expression, e);
+			throw util.format('Test failed for %s. Reason : ', exprDefVerbally(exprDef), e);
 		}
 
-		printOkExpression(expression);
+		printOkExpression(exprDef);
 		return;
 	}
 
 	// if the exprDef.result is not defined, expression must fail. checking
 	if (!exprDef.result) {
-		throw util.format("The [%s] expression must fail, but hasn't", expression);
+		throw util.format("As for %s must FAIL, but hasn't", exprDefVerbally(exprDef));
 	}
 
-	assert(compare(result, exprDef.result), util.format("Evaluation result = [%s] doesn't match to expected = [%s] for [%s] expression, ", result, exprDef.result, expression));
-	printOkExpression(expression);
+	assert(compare(result, exprDef.result), util.format("Expected result = [%s] doesn't match to original result = [%s] for %s", result, exprDef.result, exprDefVerbally(exprDef)));
+	printOkExpression(exprDef);
 }
 
 // entry point
 function start() {
-	// iterating over expressions
-	for (var expression in expressions) {
-		var exprDef = expressions[expression];
-		testExpression(expression, exprDef);
+	// iterating over expressions definitions
+	for (var index in expressions) {
+		var exprDef = expressions[index];
+		testExpression(exprDef);
 	}
 
 	console.log('\n\n****************************************************************\nAll tests are passed OK\n****************************************************************');
