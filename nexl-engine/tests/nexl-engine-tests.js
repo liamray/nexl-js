@@ -52,6 +52,8 @@ function start() {
 		var exprDef = expressions[expression];
 		testExpression(expression, exprDef);
 	}
+
+	console.log('\n\n****************************************************************\nAll tests are passed OK\n****************************************************************');
 }
 
 start();
