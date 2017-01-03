@@ -1,39 +1,9 @@
 // test external args override js vars
 // test function call
 // test standard functions call like Math.random()
-// test function call when function gets a object/array and returns object/array/array of objects
-// test array ob objects resolution like a.arrOfObjs.b.c
+// test function call when function gets an object/array and returns object/array/array of objects
+// test array ob objects resolution like a.${arrOfObjs}.b.c
 // test multi escaping for special characters
-
-/*
- var testExpression001 = 'no expression';
- // simple resolution
- //var testExpression002a = '${intItem}    ${strItem}    ${boolItem}    empty=[${undefinedVariable!C}]    ${intItem~O}';
- var testExpression002b = '1[${undefinedVariable!C}]    2[${undefinedVariable2:]}    3[${undefinedVariable:111}]    4[${aaa:${bbb!C}:222}]';
- // cartesian product
- var testExpression003 = '${intItem} ${strItem} ${boolItem} ${arr1}';
- // array concatenation, escaping special chars
- var testExpression004 = '${arr1?,}     ${arr1?\\?}     ${arr1?\\:}     ${arr1?\\+}     ${arr1?\\-}     ${arr1?\\!}     ${arr1?\\~}     ${arr1?\\<}     ${arr1?\\?\\:\\+\\-\\!\\~\\<}';
- var testExpression004a = '${arr3}';
- var testExpression004b = '${arr1} ${arr2}';
- // object
- var testExpression005a = '${obj1}';
- // keys and values
- var testExpression005b = 'KEYS=[${obj1~K?,}] VALUES=[${obj1~V?,}]';
- // accessing properties
- var testExpression005c = '${obj1.price}    ${..obj1....beneficial...}    ${obj1.pack~K?,}    ${obj1.pack~V?,}    ${obj1.${undefinedVariable!C}~V?,}    ${obj1.${obj1PropName}}';
- // reverse resolution
- var testExpression005d = '${obj1<true}    ${obj1<${strItem}}    ${obj1<${undefinedVariable!C}:undefined}    ';
- // omit whole expression modifier
- var testExpression006a = '${omitArr1-?,}    ${omitArr1+?,}    ${omitArr1?,}';
- var testExpression006b = '[${omitStr1-}] | ${omitStr1+} | ${omitStr1}';
- // functions
- var testExpression007a = '${reverseArray([1, 2, 3])}';
- var testExpression007b = '${obj1.pack.wrapWithBrackets("1")}';
- var testExpression007c = '${nexlEngineInternalCall()}';
-
- */
-
 
 var expressions = [];
 module.exports = expressions;
@@ -55,6 +25,78 @@ expressions.push({
 expressions.push({
 	expression: '${intItem} ${strItem} ${boolItem} ${arr1}',
 	result: ['71 berry true queen', '71 berry true muscle', '71 berry true 79', '71 berry true false']
+});
+
+// array concatenation, escaping special chars
+expressions.push({
+	expression: '${arr1?,} ${arr1?\\?} ${arr1?\\:} ${arr1?\\+} ${arr1?\\-} ${arr1?\\!} ${arr1?\\~} ${arr1?\\<} ${arr1?\\?\\:\\+\\-\\!\\~\\<}',
+	result: 'queen,muscle,79,false queen?muscle?79?false queen:muscle:79:false queen+muscle+79+false queen-muscle-79-false queen!muscle!79!false queen~muscle~79~false queen<muscle<79<false queen?:+-!~<muscle?:+-!~<79?:+-!~<false'
+});
+
+// arrays
+expressions.push({
+	expression: '${arr3}',
+	result: ['queen', 'muscle', '79', 'false', 'air', '16', '99', 'true', 'smooth']
+});
+
+// arrays
+expressions.push({
+	expression: '${arr1} ${arr2}',
+	result: ['queen air', 'queen 16', 'queen 99', 'queen true', 'queen smooth', 'muscle air', 'muscle 16', 'muscle 99', 'muscle true', 'muscle smooth', '79 air', '79 16', '79 99', '79 true', '79 smooth', 'false air', 'false 16', 'false 99', 'false true', 'false smooth']
+});
+
+// objects
+expressions.push({
+	expression: '${obj1}',
+	result: '{"beneficial":"mint","religion":"righteous","()":"trick","disturbed":46,"price":true,"pack":{"strong":"balance","deer":7},"71":"berry"}'
+});
+
+// keys and values
+expressions.push({
+	expression: 'KEYS=[${obj1~K?,}] VALUES=[${obj1~V?,}]',
+	result: 'KEYS=[beneficial,religion,(),disturbed,price,pack,71] VALUES=[mint,righteous,trick,46,true,balance,7,berry]'
+});
+
+// accessing props
+expressions.push({
+	expression: '${obj1.price} ${..obj1....beneficial...} ${obj1.pack~K?,} ${obj1.pack~V?,} ${obj1.${undefinedVariable!C}~V?,} ${obj1.${obj1PropName}}',
+	result: 'true mint strong,deer balance,7 mint,righteous,trick,46,true,balance,7,berry trick'
+});
+
+// reverse resolution
+expressions.push({
+	expression: '${obj1<true} ${obj1<${strItem}} ${obj1<${undefinedVariable!C}:undefined}',
+	result: 'price 71 undefined'
+});
+
+// omit whole expression modifier
+expressions.push({
+	expression: '${omitArr1-?,} ${omitArr1+?,} ${omitArr1?,}',
+	result: 'disconnect,false,24 disconnect,false,24,, disconnect,false,24,,'
+});
+
+// omit whole expression modifier
+expressions.push({
+	expression: '[${omitStr1-}] | ${omitStr1+} | ${omitStr1}',
+	result: '[] | 71 berry true  | 71 berry true '
+});
+
+// funcs
+expressions.push({
+	expression: '${reverseArray([1, 2, 3])}',
+	result: ['3', '2', '1']
+});
+
+// funcs
+expressions.push({
+	expression: '${obj2.pack.wrapWithBrackets("1")}',
+	result: '{1}'
+});
+
+// funcs
+expressions.push({
+	expression: '${nexlEngineInternalCall()}',
+	result: 'queen,muscle,79,false'
 });
 
 // undefined variable

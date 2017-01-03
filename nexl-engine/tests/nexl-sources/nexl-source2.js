@@ -40,7 +40,9 @@ function reverseArray(arr) {
 	return arr.reverse();
 }
 
-obj1.pack.wrapWithBrackets = function (str) {
+var obj2 = {};
+obj2.pack = {};
+obj2.pack.wrapWithBrackets = function (str) {
 	return '{' + str + '}';
 };
 
