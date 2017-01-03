@@ -76,6 +76,7 @@ NexlEngine.prototype.retrieveOmitWholeExpression = function (varStuff) {
 
 NexlEngine.prototype.processIdentifier = function (identifierInfo) {
 	var item;
+	// todo: dot can be escaped ! ( bug )
 	var dotPos = identifierInfo.identifier.indexOf('.', identifierInfo.start);
 	var bracketPos = identifierInfo.identifier.indexOf('(', identifierInfo.start);
 

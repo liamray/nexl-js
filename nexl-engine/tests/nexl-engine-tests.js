@@ -33,7 +33,7 @@ function testExpression(exprDef) {
 	try {
 		var result = nexlEngine.evalNexlExpression(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
-		if (exprDef.result) {
+		if (exprDef.result !== undefined) {
 			throw util.format('Test failed for %s. Reason : ', exprDefVerbally(exprDef), e);
 		}
 
@@ -42,11 +42,11 @@ function testExpression(exprDef) {
 	}
 
 	// if the exprDef.result is not defined, expression must fail. checking
-	if (!exprDef.result) {
+	if (exprDef.result === undefined) {
 		throw util.format("As for %s must FAIL, but hasn't", exprDefVerbally(exprDef));
 	}
 
-	assert(compare(result, exprDef.result), util.format("Expected result = [%s] doesn't match to original result = [%s] for %s", result, exprDef.result, exprDefVerbally(exprDef)));
+	assert(compare(result, exprDef.result), util.format("Expected result = [%s] doesn't match to original result = [%s] for %s", exprDef.result, result, exprDefVerbally(exprDef)));
 	printOkExpression(exprDef);
 }
 
