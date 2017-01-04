@@ -4,6 +4,7 @@
 // test function call when function gets an object/array and returns object/array/array of objects
 // test array ob objects resolution like a.${arrOfObjs}.b.c
 // test multi escaping for special characters
+// test the following expression which has a substitute bug : [${asd} hello ${x:${asd}}]
 
 var expressions = [];
 module.exports = expressions;
