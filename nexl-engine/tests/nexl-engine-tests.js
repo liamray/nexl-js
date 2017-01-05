@@ -28,37 +28,64 @@ function printOkExpression(exprDef) {
 	console.log('OK for ', exprDefVerbally(exprDef));
 }
 
+function failureMessage(exprDef, err) {
+	console.log('\n------>>>>>> FAILURE !!!! <<<<<<------');
+	console.log(exprDefVerbally(exprDef));
+	console.log('Reason : ' + err);
+	console.log('');
+}
+
 // tests the expression
 function testExpression(exprDef) {
 	try {
 		var result = nexlEngine.evalNexlExpression(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
 		if (exprDef.result !== undefined) {
-			throw util.format('Test failed for %s. Reason : ', exprDefVerbally(exprDef), e);
+			failureMessage(exprDef, e);
+			return false;
 		}
 
 		printOkExpression(exprDef);
-		return;
+		return true;
 	}
 
 	// if the exprDef.result is not defined, expression must fail. checking
 	if (exprDef.result === undefined) {
-		throw util.format("As for %s must FAIL, but hasn't", exprDefVerbally(exprDef));
+		failureMessage(exprDef, 'This test MUST FAIL, but hasn\'t');
+		return false;
 	}
 
-	assert(compare(result, exprDef.result), util.format("Expected result = [%s] doesn't match to original result = [%s] for %s", exprDef.result, result, exprDefVerbally(exprDef)));
+	var compareResult = compare(result, exprDef.result);
+	if (!compareResult) {
+		failureMessage(exprDef, util.format('Expected result = [%s] doesn\'t match to evaluated result = [%s]', exprDef.result, result));
+		return false;
+	}
+
 	printOkExpression(exprDef);
+	return true;
 }
 
 // entry point
 function start() {
 	// iterating over expressions definitions
+	var okCnt = 0;
+	var failCnt = 0;
 	for (var index in expressions) {
 		var exprDef = expressions[index];
-		testExpression(exprDef);
+		var result = testExpression(exprDef);
+
+		if (result) {
+			okCnt++;
+		} else {
+			failCnt++;
+		}
 	}
 
-	console.log('\n\n****************************************************************\nAll tests are passed OK\n****************************************************************');
+	console.log(util.format('OK tests : %s', okCnt));
+	console.log(util.format('Failed tests : %s', failCnt));
+
+	var msg = failCnt <= 0 ? 'All tests are passed OK' : 'One or more tests ARE FAILED !!!';
+	console.log(util.format('\n\n****************************************************************\n%s\n****************************************************************', msg));
 }
 
 start();
