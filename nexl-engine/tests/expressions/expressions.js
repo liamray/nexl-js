@@ -1,10 +1,13 @@
 // test external args override js vars
 // test function call
-// test standard functions call like Math.random()
+// test standard functions call like Math.random() ( actually Math\\.random() )
 // test function call when function gets an object/array and returns object/array/array of objects
 // test array ob objects resolution like a.${arrOfObjs}.b.c
-// test multi escaping for special characters
+// test multi escaping for : brackets, $, modifiers, dots
 // test the following expression which has a substitute bug : [${asd} hello ${x:${asd}}]
+// test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
+// test global setting ( in future version of nexl-engine )
+
 
 var expressions = [];
 module.exports = expressions;
