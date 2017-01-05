@@ -263,8 +263,149 @@ function extractFirstLevelVars(str) {
 	return result;
 }
 
+function extractFirstLevelVars2Wrapper(result, cycleData) {
+	var c = cycleData.str.charAt(cycleData.index);
+
+	// is it a slash character ?
+	if (c === '\\') {
+		// accumulating slashes
+		cycleData.slashes += '\\';
+		cycleData.index++;
+		return;
+	}
+
+	// is not a nexl expression for sure ?
+	if (c !== '$') {
+		// dropping slashes to result.escapedStr
+		result.escapedStr += cycleData.slashes;
+		result.escapedStr += c;
+
+		cycleData.slashes = '';
+		cycleData.index++;
+		return;
+	}
+
+	// is a character after $ sign not a { ?
+	if (cycleData.str.charAt(cycleData.index + 1) !== '{') {
+		// not a nexl expression. dropping slashes to str
+		result.escapedStr += cycleData.slashes;
+		result.escapedStr += c;
+
+		cycleData.slashes = '';
+		cycleData.index++;
+		return;
+	}
+
+	// is it an odd number of slashes ? ( odd number of slashes tell that $ sign is escaped )
+	// example : \\\${...}  => \${...}
+	if (cycleData.slashes.length % 2 === 1) {
+		// dropping a half slashes to a str because it is escaping for $ sign
+		result.escapedStr += cycleData.slashes.substr(0, cycleData.slashes.length / 2);
+		result.escapedStr += c;
+
+		cycleData.slashes = '';
+		cycleData.index++;
+		return;
+	}
+
+	// here is a nexl expression
+	// dropping a half slashes to a str because it was before $ sign and they were escaped itself
+	// example : \\\\\\${...}  => \\\${...}
+	result.escapedStr += cycleData.slashes.substr(cycleData.slashes.length / 2);
+	cycleData.slashes = '';
+	cycleData.index++;
+
+	// calculating start/end position of nexl expression
+	var endPos = findClosestBracketPos2(cycleData.str, cycleData.index);
+
+	// didn't find an end position ?
+	if (endPos < 0) {
+		throw util.format('The [%s] expression which starts from [%s] position doesn\'t have a close bracket', cycleData.str, cycleData.index);
+	}
+
+	// nexl expression is
+	var nexlExpression = cycleData.str.substring(cycleData.index - 1, endPos + 1);
+	cycleData.index += ( nexlExpression.length - 1);
+
+	// calculating start/end position
+	var startPos = result.escapedStr.length;
+	result.escapedStr += nexlExpression;
+	endPos = result.escapedStr.length;
+
+	// adding first level variable ( expression )
+	result.flvs.push({
+		startPos: startPos,
+		endPos: endPos,
+		varContext: nexlExpression
+	});
+}
+
+// returns following object :
+// { escapedStr: '...', flvs : [ '${...}': { startPos:x, endPos:y }, ... ] }
+function extractFirstLevelVars2(str) {
+	var result = {
+		escapedStr: '',
+		flvs: []
+	};
+
+	var cycleData = {
+		index: 0,
+		slashes: '',
+		str: str
+	};
+
+	// length -3 because of nexl expression must have at least 3 characters like ${}
+	while (cycleData.index < cycleData.str.length - 3) {
+		extractFirstLevelVars2Wrapper(result, cycleData);
+	}
+
+	// adding slasheh and the rest of the str
+	result.escapedStr += cycleData.slashes;
+	result.escapedStr += cycleData.str.substr(cycleData.index);
+
+	return result;
+}
+
 function hasFirstLevelVars(str) {
 	return extractFirstLevelVar(str) != null;
+}
+
+function findClosestBracketPos2(str, start) {
+	var openBracket = str.charAt(start);
+	var closeBracket = KNOWN_BRACKETS[openBracket];
+	if (!closeBracket) {
+		return -1;
+	}
+
+	var slashes = '';
+
+	var bracketCount = 1;
+	for (var i = start + 1; i < str.length; i++) {
+		var c = str.charAt(i);
+
+		// accumulating slashes
+		if (c === '\\') {
+			slashes += '\\';
+			continue;
+		}
+
+		// is open bracket and slashes count is an even number
+		if (str.charAt(i) === openBracket && slashes.length % 2 === 0) {
+			bracketCount++;
+		}
+
+		if (str.charAt(i) === closeBracket && slashes.length % 2 === 0) {
+			bracketCount--;
+		}
+
+		slashes = '';
+
+		if (bracketCount < 1) {
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 function findClosestBracketPos(str, start) {
