@@ -21,7 +21,7 @@ expressions.push({
 
 // simple variable resolution
 expressions.push({
-	expression: '1[${undefinedVariable!C}] 2[${undefinedVariable2:]} 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]',
+	expression: '1[${undefinedVariable!C}] 2[${undefinedVariable2:}] 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]',
 	result: '1[] 2[] 3[111] 4[222]'
 });
 
