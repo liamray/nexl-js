@@ -275,33 +275,23 @@ function extractFirstLevelVars2Wrapper(result, cycleData) {
 	}
 
 	// is not a nexl expression for sure ?
-	if (c !== '$') {
-		// dropping slashes to result.escapedStr
-		result.escapedStr += cycleData.slashes;
-		result.escapedStr += c;
+	if (c !== '$' || cycleData.str.charAt(cycleData.index + 1) !== '{') {
+		// dropping slashes to result.accumulator
+		cycleData.accumulator += cycleData.slashes;
+		cycleData.accumulator += c;
 
 		cycleData.slashes = '';
 		cycleData.index++;
 		return;
 	}
 
-	// is a character after $ sign not a { ?
-	if (cycleData.str.charAt(cycleData.index + 1) !== '{') {
-		// not a nexl expression. dropping slashes to str
-		result.escapedStr += cycleData.slashes;
-		result.escapedStr += c;
-
-		cycleData.slashes = '';
-		cycleData.index++;
-		return;
-	}
-
+	// it's a beginning of nexl expression ${... checking for precede slashes
 	// is it an odd number of slashes ? ( odd number of slashes tell that $ sign is escaped )
 	// example : \\\${...}  => \${...}
 	if (cycleData.slashes.length % 2 === 1) {
 		// dropping a half slashes to a str because it is escaping for $ sign
-		result.escapedStr += cycleData.slashes.substr(0, cycleData.slashes.length / 2);
-		result.escapedStr += c;
+		cycleData.accumulator += cycleData.slashes.substr(0, cycleData.slashes.length / 2);
+		cycleData.accumulator += c;
 
 		cycleData.slashes = '';
 		cycleData.index++;
@@ -311,9 +301,22 @@ function extractFirstLevelVars2Wrapper(result, cycleData) {
 	// here is a nexl expression
 	// dropping a half slashes to a str because it was before $ sign and they were escaped itself
 	// example : \\\\\\${...}  => \\\${...}
-	result.escapedStr += cycleData.slashes.substr(cycleData.slashes.length / 2);
+	cycleData.accumulator += cycleData.slashes.substr(cycleData.slashes.length / 2);
 	cycleData.slashes = '';
 	cycleData.index++;
+
+	// adding a new element to result.escapedChunks[]
+	if (cycleData.accumulator != '') {
+		result.escapedChunks.push(cycleData.accumulator);
+		cycleData.currentChunk++;
+	}
+
+	// reset the cycleData.accumulator
+	cycleData.accumulator = '';
+
+	// adding a null element to result.escapedChunks[] ( it is an empty place for first level variable )
+	result.escapedChunks.push(null);
+	cycleData.currentChunk++;
 
 	// calculating start/end position of nexl expression
 	var endPos = findClosestBracketPos2(cycleData.str, cycleData.index);
@@ -327,31 +330,41 @@ function extractFirstLevelVars2Wrapper(result, cycleData) {
 	var nexlExpression = cycleData.str.substring(cycleData.index - 1, endPos + 1);
 	cycleData.index += ( nexlExpression.length - 1);
 
-	// calculating start/end position
-	var startPos = result.escapedStr.length;
-	result.escapedStr += nexlExpression;
-	endPos = result.escapedStr.length;
-
-	// adding first level variable ( expression )
-	result.flvs.push({
-		startPos: startPos,
-		endPos: endPos,
-		varContext: nexlExpression
-	});
+	// adding nexl expression to result.flvs{}
+	result.flvs[cycleData.currentChunk - 1] = nexlExpression;
 }
 
-// returns following object :
-// { escapedStr: '...', flvs : [ '${...}': { startPos:x, endPos:y }, ... ] }
+/*
+ escapes and splits the str to chunks ( as array ) where null chunks are first level variables. for example :
+ str = 'To kill ${x} birds with ${y} stone';
+ chunks are : [ 'To kill ', null, ' birds with ', null, ' stone' ]
+ the position of every null chunk is mapped in object like this :
+ {
+ 1: '${x}',
+ 3: '${y}'
+ }
+
+ function returns object :
+ {
+ escapedChunks: [...],
+ flvs: {
+ pos: '${...}',
+ ...
+ }
+ }
+ */
 function extractFirstLevelVars2(str) {
 	var result = {
-		escapedStr: '',
-		flvs: []
+		escapedChunks: [],
+		flvs: {}
 	};
 
 	var cycleData = {
 		index: 0,
 		slashes: '',
-		str: str
+		str: str,
+		accumulator: '',
+		currentChunk: 0
 	};
 
 	// length -3 because of nexl expression must have at least 3 characters like ${}
@@ -360,8 +373,12 @@ function extractFirstLevelVars2(str) {
 	}
 
 	// adding slasheh and the rest of the str
-	result.escapedStr += cycleData.slashes;
-	result.escapedStr += cycleData.str.substr(cycleData.index);
+	cycleData.accumulator += cycleData.slashes;
+	cycleData.accumulator += cycleData.str.substr(cycleData.index);
+
+	if (cycleData.accumulator != '') {
+		result.escapedChunks.push(cycleData.accumulator);
+	}
 
 	return result;
 }
