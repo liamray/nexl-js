@@ -383,6 +383,35 @@ function extractFirstLevelVars2(str) {
 	return result;
 }
 
+function hasFirstLevelVar2(str) {
+	var index = 0;
+	while ((index = str.indexOf('${', index) ) >= 0) {
+		var backIndex = index - 1;
+
+		// searching for slashes backward
+		while (backIndex >= 0 && str.charAt(backIndex) === '\\') {
+			backIndex--;
+		}
+
+		// counting slashes count
+		var slashesCnt = index - backIndex - 1;
+
+		// is it an even number ? ( even number of slashes tell that nexl expression is not escaped )
+		if (slashesCnt % 2 === 0) {
+			// might be nexl expression. searching for close bracket
+			var closeBracketPos = findClosestBracketPos2(str, index + 1);
+			// is close bracket found ? ( and nexl expression has something inside )
+			if (closeBracketPos > 0 && closeBracketPos - index > 2) {
+				return true;
+			}
+		}
+
+		index++;
+	}
+
+	return false;
+}
+
 function hasFirstLevelVars(str) {
 	return extractFirstLevelVar(str) != null;
 }
