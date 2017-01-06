@@ -81,11 +81,11 @@ function start() {
 		}
 	}
 
-	console.log(util.format('OK tests : %s', okCnt));
-	console.log(util.format('Failed tests : %s', failCnt));
+	util.log('OK tests : %s', okCnt);
+	util.log('Failed tests : %s', failCnt);
 
 	var msg = failCnt <= 0 ? 'All tests are passed OK' : 'One or more tests ARE FAILED !!!';
-	console.log(util.format('\n\n****************************************************************\n%s\n****************************************************************', msg));
+	util.log('\n\n****************************************************************\n%s\n****************************************************************', msg);
 }
 
 start();
