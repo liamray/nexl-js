@@ -17,7 +17,13 @@ function compare(result, expectedResult) {
 
 // exprDef -> to string
 function exprDefVerbally(exprDef) {
-	return util.format("expression = [%s], args = %s", exprDef.expression, JSON.stringify(exprDef.args))
+	var str = '';
+	if (exprDef.args) {
+		str = ', args = ' + JSON.stringify(exprDef.args);
+	} else {
+		str = ' -- no args --';
+	}
+	return util.format("expression = [%s]%s", exprDef.expression, str)
 }
 
 // prints OK message for expression

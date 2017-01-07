@@ -40,7 +40,7 @@ expressions.push({
 // arrays
 expressions.push({
 	expression: '${arr3}',
-	result: ['queen', 'muscle', '79', 'false', 'air', '16', '99', 'true', 'smooth']
+	result: ['queen', 'muscle', 79, false, 'air', 16, 99, true, 'smooth']
 });
 
 // arrays
