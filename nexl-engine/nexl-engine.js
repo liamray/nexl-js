@@ -47,7 +47,7 @@ function NexlEngine(nexlSource, nexlExpression, externalArgs) {
 	this.context = {};
 	// this is a bridge function between nexl-source and nexl-engine ( you can call nexl-engine function from nexl sources )
 	this.context.evalNexlExpression = function (nexlExpression) {
-		return savedThis.evalNexlExpressionWrapper(nexlExpression);
+		return savedThis.evalAndSubstNexlExpressionInner(nexlExpression);
 	};
 }
 
@@ -174,7 +174,7 @@ NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier) {
 		return null;
 	}
 
-	return identifierInfo.value;
+	return this.evalAndSubstNexlExpressionInner(identifierInfo.value);
 };
 
 // jsVariable can point to object's property, for example : x.y.z
@@ -209,7 +209,7 @@ NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable) {
 
 NexlEngine.prototype.isContainsValue = function (obj, reversedKey) {
 	if (j79.isString(obj)) {
-		obj = this.evalNexlExpressionWrapper(obj);
+		obj = this.evalAndSubstNexlExpressionInner(obj);
 	}
 	if (j79.isArray(obj) && obj.length == 1) {
 		obj = obj[0];
@@ -241,7 +241,7 @@ NexlEngine.prototype.isContainsValue = function (obj, reversedKey) {
 
 NexlEngine.prototype.jsonReverseResolution = function (json, reversedKey) {
 	var result = [];
-	reversedKey = this.evalNexlExpressionWrapper(reversedKey);
+	reversedKey = this.evalAndSubstNexlExpressionInner(reversedKey);
 	for (var key in json) {
 		var val = json[key];
 		if (this.isContainsValue(val, reversedKey)) {
@@ -257,8 +257,8 @@ NexlEngine.prototype.retrieveDefaultValue = function (defValue) {
 	}
 	for (var i = 0; i < defValue.length; i++) {
 		var item = defValue[i];
-		var value = this.evalNexlExpressionWrapper(item);
-		if (neu.isDefValueSet(value)) {
+		var value = this.evalAndSubstNexlExpressionInner(item);
+		if (value !== undefined && value !== null) {
 			return neu.unescape(value);
 		}
 	}
@@ -271,7 +271,7 @@ NexlEngine.prototype.abortErrMsg = function (varStuff, originalVal) {
 
 	// was it because of reverse resolution ?
 	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(originalVal)) {
-		var value = this.evalNexlExpressionWrapper(varStuff.MODIFIERS.REVERSE_RESOLUTION);
+		var value = this.evalAndSubstNexlExpressionInner(varStuff.MODIFIERS.REVERSE_RESOLUTION);
 		return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
 	}
 
@@ -314,20 +314,17 @@ NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, treatAs, var
 
 	switch (treatAs) {
 		// keys
-		case 'K':
-		{
+		case 'K': {
 			return Object.keys(objCandidate);
 		}
 
 		// values
-		case 'V':
-		{
+		case 'V': {
 			return j79.obj2ArrayIfNeeded(objCandidate);
 		}
 
 		// as xml
-		case 'X' :
-		{
+		case 'X' : {
 			return neu.obj2Xml(objCandidate);
 		}
 	}
@@ -339,8 +336,13 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	var result = value;
 
 	// apply json reverse resolution is present
-	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(value)) {
-		result = this.jsonReverseResolution(value, varStuff.MODIFIERS.REVERSE_RESOLUTION);
+	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(result)) {
+		result = this.jsonReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
+	}
+
+	// apply json reverse resolution is present
+	if (varStuff.MODIFIERS.DELIMITER && j79.isArray(result)) {
+		result = result.join(neu.unescapeString(varStuff.MODIFIERS.DELIMITER));
 	}
 
 	// apply default value if value not set
@@ -353,7 +355,6 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 
 	result = this.applyTreatAsModifier(result, varStuff.MODIFIERS.TREAT_AS, varStuff);
 
-	result = j79.wrapWithArrayIfNeeded(result);
 	return result;
 };
 
@@ -364,12 +365,13 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 	var varStuff = neu.extractVarStuff(varName);
 
 	// varName can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
-	var variables = this.evalNexlExpressionWrapper(varStuff.varName, false);
+	var variables = this.evalAndSubstNexlExpressionInner(varStuff.varName, false);
 
-	// retrieving the OMIT_WHOLE_EXPRESSION/DONT_OMIT_WHOLE_EXPRESSION modifier value
-	var isOmitWholeExpression = this.retrieveOmitWholeExpression(varStuff);
+	var isArrayFlag = j79.isArray(variables);
 
-	// iterating over variables ( previous iteration in assembleExpression() can bring more that 1 result )
+	variables = j79.wrapWithArrayIfNeeded(variables);
+
+	// iterating over variables ( previous iteration in evalAndSubstNexlExpressionInner() can bring more that 1 result )
 	for (var i = 0; i < variables.length; i++) {
 		var variable = variables[i];
 
@@ -379,30 +381,16 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 		// applying related modifiers
 		var values = this.applyModifiers(evaluatedValue, varStuff);
 
-		// iterating over values and accumulating result in [result]
-		for (var j = 0; j < values.length; j++) {
-			var item = values[j];
-
-			if (item == null) {
-				if (!isOmitWholeExpression) {
-					result.push(null);
-				}
-				continue;
-			}
-
-			// value can contain sub-variables, so assembling them
-			var items = this.evalNexlExpressionWrapper(item, isOmitWholeExpression);
-
-			if (items.length == 1 && items[0] == null) {
-				if (!isOmitWholeExpression) {
-					result.push(null);
-				}
-				continue;
-			}
-
-			// accumulating result in [result]
-			result = result.concat(items);
+		if (j79.isArray(values)) {
+			isArrayFlag = true;
 		}
+
+		// accumulating result in [result]
+		result = result.concat(values);
+	}
+
+	if (!isArrayFlag) {
+		result = result[0];
 	}
 
 	varStuff.value = result;
@@ -485,38 +473,118 @@ NexlEngine.prototype.substExpressionValues = function (expression, searchVal, va
 	return result;
 };
 
-NexlEngine.prototype.evalNexlExpressionWrapper = function (expression, isOmitWholeExpression) {
-	// converting expression to string if needed
-	if (!j79.isString(expression)) {
-		expression = expression.toString();
-	}
+NexlEngine.prototype.substExpressionValues2 = function (currentResult, chunkPosition, varStuff) {
+	var result = [];
 
-	var result = [expression];
+	var valueItems = j79.wrapWithArrayIfNeeded(varStuff.value);
 
-	// extracting first level variables from expression
-	var flvs = neu.extractFirstLevelVars(expression);
+	for (var i = 0; i < valueItems.length; i++) {
+		var item = valueItems[i];
 
-	// iterating over first level variables, evaluating, substituting to [result]
-	for (var i = 0; i < flvs.length; i++) {
-		// first level variable
-		var flv = flvs[i];
+		for (j = 0; j < currentResult.length; j++) {
+			// cloning a currentResult[j]
+			var currentItem = currentResult[j].slice(0); // currentItem is an escapedChunks entity
 
-		// evaluating nexl variable
-		var varStuff = this.evalNexlVariable(flv);
+			// substituting a value
+			currentItem[chunkPosition] = item;
 
-		// if [isOmitWholeExpression] is ON and [varStuff.value] is empty, omitting the whole expression
-		if (isOmitWholeExpression && neu.isVarStuffEmpty(varStuff)) {
-			return [null];
+			// adding to result
+			result.push(currentItem);
 		}
-
-		// substituting value
-		result = this.substExpressionValues(result, flv, varStuff);
 	}
 
 	return result;
 };
 
-NexlEngine.prototype.evalNexlExpression = function () {
+NexlEngine.prototype.evalArray = function (arr) {
+	var result = [];
+
+	for (var index in arr) {
+		var arrItem = arr[index];
+		var item = this.evalAndSubstNexlExpressionInner(arrItem);
+
+		if (j79.isArray(item)) {
+			result = result.concat(item)
+		} else {
+			result.push(item);
+		}
+	}
+
+	return result;
+};
+
+NexlEngine.prototype.evalObject = function (obj) {
+	throw 'Still not implemented';
+};
+
+NexlEngine.prototype.evalFunction = function (func) {
+	throw 'Still not implemented';
+};
+
+NexlEngine.prototype.evalString = function (inputAsStr) {
+	// extracting first level variables from inputAsStr
+	var flvs = neu.extractFirstLevelVars2(inputAsStr);
+
+	var isArrayFlag = false;
+
+	// wrapping with array. later, if the isArrayFlag it will be unwrapped back to single element
+	var result = [flvs.escapedChunks];
+
+	// iterating over positions to substitute a values in escapedChunks
+	for (var position in flvs.flvs) {
+		var nexlExpression = flvs.flvs[position];
+
+		// evaluating nexl variable
+		var varStuff = this.evalNexlVariable(nexlExpression);
+
+		if (j79.isArray(varStuff.value)) {
+			isArrayFlag = true;
+		}
+
+		// substituting value
+		result = this.substExpressionValues2(result, position, varStuff);
+	}
+
+	// iterating over result and joining all chunks
+	var finalResult = [];
+	for (var i = 0; i < result.length; i++) {
+		if (result[i].length === 1) {
+			finalResult.push(result[i][0]);
+		} else {
+			finalResult.push(result[i].join(''));
+		}
+	}
+
+	// checking for isArrayFlag
+	if (!isArrayFlag) {
+		finalResult = finalResult[0];
+	}
+
+	return finalResult;
+};
+
+NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input) {
+	if (j79.isArray(input)) {
+		return this.evalArray(input);
+	}
+
+	if (j79.isObject(input)) {
+		return this.evalObject(input);
+	}
+
+	if (j79.isFunction(input)) {
+		return this.evalFunction(input);
+	}
+
+	if (j79.isString(input)) {
+		return this.evalString(input);
+	}
+
+	return input;
+};
+
+
+NexlEngine.prototype.evalAndSubstNexlExpression = function () {
 	// assembling nexl source
 	var sourceCode = neu.assembleSourceCode(this.nexlSource);
 
@@ -528,13 +596,13 @@ NexlEngine.prototype.evalNexlExpression = function () {
 	}
 
 	// assembling
-	return this.evalNexlExpressionWrapper(this.nexlExpression, false);
+	return this.evalAndSubstNexlExpressionInner(this.nexlExpression, false);
 };
 
-// exporting evalNexlExpression
-module.exports.evalNexlExpression = function (nexlSource, nexlExpression, externalArgs) {
+// exporting evalAndSubstNexlExpression()
+module.exports.evalAndSubstNexlExpression = function (nexlSource, nexlExpression, externalArgs) {
 	var nexlEngine = new NexlEngine(nexlSource, nexlExpression, externalArgs);
-	return nexlEngine.evalNexlExpression();
+	return nexlEngine.evalAndSubstNexlExpression();
 };
 
 // exporting 'settings-list'

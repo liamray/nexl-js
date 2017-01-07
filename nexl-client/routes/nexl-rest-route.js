@@ -193,7 +193,7 @@ function evalNexl(req, res) {
     var nexlSource = makeNexlSource(nexlSourceFileName, nexlSourceFileContent);
 
     try {
-        var result = nexlEngine.evalNexlExpression(nexlSource, nexlExpression, nexlArgs);
+        var result = nexlEngine.evalAndSubstNexlExpression(nexlSource, nexlExpression, nexlArgs);
         res.send(result);
     } catch (e) {
         res.status(500).send('Failed to evaluate nexl expression. Reason : ' + e);

@@ -499,6 +499,7 @@ function whereIsVariableEnds(str, index) {
 module.exports.whereIsVariableEnds = whereIsVariableEnds;
 module.exports.hasFirstLevelVars = hasFirstLevelVars;
 module.exports.extractFirstLevelVars = extractFirstLevelVars;
+module.exports.extractFirstLevelVars2 = extractFirstLevelVars2;
 module.exports.findClosestBracketPos = findClosestBracketPos;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,9 +10,6 @@ var nexlSource = {asFile: {fileName: 'nexl-sources/nexl-source1.js'}};
 
 // comparing two javascript variables
 function compare(result, expectedResult) {
-	// todo: temporary, until the big nexl-engine refactoring
-	expectedResult = j79.wrapWithArrayIfNeeded(expectedResult);
-
 	var s1 = JSON.stringify(result);
 	var s2 = JSON.stringify(expectedResult);
 	return s1 === s2;
@@ -38,7 +35,7 @@ function failureMessage(exprDef, err) {
 // tests the expression
 function testExpression(exprDef) {
 	try {
-		var result = nexlEngine.evalNexlExpression(nexlSource, exprDef.expression, exprDef.args);
+		var result = nexlEngine.evalAndSubstNexlExpression(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
 		if (exprDef.result !== undefined) {
 			failureMessage(exprDef, e);
@@ -57,7 +54,9 @@ function testExpression(exprDef) {
 
 	var compareResult = compare(result, exprDef.result);
 	if (!compareResult) {
-		failureMessage(exprDef, util.format('Expected result = [%s] doesn\'t match to evaluated result = [%s]', exprDef.result, result));
+		var resultType = j79.getType(result);
+		var exprDefType = j79.getType(exprDef.result);
+		failureMessage(exprDef, util.format('Expected result = (%s)[%s] doesn\'t match to evaluated result = (%s)[%s]', exprDefType, exprDef.result, resultType, result));
 		return false;
 	}
 
