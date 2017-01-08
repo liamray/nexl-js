@@ -525,21 +525,21 @@ NexlEngine.prototype.evalString = function (inputAsStr) {
 	// extracting first level variables from inputAsStr
 	var flvs = neu.extractFirstLevelVars2(inputAsStr);
 
+	// assuming that result is a single value at the beginning. but it can be turn out to array
 	var isArrayFlag = false;
 
 	// wrapping with array. later, if the isArrayFlag it will be unwrapped back to single element
 	var result = [flvs.escapedChunks];
 
-	// iterating over positions to substitute a values in escapedChunks
+	// iterating over positions to substitute values in escapedChunks
 	for (var position in flvs.flvs) {
 		var nexlExpression = flvs.flvs[position];
 
 		// evaluating nexl variable
 		var varStuff = this.evalNexlVariable(nexlExpression);
 
-		if (j79.isArray(varStuff.value)) {
-			isArrayFlag = true;
-		}
+		// setting the isArrayFlag to true if we've got an array
+		isArrayFlag = isArrayFlag || j79.isArray(varStuff.value);
 
 		// substituting value
 		result = this.substExpressionValues2(result, position, varStuff);
