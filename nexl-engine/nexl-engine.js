@@ -200,7 +200,7 @@ NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable) {
 	// got an external argument
 	// preventing arguments to be evaluated ( i.e. preventing code injection in external arguments )
 	// nexl engine evaluates nexl expressions, checking is the result a nexl expression ?
-	if (j79.isString(result) && neu.hasFirstLevelVars(result)) {
+	if (j79.isString(result) && neu.hasFirstLevelVar(result)) {
 		throw "You can't pass a nexl expression in external arguments. Escape a $ sign in your argument if you didn't intend to pass an expression";
 	}
 
@@ -397,83 +397,7 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 	return varStuff;
 };
 
-// when items are joined into one string separated by [delimiter]
-NexlEngine.prototype.substituteFlat = function (expression, searchVal, replaceVal, delimiter, result) {
-	var preResult = [];
-
-	// iterating over replace values and aggregating them in [preResult]
-	for (var i = 0; i < replaceVal.length; i++) {
-		var item = replaceVal[i];
-
-		// replacing null with empty string
-		item = (item == null) ? "" : item;
-
-		// adding
-		preResult.push(item);
-	}
-
-	// joining all
-	preResult = preResult.join(delimiter);
-
-	// substituted values with [delimiter]
-	preResult = j79.replaceAll(expression, searchVal, preResult);
-
-	// adding to [result]
-	result.push(preResult);
-};
-
-// this is default behaviour when all items are joined as array
-NexlEngine.prototype.substituteVertical = function (expression, searchVal, replaceVal, result) {
-	for (var i = 0; i < replaceVal.length; i++) {
-		var item = replaceVal[i];
-
-		// expression is same as search value and item is null
-		// this is done to push real [null] values to result, otherwise stringified null is pushed ['null']
-		if (expression == searchVal && item == null) {
-			result.push(null);
-			continue;
-		}
-
-		// replacing [null] with empty string to perform substitute
-		item = (item == null) ? "" : item;
-
-		// substituting
-		item = j79.replaceAll(expression, searchVal, item);
-
-		result.push(item);
-	}
-};
-
-NexlEngine.prototype.substExpressionValues = function (expression, searchVal, varStuff) {
-	var result = [];
-
-	// discovering delimiter
-	var delimiter = varStuff.MODIFIERS.DELIMITER;
-	delimiter = neu.unescape(delimiter);
-	delimiter = j79.isValSet(delimiter) ? delimiter : this.retrieveSettings('DEFAULT_DELIMITER');
-
-	// preparing replaceVal
-	var replaceVal = neu.isVarStuffEmpty(varStuff) ? [null] : j79.wrapWithArrayIfNeeded(varStuff.value);
-
-	// iterating over expression ( expression can be array ) and substituting [replaceVal]
-	for (var i = 0; i < expression.length; i++) {
-
-		var item = expression[i];
-
-		if (delimiter == "\n") {
-			// every value is pushed to [result]
-			this.substituteVertical(item, searchVal, replaceVal, result);
-		} else {
-			// all values are aggregated in one string and then this final string is pushed to [result]
-			this.substituteFlat(item, searchVal, replaceVal, delimiter, result);
-		}
-
-	}
-
-	return result;
-};
-
-NexlEngine.prototype.substExpressionValues2 = function (currentResult, chunkPosition, varStuff) {
+NexlEngine.prototype.substExpressionValues = function (currentResult, chunkPosition, varStuff) {
 	var result = [];
 
 	var valueItems = j79.wrapWithArrayIfNeeded(varStuff.value);
@@ -481,7 +405,7 @@ NexlEngine.prototype.substExpressionValues2 = function (currentResult, chunkPosi
 	for (var i = 0; i < valueItems.length; i++) {
 		var item = valueItems[i];
 
-		for (j = 0; j < currentResult.length; j++) {
+		for (var j = 0; j < currentResult.length; j++) {
 			// cloning a currentResult[j]
 			var currentItem = currentResult[j].slice(0); // currentItem is an escapedChunks entity
 
@@ -523,7 +447,7 @@ NexlEngine.prototype.evalFunction = function (func) {
 
 NexlEngine.prototype.evalString = function (inputAsStr) {
 	// extracting first level variables from inputAsStr
-	var flvs = neu.extractFirstLevelVars2(inputAsStr);
+	var flvs = neu.extractFirstLevelVars(inputAsStr);
 
 	// assuming that result is a single value at the beginning. but it can be turn out to array
 	var isArrayFlag = false;
@@ -542,7 +466,7 @@ NexlEngine.prototype.evalString = function (inputAsStr) {
 		isArrayFlag = isArrayFlag || j79.isArray(varStuff.value);
 
 		// substituting value
-		result = this.substExpressionValues2(result, position, varStuff);
+		result = this.substExpressionValues(result, position, varStuff);
 	}
 
 	// iterating over result and joining all chunks

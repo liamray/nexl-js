@@ -220,49 +220,6 @@ module.exports.resolveJsVariables = resolveJsVariables;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// extracts the first level variable ( only the first item )
-function extractFirstLevelVar(str) {
-	var start = 0;
-
-	// searching for not escaped ${ characters, saving the position in start variable
-	while (true) {
-		start = str.indexOf("${", start);
-		if (start < 0) {
-			// there no first level variables
-			return null;
-		}
-		if (( start > 0 ) && ( str.charAt(start - 1) == '\\' )) {
-			start++;
-			continue;
-		}
-		break;
-	}
-
-	var closeBracketPos = findClosestBracketPos(str, start + 1);
-	if (closeBracketPos < 0) {
-		// there no first level variables
-		return null;
-	}
-
-	var extractedVar = str.substr(start, closeBracketPos - start + 1);
-	str = str.substr(closeBracketPos);
-	// returning the first level variable and the of str
-	return {flvName: extractedVar, restStr: str};
-}
-
-function extractFirstLevelVars(str) {
-	var result = [];
-	// oneFlv is an object which contains the following : flvName ( first level variable name ), restStr ( the rest of str after flvName )
-	var oneFlv = extractFirstLevelVar(str);
-	while (oneFlv != null) {
-		result.push(oneFlv.flvName);
-		str = oneFlv.restStr;
-		oneFlv = extractFirstLevelVar(str);
-	}
-	return result;
-}
-
 function extractFirstLevelVars2Wrapper(result, cycleData) {
 	var c = cycleData.str.charAt(cycleData.index);
 
@@ -319,7 +276,7 @@ function extractFirstLevelVars2Wrapper(result, cycleData) {
 	cycleData.currentChunk++;
 
 	// calculating start/end position of nexl expression
-	var endPos = findClosestBracketPos2(cycleData.str, cycleData.index);
+	var endPos = findClosestBracketPos(cycleData.str, cycleData.index);
 
 	// didn't find an end position ?
 	if (endPos < 0) {
@@ -353,7 +310,7 @@ function extractFirstLevelVars2Wrapper(result, cycleData) {
  }
  }
  */
-function extractFirstLevelVars2(str) {
+function extractFirstLevelVars(str) {
 	var result = {
 		escapedChunks: [],
 		flvs: {}
@@ -372,7 +329,7 @@ function extractFirstLevelVars2(str) {
 		extractFirstLevelVars2Wrapper(result, cycleData);
 	}
 
-	// adding slasheh and the rest of the str
+	// adding slashes and the rest of the str
 	cycleData.accumulator += cycleData.slashes;
 	cycleData.accumulator += cycleData.str.substr(cycleData.index);
 
@@ -383,7 +340,7 @@ function extractFirstLevelVars2(str) {
 	return result;
 }
 
-function hasFirstLevelVar2(str) {
+function hasFirstLevelVar(str) {
 	var index = 0;
 	while ((index = str.indexOf('${', index) ) >= 0) {
 		var backIndex = index - 1;
@@ -399,7 +356,7 @@ function hasFirstLevelVar2(str) {
 		// is it an even number ? ( even number of slashes tell that nexl expression is not escaped )
 		if (slashesCnt % 2 === 0) {
 			// might be nexl expression. searching for close bracket
-			var closeBracketPos = findClosestBracketPos2(str, index + 1);
+			var closeBracketPos = findClosestBracketPos(str, index + 1);
 			// is close bracket found ? ( and nexl expression has something inside )
 			if (closeBracketPos > 0 && closeBracketPos - index > 2) {
 				return true;
@@ -412,11 +369,7 @@ function hasFirstLevelVar2(str) {
 	return false;
 }
 
-function hasFirstLevelVars(str) {
-	return extractFirstLevelVar(str) != null;
-}
-
-function findClosestBracketPos2(str, start) {
+function findClosestBracketPos(str, start) {
 	var openBracket = str.charAt(start);
 	var closeBracket = KNOWN_BRACKETS[openBracket];
 	if (!closeBracket) {
@@ -454,29 +407,6 @@ function findClosestBracketPos2(str, start) {
 	return -1;
 }
 
-function findClosestBracketPos(str, start) {
-	var openBracket = str.charAt(start);
-	var closeBracket = KNOWN_BRACKETS[openBracket];
-	if (!closeBracket) {
-		return -1;
-	}
-
-	var bracketCount = 1;
-	for (var i = start + 1; i < str.length; i++) {
-		if (str.charAt(i) == openBracket) {
-			bracketCount++;
-		}
-		if (str.charAt(i) == closeBracket) {
-			bracketCount--;
-		}
-		if (bracketCount < 1) {
-			return i;
-		}
-	}
-
-	return -1;
-}
-
 function whereIsVariableEnds(str, index) {
 	// nexl variable consist at least of 4 characters like ${x}
 	if (str.length < index + 4) {
@@ -497,9 +427,8 @@ function whereIsVariableEnds(str, index) {
 }
 
 module.exports.whereIsVariableEnds = whereIsVariableEnds;
-module.exports.hasFirstLevelVars = hasFirstLevelVars;
+module.exports.hasFirstLevelVar = hasFirstLevelVar;
 module.exports.extractFirstLevelVars = extractFirstLevelVars;
-module.exports.extractFirstLevelVars2 = extractFirstLevelVars2;
 module.exports.findClosestBracketPos = findClosestBracketPos;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
