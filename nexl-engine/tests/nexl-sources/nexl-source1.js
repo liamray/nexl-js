@@ -36,7 +36,7 @@ var ALL_PROD_INTERFACES_DEF = {
 	"PROD": "${HOSTS.APP_SERVER_INTERFACES.${PROD_ENVS}~V!C-}"
 };
 
-var ALL_APP_SERVER_INTERFACES = "${ALL_PROD_INTERFACES_DEF.${ENV!A}:${HOSTS.APP_SERVER_INTERFACES.${ENV!A}.${INSTANCE!C}~V!C}:${HOSTS.APP_SERVER_INTERFACES.${ENV!A}~V}~V}";
+var ALL_APP_SERVER_INTERFACES = "${ALL_PROD_INTERFACES_DEF.${ENV!A}:${HOSTS.APP_SERVER_INTERFACES.${ENV!A}.${INSTANCE!C}~V!C}:${HOSTS.APP_SERVER_INTERFACES.${ENV!A}~V}~V-}";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,7 +82,6 @@ WS.PORTS_DEF = {
 WS.PORTS = "${WS.PORTS_DEF.${ENV!A}:${WS.PORT}}";
 
 WS.ALL_PORTS = ['${WS.PORTS_DEF~V}', '${WS.PORT}'];
-
 
 WS.URL1 = 'http://test-url:${WS.PORTS}/${ENV!A}';
 

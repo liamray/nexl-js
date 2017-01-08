@@ -22,6 +22,11 @@ expressions.push({
 	result: 'no expression'
 });
 
+// undefined variable
+expressions.push({
+	expression: '${undefinedVariable} ${undefinedVariable!A}'
+});
+
 // simple variable resolution
 expressions.push({
 	expression: '1[${undefinedVariable!C}] 2[${undefinedVariable2:}] 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]',
@@ -79,7 +84,7 @@ expressions.push({
 // omit whole expression modifier
 expressions.push({
 	expression: '${omitArr1-?,} ${omitArr1+?,} ${omitArr1?,}',
-	result: 'disconnect,false,24 disconnect,false,24,, disconnect,false,24,,'
+	result: 'disconnect,24,false disconnect,24,,,false disconnect,24,,,false'
 });
 
 // omit whole expression modifier
@@ -91,7 +96,7 @@ expressions.push({
 // funcs
 expressions.push({
 	expression: '${reverseArray([1, 2, 3])}',
-	result: ['3', '2', '1']
+	result: [3, 2, 1]
 });
 
 // funcs
@@ -104,11 +109,6 @@ expressions.push({
 expressions.push({
 	expression: '${nexlEngineInternalCall()}',
 	result: 'queen,muscle,79,false'
-});
-
-// undefined variable
-expressions.push({
-	expression: '${undefinedVariable} ${undefinedVariable!A}'
 });
 
 // unitedKey
@@ -214,7 +214,7 @@ expressions.push({
 // WS.URL1, ENV = PROD
 expressions.push({
 	expression: '${WS.URL1}',
-	result: ['http://test-url:8080/PROD'],
+	result: 'http://test-url:8080/PROD',
 	args: {
 		ENV: 'PROD'
 	}

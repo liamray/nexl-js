@@ -32,7 +32,7 @@ function printOkExpression(exprDef) {
 }
 
 function failureMessage(exprDef, err) {
-	console.log('\n------>>>>>> FAILURE !!!! <<<<<<------');
+	console.log('------>>>>>> FAILURE !!!! <<<<<<------');
 	console.log(exprDefVerbally(exprDef));
 	console.log('Reason : ' + err);
 	console.log('');
@@ -76,6 +76,8 @@ function start() {
 	var okCnt = 0;
 	var failCnt = 0;
 	for (var index in expressions) {
+		console.log('\nTest #', index);
+
 		var exprDef = expressions[index];
 		var result = testExpression(exprDef);
 
@@ -86,11 +88,11 @@ function start() {
 		}
 	}
 
-	util.log('OK tests : %s', okCnt);
-	util.log('Failed tests : %s', failCnt);
+	console.log(util.format('\n\nOK tests : %s', okCnt));
+	console.log(util.format('Failed tests : %s', failCnt));
 
 	var msg = failCnt <= 0 ? 'All tests are passed OK' : 'One or more tests ARE FAILED !!!';
-	util.log('\n\n****************************************************************\n%s\n****************************************************************', msg);
+	console.log(util.format('\n\n****************************************************************\n%s\n****************************************************************', msg));
 }
 
 start();

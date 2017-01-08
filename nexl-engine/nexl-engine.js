@@ -156,7 +156,7 @@ NexlEngine.prototype.processIdentifier = function (identifierInfo) {
 	throw 'You should not achieve this code';
 };
 
-NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier) {
+NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier, varStuff) {
 	var identifierInfo = {
 		identifier: identifier,
 		value: this.context,
@@ -174,19 +174,21 @@ NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier) {
 		return null;
 	}
 
-	return this.evalAndSubstNexlExpressionInner(identifierInfo.value);
+	var isOmit = NexlEngine.prototype.retrieveOmitWholeExpression(varStuff);
+
+	return this.evalAndSubstNexlExpressionInner(identifierInfo.value, null, isOmit);
 };
 
 // jsVariable can point to object's property, for example : x.y.z
-NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable) {
+NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable, varStuff) {
 	// if externalArgs is not provided, just evaluate jsVariable
 	if (!this.externalArgs) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable);
+		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
 	}
 
 	// are external arguments weaker than source ?
 	if (!this.retrieveBoolSettings('ARGS_ARE_OVERRIDING_SRC')) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable);
+		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
 	}
 
 	// retrieving value from external args
@@ -194,7 +196,7 @@ NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable) {
 
 	// still doesn't have a value ?
 	if (!j79.isValSet(result)) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable);
+		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
 	}
 
 	// got an external argument
@@ -301,7 +303,61 @@ NexlEngine.prototype.abortScriptIfNeeded = function (originalVal, result, varStu
 	}
 };
 
-NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, treatAs, varStuff) {
+NexlEngine.prototype.applyOmitModifier = function (result, varStuff) {
+	var isOmit = NexlEngine.prototype.retrieveOmitWholeExpression(varStuff);
+	if (!isOmit) {
+		return result;
+	}
+
+	// omitting null values from array
+	if (j79.isArray(result)) {
+		for (var i = 0; i < result.length; i++) {
+			if (result[i] === null) {
+				result.splice(i, 1);
+				i--;
+			}
+		}
+
+		return result;
+	}
+
+	// todo: omitting null values from obj
+	if (j79.isObject(result)) {
+		return result;
+	}
+
+	return result;
+};
+
+NexlEngine.prototype.applyObjectReverseResolutionModifier = function (result, varStuff) {
+	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(result)) {
+		return this.jsonReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
+	}
+
+	return result;
+};
+
+NexlEngine.prototype.applyConcatArrayElementsModifier = function (result, varStuff) {
+	// apply json reverse resolution is present
+	if (varStuff.MODIFIERS.DELIMITER && j79.isArray(result)) {
+		return result.join(neu.unescapeString(varStuff.MODIFIERS.DELIMITER));
+	}
+
+	return result;
+};
+
+NexlEngine.prototype.applyDefaultValueModifier = function (result, varStuff) {
+	// apply default value if value not set
+	if (!j79.isValSet(result)) {
+		return this.retrieveDefaultValue(varStuff.MODIFIERS.DEF_VALUE);
+	}
+
+	return result;
+};
+
+NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, varStuff) {
+	var treatAs = varStuff.MODIFIERS.TREAT_AS;
+
 	// force make object
 	if (treatAs === 'O') {
 		var result = j79.wrapWithObjIfNeeded(objCandidate, varStuff.varName);
@@ -335,25 +391,23 @@ NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, treatAs, var
 NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	var result = value;
 
-	// apply json reverse resolution is present
-	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(result)) {
-		result = this.jsonReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
-	}
+	// applying OMIT_WHOLE_EXPRESSION modifier
+	result = this.applyOmitModifier(result, varStuff);
 
-	// apply json reverse resolution is present
-	if (varStuff.MODIFIERS.DELIMITER && j79.isArray(result)) {
-		result = result.join(neu.unescapeString(varStuff.MODIFIERS.DELIMITER));
-	}
+	// applying object reverse resolution modifier
+	result = this.applyObjectReverseResolutionModifier(result, varStuff);
 
-	// apply default value if value not set
-	if (!j79.isValSet(result)) {
-		result = this.retrieveDefaultValue(varStuff.MODIFIERS.DEF_VALUE);
-	}
+	// applying concat array elements modifier
+	result = this.applyConcatArrayElementsModifier(result, varStuff);
+
+	// applying default value modifier
+	result = this.applyDefaultValueModifier(result, varStuff);
+
+	// apply treat as modifier
+	result = this.applyTreatAsModifier(result, varStuff);
 
 	// abort script execution if value still not set and [!C] modifier is not applied
 	this.abortScriptIfNeeded(value, result, varStuff);
-
-	result = this.applyTreatAsModifier(result, varStuff.MODIFIERS.TREAT_AS, varStuff);
 
 	return result;
 };
@@ -376,7 +430,7 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 		var variable = variables[i];
 
 		// evaluating javascript variable
-		var evaluatedValue = this.resolveJSIdentifierValue(variable);
+		var evaluatedValue = this.resolveJSIdentifierValue(variable, varStuff);
 
 		// applying related modifiers
 		var values = this.applyModifiers(evaluatedValue, varStuff);
@@ -445,7 +499,7 @@ NexlEngine.prototype.evalFunction = function (func) {
 	throw 'Still not implemented';
 };
 
-NexlEngine.prototype.evalString = function (inputAsStr) {
+NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 	// extracting first level variables from inputAsStr
 	var flvs = neu.extractFirstLevelVars(inputAsStr);
 
@@ -461,6 +515,11 @@ NexlEngine.prototype.evalString = function (inputAsStr) {
 
 		// evaluating nexl variable
 		var varStuff = this.evalNexlVariable(nexlExpression);
+
+		// is to omit the inputAsStr expression if the value is null
+		if (varStuff.value === null && isOmit) {
+			return '';
+		}
 
 		// setting the isArrayFlag to true if we've got an array
 		isArrayFlag = isArrayFlag || j79.isArray(varStuff.value);
@@ -487,7 +546,7 @@ NexlEngine.prototype.evalString = function (inputAsStr) {
 	return finalResult;
 };
 
-NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input) {
+NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, isOmit) {
 	if (j79.isArray(input)) {
 		return this.evalArray(input);
 	}
@@ -501,7 +560,7 @@ NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input) {
 	}
 
 	if (j79.isString(input)) {
-		return this.evalString(input);
+		return this.evalString(input, isOmit);
 	}
 
 	return input;
@@ -520,7 +579,8 @@ NexlEngine.prototype.evalAndSubstNexlExpression = function () {
 	}
 
 	// assembling
-	return this.evalAndSubstNexlExpressionInner(this.nexlExpression, false);
+	// todo: may be pass the real args ? consider this situation
+	return this.evalAndSubstNexlExpressionInner(this.nexlExpression, null, false);
 };
 
 // exporting evalAndSubstNexlExpression()
