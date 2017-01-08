@@ -7,6 +7,9 @@
 // test the following expression which has a substitute bug : [${asd} hello ${x:${asd}}]
 // test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
 // test global setting ( in future version of nexl-engine )
+// test function with multi params of different types
+// test different types as first argument for evalAndSubstNexlExpressionInner() function ( arrays, objects, funcs, bool, ... )
+// test empty input, empty output
 
 
 var expressions = [];
@@ -46,7 +49,7 @@ expressions.push({
 // arrays
 expressions.push({
 	expression: '${arr1} ${arr2}',
-	result: ['queen air', 'queen 16', 'queen 99', 'queen true', 'queen smooth', 'muscle air', 'muscle 16', 'muscle 99', 'muscle true', 'muscle smooth', '79 air', '79 16', '79 99', '79 true', '79 smooth', 'false air', 'false 16', 'false 99', 'false true', 'false smooth']
+	result: ['queen air', 'muscle air', '79 air', 'false air', 'queen 16', 'muscle 16', '79 16', 'false 16', 'queen 99', 'muscle 99', '79 99', 'false 99', 'queen true', 'muscle true', '79 true', 'false true', 'queen smooth', 'muscle smooth', '79 smooth', 'false smooth']
 });
 
 // objects
