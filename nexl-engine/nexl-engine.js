@@ -209,47 +209,55 @@ NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable, varStuff) 
 	return result;
 };
 
-NexlEngine.prototype.isContainsValue = function (obj, reversedKey) {
-	if (j79.isString(obj)) {
-		obj = this.evalAndSubstNexlExpressionInner(obj);
-	}
-	if (j79.isArray(obj) && obj.length == 1) {
-		obj = obj[0];
-	}
-	if (j79.isString(obj) || j79.isInt(obj) || j79.isBool(obj)) {
-		for (var i = 0; i < reversedKey.length; i++) {
-			var item = neu.unescape(reversedKey[i]);
-			if (item == obj.toString()) {
+NexlEngine.prototype.isContainsValue = function (val, reversedKey) {
+	if (j79.isArray(val)) {
+		for (var i = 0; i < val.length; i++) {
+			if (this.isContainsValue(val[i], reversedKey)) {
 				return true;
 			}
 		}
+
+		return false;
 	}
-	if (j79.isArray(obj)) {
-		for (var i = 0; i < obj.length; i++) {
-			if (this.isContainsValue(obj[i], reversedKey)) {
+
+	if (j79.isObject(val)) {
+		for (var key in val) {
+			if (this.isContainsValue(val[key], reversedKey)) {
 				return true;
 			}
 		}
+
+		return false;
 	}
-	if (j79.isObject(obj)) {
-		for (var key in obj) {
-			if (this.isContainsValue(obj[key], reversedKey)) {
-				return true;
-			}
+
+	var reverseKeyWrappedWithArray = j79.wrapWithArrayIfNeeded(reversedKey);
+
+	for (var i = 0; i < reverseKeyWrappedWithArray.length; i++) {
+		if (reverseKeyWrappedWithArray[i] === val) {
+			return true;
 		}
 	}
+
 	return false;
 };
 
-NexlEngine.prototype.jsonReverseResolution = function (json, reversedKey) {
+NexlEngine.prototype.jsonReverseResolution = function (obj, reversedKey) {
 	var result = [];
-	reversedKey = this.evalAndSubstNexlExpressionInner(reversedKey);
-	for (var key in json) {
-		var val = json[key];
-		if (this.isContainsValue(val, reversedKey)) {
+	// evaluating reverseKey
+	var reversedKeyEvaluated = this.evalAndSubstNexlExpressionInner(reversedKey);
+
+	if (j79.isObject(reversedKeyEvaluated) || j79.isFunction(reversedKey)) {
+		throw util.format('Object resolution by object/function is not implemented yet. reverseKey = [%s], reverseKeyEvaluated = [%s], object = [%s]', reversedKey, reversedKeyEvaluated, JSON.stringify(obj));
+	}
+
+	for (var key in obj) {
+		var val = obj[key];
+		if (this.isContainsValue(val, reversedKeyEvaluated)) {
 			result.push(key);
 		}
 	}
+
+	result = result.length === 1 ? result[0] : result;
 	return result.length < 1 ? null : result;
 };
 
@@ -358,34 +366,39 @@ NexlEngine.prototype.applyDefaultValueModifier = function (result, varStuff) {
 NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, varStuff) {
 	var treatAs = varStuff.MODIFIERS.TREAT_AS;
 
-	// force make object
-	if (treatAs === 'O') {
-		var result = j79.wrapWithObjIfNeeded(objCandidate, varStuff.varName);
-		return JSON.stringify(result);
-	}
-
+	// is objCandidate not an object ?
 	if (!j79.isObject(objCandidate)) {
-		return objCandidate;
+		// should we treat it as object ?
+		if (treatAs === 'O') {
+			// treat it as object ( i.e. wrap with object )
+			return j79.wrapWithObjIfNeeded(objCandidate, varStuff.varName);
+		} else {
+			return objCandidate;
+
+		}
 	}
 
 	switch (treatAs) {
 		// keys
-		case 'K': {
+		case 'K':
+		{
 			return Object.keys(objCandidate);
 		}
 
 		// values
-		case 'V': {
+		case 'V':
+		{
 			return j79.obj2ArrayIfNeeded(objCandidate);
 		}
 
 		// as xml
-		case 'X' : {
+		case 'X' :
+		{
 			return neu.obj2Xml(objCandidate);
 		}
 	}
 
-	return JSON.stringify(objCandidate);
+	return objCandidate;
 };
 
 NexlEngine.prototype.applyModifiers = function (value, varStuff) {
@@ -397,14 +410,14 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	// applying object reverse resolution modifier
 	result = this.applyObjectReverseResolutionModifier(result, varStuff);
 
+	// apply treat as modifier
+	result = this.applyTreatAsModifier(result, varStuff);
+
 	// applying concat array elements modifier
 	result = this.applyConcatArrayElementsModifier(result, varStuff);
 
 	// applying default value modifier
 	result = this.applyDefaultValueModifier(result, varStuff);
-
-	// apply treat as modifier
-	result = this.applyTreatAsModifier(result, varStuff);
 
 	// abort script execution if value still not set and [!C] modifier is not applied
 	this.abortScriptIfNeeded(value, result, varStuff);
@@ -492,7 +505,23 @@ NexlEngine.prototype.evalArray = function (arr) {
 };
 
 NexlEngine.prototype.evalObject = function (obj) {
-	throw 'Still not implemented';
+	var result = {};
+
+	// iterating over over keys:values and evaluating
+	for (var key in obj) {
+		var evaluatedKey = this.evalAndSubstNexlExpressionInner(key);
+		if (j79.isArray(evaluatedKey) || j79.isObject(evaluatedKey) || j79.isFunction(evaluatedKey)) {
+			var type = j79.getType(evaluatedKey);
+			throw util.format('Can\'t assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
+		}
+
+		var value = obj[key];
+		var evaluatedValue = this.evalAndSubstNexlExpressionInner(value);
+
+		result[evaluatedKey] = evaluatedValue;
+	}
+
+	return result;
 };
 
 NexlEngine.prototype.evalFunction = function (func) {
@@ -547,6 +576,7 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 };
 
 NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, isOmit) {
+	// iterates over each array element and evaluates every item
 	if (j79.isArray(input)) {
 		return this.evalArray(input);
 	}
@@ -559,10 +589,12 @@ NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, is
 		return this.evalFunction(input);
 	}
 
+	// actually only string elements are really evaluable
 	if (j79.isString(input)) {
 		return this.evalString(input, isOmit);
 	}
 
+	// all another primitives are not evaluable, returning it as is
 	return input;
 };
 

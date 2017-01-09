@@ -60,20 +60,34 @@ expressions.push({
 // objects
 expressions.push({
 	expression: '${obj1}',
-	result: '{"beneficial":"mint","religion":"righteous","()":"trick","disturbed":46,"price":true,"pack":{"strong":"balance","deer":7},"71":"berry"}'
+	result: {
+		beneficial: 'mint',
+		'religion': 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: {
+			strong: 'balance',
+			deer: 7
+		},
+		71: 'berry'
+	}
+
 });
+
 
 // keys and values
 expressions.push({
 	expression: 'KEYS=[${obj1~K?,}] VALUES=[${obj1~V?,}]',
-	result: 'KEYS=[beneficial,religion,(),disturbed,price,pack,71] VALUES=[mint,righteous,trick,46,true,balance,7,berry]'
+	result: 'KEYS=[71,beneficial,religion,(),disturbed,price,pack] VALUES=[berry,mint,righteous,trick,46,true,balance,7]'
 });
 
 // accessing props
 expressions.push({
 	expression: '${obj1.price} ${..obj1....beneficial...} ${obj1.pack~K?,} ${obj1.pack~V?,} ${obj1.${undefinedVariable!C}~V?,} ${obj1.${obj1PropName}}',
-	result: 'true mint strong,deer balance,7 mint,righteous,trick,46,true,balance,7,berry trick'
+	result: 'true mint strong,deer balance,7 berry,mint,righteous,trick,46,true,balance,7 trick'
 });
+
 
 // reverse resolution
 expressions.push({

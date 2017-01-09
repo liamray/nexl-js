@@ -220,7 +220,7 @@ module.exports.resolveJsVariables = resolveJsVariables;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function extractFirstLevelVars2Wrapper(result, cycleData) {
+function extractFirstLevelVarsInner(result, cycleData) {
 	var c = cycleData.str.charAt(cycleData.index);
 
 	// is it a slash character ?
@@ -326,7 +326,7 @@ function extractFirstLevelVars(str) {
 
 	// length -3 because of nexl expression must have at least 3 characters like ${}
 	while (cycleData.index < cycleData.str.length - 3) {
-		extractFirstLevelVars2Wrapper(result, cycleData);
+		extractFirstLevelVarsInner(result, cycleData);
 	}
 
 	// adding slashes and the rest of the str
