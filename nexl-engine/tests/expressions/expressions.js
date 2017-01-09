@@ -10,11 +10,12 @@
 // test function with multi params of different types
 // test different types as first argument for evalAndSubstNexlExpressionInner() function ( arrays, objects, funcs, bool, ... )
 // test empty input, empty output
+// test ~O modifier ( which modifier wasn't tested ? check )
+// test different object types in reverse resolution
 
 
 var expressions = [];
 module.exports = expressions;
-
 
 // no expression test
 expressions.push({
@@ -88,11 +89,15 @@ expressions.push({
 	result: 'true mint strong,deer balance,7 berry,mint,righteous,trick,46,true,balance,7 trick'
 });
 
-
 // reverse resolution
 expressions.push({
-	expression: '${obj1<true} ${obj1<${strItem}} ${obj1<${undefinedVariable!C}:undefined}',
+	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable!C}:undefined}',
 	result: 'price 71 undefined'
+});
+
+// reverse resolution - type check
+expressions.push({
+	expression: '${obj1<true}'
 });
 
 // omit whole expression modifier
@@ -237,7 +242,7 @@ expressions.push({
 // ALL_HOSTS_AND_PORTS1
 expressions.push({
 	expression: '${ALL_HOSTS_AND_PORTS1?,}',
-	result: 'hothead1[9595],hothead1[9696],hothead1[8080],awakening1[9595],awakening1[9696],awakening1[8080],dynamite1[9595],dynamite1[9696],dynamite1[8080],military1[9595],military1[9696],military1[8080],cuddly2[9595],cuddly2[9696],cuddly2[8080],grease2[9595],grease2[9696],grease2[8080],fate2[9595],fate2[9696],fate2[8080],atmosphere2[9595],atmosphere2[9696],atmosphere2[8080],zombie[9595],zombie[9696],zombie[8080],arrows[9595],arrows[9696],arrows[8080],zebra[9595],zebra[9696],zebra[8080],autonomous1[9595],autonomous1[9696],autonomous1[8080],criminal1[9595],criminal1[9696],criminal1[8080],adrenaline2[9595],adrenaline2[9696],adrenaline2[8080],prophetic2[9595],prophetic2[9696],prophetic2[8080],drp-prod[9595],drp-prod[9696],drp-prod[8080],yest[9595],yest[9696],yest[8080],jstaging[9595],jstaging[9696],jstaging[8080]'
+	result: 'hothead1[9595],awakening1[9595],dynamite1[9595],military1[9595],cuddly2[9595],grease2[9595],fate2[9595],atmosphere2[9595],zombie[9595],arrows[9595],zebra[9595],autonomous1[9595],criminal1[9595],adrenaline2[9595],prophetic2[9595],drp-prod[9595],yest[9595],jstaging[9595],hothead1[9696],awakening1[9696],dynamite1[9696],military1[9696],cuddly2[9696],grease2[9696],fate2[9696],atmosphere2[9696],zombie[9696],arrows[9696],zebra[9696],autonomous1[9696],criminal1[9696],adrenaline2[9696],prophetic2[9696],drp-prod[9696],yest[9696],jstaging[9696],hothead1[8080],awakening1[8080],dynamite1[8080],military1[8080],cuddly2[8080],grease2[8080],fate2[8080],atmosphere2[8080],zombie[8080],arrows[8080],zebra[8080],autonomous1[8080],criminal1[8080],adrenaline2[8080],prophetic2[8080],drp-prod[8080],yest[8080],jstaging[8080]'
 });
 
 // ALL_HOSTS_AND_PORTS2 ( PROD )
@@ -261,15 +266,14 @@ expressions.push({
 // makeUrls() function
 expressions.push({
 	expression: '${makeUrls()}',
-	// todo: JSON.stringify() is temporary, until the big nexl-engine refactoring
-	result: JSON.stringify({
+	result: {
 		"PROD": ["http://hothead1", "http://awakening1", "http://dynamite1", "http://military1", "http://cuddly2", "http://grease2", "http://fate2", "http://atmosphere2"],
 		"DEV": ["http://zombie", "http://arrows", "http://zebra"],
 		"QA": ["http://autonomous1", "http://criminal1", "http://adrenaline2", "http://prophetic2"],
-		"DRP-PROD": ["http://drp-prod"],
-		"YEST": ["http://yest"],
-		"STAGING": ["http://jstaging"]
-	})
+		"DRP-PROD": "http://drp-prod",
+		"YEST": "http://yest",
+		"STAGING": "http://jstaging"
+	}
 });
 
 // resolve ENV by IFC

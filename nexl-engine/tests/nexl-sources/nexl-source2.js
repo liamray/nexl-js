@@ -19,7 +19,7 @@ obj1 = {
 	'religion': 'righteous',
 	'()': 'trick',
 	disturbed: 46,
-	price: 'true',
+	price: true,
 	pack: {
 		strong: 'balance',
 		deer: 7
