@@ -27,6 +27,10 @@ obj1 = {
 	'${intItem}': '${strItem}'
 };
 
+var obj1a = {
+	x: '${obj1.pack}'
+};
+
 UNITED_KEY_DEF = {
 	'price': ['price', 'disturbed', 'beneficial']
 };

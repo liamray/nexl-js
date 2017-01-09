@@ -12,6 +12,7 @@
 // test empty input, empty output
 // test ~O modifier ( which modifier wasn't tested ? check )
 // test different object types in reverse resolution
+// test omit modifier on objects ( to omit null valus from object )
 
 
 var expressions = [];
@@ -76,6 +77,11 @@ expressions.push({
 
 });
 
+// nested objects
+expressions.push({
+	expression: '${obj1a.x.deer}',
+	result: 7
+});
 
 // keys and values
 expressions.push({
