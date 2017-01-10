@@ -31,6 +31,10 @@ var obj1a = {
 	x: '${obj1.pack}'
 };
 
+var objArray1 = ['${obj1}', '${obj1a}'];
+
+obj1Keys = ['balance', 7, 'mint', 'berry'];
+
 UNITED_KEY_DEF = {
 	'price': ['price', 'disturbed', 'beneficial']
 };

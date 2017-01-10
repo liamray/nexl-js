@@ -1,22 +1,28 @@
-// test external args override js vars
-// test function call
+// test multi escaping for : brackets, $, modifiers, dots
+
 // test standard functions call like Math.random() ( actually Math\\.random() )
 // test function call when function gets an object/array and returns object/array/array of objects
-// test array ob objects resolution like a.${arrOfObjs}.b.c
-// test multi escaping for : brackets, $, modifiers, dots
-// test the following expression which has a substitute bug : [${asd} hello ${x:${asd}}]
-// test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
-// test global setting ( in future version of nexl-engine )
 // test function with multi params of different types
-// test different types as first argument for evalAndSubstNexlExpressionInner() function ( arrays, objects, funcs, bool, ... )
-// test empty input, empty output
-// test ~O modifier ( which modifier wasn't tested ? check )
-// test different object types in reverse resolution
-// test omit modifier on objects ( to omit null valus from object )
+
+// test array of objects resolution like a.${arrOfObjs}.b.c
+// test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
+// test omit modifier on objects ( to omit null values from object )
 
 
 var expressions = [];
 module.exports = expressions;
+
+// null input
+expressions.push({
+	expression: null,
+	result: null
+});
+
+// empty input
+expressions.push({
+	expression: '',
+	result: ''
+});
 
 // no expression test
 expressions.push({
@@ -33,6 +39,21 @@ expressions.push({
 expressions.push({
 	expression: '1[${undefinedVariable!C}] 2[${undefinedVariable2:}] 3[${undefinedVariable:111}] 4[${aaa:${bbb!C}:222}]',
 	result: '1[] 2[] 3[111] 4[222]'
+});
+
+// subst bug fix : ${intItem} hello ${x:${intItem}}
+expressions.push({
+	expression: '${intItem} hello ${x:${intItem}}',
+	result: '71 hello 71'
+});
+
+// external arg test
+expressions.push({
+	expression: '${intItem}',
+	result: 1,
+	args: {
+		intItem: 1
+	}
 });
 
 // cartesian product
@@ -74,7 +95,6 @@ expressions.push({
 		},
 		71: 'berry'
 	}
-
 });
 
 // nested objects
@@ -82,6 +102,42 @@ expressions.push({
 	expression: '${obj1a.x.deer}',
 	result: 7
 });
+
+// array of objects
+expressions.push({
+	expression: '${objArray1}',
+	result: [{
+		beneficial: 'mint',
+		'religion': 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: {
+			strong: 'balance',
+			deer: 7
+		},
+		71: 'berry'
+	}, {
+		x: {
+			strong: 'balance',
+			deer: 7
+		}
+	}]
+});
+
+
+// ~O modifier
+expressions.push({
+	expression: '${intItem~O}',
+	result: {intItem: 71}
+});
+
+// ~O modifier
+expressions.push({
+	expression: '${obj1.pack~O}',
+	result: {strong: 'balance', deer: 7}
+});
+
 
 // keys and values
 expressions.push({
@@ -104,6 +160,27 @@ expressions.push({
 // reverse resolution - type check
 expressions.push({
 	expression: '${obj1<true}'
+});
+
+// reverse resolution - array as input and output
+expressions.push({
+	expression: '${obj1<${obj1Keys}}',
+	result: ['71', 'beneficial', 'pack']
+});
+
+// reverse resolution - should resolve the highest key
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES<cuddly2}',
+	result: 'PROD'
+});
+
+// reverse resolution - debug_opts
+expressions.push({
+	expression: '${DEBUG_OPTS}',
+	result: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8790',
+	args: {
+		IS_DEBUG_ON: 'on'
+	}
 });
 
 // omit whole expression modifier

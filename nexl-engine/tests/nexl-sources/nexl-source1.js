@@ -70,6 +70,12 @@ var DB_DEF = {
 var DB_NAME = "${DB_DEF.${ENV}:${ENV}}";
 var DATABASE_DEF = "-DDB_NAME=${DB_NAME}";
 
+DEBUG_OPTS_DEF = {
+	'-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8790': ['on', 'true']
+};
+
+DEBUG_OPTS = '${DEBUG_OPTS_DEF<${IS_DEBUG_ON}}';
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 var WS = {};
 

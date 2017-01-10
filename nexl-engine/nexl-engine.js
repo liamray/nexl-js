@@ -241,7 +241,7 @@ NexlEngine.prototype.isContainsValue = function (val, reversedKey) {
 	return false;
 };
 
-NexlEngine.prototype.jsonReverseResolution = function (obj, reversedKey) {
+NexlEngine.prototype.objectReverseResolution = function (obj, reversedKey) {
 	var result = [];
 	// evaluating reverseKey
 	var reversedKeyEvaluated = this.evalAndSubstNexlExpressionInner(reversedKey);
@@ -339,7 +339,7 @@ NexlEngine.prototype.applyOmitModifier = function (result, varStuff) {
 
 NexlEngine.prototype.applyObjectReverseResolutionModifier = function (result, varStuff) {
 	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(result)) {
-		return this.jsonReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
+		return this.objectReverseResolution(result, varStuff.MODIFIERS.REVERSE_RESOLUTION);
 	}
 
 	return result;
