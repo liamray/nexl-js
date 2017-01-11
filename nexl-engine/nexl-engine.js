@@ -82,7 +82,7 @@ NexlEngine.prototype.retrieveOmitWholeExpression = function (varStuff) {
 	return this.retrieveBoolSettings('SKIP_UNDEFINED_VARS');
 };
 
-NexlEngine.prototype.processIdentifier = function (identifierInfo) {
+NexlEngine.prototype.evalNexlExpressionInner3 = function (identifierInfo) {
 	var item;
 	// todo: dot can be escaped ! ( bug )
 	var dotPos = identifierInfo.identifier.indexOf('.', identifierInfo.start);
@@ -164,7 +164,7 @@ NexlEngine.prototype.processIdentifier = function (identifierInfo) {
 	throw 'You should not achieve this code';
 };
 
-NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier, varStuff) {
+NexlEngine.prototype.evalNexlExpressionInner2 = function (identifier, varStuff) {
 	var identifierInfo = {
 		identifier: identifier,
 		value: this.context,
@@ -173,7 +173,7 @@ NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier, var
 
 	// processing identifier
 	while (identifierInfo.start < identifier.length && j79.isValSet(identifierInfo.value)) {
-		this.processIdentifier(identifierInfo);
+		this.evalNexlExpressionInner3(identifierInfo);
 	}
 
 	// has it never been in last WHILE cycle ?
@@ -188,15 +188,15 @@ NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier, var
 };
 
 // jsVariable can point to object's property, for example : x.y.z
-NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable, varStuff) {
+NexlEngine.prototype.evalNexlExpressionInner1 = function (jsVariable, varStuff) {
 	// if externalArgs is not provided, just evaluate jsVariable
 	if (!this.externalArgs) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
+		return this.evalNexlExpressionInner2(jsVariable, varStuff);
 	}
 
 	// are external arguments weaker than source ?
 	if (!this.retrieveBoolSettings('ARGS_ARE_OVERRIDING_SRC')) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
+		return this.evalNexlExpressionInner2(jsVariable, varStuff);
 	}
 
 	// retrieving value from external args
@@ -204,7 +204,7 @@ NexlEngine.prototype.resolveJSIdentifierValue = function (jsVariable, varStuff) 
 
 	// still doesn't have a value ?
 	if (!j79.isValSet(result)) {
-		return this.resolveJSIdentifierValueWrapper(jsVariable, varStuff);
+		return this.evalNexlExpressionInner2(jsVariable, varStuff);
 	}
 
 	// got an external argument
@@ -430,7 +430,7 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	return result;
 };
 
-NexlEngine.prototype.evalNexlVariable = function (varName) {
+NexlEngine.prototype.evalNexlExpression = function (varName) {
 	var result = [];
 
 	// extracting variable stuff ( modifiers, var name, ... )
@@ -448,7 +448,7 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 		var variable = variables[i];
 
 		// evaluating javascript variable
-		var evaluatedValue = this.resolveJSIdentifierValue(variable, varStuff);
+		var evaluatedValue = this.evalNexlExpressionInner1(variable, varStuff);
 
 		// applying related modifiers
 		var values = this.applyModifiers(evaluatedValue, varStuff);
@@ -492,7 +492,7 @@ NexlEngine.prototype.substExpressionValues = function (currentResult, chunkPosit
 	return result;
 };
 
-NexlEngine.prototype.evalArray = function (arr) {
+NexlEngine.prototype.processArrayItem = function (arr) {
 	var result = [];
 
 	for (var index in arr) {
@@ -509,7 +509,7 @@ NexlEngine.prototype.evalArray = function (arr) {
 	return result;
 };
 
-NexlEngine.prototype.evalObject = function (obj) {
+NexlEngine.prototype.processObjectItem = function (obj) {
 	var result = {};
 
 	// iterating over over keys:values and evaluating
@@ -529,11 +529,11 @@ NexlEngine.prototype.evalObject = function (obj) {
 	return result;
 };
 
-NexlEngine.prototype.evalFunction = function (func) {
+NexlEngine.prototype.processFunctionItem = function (func) {
 	throw 'Still not implemented';
 };
 
-NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
+NexlEngine.prototype.processStringItem = function (inputAsStr, isOmit) {
 	// extracting first level variables from inputAsStr
 	var flvs = neu.extractFirstLevelVars(inputAsStr);
 
@@ -548,7 +548,7 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 		var nexlExpression = flvs.flvs[position];
 
 		// evaluating nexl variable
-		var varStuff = this.evalNexlVariable(nexlExpression);
+		var varStuff = this.evalNexlExpression(nexlExpression);
 
 		// is to omit the inputAsStr expression if the value is null
 		if (varStuff.value === null && isOmit) {
@@ -585,20 +585,20 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 NexlEngine.prototype.processItemInner = function (input, args, isOmit) {
 	// iterates over each array element and evaluates every item
 	if (j79.isArray(input)) {
-		return this.evalArray(input);
+		return this.processArrayItem(input);
 	}
 
 	if (j79.isObject(input)) {
-		return this.evalObject(input);
+		return this.processObjectItem(input);
 	}
 
 	if (j79.isFunction(input)) {
-		return this.evalFunction(input);
+		return this.processFunctionItem(input);
 	}
 
 	// actually only string elements are really evaluable
 	if (j79.isString(input)) {
-		return this.evalString(input, isOmit);
+		return this.processStringItem(input, isOmit);
 	}
 
 	// all another primitives are not evaluable, returning it as is
