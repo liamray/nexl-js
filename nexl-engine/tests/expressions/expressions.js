@@ -4,6 +4,7 @@
 // test function call when function gets an object/array and returns object/array/array of objects
 // test function with multi params of different types
 
+// test access to fields in sub objects like ${obj1.x.deer}
 // test array of objects resolution like a.${arrOfObjs}.b.c
 // test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
 // test omit modifier on objects ( to omit null values from object )

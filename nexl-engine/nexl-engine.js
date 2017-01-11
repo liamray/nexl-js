@@ -557,7 +557,7 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 		result = this.substExpressionValues(result, position, varStuff);
 	}
 
-	// iterating over result and joining all chunks
+	// iterating over result and joining all chunks ( all chunks are joining as strings ! )
 	var finalResult = [];
 	for (var i = 0; i < result.length; i++) {
 		if (result[i].length === 1) {
@@ -569,12 +569,14 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 
 	// checking for isArrayFlag
 	if (!isArrayFlag) {
+		// it wasn't array at the beginning, extracting the first element from array ( it has only 1 element )
 		finalResult = finalResult[0];
 	}
 
 	return finalResult;
 };
 
+// todo: take in account args parameter ( implement it )
 NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, isOmit) {
 	// iterates over each array element and evaluates every item
 	if (j79.isArray(input)) {
