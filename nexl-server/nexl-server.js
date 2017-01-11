@@ -136,7 +136,7 @@
 
         // evaluating
         try {
-            var result = nexlEngine.evalAndSubstNexlExpression(nexlSource, expression, args);
+			var result = nexlEngine.processItem(nexlSource, expression, args);
             sendResult(result, input, res);
         } catch (e) {
             sendException(e, input, res);

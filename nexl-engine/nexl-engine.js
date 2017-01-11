@@ -45,9 +45,17 @@ function NexlEngine(nexlSource, nexlExpression, externalArgs) {
 
 	// creating context
 	this.context = {};
-	// this is a bridge function between nexl-source and nexl-engine ( you can call nexl-engine function from nexl sources )
-	this.context.evalNexlExpression = function (nexlExpression) {
-		return savedThis.evalAndSubstNexlExpressionInner(nexlExpression);
+
+
+	// adding nexl stuff to the context
+	this.context.nexl = {};
+
+	// giving access to arguments to functions in nexl-sources
+	this.context.nexl.args = externalArgs;
+
+	// proxy function to give an access to the functions in nexl-sources
+	this.context.nexl.processItem = function (nexlExpression, args) {
+		return savedThis.processItemInner(nexlExpression, args);
 	};
 }
 
@@ -176,7 +184,7 @@ NexlEngine.prototype.resolveJSIdentifierValueWrapper = function (identifier, var
 
 	var isOmit = NexlEngine.prototype.retrieveOmitWholeExpression(varStuff);
 
-	return this.evalAndSubstNexlExpressionInner(identifierInfo.value, null, isOmit);
+	return this.processItemInner(identifierInfo.value, null, isOmit);
 };
 
 // jsVariable can point to object's property, for example : x.y.z
@@ -244,7 +252,7 @@ NexlEngine.prototype.isContainsValue = function (val, reversedKey) {
 NexlEngine.prototype.objectReverseResolution = function (obj, reversedKey) {
 	var result = [];
 	// evaluating reverseKey
-	var reversedKeyEvaluated = this.evalAndSubstNexlExpressionInner(reversedKey);
+	var reversedKeyEvaluated = this.processItemInner(reversedKey);
 
 	if (j79.isObject(reversedKeyEvaluated) || j79.isFunction(reversedKey)) {
 		throw util.format('Object resolution by object/function is not implemented yet. reverseKey = [%s], reverseKeyEvaluated = [%s], object = [%s]', reversedKey, reversedKeyEvaluated, JSON.stringify(obj));
@@ -267,7 +275,7 @@ NexlEngine.prototype.retrieveDefaultValue = function (defValue) {
 	}
 	for (var i = 0; i < defValue.length; i++) {
 		var item = defValue[i];
-		var value = this.evalAndSubstNexlExpressionInner(item);
+		var value = this.processItemInner(item);
 		if (value !== undefined && value !== null) {
 			return neu.unescape(value);
 		}
@@ -281,7 +289,7 @@ NexlEngine.prototype.abortErrMsg = function (varStuff, originalVal) {
 
 	// was it because of reverse resolution ?
 	if (varStuff.MODIFIERS.REVERSE_RESOLUTION && j79.isObject(originalVal)) {
-		var value = this.evalAndSubstNexlExpressionInner(varStuff.MODIFIERS.REVERSE_RESOLUTION);
+		var value = this.processItemInner(varStuff.MODIFIERS.REVERSE_RESOLUTION);
 		return util.format('Failed to resolve a KEY by VALUE for [%s] object. The VALUE is [%s]', varName, value);
 	}
 
@@ -380,20 +388,17 @@ NexlEngine.prototype.applyTreatAsModifier = function (objCandidate, varStuff) {
 
 	switch (treatAs) {
 		// keys
-		case 'K':
-		{
+		case 'K': {
 			return Object.keys(objCandidate);
 		}
 
 		// values
-		case 'V':
-		{
+		case 'V': {
 			return j79.obj2ArrayIfNeeded(objCandidate);
 		}
 
 		// as xml
-		case 'X' :
-		{
+		case 'X' : {
 			return neu.obj2Xml(objCandidate);
 		}
 	}
@@ -432,13 +437,13 @@ NexlEngine.prototype.evalNexlVariable = function (varName) {
 	var varStuff = neu.extractVarStuff(varName);
 
 	// varName can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
-	var variables = this.evalAndSubstNexlExpressionInner(varStuff.varName, false);
+	var variables = this.processItemInner(varStuff.varName, false);
 
 	var isArrayFlag = j79.isArray(variables);
 
 	variables = j79.wrapWithArrayIfNeeded(variables);
 
-	// iterating over variables ( previous iteration in evalAndSubstNexlExpressionInner() can bring more that 1 result )
+	// iterating over variables ( previous iteration in processItemInner() can bring more that 1 result )
 	for (var i = 0; i < variables.length; i++) {
 		var variable = variables[i];
 
@@ -492,7 +497,7 @@ NexlEngine.prototype.evalArray = function (arr) {
 
 	for (var index in arr) {
 		var arrItem = arr[index];
-		var item = this.evalAndSubstNexlExpressionInner(arrItem);
+		var item = this.processItemInner(arrItem);
 
 		if (j79.isArray(item)) {
 			result = result.concat(item)
@@ -509,14 +514,14 @@ NexlEngine.prototype.evalObject = function (obj) {
 
 	// iterating over over keys:values and evaluating
 	for (var key in obj) {
-		var evaluatedKey = this.evalAndSubstNexlExpressionInner(key);
+		var evaluatedKey = this.processItemInner(key);
 		if (j79.isArray(evaluatedKey) || j79.isObject(evaluatedKey) || j79.isFunction(evaluatedKey)) {
 			var type = j79.getType(evaluatedKey);
 			throw util.format('Can\'t assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
 		}
 
 		var value = obj[key];
-		var evaluatedValue = this.evalAndSubstNexlExpressionInner(value);
+		var evaluatedValue = this.processItemInner(value);
 
 		result[evaluatedKey] = evaluatedValue;
 	}
@@ -577,7 +582,7 @@ NexlEngine.prototype.evalString = function (inputAsStr, isOmit) {
 };
 
 // todo: take in account args parameter ( implement it )
-NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, isOmit) {
+NexlEngine.prototype.processItemInner = function (input, args, isOmit) {
 	// iterates over each array element and evaluates every item
 	if (j79.isArray(input)) {
 		return this.evalArray(input);
@@ -601,7 +606,7 @@ NexlEngine.prototype.evalAndSubstNexlExpressionInner = function (input, args, is
 };
 
 
-NexlEngine.prototype.evalAndSubstNexlExpression = function () {
+NexlEngine.prototype.processItem = function () {
 	// assembling nexl source
 	var sourceCode = neu.assembleSourceCode(this.nexlSource);
 
@@ -614,13 +619,13 @@ NexlEngine.prototype.evalAndSubstNexlExpression = function () {
 
 	// assembling
 	// todo: may be pass the real args ? consider this situation
-	return this.evalAndSubstNexlExpressionInner(this.nexlExpression, null, false);
+	return this.processItemInner(this.nexlExpression, null, false);
 };
 
-// exporting evalAndSubstNexlExpression()
-module.exports.evalAndSubstNexlExpression = function (nexlSource, nexlExpression, externalArgs) {
+// exporting processItem()
+module.exports.processItem = function (nexlSource, nexlExpression, externalArgs) {
 	var nexlEngine = new NexlEngine(nexlSource, nexlExpression, externalArgs);
-	return nexlEngine.evalAndSubstNexlExpression();
+	return nexlEngine.processItem();
 };
 
 // exporting 'settings-list'

@@ -108,7 +108,7 @@ function makeUrls() {
 
 	for (var key in HOSTS.APP_SERVER_INTERFACES) {
 		var value = HOSTS.APP_SERVER_INTERFACES[key];
-		var hosts = evalNexlExpression('http://${HOSTS.APP_SERVER_INTERFACES.' + escapeDrpProd(key) + '~V}');
+		var hosts = nexl.processItem('http://${HOSTS.APP_SERVER_INTERFACES.' + escapeDrpProd(key) + '~V}');
 		result[key] = hosts;
 	}
 

@@ -55,5 +55,5 @@ obj2.pack.wrapWithBrackets = function (str) {
 };
 
 function nexlEngineInternalCall() {
-	return evalNexlExpression('${arr1?,}');
+	return nexl.processItem('${arr1?,}');
 }
