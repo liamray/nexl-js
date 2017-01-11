@@ -430,13 +430,19 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	return result;
 };
 
-NexlEngine.prototype.evalNexlExpression = function (varName) {
+// evaluates nexl expression like ${test:1}
+NexlEngine.prototype.evalNexlExpressionNew = function (nexlExpression) {
+	// extracting variable stuff ( modifiers, var name, ... )
+	var varStuff = neu.extractVarStuff(nexlExpression);
+};
+
+NexlEngine.prototype.evalNexlExpression = function (nexlExpression) {
 	var result = [];
 
 	// extracting variable stuff ( modifiers, var name, ... )
-	var varStuff = neu.extractVarStuff(varName);
+	var varStuff = neu.extractVarStuff(nexlExpression);
 
-	// varName can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
+	// nexlExpression can contain sub-variables. assembling them if exist ( and we don't need to omit an empty expression )
 	var variables = this.processItemInner(varStuff.varName, false);
 
 	var isArrayFlag = j79.isArray(variables);

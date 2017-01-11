@@ -13,10 +13,10 @@
 var expressions = [];
 module.exports = expressions;
 
-// null input
+// parser bug !!!
 expressions.push({
-	expression: null,
-	result: null
+	expression: 'hello ${escapeDrpProd("}1")}',
+	result: '}1'
 });
 
 // empty input
