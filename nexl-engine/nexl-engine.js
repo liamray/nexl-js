@@ -431,6 +431,7 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 };
 
 // evaluates nexl expression like ${test:1}
+// todo: take in account a !AA, !CC new modifiers
 NexlEngine.prototype.evalNexlExpressionNew = function (nexlExpression) {
 	// extracting variable stuff ( modifiers, var name, ... )
 	var varStuff = neu.extractVarStuff(nexlExpression);
