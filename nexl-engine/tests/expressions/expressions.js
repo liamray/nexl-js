@@ -15,6 +15,13 @@ module.exports = expressions;
 
 // parser bug !!!
 expressions.push({
+	expression: '${obj1.71}',
+	result: 'berry'
+});
+
+
+// parser bug !!!
+expressions.push({
 	expression: 'hello ${escapeDrpProd("}1")}',
 	result: '}1'
 });
