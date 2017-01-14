@@ -539,6 +539,10 @@ NexlEngine.prototype.processFunctionItem = function (func) {
 	throw 'Still not implemented';
 };
 
+NexlEngine.prototype.processStringItemNew = function (inputAsStr, isOmit) {
+	var fle = neu.extractFirstLevelExpressions(inputAsStr);
+};
+
 NexlEngine.prototype.processStringItem = function (inputAsStr, isOmit) {
 	// extracting first level variables from inputAsStr
 	var flvs = neu.extractFirstLevelVars(inputAsStr);

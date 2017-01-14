@@ -433,6 +433,118 @@ module.exports.findClosestBracketPos = findClosestBracketPos;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const NEXL_EXPRESSION_OPEN = '${';
+
+function findEscapingSlashes(str, pos) {
+	var slashesCnt = 0;
+
+	// counting preceding slashes
+	for (var i = pos - 1; i >= 0; i--) {
+		if (str.charAt(i) === '\\') {
+			result.slashesCnt++;
+		} else {
+			return slashesCnt;
+		}
+	}
+
+	return slashesCnt;
+}
+
+
+function cutHalfSlashes(cycleData, startPos, cnt) {
+	if (cnt < 1) {
+		return;
+	}
+
+	cnt = cnt / 2;
+	cycleData.str = cycleData.str.substr(0, startPos - cnt) + cycleData.str.substr(startPos + 1, cycleData.str.length);
+}
+
+function extractNexlExpressionStuff(str, pos) {
+	var cycleData = {};
+	cycleData.str = str.substr();
+
+	// searching for for the following characters : . ( [
+	var searchPos = str.search(/\(|\[|\./, pos);
+
+}
+
+function extractFirstLevelExpressionsInner(cycleData, result) {
+	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, cycleData.lastSearchPos);
+
+	// no more expressions ?
+	if (newSearchPos < 0) {
+		cycleData.lastSearchPos = cycleData.str.length;
+		return;
+	}
+
+	// discovering escaping slashes
+	var slashesCnt = findEscapingSlashes(cycleData.str, newSearchPos);
+
+	// cutting 1/2 slashes
+	cutHalfSlashes(cycleData, newSearchPos - 1, slashesCnt);
+
+	// correcting newSearchPos according to slashes count
+	newSearchPos -= Math.floor(slashesCnt / 2);
+
+	// checking slashes count. odd number tells that the NEXL_EXPRESSION_OPEN is escaped
+	if (slashesCnt % 2 === 1) {
+		// NEXL_EXPRESSION_OPEN is escaped, continuing search next nexl expression
+		cycleData.lastSearchPos = newSearchPos + 1;
+		return;
+	}
+
+	// NEXL_EXPRESSION_OPEN is not escaped. adding item to result.chunks[]
+	if (newSearchPos - 1 > cycleData.lastSearchPos) {
+		var chunk = cycleData.str.substring(cycleData.lastSearchPos, newSearchPos - 1);
+		result.chunks.push(chunk);
+	}
+
+	// adding empty item to chunks, this item will be replaced with nexl expression's value on substitution stage
+	result.chunks.push(null);
+	var chunkNr = result.chunks.length - 1;
+
+	// extracting nexl expression stuff
+	var nexlExpressionStuff = extractNexlExpressionStuff(cycleData.str, newSearchPos);
+
+	// adding to result.expressions as chunkNr
+	result.expressions[chunkNr] = nexlExpressionStuff;
+
+	// updating lastSearchPos, lastExpressionPos
+	cycleData.lastSearchPos = newSearchPos + nexlExpressionStuff.content.length;
+	cycleData.lastExpressionPos = cycleData.lastSearchPos;
+}
+
+function extractFirstLevelExpressions(str) {
+
+	var result = {};
+	result.chunks = [];
+	result.expressions = {}; // map of position:fle ( fle = first level expressions )
+
+	var cycleData = {};
+	cycleData.lastExpressionPos = 0; // position of last nexl expression in str
+	cycleData.lastSearchPos = 0; // last search position in str
+	cycleData.str = str;
+
+	while (cycleData.lastSearchPos < cycleData.str.length) {
+		extractFirstLevelExpressionsInner(cycleData, result);
+	}
+
+	// do we have a last chunk ?
+	if (cycleData.lastSearchPos > cycleData.lastExpressionPos) {
+		// adding chunk to result.chunks[]
+		var chunk = cycleData.str.substring(cycleData.lastExpressionPos, cycleData.lastSearchPos);
+		result.push(chunk);
+	}
+
+	return result;
+}
+
+module.exports.extractFirstLevelExpressions = extractFirstLevelExpressions;
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 var MODIFIERS_ESCAPE_REGEX;
 
 function assembleModifiersRegex() {
