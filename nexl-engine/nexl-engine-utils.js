@@ -435,31 +435,6 @@ module.exports.findClosestBracketPos = findClosestBracketPos;
 
 const NEXL_EXPRESSION_OPEN = '${';
 
-function findEscapingSlashes(str, pos) {
-	var slashesCnt = 0;
-
-	// counting preceding slashes
-	for (var i = pos - 1; i >= 0; i--) {
-		if (str.charAt(i) === '\\') {
-			result.slashesCnt++;
-		} else {
-			return slashesCnt;
-		}
-	}
-
-	return slashesCnt;
-}
-
-
-function cutHalfSlashes(cycleData, startPos, cnt) {
-	if (cnt < 1) {
-		return;
-	}
-
-	cnt = cnt / 2;
-	cycleData.str = cycleData.str.substr(0, startPos - cnt) + cycleData.str.substr(startPos + 1, cycleData.str.length);
-}
-
 function extractNexlExpressionStuff(str, pos) {
 	var cycleData = {};
 	cycleData.str = str.substr();
@@ -512,17 +487,13 @@ function extractFirstLevelExpressionsInner(cycleData, result) {
 		return;
 	}
 
-	// discovering escaping slashes
-	var slashesCnt = findEscapingSlashes(cycleData.str, newSearchPos);
+	// Obamacare ( i.e. escaping care :P )
+	var escaping = escapePrecedingSlashes(cycleData.str, newSearchPos);
+	cycleData.str = escaping.str;
+	newSearchPos = escaping.correctedPos;
 
-	// cutting 1/2 slashes
-	cutHalfSlashes(cycleData, newSearchPos - 1, slashesCnt);
-
-	// correcting newSearchPos according to slashes count
-	newSearchPos -= Math.floor(slashesCnt / 2);
-
-	// checking slashes count. odd number tells that the NEXL_EXPRESSION_OPEN is escaped
-	if (slashesCnt % 2 === 1) {
+	// is NEXL_EXPRESSION_OPEN is escaped ?
+	if (escaping.escaped) {
 		// NEXL_EXPRESSION_OPEN is escaped, continuing search next nexl expression
 		cycleData.lastSearchPos = newSearchPos + 1;
 		return;
