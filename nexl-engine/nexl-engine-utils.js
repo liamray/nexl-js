@@ -469,6 +469,40 @@ function extractNexlExpressionStuff(str, pos) {
 
 }
 
+// returned the following in object :
+// escaped - is str escaped ? true|false
+// str - corrected str if slashes were found
+// correctedPos - the new position of character which was at [pos] position
+function escapePrecedingSlashes(str, pos) {
+	var result = {};
+	var slashesCnt = 0;
+
+	for (var i = pos - 1; i >= 0; i--) {
+		if (str.charAt(i) !== '\\') {
+			break;
+		}
+
+		slashesCnt++;
+	}
+
+	// odd count of slashes tells that character at [pos] position is escaped
+	result.escaped = ( slashesCnt % 2 === 1 );
+
+	var halfSlashes = Math.floor((slashesCnt + 1 ) / 2);
+
+	if (slashesCnt > 0) {
+		// cutting 1/2 slashes
+		result.str = str.substr(0, pos - halfSlashes) + str.substr(pos);
+	} else {
+		result.str = str;
+	}
+
+	result.correctedPos = pos - halfSlashes;
+
+	return result;
+}
+
+
 function extractFirstLevelExpressionsInner(cycleData, result) {
 	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, cycleData.lastSearchPos);
 
@@ -516,7 +550,6 @@ function extractFirstLevelExpressionsInner(cycleData, result) {
 }
 
 function extractFirstLevelExpressions(str) {
-
 	var result = {};
 	result.chunks = [];
 	result.expressions = {}; // map of position:fle ( fle = first level expressions )
