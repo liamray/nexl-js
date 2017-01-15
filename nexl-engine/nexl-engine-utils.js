@@ -467,9 +467,9 @@ function escapePrecedingSlashes(str, pos) {
 
 	if (slashesCnt > 0) {
 		// cutting 1/2 slashes
-		result.str = str.substr(0, pos - halfSlashes) + str.substr(pos);
+		result.correctedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
 	} else {
-		result.str = str;
+		result.correctedStr = str;
 	}
 
 	result.correctedPos = pos - halfSlashes;
@@ -489,7 +489,7 @@ function extractFirstLevelExpressionsInner(cycleData, result) {
 
 	// Obamacare ( i.e. escaping care :P )
 	var escaping = escapePrecedingSlashes(cycleData.str, newSearchPos);
-	cycleData.str = escaping.str;
+	cycleData.str = escaping.correctedStr;
 	newSearchPos = escaping.correctedPos;
 
 	// is NEXL_EXPRESSION_OPEN is escaped ?
