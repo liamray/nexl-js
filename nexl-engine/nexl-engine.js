@@ -541,7 +541,7 @@ NexlEngine.prototype.processFunctionItem = function (func) {
 };
 
 NexlEngine.prototype.processStringItemNew = function (inputAsStr, isOmit) {
-	var fle = neu.extractFirstLevelExpressions(inputAsStr);
+	var fle = neu.parse(inputAsStr);
 };
 
 NexlEngine.prototype.processStringItem = function (inputAsStr, isOmit) {

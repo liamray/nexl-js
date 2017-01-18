@@ -24,6 +24,9 @@ var MODIFIERS = {
 	"REVERSE_RESOLUTION": "<"
 };
 
+// rebuild it if you change MODIFIERS !!!
+var NEXL_EXPRESSION_REGEX1 = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<';
+
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
 	DEFAULT_DELIMITER: "\n",
@@ -435,14 +438,181 @@ module.exports.findClosestBracketPos = findClosestBracketPos;
 
 const NEXL_EXPRESSION_OPEN = '${';
 
-function extractNexlExpressionStuff(str, pos) {
-	var cycleData = {};
-	cycleData.str = str.substr();
-
-	// searching for for the following characters : . ( [
-	var searchPos = str.search(/\(|\[|\./, pos);
-
+function escapeRegex(str) {
+	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
+
+function joinEverything() {
+	var result = [];
+	for (var i = 0; i < arguments.length; i++) {
+		var item = arguments[i];
+		if (j79.isArray(item)) {
+			result = result.concat(item);
+		} else {
+			result.push(item);
+		}
+	}
+
+	return result;
+}
+
+function findOneOfChars(str, chars, startPos) {
+	for (var i = startPos; i < str.length; i++) {
+		if (chars.indexOf(str.charAt(i)) >= 0) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+function dropCut2BufferIfNotEmpty(cycleData) {
+	if (cycleData.cut.length > 0) {
+		// adding to buffer
+		cycleData.buffer.chunks.push(cycleData.cut);
+	}
+}
+
+function cleanBuffer(cycleData) {
+	cycleData.buffer.chunks = [];
+	cycleData.buffer.chunkSubstitutions = {};
+}
+
+function dropBuffer2ResultIfNotEmpty(cycleData, result) {
+	// is buffer contains something ?
+	if (cycleData.buffer.chunks.length > 0) {
+		// adding buffer to result
+		result.actions.push(cycleData.buffer);
+	}
+}
+
+function finalizeExpression(cycleData, result) {
+	dropCut2BufferIfNotEmpty(cycleData);
+	dropBuffer2ResultIfNotEmpty(cycleData, result);
+	cycleData.lastSearchPos = cycleData.searchPos + 1;
+}
+
+function dropExpression2Buffer(cycleData, nexlExpression) {
+	cycleData.buffer.chunks.push(null);
+	var index = cycleData.buffer.chunks.length - 1;
+	cycleData.buffer.chunkSubstitutions[index] = nexlExpression;
+}
+
+function findAndEscapeIfNeeded(cycleData) {
+	// searching for for the following characters :
+	// . (new fragment), ( (function), [ (array), ${ (expression beginning), } (end of expression), all modifiers
+	cycleData.searchPos = cycleData.str.substr(cycleData.lastSearchPos).search(NEXL_EXPRESSION_REGEX1);
+
+	if (cycleData.searchPos < 0) {
+		throw util.format('Bad nexl expression. Expression is not closed with } character in [%s]', cycleData.str);
+	}
+
+	// escaping string if needed
+	var escapedStr = escapePrecedingSlashes(cycleData.str, cycleData.searchPos);
+
+	// storing delta between searchPos and escapedStr.correctedStr
+	cycleData.escapingDeltaLength += (cycleData.searchPos - escapedStr.correctedStr);
+
+	// correcting str and searchPos according to escaping
+	cycleData.str = escapedStr.correctedStr;
+	cycleData.searchPos = escapedStr.correctedPos;
+	cycleData.escaped = escapedStr.escaped;
+}
+
+function addObject(cycleData, result) {
+	dropCut2BufferIfNotEmpty(cycleData);
+	dropBuffer2ResultIfNotEmpty(cycleData, result);
+	cleanBuffer(cycleData);
+
+	cycleData.lastSearchPos = cycleData.searchPos + 1;
+}
+
+function addExpression(cycleData) {
+	// parsing nexl expression
+	var nexlExpression = parseNexlExpression(cycleData.str, cycleData.searchPos);
+	// dropping existing data to buffer
+	dropCut2BufferIfNotEmpty(cycleData);
+	// dropping nexl expression to buffer
+	dropExpression2Buffer(cycleData, nexlExpression);
+
+	cycleData.lastSearchPos = cycleData.searchPos + nexlExpression.length + 1;
+}
+
+function parseNexlExpressionInner(cycleData, result) {
+	findAndEscapeIfNeeded(cycleData);
+
+	// was it really escaped ?
+	if (cycleData.escaped) {
+		// search character was escaped, skipping and continuing search
+		cycleData.lastSearchPos = cycleData.searchPos + 1;
+		return;
+	}
+
+	// characters
+	var charsAtPos = cycleData.str.charAt(cycleData.searchPos);
+	// everything before searchPos and after cycleData.pos
+	cycleData.cut = cycleData.str.substring(cycleData.lastSearchPos, cycleData.searchPos - 1);
+
+	// is end of expression ?
+	if (charsAtPos === '}') {
+		finalizeExpression(cycleData, result);
+		return;
+	}
+
+	// is new object ?
+	if (charsAtPos === '.') {
+		addObject(cycleData, result);
+		return;
+	}
+
+	// is new expression ?
+	if (charsAtPos === '${') {
+		addExpression(cycleData);
+		return;
+	}
+
+	// is function call ?
+	if (charsAtPos === '(') {
+		parseFunctionCall(cycleData, result);
+		return;
+	}
+
+	// is array index access ?
+	if (charsAtPos === '[') {
+		parseArrayIndexAccess(cycleData, result);
+		return;
+	}
+
+	// here are modifiers
+	parseModifiers(cycleData, result);
+}
+
+// pos points to a $ sign
+function parseNexlExpression(str, pos) {
+	var cycleData = {};
+	cycleData.str = str.substr(str, pos);
+	cycleData.lastSearchPos = 0;
+	cycleData.escapingDeltaLength = 0; // the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
+	cycleData.continueSearch = true;
+	cycleData.buffer = {
+		chunks: [],
+		chunkSubstitutions: {}
+	};
+
+	var result = {};
+	result.actions = []; // get object field, execute function, access array elements
+	result.modifiers = []; // parsed nexl expression modifiers
+
+	while (cycleData.lastSearchPos < cycleData.length || cycleData.continueSearch) {
+		parseNexlExpressionInner(cycleData, result);
+	}
+
+	// nexl expression length in characters. need it to know where nexl expression ends
+	result.length = cycleData.escapingDeltaLength + cycleData.lastSearchPos;
+}
+
+var parseNexlExpression2 = parseNexlExpression('test', 0);
+console.log(1);
 
 // returned the following in object :
 // escaped - is str escaped ? true|false
@@ -477,8 +647,7 @@ function escapePrecedingSlashes(str, pos) {
 	return result;
 }
 
-
-function extractFirstLevelExpressionsInner(cycleData, result) {
+function parseInner(cycleData, result) {
 	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, cycleData.lastSearchPos);
 
 	// no more expressions ?
@@ -499,7 +668,7 @@ function extractFirstLevelExpressionsInner(cycleData, result) {
 		return;
 	}
 
-	// NEXL_EXPRESSION_OPEN is not escaped. adding item to result.chunks[]
+	// NEXL_EXPRESSION_OPEN is not escaped. adding item to result.chunks[] if it's not empty
 	if (newSearchPos - 1 > cycleData.lastSearchPos) {
 		var chunk = cycleData.str.substring(cycleData.lastSearchPos, newSearchPos - 1);
 		result.chunks.push(chunk);
@@ -510,20 +679,20 @@ function extractFirstLevelExpressionsInner(cycleData, result) {
 	var chunkNr = result.chunks.length - 1;
 
 	// extracting nexl expression stuff
-	var nexlExpressionStuff = extractNexlExpressionStuff(cycleData.str, newSearchPos);
+	var nexlExpression = parseNexlExpression(cycleData.str, newSearchPos);
 
-	// adding to result.expressions as chunkNr
-	result.expressions[chunkNr] = nexlExpressionStuff;
+	// adding to result.chunkSubstitutions as chunkNr
+	result.chunkSubstitutions[chunkNr] = nexlExpression;
 
 	// updating lastSearchPos, lastExpressionPos
-	cycleData.lastSearchPos = newSearchPos + nexlExpressionStuff.content.length;
+	cycleData.lastSearchPos = newSearchPos + nexlExpression.content.length;
 	cycleData.lastExpressionPos = cycleData.lastSearchPos;
 }
 
-function extractFirstLevelExpressions(str) {
+function parse(str) {
 	var result = {};
 	result.chunks = [];
-	result.expressions = {}; // map of position:fle ( fle = first level expressions )
+	result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
 
 	var cycleData = {};
 	cycleData.lastExpressionPos = 0; // position of last nexl expression in str
@@ -531,7 +700,7 @@ function extractFirstLevelExpressions(str) {
 	cycleData.str = str;
 
 	while (cycleData.lastSearchPos < cycleData.str.length) {
-		extractFirstLevelExpressionsInner(cycleData, result);
+		parseInner(cycleData, result);
 	}
 
 	// do we have a last chunk ?
@@ -544,7 +713,7 @@ function extractFirstLevelExpressions(str) {
 	return result;
 }
 
-module.exports.extractFirstLevelExpressions = extractFirstLevelExpressions;
+module.exports.parse = parse;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
