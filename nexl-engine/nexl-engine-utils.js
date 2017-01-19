@@ -513,6 +513,7 @@ ParseNexlExpression.prototype.findAndEscapeIfNeeded = function () {
 };
 
 ParseNexlExpression.prototype.cleanBuffer = function () {
+	this.buffer = {};
 	this.buffer.chunks = [];
 	this.buffer.chunkSubstitutions = {};
 };
@@ -554,49 +555,54 @@ ParseNexlExpression.prototype.addExpression = function () {
 	// dropping nexl expression to buffer
 	this.dropExpression2Buffer(nexlExpression);
 
-	this.lastSearchPos = this.searchPos + nexlExpression.length + 1;
+	this.lastSearchPos = this.searchPos + nexlExpression.length;
 };
 
 ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.dropCut2BufferIfNotEmpty();
 	this.dropBuffer2ResultIfNotEmpty();
 	this.lastSearchPos = this.searchPos + 1;
+	this.isFinished = true;
+};
+
+ParseNexlExpression.prototype.isStartsFrom = function (chars) {
+	return this.charsAtPos.indexOf(chars) === 0;
 };
 
 ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.findAndEscapeIfNeeded();
 
 	// characters
-	var charsAtPos = this.str.charAt(this.searchPos);
+	this.charsAtPos = this.str.substr(this.searchPos);
 	// everything before searchPos and after this.searchPos
 	this.cut = this.str.substring(this.lastSearchPos, this.searchPos);
 
 	// is end of expression ?
-	if (charsAtPos === '}') {
+	if (this.isStartsFrom('}')) {
 		this.finalizeExpression();
 		return;
 	}
 
 	// is new object ?
-	if (charsAtPos === '.') {
+	if (this.isStartsFrom('.')) {
 		this.addObject();
 		return;
 	}
 
 	// is new expression ?
-	if (charsAtPos === '${') {
+	if (this.isStartsFrom('${')) {
 		this.addExpression();
 		return;
 	}
 
 	// is function call ?
-	if (charsAtPos === '(') {
+	if (this.isStartsFrom('(')) {
 		this.parseFunctionCall();
 		return;
 	}
 
 	// is array index access ?
-	if (charsAtPos === '[') {
+	if (this.isStartsFrom('[')) {
 		this.parseArrayIndexAccess();
 		return;
 	}
@@ -607,22 +613,32 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 
 // pos points to a $ sign
 ParseNexlExpression.prototype.parseNexlExpression = function () {
-	this.lastSearchPos = 0;
 	// the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
 	// starting escapingDeltaLength from 2 because we skip 2 first chracters in nexl expression
 	this.escapingDeltaLength = 2;
+
 	// skipping first 2 characters
-	this.str = this.str.substr(this.escapingDeltaLength);
+	this.str = this.str.substr(this.escapingDeltaLength + this.pos);
+
+	// start search from 0
+	this.lastSearchPos = 0;
+
+	// buffer is using to accumulate chunks
 	this.buffer = {
 		chunks: [],
 		chunkSubstitutions: {}
 	};
 
+	// the } character found indication
+	this.isFinished = false;
+
+	// result to be returned
 	this.result = {};
 	this.result.actions = []; // get object field, execute function, access array elements
 	this.result.modifiers = []; // parsed nexl expression modifiers
 
-	while (this.lastSearchPos < this.str.length) {
+	// iterating and parsing
+	while (this.lastSearchPos < this.str.length && !this.isFinished) {
 		this.parseNexlExpressionInner();
 	}
 
@@ -635,8 +651,8 @@ ParseNexlExpression.prototype.parseNexlExpression = function () {
 // pos points to ${ chars of expression
 function ParseNexlExpression(str, pos) {
 	this.str = str;
+	this.pos = pos;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
