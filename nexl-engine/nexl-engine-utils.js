@@ -436,184 +436,6 @@ module.exports.findClosestBracketPos = findClosestBracketPos;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const NEXL_EXPRESSION_OPEN = '${';
-
-function escapeRegex(str) {
-	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-function joinEverything() {
-	var result = [];
-	for (var i = 0; i < arguments.length; i++) {
-		var item = arguments[i];
-		if (j79.isArray(item)) {
-			result = result.concat(item);
-		} else {
-			result.push(item);
-		}
-	}
-
-	return result;
-}
-
-function findOneOfChars(str, chars, startPos) {
-	for (var i = startPos; i < str.length; i++) {
-		if (chars.indexOf(str.charAt(i)) >= 0) {
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-function dropCut2BufferIfNotEmpty(cycleData) {
-	if (cycleData.cut.length > 0) {
-		// adding to buffer
-		cycleData.buffer.chunks.push(cycleData.cut);
-	}
-}
-
-function cleanBuffer(cycleData) {
-	cycleData.buffer.chunks = [];
-	cycleData.buffer.chunkSubstitutions = {};
-}
-
-function dropBuffer2ResultIfNotEmpty(cycleData, result) {
-	// is buffer contains something ?
-	if (cycleData.buffer.chunks.length > 0) {
-		// adding buffer to result
-		result.actions.push(cycleData.buffer);
-	}
-}
-
-function finalizeExpression(cycleData, result) {
-	dropCut2BufferIfNotEmpty(cycleData);
-	dropBuffer2ResultIfNotEmpty(cycleData, result);
-	cycleData.lastSearchPos = cycleData.searchPos + 1;
-}
-
-function dropExpression2Buffer(cycleData, nexlExpression) {
-	cycleData.buffer.chunks.push(null);
-	var index = cycleData.buffer.chunks.length - 1;
-	cycleData.buffer.chunkSubstitutions[index] = nexlExpression;
-}
-
-function findAndEscapeIfNeeded(cycleData) {
-	// searching for for the following characters :
-	// . (new fragment), ( (function), [ (array), ${ (expression beginning), } (end of expression), all modifiers
-	cycleData.searchPos = cycleData.str.substr(cycleData.lastSearchPos).search(NEXL_EXPRESSION_REGEX1);
-
-	if (cycleData.searchPos < 0) {
-		throw util.format('Bad nexl expression. Expression is not closed with } character in [%s]', cycleData.str);
-	}
-
-	// escaping string if needed
-	var escapedStr = escapePrecedingSlashes(cycleData.str, cycleData.searchPos);
-
-	// storing delta between searchPos and escapedStr.correctedStr
-	cycleData.escapingDeltaLength += (cycleData.searchPos - escapedStr.correctedStr);
-
-	// correcting str and searchPos according to escaping
-	cycleData.str = escapedStr.correctedStr;
-	cycleData.searchPos = escapedStr.correctedPos;
-	cycleData.escaped = escapedStr.escaped;
-}
-
-function addObject(cycleData, result) {
-	dropCut2BufferIfNotEmpty(cycleData);
-	dropBuffer2ResultIfNotEmpty(cycleData, result);
-	cleanBuffer(cycleData);
-
-	cycleData.lastSearchPos = cycleData.searchPos + 1;
-}
-
-function addExpression(cycleData) {
-	// parsing nexl expression
-	var nexlExpression = parseNexlExpression(cycleData.str, cycleData.searchPos);
-	// dropping existing data to buffer
-	dropCut2BufferIfNotEmpty(cycleData);
-	// dropping nexl expression to buffer
-	dropExpression2Buffer(cycleData, nexlExpression);
-
-	cycleData.lastSearchPos = cycleData.searchPos + nexlExpression.length + 1;
-}
-
-function parseNexlExpressionInner(cycleData, result) {
-	findAndEscapeIfNeeded(cycleData);
-
-	// was it really escaped ?
-	if (cycleData.escaped) {
-		// search character was escaped, skipping and continuing search
-		cycleData.lastSearchPos = cycleData.searchPos + 1;
-		return;
-	}
-
-	// characters
-	var charsAtPos = cycleData.str.charAt(cycleData.searchPos);
-	// everything before searchPos and after cycleData.pos
-	cycleData.cut = cycleData.str.substring(cycleData.lastSearchPos, cycleData.searchPos - 1);
-
-	// is end of expression ?
-	if (charsAtPos === '}') {
-		finalizeExpression(cycleData, result);
-		return;
-	}
-
-	// is new object ?
-	if (charsAtPos === '.') {
-		addObject(cycleData, result);
-		return;
-	}
-
-	// is new expression ?
-	if (charsAtPos === '${') {
-		addExpression(cycleData);
-		return;
-	}
-
-	// is function call ?
-	if (charsAtPos === '(') {
-		parseFunctionCall(cycleData, result);
-		return;
-	}
-
-	// is array index access ?
-	if (charsAtPos === '[') {
-		parseArrayIndexAccess(cycleData, result);
-		return;
-	}
-
-	// here are modifiers
-	parseModifiers(cycleData, result);
-}
-
-// pos points to a $ sign
-function parseNexlExpression(str, pos) {
-	var cycleData = {};
-	cycleData.str = str.substr(str, pos);
-	cycleData.lastSearchPos = 0;
-	cycleData.escapingDeltaLength = 0; // the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
-	cycleData.continueSearch = true;
-	cycleData.buffer = {
-		chunks: [],
-		chunkSubstitutions: {}
-	};
-
-	var result = {};
-	result.actions = []; // get object field, execute function, access array elements
-	result.modifiers = []; // parsed nexl expression modifiers
-
-	while (cycleData.lastSearchPos < cycleData.length || cycleData.continueSearch) {
-		parseNexlExpressionInner(cycleData, result);
-	}
-
-	// nexl expression length in characters. need it to know where nexl expression ends
-	result.length = cycleData.escapingDeltaLength + cycleData.lastSearchPos;
-}
-
-var parseNexlExpression2 = parseNexlExpression('test', 0);
-console.log(1);
-
 // returned the following in object :
 // escaped - is str escaped ? true|false
 // str - corrected str if slashes were found
@@ -647,73 +469,251 @@ function escapePrecedingSlashes(str, pos) {
 	return result;
 }
 
-function parseInner(cycleData, result) {
-	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, cycleData.lastSearchPos);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const NEXL_EXPRESSION_OPEN = '${';
+
+ParseNexlExpression.prototype.findAndEscapeIfNeededInner = function () {
+	// searching for for the following characters :
+	// . (new fragment), ( (function), [ (array), ${ (expression beginning), } (end of expression), all modifiers
+	var pos = this.str.substr(this.searchPosTmp).search(NEXL_EXPRESSION_REGEX1);
+
+	if (pos < 0) {
+		throw util.format('Bad nexl expression. Expression is not closed with } character in [%s]', this.str);
+	}
+
+	this.searchPosTmp += pos;
+
+	// escaping string if needed
+	var escapedStr = escapePrecedingSlashes(this.str, this.searchPosTmp);
+
+	// storing delta between searchPos and escapedStr.correctedStr
+	this.escapingDeltaLength += (this.searchPosTmp - escapedStr.correctedPos);
+
+	// correcting str and searchPos according to escaping
+	this.str = escapedStr.correctedStr;
+	this.searchPosTmp = escapedStr.correctedPos;
+	this.escaped = escapedStr.escaped;
+
+	if (this.escaped) {
+		// continue searching
+		this.searchPosTmp++;
+	}
+};
+
+ParseNexlExpression.prototype.findAndEscapeIfNeeded = function () {
+	this.searchPosTmp = this.lastSearchPos;
+
+	do {
+		this.findAndEscapeIfNeededInner();
+	} while (this.escaped);
+
+	this.searchPos = this.searchPosTmp;
+};
+
+ParseNexlExpression.prototype.cleanBuffer = function () {
+	this.buffer.chunks = [];
+	this.buffer.chunkSubstitutions = {};
+};
+
+ParseNexlExpression.prototype.dropCut2BufferIfNotEmpty = function () {
+	if (this.cut.length > 0) {
+		// adding to buffer
+		this.buffer.chunks.push(this.cut);
+	}
+};
+
+ParseNexlExpression.prototype.dropBuffer2ResultIfNotEmpty = function () {
+	// is buffer contains something ?
+	if (this.buffer.chunks.length > 0) {
+		// adding buffer to result
+		this.result.actions.push(this.buffer);
+	}
+};
+
+ParseNexlExpression.prototype.dropExpression2Buffer = function (nexlExpression) {
+	this.buffer.chunks.push(null);
+	var index = this.buffer.chunks.length - 1;
+	this.buffer.chunkSubstitutions[index] = nexlExpression;
+};
+
+ParseNexlExpression.prototype.addObject = function () {
+	this.dropCut2BufferIfNotEmpty();
+	this.dropBuffer2ResultIfNotEmpty();
+	this.cleanBuffer();
+
+	this.lastSearchPos = this.searchPos + 1;
+};
+
+ParseNexlExpression.prototype.addExpression = function () {
+	// parsing nexl expression
+	var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
+	// dropping existing data to buffer
+	this.dropCut2BufferIfNotEmpty();
+	// dropping nexl expression to buffer
+	this.dropExpression2Buffer(nexlExpression);
+
+	this.lastSearchPos = this.searchPos + nexlExpression.length + 1;
+};
+
+ParseNexlExpression.prototype.finalizeExpression = function () {
+	this.dropCut2BufferIfNotEmpty();
+	this.dropBuffer2ResultIfNotEmpty();
+	this.lastSearchPos = this.searchPos + 1;
+};
+
+ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
+	this.findAndEscapeIfNeeded();
+
+	// characters
+	var charsAtPos = this.str.charAt(this.searchPos);
+	// everything before searchPos and after this.searchPos
+	this.cut = this.str.substring(this.lastSearchPos, this.searchPos);
+
+	// is end of expression ?
+	if (charsAtPos === '}') {
+		this.finalizeExpression();
+		return;
+	}
+
+	// is new object ?
+	if (charsAtPos === '.') {
+		this.addObject();
+		return;
+	}
+
+	// is new expression ?
+	if (charsAtPos === '${') {
+		this.addExpression();
+		return;
+	}
+
+	// is function call ?
+	if (charsAtPos === '(') {
+		this.parseFunctionCall();
+		return;
+	}
+
+	// is array index access ?
+	if (charsAtPos === '[') {
+		this.parseArrayIndexAccess();
+		return;
+	}
+
+	// here are modifiers
+	this.parseModifiers();
+};
+
+// pos points to a $ sign
+ParseNexlExpression.prototype.parseNexlExpression = function () {
+	this.lastSearchPos = 0;
+	// the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
+	// starting escapingDeltaLength from 2 because we skip 2 first chracters in nexl expression
+	this.escapingDeltaLength = 2;
+	// skipping first 2 characters
+	this.str = this.str.substr(this.escapingDeltaLength);
+	this.buffer = {
+		chunks: [],
+		chunkSubstitutions: {}
+	};
+
+	this.result = {};
+	this.result.actions = []; // get object field, execute function, access array elements
+	this.result.modifiers = []; // parsed nexl expression modifiers
+
+	while (this.lastSearchPos < this.str.length) {
+		this.parseNexlExpressionInner();
+	}
+
+	// nexl expression length in characters. need it to know where nexl expression ends
+	this.result.length = this.escapingDeltaLength + this.lastSearchPos;
+
+	return this.result;
+};
+
+// pos points to ${ chars of expression
+function ParseNexlExpression(str, pos) {
+	this.str = str;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ParseStr.prototype.parseStrInner = function () {
+	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, this.lastSearchPos);
 
 	// no more expressions ?
 	if (newSearchPos < 0) {
-		cycleData.lastSearchPos = cycleData.str.length;
+		this.lastSearchPos = this.str.length;
 		return;
 	}
 
 	// Obamacare ( i.e. escaping care :P )
-	var escaping = escapePrecedingSlashes(cycleData.str, newSearchPos);
-	cycleData.str = escaping.correctedStr;
+	var escaping = escapePrecedingSlashes(this.str, newSearchPos);
+	this.str = escaping.correctedStr;
 	newSearchPos = escaping.correctedPos;
 
 	// is NEXL_EXPRESSION_OPEN is escaped ?
 	if (escaping.escaped) {
 		// NEXL_EXPRESSION_OPEN is escaped, continuing search next nexl expression
-		cycleData.lastSearchPos = newSearchPos + 1;
+		this.lastSearchPos = newSearchPos + 1;
 		return;
 	}
 
 	// NEXL_EXPRESSION_OPEN is not escaped. adding item to result.chunks[] if it's not empty
-	if (newSearchPos - 1 > cycleData.lastSearchPos) {
-		var chunk = cycleData.str.substring(cycleData.lastSearchPos, newSearchPos - 1);
-		result.chunks.push(chunk);
+	if (newSearchPos - 1 > this.lastSearchPos) {
+		var chunk = this.str.substring(this.lastSearchPos, newSearchPos - 1);
+		this.result.chunks.push(chunk);
 	}
 
 	// adding empty item to chunks, this item will be replaced with nexl expression's value on substitution stage
-	result.chunks.push(null);
-	var chunkNr = result.chunks.length - 1;
+	this.result.chunks.push(null);
+	var chunkNr = this.result.chunks.length - 1;
 
 	// extracting nexl expression stuff
-	var nexlExpression = parseNexlExpression(cycleData.str, newSearchPos);
+	var nexlExpression = new ParseNexlExpression(this.str, newSearchPos).parseNexlExpression();
 
 	// adding to result.chunkSubstitutions as chunkNr
-	result.chunkSubstitutions[chunkNr] = nexlExpression;
+	this.result.chunkSubstitutions[chunkNr] = nexlExpression;
 
 	// updating lastSearchPos, lastExpressionPos
-	cycleData.lastSearchPos = newSearchPos + nexlExpression.content.length;
-	cycleData.lastExpressionPos = cycleData.lastSearchPos;
-}
+	this.lastSearchPos = newSearchPos + nexlExpression.content.length;
+	this.lastExpressionPos = this.lastSearchPos;
+};
 
-function parse(str) {
-	var result = {};
-	result.chunks = [];
-	result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
+ParseStr.prototype.parseStr = function () {
+	this.result = {};
+	this.result.chunks = [];
+	this.result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
 
-	var cycleData = {};
-	cycleData.lastExpressionPos = 0; // position of last nexl expression in str
-	cycleData.lastSearchPos = 0; // last search position in str
-	cycleData.str = str;
+	// position of last nexl expression in str
+	this.lastExpressionPos = 0;
 
-	while (cycleData.lastSearchPos < cycleData.str.length) {
-		parseInner(cycleData, result);
+	// last search position in str
+	this.lastSearchPos = 0;
+
+	while (this.lastSearchPos < this.str.length) {
+		this.parseStrInner();
 	}
 
 	// do we have a last chunk ?
-	if (cycleData.lastSearchPos > cycleData.lastExpressionPos) {
+	if (this.lastSearchPos > this.lastExpressionPos) {
 		// adding chunk to result.chunks[]
-		var chunk = cycleData.str.substring(cycleData.lastExpressionPos, cycleData.lastSearchPos);
-		result.push(chunk);
+		var chunk = this.str.substring(this.lastExpressionPos, this.lastSearchPos);
+		this.result.push(chunk);
 	}
 
-	return result;
+	return this.result;
+};
+
+function ParseStr(str) {
+	this.str = str;
 }
 
-module.exports.parse = parse;
+module.exports.parseStr = function (str) {
+	return new ParseStr(str).parseStr();
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
