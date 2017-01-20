@@ -750,9 +750,6 @@ function ParseNexlExpression(str, pos) {
 	this.pos = pos;
 }
 
-var parseNexlExpression = new ParseNexlExpression('${test().hello.${world()}}', 0).parseNexlExpression();
-console.log(parseNexlExpression);
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ParseStr.prototype.parseStrInner = function () {
