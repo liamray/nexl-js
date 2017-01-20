@@ -30,6 +30,8 @@ const NEXL_EXPRESSION_PARSER_REGEX = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
 
+const OBJECTS_SEPARATOR = '.';
+
 const FUNCTION_CALL_OPEN = '(';
 const FUNCTION_CALL_CLOSE = ')';
 
@@ -648,6 +650,9 @@ ParseNexlExpression.prototype.addFunction = function () {
 	this.lastSearchPos += parsedFunctionCall.length;
 };
 
+ParseNexlExpression.prototype.addArrayIndexes = function () {
+
+};
 
 ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.dropCut2BufferIfNotEmpty();
@@ -656,46 +661,42 @@ ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.isFinished = true;
 };
 
-ParseNexlExpression.prototype.isStartsFrom = function (chars) {
-	return this.charsAtPos.indexOf(chars) === 0;
-};
-
 ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.findAndEscapeIfNeeded();
 
 	// characters
-	this.charsAtPos = this.str.substr(this.searchPos);
+	var charsAtPos = this.str.substr(this.searchPos);
 	// everything before searchPos and after this.searchPos
 	this.cut = this.str.substring(this.lastSearchPos, this.searchPos);
 
 	// is end of expression ?
-	if (this.isStartsFrom(NEXL_EXPRESSION_CLOSE)) {
+	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_CLOSE)) {
 		this.finalizeExpression();
 		return;
 	}
 
 	// is new object ?
-	if (this.isStartsFrom('.')) {
+	if (doestStartFrom0Pos(charsAtPos, OBJECTS_SEPARATOR)) {
 		this.addObject();
 		return;
 	}
 
 	// is new expression ?
-	if (this.isStartsFrom(NEXL_EXPRESSION_OPEN)) {
+	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
 		this.addExpression();
 		return;
 	}
 
 	// is function call ?
-	if (this.isStartsFrom(FUNCTION_CALL_OPEN)) {
+	if (doestStartFrom0Pos(charsAtPos, FUNCTION_CALL_OPEN)) {
 		this.addObject();
 		this.addFunction();
 		return;
 	}
 
 	// is array index access ?
-	if (this.isStartsFrom(ARRAY_INDEX_OPEN)) {
-		this.parseArrayIndexAccess();
+	if (doestStartFrom0Pos(charsAtPos, ARRAY_INDEX_OPEN)) {
+		this.addArrayIndexes();
 		return;
 	}
 
@@ -748,6 +749,9 @@ function ParseNexlExpression(str, pos) {
 	this.str = str;
 	this.pos = pos;
 }
+
+var parseNexlExpression = new ParseNexlExpression('${test().hello.${world()}}', 0).parseNexlExpression();
+console.log(parseNexlExpression);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
