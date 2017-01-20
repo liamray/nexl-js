@@ -25,7 +25,9 @@ var MODIFIERS = {
 };
 
 // rebuild it if you change MODIFIERS !!!
-var NEXL_EXPRESSION_REGEX1 = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<';
+const NEXL_EXPRESSION_PARSER_REGEX = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<';
+const FUNCTION_CALL_PATTERN1 = [')', '${', '"', '\''];
+const NEXL_EXPRESSION_OPEN = '${';
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -459,9 +461,9 @@ function escapePrecedingSlashes(str, pos) {
 
 	if (slashesCnt > 0) {
 		// cutting 1/2 slashes
-		result.correctedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
+		result.escapedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
 	} else {
-		result.correctedStr = str;
+		result.escapedStr = str;
 	}
 
 	result.correctedPos = pos - halfSlashes;
@@ -472,15 +474,14 @@ function escapePrecedingSlashes(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const NEXL_EXPRESSION_OPEN = '${';
 
 ParseNexlExpression.prototype.findAndEscapeIfNeededInner = function () {
 	// searching for for the following characters :
 	// . (new fragment), ( (function), [ (array), ${ (expression beginning), } (end of expression), all modifiers
-	var pos = this.str.substr(this.searchPosTmp).search(NEXL_EXPRESSION_REGEX1);
+	var pos = this.str.substr(this.searchPosTmp).search(NEXL_EXPRESSION_PARSER_REGEX);
 
 	if (pos < 0) {
-		throw util.format('Bad nexl expression. Expression is not closed with } character in [%s]', this.str);
+		throw util.format('Invalid nexl expression. The [%s] expression doesn\' have a close bracket }', this.str);
 	}
 
 	this.searchPosTmp += pos;
@@ -488,11 +489,11 @@ ParseNexlExpression.prototype.findAndEscapeIfNeededInner = function () {
 	// escaping string if needed
 	var escapedStr = escapePrecedingSlashes(this.str, this.searchPosTmp);
 
-	// storing delta between searchPos and escapedStr.correctedStr
+	// storing delta between searchPos and escapedStr.escapedStr
 	this.escapingDeltaLength += (this.searchPosTmp - escapedStr.correctedPos);
 
 	// correcting str and searchPos according to escaping
-	this.str = escapedStr.correctedStr;
+	this.str = escapedStr.escapedStr;
 	this.searchPosTmp = escapedStr.correctedPos;
 	this.escaped = escapedStr.escaped;
 
@@ -558,6 +559,65 @@ ParseNexlExpression.prototype.addExpression = function () {
 	this.lastSearchPos = this.searchPos + nexlExpression.length;
 };
 
+ParseNexlExpression.prototype.skipSpaces = function () {
+	for (var i = this.searchPos; i < this.str.length; i++) {
+		if (this.str.charAt(i) !== ' ') {
+			this.searchPos = i;
+			return;
+		}
+	}
+};
+
+ParseNexlExpression.prototype.parseFunctionCall = function () {
+	// preparing action of type "function call"
+	this.funcCallAction = {};
+	this.funcCallAction.funcParams = [];
+
+	// this.searchPos points to open bracket, skipping the bracket
+	this.searchPos++;
+
+	// skipping spaces
+	this.skipSpaces();
+
+	// current characters are
+	this.charsAtPos = this.str.substr(this.searchPos);
+	FUNCTION_CALL_PATTERN1;
+
+	// charsAtPos must be one of the following characters:     )   ${   '   "
+	if (FUNCTION_CALL_PATTERN1.indexOf(this.charsAtPos) < 0) {
+		throw util.format('Invalid nexl expression. Expecting the following characters at the [%s] position in [%s] expression : [%s]', this.searchPos, this.str, FUNCTION_CALL_PATTERN1.join());
+	}
+
+	// is end of function ?
+	if (this.isStartsFrom(')')) {
+		this.result.actions.push(this.funcCallAction);
+		this.lastSearchPos = this.searchPos + 1;
+		return;
+	}
+
+	// is nexl expression ?
+	if (this.isStartsFrom('${')) {
+		var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
+		this.lastSearchPos = this.searchPos + nexlExpression.length;
+		this.funcCallAction.funcParams.push(nexlExpression);
+		return;
+	}
+
+	// is nexl expression ?
+	if (this.isStartsFrom('"') || this.isStartsFrom('\'')) {
+		var x = this.findWhereQuoteEndsAndEscape();
+		this.str = x.escapedStr;
+		var cut = this.str.substring(this.searchPos, x.pos);
+		this.funcCallAction.funcParams.push(cut);
+		this.lastSearchPos = x.pos + 1;
+		this.escapingDeltaLength += x.escapesCnt;
+		return;
+	}
+
+	throw 'Something wrong in nexl expressions parser [#2]. Open me a bug !'
+};
+
+
 ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.dropCut2BufferIfNotEmpty();
 	this.dropBuffer2ResultIfNotEmpty();
@@ -609,19 +669,17 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 
 	// here are modifiers
 	this.parseModifiers();
+
+	throw 'Something wrong in nexl expressions parser [#1]. Open me a bug !'
 };
 
 // pos points to a $ sign
 ParseNexlExpression.prototype.parseNexlExpression = function () {
 	// the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
-	// starting escapingDeltaLength from 2 because we skip 2 first chracters in nexl expression
-	this.escapingDeltaLength = 2;
+	this.escapingDeltaLength = 0;
 
-	// skipping first 2 characters
-	this.str = this.str.substr(this.escapingDeltaLength + this.pos);
-
-	// start search from 0
-	this.lastSearchPos = 0;
+	// skipping first ${ characters
+	this.lastSearchPos = this.pos + 2;
 
 	// buffer is using to accumulate chunks
 	this.buffer = {
@@ -638,12 +696,12 @@ ParseNexlExpression.prototype.parseNexlExpression = function () {
 	this.result.modifiers = []; // parsed nexl expression modifiers
 
 	// iterating and parsing
-	while (this.lastSearchPos < this.str.length && !this.isFinished) {
+	while (!this.isFinished) {
 		this.parseNexlExpressionInner();
 	}
 
 	// nexl expression length in characters. need it to know where nexl expression ends
-	this.result.length = this.escapingDeltaLength + this.lastSearchPos;
+	this.result.length = this.lastSearchPos - this.pos + this.escapingDeltaLength;
 
 	return this.result;
 };
@@ -653,6 +711,9 @@ function ParseNexlExpression(str, pos) {
 	this.str = str;
 	this.pos = pos;
 }
+
+var parseNexlExpression = new ParseNexlExpression('${}', 0).parseNexlExpression();
+console.log(parseNexlExpression);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -667,7 +728,7 @@ ParseStr.prototype.parseStrInner = function () {
 
 	// Obamacare ( i.e. escaping care :P )
 	var escaping = escapePrecedingSlashes(this.str, newSearchPos);
-	this.str = escaping.correctedStr;
+	this.str = escaping.escapedStr;
 	newSearchPos = escaping.correctedPos;
 
 	// is NEXL_EXPRESSION_OPEN is escaped ?
