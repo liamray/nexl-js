@@ -32,9 +32,6 @@ const NEXL_EXPRESSION_CLOSE = '}';
 
 const FUNCTION_CALL_OPEN = '(';
 const FUNCTION_CALL_CLOSE = ')';
-const SINGLE_QUOTE = "'";
-const DOUBLE_QUOTE = '"';
-const FUNCTION_CALL_PATTERN = [FUNCTION_CALL_CLOSE, NEXL_EXPRESSION_OPEN, SINGLE_QUOTE, DOUBLE_QUOTE];
 
 const ARRAY_INDEX_OPEN = '[';
 const ARRAY_INDEX_CLOSE = ']';
@@ -494,49 +491,41 @@ function skipSpaces(str, pos) {
 	return str.length;
 }
 
-function doestStartFrom0Pos(str, pos, chars) {
-	return str.substr(pos).indexOf(chars) === 0;
+function doestStartFrom0Pos(str, chars) {
+	return str.indexOf(chars) === 0;
 }
+
+ParseFunctionCall.prototype.skipCommaIfPresents = function () {
+	if (this.str.charAt(this.lastSearchPos) === ',') {
+		this.lastSearchPos++;
+	}
+};
 
 ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 	// skipping redundant spaces
 	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
 
 	// current characters are
-	var charsAtPos = this.str.substr(this.searchPos);
+	var charsAtPos = this.str.substr(this.lastSearchPos);
 
-	// charsAtPos must be one of the following characters:     )   ${   '   "
-	if (FUNCTION_CALL_PATTERN.indexOf(this.charsAtPos) < 0) {
-		throw util.format('Invalid nexl expression. Expecting the following characters at the [%s] position in [%s] expression : [%s]', this.searchPos, this.str, FUNCTION_CALL_PATTERN.join());
-	}
+	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpression = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
+		this.lastSearchPos += nexlExpression.length;
+		this.result.funcCallAction.funcParams.push(nexlExpression);
 
-	// is end of function ?
-	if (doestStartFrom0Pos(this.str, this.lastSearchPos, FUNCTION_CALL_CLOSE)) {
-		this.result.actions.push(this.funcCallAction);
-		this.lastSearchPos = this.searchPos + 1;
+		// skip spaces
+		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+		// skip comma if present
+		this.skipCommaIfPresents();
 		return;
 	}
 
-	// is nexl expression ?
-	if (doestStartFrom0Pos(this.str, this.lastSearchPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
-		this.lastSearchPos = this.searchPos + nexlExpression.length;
-		this.funcCallAction.funcParams.push(nexlExpression);
+	if (doestStartFrom0Pos(charsAtPos, FUNCTION_CALL_CLOSE)) {
+		this.isFinished = true;
 		return;
 	}
 
-	// is nexl expression ?
-	if (doestStartFrom0Pos(this.str, this.lastSearchPos, SINGLE_QUOTE) || doestStartFrom0Pos(this.str, this.lastSearchPos, DOUBLE_QUOTE)) {
-		var x = this.findWhereQuoteEndsAndEscape();
-		this.str = x.escapedStr;
-		var cut = this.str.substring(this.searchPos, x.pos);
-		this.funcCallAction.funcParams.push(cut);
-		this.lastSearchPos = x.pos + 1;
-		this.escapingDeltaLength += x.escapesCnt;
-		return;
-	}
-
-	throw 'Something wrong in nexl expressions parser [#2]. Open me a bug !'
+	throw util.format('Invalid nexl expression. Function arguments in nexl expression can be only another nexl expression. Occurred in [%s] nexl expression at [%s] position', this.str, this.lastSearchPos);
 };
 
 ParseFunctionCall.prototype.parseFunctionCall = function () {
@@ -546,7 +535,7 @@ ParseFunctionCall.prototype.parseFunctionCall = function () {
 	this.result.funcCallAction.funcParams = [];
 
 	// checking for first character in str, must be an open bracket
-	if (this.str.indexOf(this.pos) !== FUNCTION_CALL_OPEN) {
+	if (this.str.charAt(this.pos) !== FUNCTION_CALL_OPEN) {
 		throw util.format('Invalid function call format. The [%s] must start from open bracket [%s]', this.str.substr(this.pos), FUNCTION_CALL_OPEN);
 	}
 
@@ -556,6 +545,9 @@ ParseFunctionCall.prototype.parseFunctionCall = function () {
 	while (!this.isFinished) {
 		this.parseFunctionCallInner();
 	}
+
+	this.result.length = this.lastSearchPos - this.pos;
+	return this.result;
 };
 
 function ParseFunctionCall(str, pos) {
@@ -636,7 +628,6 @@ ParseNexlExpression.prototype.addObject = function () {
 	this.dropCut2BufferIfNotEmpty();
 	this.dropBuffer2ResultIfNotEmpty();
 	this.cleanBuffer();
-
 	this.lastSearchPos = this.searchPos + 1;
 };
 
@@ -649,6 +640,12 @@ ParseNexlExpression.prototype.addExpression = function () {
 	this.dropExpression2Buffer(nexlExpression);
 
 	this.lastSearchPos = this.searchPos + nexlExpression.length;
+};
+
+ParseNexlExpression.prototype.addFunction = function () {
+	var parsedFunctionCall = new ParseFunctionCall(this.str, this.searchPos).parseFunctionCall();
+	this.result.actions.push(parsedFunctionCall.funcCallAction);
+	this.lastSearchPos += parsedFunctionCall.length;
 };
 
 
@@ -691,8 +688,8 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 
 	// is function call ?
 	if (this.isStartsFrom(FUNCTION_CALL_OPEN)) {
-		var parseFunctionCall = new ParseFunctionCall().parseFunctionCall();
-		// todo: finalize
+		this.addObject();
+		this.addFunction();
 		return;
 	}
 
@@ -714,7 +711,7 @@ ParseNexlExpression.prototype.parseNexlExpression = function () {
 	this.escapingDeltaLength = 0;
 
 	// does expression start from ${ ?
-	if (this.str.indexOf(NEXL_EXPRESSION_OPEN, this.pos) !== 0) {
+	if (this.str.indexOf(NEXL_EXPRESSION_OPEN, this.pos) !== this.pos) {
 		throw util.format('Invalid nexl expression. The [%s] expression doesn\'t start from [%s] characters', this.str.substr(this.pos), NEXL_EXPRESSION_OPEN);
 	}
 
@@ -751,9 +748,6 @@ function ParseNexlExpression(str, pos) {
 	this.str = str;
 	this.pos = pos;
 }
-
-var parseNexlExpression = new ParseNexlExpression('${te${x}st}', 0).parseNexlExpression();
-console.log(parseNexlExpression);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
