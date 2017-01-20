@@ -25,9 +25,19 @@ var MODIFIERS = {
 };
 
 // rebuild it if you change MODIFIERS !!!
+// todo : make more generic
 const NEXL_EXPRESSION_PARSER_REGEX = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<';
-const FUNCTION_CALL_PATTERN1 = [')', '${', '"', '\''];
 const NEXL_EXPRESSION_OPEN = '${';
+const NEXL_EXPRESSION_CLOSE = '}';
+
+const FUNCTION_CALL_OPEN = '(';
+const FUNCTION_CALL_CLOSE = ')';
+const SINGLE_QUOTE = "'";
+const DOUBLE_QUOTE = '"';
+const FUNCTION_CALL_PATTERN = [FUNCTION_CALL_CLOSE, NEXL_EXPRESSION_OPEN, SINGLE_QUOTE, DOUBLE_QUOTE];
+
+const ARRAY_INDEX_OPEN = '[';
+const ARRAY_INDEX_CLOSE = ']';
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -474,6 +484,88 @@ function escapePrecedingSlashes(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function skipSpaces(str, pos) {
+	for (var i = pos; i < str.length; i++) {
+		if (str.charAt(i) !== ' ') {
+			return i;
+		}
+	}
+
+	return str.length;
+}
+
+function doestStartFrom0Pos(str, pos, chars) {
+	return str.substr(pos).indexOf(chars) === 0;
+}
+
+ParseFunctionCall.prototype.parseFunctionCallInner = function () {
+	// skipping redundant spaces
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+
+	// current characters are
+	var charsAtPos = this.str.substr(this.searchPos);
+
+	// charsAtPos must be one of the following characters:     )   ${   '   "
+	if (FUNCTION_CALL_PATTERN.indexOf(this.charsAtPos) < 0) {
+		throw util.format('Invalid nexl expression. Expecting the following characters at the [%s] position in [%s] expression : [%s]', this.searchPos, this.str, FUNCTION_CALL_PATTERN.join());
+	}
+
+	// is end of function ?
+	if (doestStartFrom0Pos(this.str, this.lastSearchPos, FUNCTION_CALL_CLOSE)) {
+		this.result.actions.push(this.funcCallAction);
+		this.lastSearchPos = this.searchPos + 1;
+		return;
+	}
+
+	// is nexl expression ?
+	if (doestStartFrom0Pos(this.str, this.lastSearchPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
+		this.lastSearchPos = this.searchPos + nexlExpression.length;
+		this.funcCallAction.funcParams.push(nexlExpression);
+		return;
+	}
+
+	// is nexl expression ?
+	if (doestStartFrom0Pos(this.str, this.lastSearchPos, SINGLE_QUOTE) || doestStartFrom0Pos(this.str, this.lastSearchPos, DOUBLE_QUOTE)) {
+		var x = this.findWhereQuoteEndsAndEscape();
+		this.str = x.escapedStr;
+		var cut = this.str.substring(this.searchPos, x.pos);
+		this.funcCallAction.funcParams.push(cut);
+		this.lastSearchPos = x.pos + 1;
+		this.escapingDeltaLength += x.escapesCnt;
+		return;
+	}
+
+	throw 'Something wrong in nexl expressions parser [#2]. Open me a bug !'
+};
+
+ParseFunctionCall.prototype.parseFunctionCall = function () {
+	// preparing result
+	this.result = {};
+	this.result.funcCallAction = {};
+	this.result.funcCallAction.funcParams = [];
+
+	// checking for first character in str, must be an open bracket
+	if (this.str.indexOf(this.pos) !== FUNCTION_CALL_OPEN) {
+		throw util.format('Invalid function call format. The [%s] must start from open bracket [%s]', this.str.substr(this.pos), FUNCTION_CALL_OPEN);
+	}
+
+	this.lastSearchPos = this.pos + FUNCTION_CALL_OPEN.length;
+	this.isFinished = false;
+
+	while (!this.isFinished) {
+		this.parseFunctionCallInner();
+	}
+};
+
+function ParseFunctionCall(str, pos) {
+	this.str = str;
+	this.pos = pos;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 ParseNexlExpression.prototype.findAndEscapeIfNeededInner = function () {
 	// searching for for the following characters :
@@ -481,7 +573,7 @@ ParseNexlExpression.prototype.findAndEscapeIfNeededInner = function () {
 	var pos = this.str.substr(this.searchPosTmp).search(NEXL_EXPRESSION_PARSER_REGEX);
 
 	if (pos < 0) {
-		throw util.format('Invalid nexl expression. The [%s] expression doesn\' have a close bracket }', this.str);
+		throw util.format('Invalid nexl expression. The [%s] expression doesn\'t have a close bracket }', this.str.substr(this.pos));
 	}
 
 	this.searchPosTmp += pos;
@@ -559,64 +651,6 @@ ParseNexlExpression.prototype.addExpression = function () {
 	this.lastSearchPos = this.searchPos + nexlExpression.length;
 };
 
-ParseNexlExpression.prototype.skipSpaces = function () {
-	for (var i = this.searchPos; i < this.str.length; i++) {
-		if (this.str.charAt(i) !== ' ') {
-			this.searchPos = i;
-			return;
-		}
-	}
-};
-
-ParseNexlExpression.prototype.parseFunctionCall = function () {
-	// preparing action of type "function call"
-	this.funcCallAction = {};
-	this.funcCallAction.funcParams = [];
-
-	// this.searchPos points to open bracket, skipping the bracket
-	this.searchPos++;
-
-	// skipping spaces
-	this.skipSpaces();
-
-	// current characters are
-	this.charsAtPos = this.str.substr(this.searchPos);
-	FUNCTION_CALL_PATTERN1;
-
-	// charsAtPos must be one of the following characters:     )   ${   '   "
-	if (FUNCTION_CALL_PATTERN1.indexOf(this.charsAtPos) < 0) {
-		throw util.format('Invalid nexl expression. Expecting the following characters at the [%s] position in [%s] expression : [%s]', this.searchPos, this.str, FUNCTION_CALL_PATTERN1.join());
-	}
-
-	// is end of function ?
-	if (this.isStartsFrom(')')) {
-		this.result.actions.push(this.funcCallAction);
-		this.lastSearchPos = this.searchPos + 1;
-		return;
-	}
-
-	// is nexl expression ?
-	if (this.isStartsFrom('${')) {
-		var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
-		this.lastSearchPos = this.searchPos + nexlExpression.length;
-		this.funcCallAction.funcParams.push(nexlExpression);
-		return;
-	}
-
-	// is nexl expression ?
-	if (this.isStartsFrom('"') || this.isStartsFrom('\'')) {
-		var x = this.findWhereQuoteEndsAndEscape();
-		this.str = x.escapedStr;
-		var cut = this.str.substring(this.searchPos, x.pos);
-		this.funcCallAction.funcParams.push(cut);
-		this.lastSearchPos = x.pos + 1;
-		this.escapingDeltaLength += x.escapesCnt;
-		return;
-	}
-
-	throw 'Something wrong in nexl expressions parser [#2]. Open me a bug !'
-};
-
 
 ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.dropCut2BufferIfNotEmpty();
@@ -638,7 +672,7 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.cut = this.str.substring(this.lastSearchPos, this.searchPos);
 
 	// is end of expression ?
-	if (this.isStartsFrom('}')) {
+	if (this.isStartsFrom(NEXL_EXPRESSION_CLOSE)) {
 		this.finalizeExpression();
 		return;
 	}
@@ -650,19 +684,20 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	}
 
 	// is new expression ?
-	if (this.isStartsFrom('${')) {
+	if (this.isStartsFrom(NEXL_EXPRESSION_OPEN)) {
 		this.addExpression();
 		return;
 	}
 
 	// is function call ?
-	if (this.isStartsFrom('(')) {
-		this.parseFunctionCall();
+	if (this.isStartsFrom(FUNCTION_CALL_OPEN)) {
+		var parseFunctionCall = new ParseFunctionCall().parseFunctionCall();
+		// todo: finalize
 		return;
 	}
 
 	// is array index access ?
-	if (this.isStartsFrom('[')) {
+	if (this.isStartsFrom(ARRAY_INDEX_OPEN)) {
 		this.parseArrayIndexAccess();
 		return;
 	}
@@ -678,8 +713,13 @@ ParseNexlExpression.prototype.parseNexlExpression = function () {
 	// the sum of all deltas between escaped and unescaped strings. for \. string delta equals to 1 because slash character will be eliminated
 	this.escapingDeltaLength = 0;
 
+	// does expression start from ${ ?
+	if (this.str.indexOf(NEXL_EXPRESSION_OPEN, this.pos) !== 0) {
+		throw util.format('Invalid nexl expression. The [%s] expression doesn\'t start from [%s] characters', this.str.substr(this.pos), NEXL_EXPRESSION_OPEN);
+	}
+
 	// skipping first ${ characters
-	this.lastSearchPos = this.pos + 2;
+	this.lastSearchPos = this.pos + NEXL_EXPRESSION_OPEN.length;
 
 	// buffer is using to accumulate chunks
 	this.buffer = {
@@ -712,7 +752,7 @@ function ParseNexlExpression(str, pos) {
 	this.pos = pos;
 }
 
-var parseNexlExpression = new ParseNexlExpression('${}', 0).parseNexlExpression();
+var parseNexlExpression = new ParseNexlExpression('${te${x}st}', 0).parseNexlExpression();
 console.log(parseNexlExpression);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
