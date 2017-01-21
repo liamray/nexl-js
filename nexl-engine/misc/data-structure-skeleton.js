@@ -24,8 +24,12 @@ var NEXL_EXPRESSION_DEFINITION = {
 			]
 		},
 		{ // array index access action
-			min: 'PRIMITIVE_INT',
-			max: 'NEXL_EXPRESSION_DEFINITION'
+			arrayIndexes: [
+				{
+					min: 'PRIMITIVE_INT',
+					max: 'NEXL_EXPRESSION_DEFINITION'
+				}
+			]
 		}
 	],
 

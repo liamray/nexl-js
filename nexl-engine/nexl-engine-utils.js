@@ -37,6 +37,7 @@ const FUNCTION_CALL_CLOSE = ')';
 
 const ARRAY_INDEX_OPEN = '[';
 const ARRAY_INDEX_CLOSE = ']';
+const TWO_DOTS = '..';
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -493,15 +494,126 @@ function skipSpaces(str, pos) {
 	return str.length;
 }
 
+function skipCommaIfPresents(str, pos) {
+	if (str.charAt(pos) === ',') {
+		return pos + 1;
+	} else {
+		return pos;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ParseArrayIndexes.prototype.parseArrayIndex = function () {
+	// is primitive number ?
+	for (var i = this.lastSearchPos; i < this.str.length; i++) {
+		var charCode = this.str.charCodeAt(i);
+		if (charCode < 48 || charCode > 57) {
+			break;
+		}
+	}
+
+	var primitive = this.str.substring(this.lastSearchPos, i);
+	if (primitive.length > 0) {
+		this.lastSearchPos += primitive.length;
+		return parseInt(primitive);
+	}
+
+	var charsAtPos = this.str.substr(this.lastSearchPos);
+
+	// is nexl expression ?
+	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpression = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
+		this.lastSearchPos += nexlExpression.length;
+		return nexlExpression;
+	}
+
+	// nothing found
+	return null;
+};
+
+ParseArrayIndexes.prototype.push = function (min, max) {
+	var item = {};
+	item.min = min;
+	item.max = max;
+	this.result.arrayIndexes.arrayIndexes.push(item);
+};
+
+ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
+	// skipping redundant spaces
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+
+	// current characters are
+	var charsAtPos = this.str.substr(this.lastSearchPos);
+
+	if (doestStartFrom0Pos(charsAtPos, ARRAY_INDEX_CLOSE)) {
+		this.isFinished = true;
+		return;
+	}
+
+	// parsing a min range
+	var min = this.parseArrayIndex();
+	if (min === null) {
+		throw util.format('Invalid nexl expression. Expecting for primitive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
+	}
+
+	// doesn't it have two dots ?
+	if (this.str.substr(this.lastSearchPos).indexOf(TWO_DOTS) !== 0) {
+		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+		this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
+		this.push(min, min);
+		return;
+	}
+
+	// skipping two dots
+	this.lastSearchPos += TWO_DOTS.length;
+
+	// parsing the max range
+	var max = this.parseArrayIndex();
+	if (max === null) {
+		throw util.format('Invalid nexl expression. Expecting for primitive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
+	}
+
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+	this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
+
+	this.push(min, max);
+};
+
+ParseArrayIndexes.prototype.parseArrayIndexes = function () {
+	// preparing result
+	this.result = {};
+	this.result.arrayIndexes = {};
+	this.result.arrayIndexes.arrayIndexes = [];
+
+	// checking for first character in str, must be an open bracket
+	if (this.str.charAt(this.pos) !== ARRAY_INDEX_OPEN) {
+		throw util.format('Invalid nexl expression. Array index access must start from open bracket [%s] in [%s] at [%s] position', FUNCTION_CALL_OPEN, this.str, this.pos);
+	}
+
+	this.lastSearchPos = this.pos + ARRAY_INDEX_OPEN.length;
+	this.isFinished = false;
+
+	while (!this.isFinished) {
+		this.parseArrayIndexesInner();
+	}
+
+	this.result.length = this.lastSearchPos - this.pos;
+	return this.result;
+};
+
+function ParseArrayIndexes(str, pos) {
+	this.str = str;
+	this.pos = pos;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 function doestStartFrom0Pos(str, chars) {
 	return str.indexOf(chars) === 0;
 }
-
-ParseFunctionCall.prototype.skipCommaIfPresents = function () {
-	if (this.str.charAt(this.lastSearchPos) === ',') {
-		this.lastSearchPos++;
-	}
-};
 
 ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 	// skipping redundant spaces
@@ -518,7 +630,7 @@ ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 		// skip spaces
 		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
 		// skip comma if present
-		this.skipCommaIfPresents();
+		this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
 		return;
 	}
 
@@ -538,7 +650,7 @@ ParseFunctionCall.prototype.parseFunctionCall = function () {
 
 	// checking for first character in str, must be an open bracket
 	if (this.str.charAt(this.pos) !== FUNCTION_CALL_OPEN) {
-		throw util.format('Invalid function call format. The [%s] must start from open bracket [%s]', this.str.substr(this.pos), FUNCTION_CALL_OPEN);
+		throw util.format('Invalid nexl expression. Function call must start from open bracket [%s] in [%s] at [%s] position', FUNCTION_CALL_OPEN, this.str, this.pos);
 	}
 
 	this.lastSearchPos = this.pos + FUNCTION_CALL_OPEN.length;
@@ -651,7 +763,9 @@ ParseNexlExpression.prototype.addFunction = function () {
 };
 
 ParseNexlExpression.prototype.addArrayIndexes = function () {
-
+	var arrayIndexes = new ParseArrayIndexes(this.str, this.searchPos).parseArrayIndexes();
+	this.result.actions.push(arrayIndexes.arrayIndexes);
+	this.lastSearchPos += arrayIndexes.length;
 };
 
 ParseNexlExpression.prototype.finalizeExpression = function () {
@@ -696,6 +810,7 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 
 	// is array index access ?
 	if (doestStartFrom0Pos(charsAtPos, ARRAY_INDEX_OPEN)) {
+		this.addObject();
 		this.addArrayIndexes();
 		return;
 	}
