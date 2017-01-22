@@ -16,7 +16,7 @@ const j79 = require('j79-utils');
 
 var MODIFIERS = {
 	"DELIMITER": "?",
-	"DEF_VALUE": ":",
+	"DEF_VALUE": "@",
 	"DONT_OMIT_WHOLE_EXPRESSION": "+",
 	"OMIT_WHOLE_EXPRESSION": "-",
 	"ABORT_ON_UNDEF_VAR": "!",
@@ -24,9 +24,7 @@ var MODIFIERS = {
 	"REVERSE_RESOLUTION": "<"
 };
 
-// rebuild it if you change MODIFIERS !!!
-// todo : make more generic
-const NEXL_EXPRESSION_PARSER_REGEX = '(\\$\\{)|\\.|\\(|\\[|\\}|\\?|:|\\+|-|!|~|<';
+const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
 
@@ -61,6 +59,80 @@ var KNOWN_BRACKETS = {
 
 var MODIFIERS_ESCAPE_REGEX;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function makeExpressionParserRegex() {
+	var modifiers = [];
+	for (var key in MODIFIERS) {
+		modifiers.push(MODIFIERS[key]);
+	}
+
+	var additionalChars = ['${', '.', '(', '[', '}'];
+
+	var result = modifiers.concat(additionalChars);
+	result = result.join('\n');
+	result = escapeRegex(result);
+	result = result.replace(/\n/g, ')|(').replace(/^/, '(').replace(/$/, ')');
+	return result;
+}
+
+
+function escapeRegex(str) {
+	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+
+// returned the following in object :
+// escaped - is str escaped ? true|false
+// str - corrected str if slashes were found
+// correctedPos - the new position of character which was at [pos] position
+function escapePrecedingSlashes(str, pos) {
+	var result = {};
+	var slashesCnt = 0;
+
+	for (var i = pos - 1; i >= 0; i--) {
+		if (str.charAt(i) !== '\\') {
+			break;
+		}
+
+		slashesCnt++;
+	}
+
+	// odd count of slashes tells that character at [pos] position is escaped
+	result.escaped = ( slashesCnt % 2 === 1 );
+
+	var halfSlashes = Math.floor((slashesCnt + 1 ) / 2);
+
+	if (slashesCnt > 0) {
+		// cutting 1/2 slashes
+		result.escapedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
+	} else {
+		result.escapedStr = str;
+	}
+
+	result.correctedPos = pos - halfSlashes;
+
+	return result;
+}
+
+function skipSpaces(str, pos) {
+	for (var i = pos; i < str.length; i++) {
+		if (str.charAt(i) !== ' ') {
+			return i;
+		}
+	}
+
+	return str.length;
+}
+
+function skipCommaIfPresents(str, pos) {
+	if (str.charAt(pos) === ',') {
+		return pos + 1;
+	} else {
+		return pos;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function resolveIncludeDirectiveDom(item) {
@@ -446,61 +518,6 @@ module.exports.hasFirstLevelVar = hasFirstLevelVar;
 module.exports.extractFirstLevelVars = extractFirstLevelVars;
 module.exports.findClosestBracketPos = findClosestBracketPos;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// returned the following in object :
-// escaped - is str escaped ? true|false
-// str - corrected str if slashes were found
-// correctedPos - the new position of character which was at [pos] position
-function escapePrecedingSlashes(str, pos) {
-	var result = {};
-	var slashesCnt = 0;
-
-	for (var i = pos - 1; i >= 0; i--) {
-		if (str.charAt(i) !== '\\') {
-			break;
-		}
-
-		slashesCnt++;
-	}
-
-	// odd count of slashes tells that character at [pos] position is escaped
-	result.escaped = ( slashesCnt % 2 === 1 );
-
-	var halfSlashes = Math.floor((slashesCnt + 1 ) / 2);
-
-	if (slashesCnt > 0) {
-		// cutting 1/2 slashes
-		result.escapedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
-	} else {
-		result.escapedStr = str;
-	}
-
-	result.correctedPos = pos - halfSlashes;
-
-	return result;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function skipSpaces(str, pos) {
-	for (var i = pos; i < str.length; i++) {
-		if (str.charAt(i) !== ' ') {
-			return i;
-		}
-	}
-
-	return str.length;
-}
-
-function skipCommaIfPresents(str, pos) {
-	if (str.charAt(pos) === ',') {
-		return pos + 1;
-	} else {
-		return pos;
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -522,10 +539,10 @@ ParseArrayIndexes.prototype.parseArrayIndex = function () {
 	var charsAtPos = this.str.substr(this.lastSearchPos);
 
 	// is nexl expression ?
-	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpression = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
-		this.lastSearchPos += nexlExpression.length;
-		return nexlExpression;
+	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
+		this.lastSearchPos += nexlExpressionMD.length;
+		return nexlExpressionMD;
 	}
 
 	// nothing found
@@ -546,7 +563,7 @@ ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
 	// current characters are
 	var charsAtPos = this.str.substr(this.lastSearchPos);
 
-	if (doestStartFrom0Pos(charsAtPos, ARRAY_INDEX_CLOSE)) {
+	if (isStartsFromZeroPos(charsAtPos, ARRAY_INDEX_CLOSE)) {
 		this.isFinished = true;
 		return;
 	}
@@ -611,7 +628,7 @@ function ParseArrayIndexes(str, pos) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function doestStartFrom0Pos(str, chars) {
+function isStartsFromZeroPos(str, chars) {
 	return str.indexOf(chars) === 0;
 }
 
@@ -622,10 +639,10 @@ ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 	// current characters are
 	var charsAtPos = this.str.substr(this.lastSearchPos);
 
-	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpression = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
-		this.lastSearchPos += nexlExpression.length;
-		this.result.funcCallAction.funcParams.push(nexlExpression);
+	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
+		this.lastSearchPos += nexlExpressionMD.length;
+		this.result.funcCallAction.funcParams.push(nexlExpressionMD);
 
 		// skip spaces
 		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
@@ -634,7 +651,7 @@ ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 		return;
 	}
 
-	if (doestStartFrom0Pos(charsAtPos, FUNCTION_CALL_CLOSE)) {
+	if (isStartsFromZeroPos(charsAtPos, FUNCTION_CALL_CLOSE)) {
 		this.isFinished = true;
 		return;
 	}
@@ -747,13 +764,13 @@ ParseNexlExpression.prototype.addObject = function () {
 
 ParseNexlExpression.prototype.addExpression = function () {
 	// parsing nexl expression
-	var nexlExpression = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
+	var nexlExpressionMD = new ParseNexlExpression(this.str, this.searchPos).parseNexlExpression();
 	// dropping existing data to buffer
 	this.dropCut2BufferIfNotEmpty();
 	// dropping nexl expression to buffer
-	this.dropExpression2Buffer(nexlExpression);
+	this.dropExpression2Buffer(nexlExpressionMD);
 
-	this.lastSearchPos = this.searchPos + nexlExpression.length;
+	this.lastSearchPos = this.searchPos + nexlExpressionMD.length;
 };
 
 ParseNexlExpression.prototype.addFunction = function () {
@@ -775,6 +792,11 @@ ParseNexlExpression.prototype.finalizeExpression = function () {
 	this.isFinished = true;
 };
 
+ParseNexlExpression.prototype.parseModifiers = function () {
+
+};
+
+
 ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.findAndEscapeIfNeeded();
 
@@ -784,32 +806,32 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.cut = this.str.substring(this.lastSearchPos, this.searchPos);
 
 	// is end of expression ?
-	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_CLOSE)) {
+	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_CLOSE)) {
 		this.finalizeExpression();
 		return;
 	}
 
 	// is new object ?
-	if (doestStartFrom0Pos(charsAtPos, OBJECTS_SEPARATOR)) {
+	if (isStartsFromZeroPos(charsAtPos, OBJECTS_SEPARATOR)) {
 		this.addObject();
 		return;
 	}
 
 	// is new expression ?
-	if (doestStartFrom0Pos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
 		this.addExpression();
 		return;
 	}
 
 	// is function call ?
-	if (doestStartFrom0Pos(charsAtPos, FUNCTION_CALL_OPEN)) {
+	if (isStartsFromZeroPos(charsAtPos, FUNCTION_CALL_OPEN)) {
 		this.addObject();
 		this.addFunction();
 		return;
 	}
 
 	// is array index access ?
-	if (doestStartFrom0Pos(charsAtPos, ARRAY_INDEX_OPEN)) {
+	if (isStartsFromZeroPos(charsAtPos, ARRAY_INDEX_OPEN)) {
 		this.addObject();
 		this.addArrayIndexes();
 		return;
@@ -867,31 +889,63 @@ function ParseNexlExpression(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ParseStr.prototype.findFirstOccurrence = function () {
+	var pos1 = this.str.indexOf(NEXL_EXPRESSION_OPEN, this.lastSearchPos);
+	var pos2 = this.str.indexOf(this.stopAt, this.lastSearchPos);
+
+	if (pos1 < 0 || pos2 < 0) {
+		return Math.max(pos1, pos2);
+	}
+
+	return Math.min(pos1, pos2);
+};
+
+ParseStr.prototype.dropChunk2Result = function () {
+	if (this.newSearchPos - 1 > this.lastSearchPos) {
+		var chunk = this.str.substring(this.lastSearchPos, this.newSearchPos);
+		this.result.chunks.push(chunk);
+		this.result.length += chunk.length;
+	}
+};
+
 ParseStr.prototype.parseStrInner = function () {
-	var newSearchPos = str.indexOf(NEXL_EXPRESSION_OPEN, this.lastSearchPos);
+	// this.lastSearchPos < this.str.length
+	this.newSearchPos = this.findFirstOccurrence();
 
 	// no more expressions ?
-	if (newSearchPos < 0) {
-		this.lastSearchPos = this.str.length;
+	if (this.newSearchPos < 0) {
+		this.newSearchPos = this.str.length;
+		this.dropChunk2Result();
+		this.isFinished = true;
 		return;
 	}
 
 	// Obamacare ( i.e. escaping care :P )
-	var escaping = escapePrecedingSlashes(this.str, newSearchPos);
-	this.str = escaping.escapedStr;
-	newSearchPos = escaping.correctedPos;
+	var escaping = escapePrecedingSlashes(this.str, this.newSearchPos);
 
-	// is NEXL_EXPRESSION_OPEN is escaped ?
+	// correcting str
+	this.str = escaping.escapedStr;
+	// correcting delta
+	this.length += (escaping.correctedPos - this.newSearchPos);
+	// correcting newSearchPos
+	this.newSearchPos = escaping.correctedPos;
+
+	// is escaped ?
 	if (escaping.escaped) {
-		// NEXL_EXPRESSION_OPEN is escaped, continuing search next nexl expression
-		this.lastSearchPos = newSearchPos + 1;
+		// continue searching for the next occurrence
+		this.lastSearchPos = this.newSearchPos + 1;
 		return;
 	}
 
-	// NEXL_EXPRESSION_OPEN is not escaped. adding item to result.chunks[] if it's not empty
-	if (newSearchPos - 1 > this.lastSearchPos) {
-		var chunk = this.str.substring(this.lastSearchPos, newSearchPos - 1);
-		this.result.chunks.push(chunk);
+	// dropping a chunk to result if its not empty
+	this.dropChunk2Result();
+
+	var chars = this.str.substr(this.newSearchPos);
+
+	// must stop here ?
+	if (isStartsFromZeroPos(chars, this.stopAt)) {
+		this.isFinished = true;
+		return;
 	}
 
 	// adding empty item to chunks, this item will be replaced with nexl expression's value on substitution stage
@@ -899,43 +953,40 @@ ParseStr.prototype.parseStrInner = function () {
 	var chunkNr = this.result.chunks.length - 1;
 
 	// extracting nexl expression stuff
-	var nexlExpression = new ParseNexlExpression(this.str, newSearchPos).parseNexlExpression();
+	var nexlExpressionMD = new ParseNexlExpression(this.str, this.newSearchPos).parseNexlExpression();
 
 	// adding to result.chunkSubstitutions as chunkNr
-	this.result.chunkSubstitutions[chunkNr] = nexlExpression;
+	this.result.chunkSubstitutions[chunkNr] = nexlExpressionMD;
+
+	// applying nexl expression length
+	this.result.length += nexlExpressionMD.length;
 
 	// updating lastSearchPos, lastExpressionPos
-	this.lastSearchPos = newSearchPos + nexlExpression.content.length;
-	this.lastExpressionPos = this.lastSearchPos;
+	this.lastSearchPos = this.newSearchPos + nexlExpressionMD.length;
 };
 
 ParseStr.prototype.parseStr = function () {
 	this.result = {};
 	this.result.chunks = [];
 	this.result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
-
-	// position of last nexl expression in str
-	this.lastExpressionPos = 0;
+	this.result.length = 0;
 
 	// last search position in str
 	this.lastSearchPos = 0;
 
-	while (this.lastSearchPos < this.str.length) {
-		this.parseStrInner();
-	}
+	this.isFinished = false;
 
-	// do we have a last chunk ?
-	if (this.lastSearchPos > this.lastExpressionPos) {
-		// adding chunk to result.chunks[]
-		var chunk = this.str.substring(this.lastExpressionPos, this.lastSearchPos);
-		this.result.push(chunk);
+
+	while (!this.isFinished) {
+		this.parseStrInner();
 	}
 
 	return this.result;
 };
 
-function ParseStr(str) {
+function ParseStr(str, stopAt) {
 	this.str = str;
+	this.stopAt = stopAt;
 }
 
 module.exports.parseStr = function (str) {
