@@ -15,16 +15,22 @@ const vm = require('vm');
 const j79 = require('j79-utils');
 
 var MODIFIERS = {
-	"DELIMITER": "?",
-	"DEF_VALUE": "@",
-	"DONT_OMIT_WHOLE_EXPRESSION": "+",
-	"OMIT_WHOLE_EXPRESSION": "-",
-	"ABORT_ON_UNDEF_VAR": "!",
-	"TREAT_AS": "~",
-	"REVERSE_RESOLUTION": "<"
+	'DELIMITER': '?',
+	'DEF_VALUE': '@',
+	'DONT_OMIT_WHOLE_EXPRESSION': '+',
+	'OMIT_WHOLE_EXPRESSION': '-',
+	'TREAT_AS': '~',
+	'REVERSE_RESOLUTION': '<',
+	// the following modifiers are reserved for future usage
+	'RESERVED1': '!',
+	'RESERVED2': '#',
+	'RESERVED3': '%',
+	'RESERVED4': '^',
+	'RESERVED5': '&',
+	'RESERVED6': '*'
 };
 
-const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
+
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
 
@@ -36,6 +42,11 @@ const FUNCTION_CALL_CLOSE = ')';
 const ARRAY_INDEX_OPEN = '[';
 const ARRAY_INDEX_CLOSE = ']';
 const TWO_DOTS = '..';
+
+
+const MODIFIERS_VALUES = retrieveModifiersValues();
+const MODIFIERS_PARSER_REGEX = makeModifiersParseRegex();
+const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -61,27 +72,37 @@ var MODIFIERS_ESCAPE_REGEX;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-function makeExpressionParserRegex() {
+function retrieveModifiersValues() {
 	var modifiers = [];
 	for (var key in MODIFIERS) {
 		modifiers.push(MODIFIERS[key]);
 	}
 
-	var additionalChars = ['${', '.', '(', '[', '}'];
-
-	var result = modifiers.concat(additionalChars);
-	result = result.join('\n');
-	result = escapeRegex(result);
-	result = result.replace(/\n/g, ')|(').replace(/^/, '(').replace(/$/, ')');
-	return result;
+	return modifiers;
 }
-
 
 function escapeRegex(str) {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+function makeOrRegexOfArray(arr) {
+	var result = arr.join('\n');
+	result = escapeRegex(result);
+	result = result.replace(/\n/g, ')|(').replace(/^/, '(').replace(/$/, ')');
+	return result;
+}
+
+function makeExpressionParserRegex() {
+	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_OPEN, OBJECTS_SEPARATOR, FUNCTION_CALL_OPEN, ARRAY_INDEX_OPEN, NEXL_EXPRESSION_CLOSE]);
+	return makeOrRegexOfArray(result);
+}
+
+function makeModifiersParseRegex() {
+	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_CLOSE]);
+	return makeOrRegexOfArray(result);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // returned the following in object :
 // escaped - is str escaped ? true|false
@@ -519,6 +540,68 @@ module.exports.extractFirstLevelVars = extractFirstLevelVars;
 module.exports.findClosestBracketPos = findClosestBracketPos;
 
 
+function isStartsFromZeroPos(str, chars) {
+	return str.indexOf(chars) === 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ParseFunctionCall.prototype.parseFunctionCallInner = function () {
+	// skipping redundant spaces
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+
+	// current characters are
+	var charsAtPos = this.str.substr(this.lastSearchPos);
+
+	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
+		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
+		this.lastSearchPos += nexlExpressionMD.length;
+		this.result.funcCallAction.funcParams.push(nexlExpressionMD);
+
+		// skip spaces
+		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+		// skip comma if present
+		this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
+		return;
+	}
+
+	if (isStartsFromZeroPos(charsAtPos, FUNCTION_CALL_CLOSE)) {
+		this.isFinished = true;
+		return;
+	}
+
+	throw util.format('Invalid nexl expression. Function arguments in nexl expression can be only another nexl expression. Occurred in [%s] nexl expression at [%s] position', this.str, this.lastSearchPos);
+};
+
+ParseFunctionCall.prototype.parseFunctionCall = function () {
+	// preparing result
+	this.result = {};
+	this.result.funcCallAction = {};
+	this.result.funcCallAction.funcParams = [];
+
+	// checking for first character in str, must be an open bracket
+	if (this.str.charAt(this.pos) !== FUNCTION_CALL_OPEN) {
+		throw util.format('Invalid nexl expression. Function call must start from open bracket [%s] in [%s] at [%s] position', FUNCTION_CALL_OPEN, this.str, this.pos);
+	}
+
+	this.lastSearchPos = this.pos + FUNCTION_CALL_OPEN.length;
+	this.isFinished = false;
+
+	while (!this.isFinished) {
+		this.parseFunctionCallInner();
+	}
+
+	this.result.length = this.lastSearchPos - this.pos;
+	return this.result;
+};
+
+function ParseFunctionCall(str, pos) {
+	this.str = str;
+	this.pos = pos;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ParseArrayIndexes.prototype.parseArrayIndex = function () {
@@ -627,61 +710,58 @@ function ParseArrayIndexes(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ParseModifiers.prototype.discoverModifierType = function () {
+	// todo : introduce type and parse
+	return 'int';
+};
 
-function isStartsFromZeroPos(str, chars) {
-	return str.indexOf(chars) === 0;
-}
+ParseModifiers.prototype.parseModifier = function () {
+	var chars = this.str.substr(this.lastSearchPos);
 
-ParseFunctionCall.prototype.parseFunctionCallInner = function () {
-	// skipping redundant spaces
-	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
-
-	// current characters are
-	var charsAtPos = this.str.substr(this.lastSearchPos);
-
-	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parseNexlExpression();
-		this.lastSearchPos += nexlExpressionMD.length;
-		this.result.funcCallAction.funcParams.push(nexlExpressionMD);
-
-		// skip spaces
-		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
-		// skip comma if present
-		this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
-		return;
-	}
-
-	if (isStartsFromZeroPos(charsAtPos, FUNCTION_CALL_CLOSE)) {
+	// is end of expression ?
+	if (isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
 		this.isFinished = true;
 		return;
 	}
 
-	throw util.format('Invalid nexl expression. Function arguments in nexl expression can be only another nexl expression. Occurred in [%s] nexl expression at [%s] position', this.str, this.lastSearchPos);
+	var modifierId = this.str.charAt(this.lastSearchPos);
+
+	this.lastSearchPos++;
+	chars = chars.substr(1);
+
+	// parsing modifier
+	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parseStr();
+
+	var modifier = {};
+	modifier.id = modifierId;
+	modifier.value = modifierMD;
+	modifier.type = this.discoverModifierType(modifierMD);
+
+	// adding to result
+	this.result.modifiers.push(modifier);
+
+	// increasing lastSearchPos
+	this.lastSearchPos += modifierMD.length;
 };
 
-ParseFunctionCall.prototype.parseFunctionCall = function () {
+ParseModifiers.prototype.parseModifiers = function () {
 	// preparing result
 	this.result = {};
-	this.result.funcCallAction = {};
-	this.result.funcCallAction.funcParams = [];
+	this.result.modifiers = [];
 
-	// checking for first character in str, must be an open bracket
-	if (this.str.charAt(this.pos) !== FUNCTION_CALL_OPEN) {
-		throw util.format('Invalid nexl expression. Function call must start from open bracket [%s] in [%s] at [%s] position', FUNCTION_CALL_OPEN, this.str, this.pos);
-	}
-
-	this.lastSearchPos = this.pos + FUNCTION_CALL_OPEN.length;
+	this.lastSearchPos = this.pos;
 	this.isFinished = false;
 
 	while (!this.isFinished) {
-		this.parseFunctionCallInner();
+		this.parseModifier();
 	}
 
 	this.result.length = this.lastSearchPos - this.pos;
 	return this.result;
 };
 
-function ParseFunctionCall(str, pos) {
+
+function ParseModifiers(str, pos) {
 	this.str = str;
 	this.pos = pos;
 }
@@ -755,6 +835,13 @@ ParseNexlExpression.prototype.dropExpression2Buffer = function (nexlExpression) 
 	this.buffer.chunkSubstitutions[index] = nexlExpression;
 };
 
+ParseNexlExpression.prototype.finalizeExpression = function () {
+	this.dropCut2BufferIfNotEmpty();
+	this.dropBuffer2ResultIfNotEmpty();
+	this.lastSearchPos = this.searchPos + 1;
+	this.isFinished = true;
+};
+
 ParseNexlExpression.prototype.addObject = function () {
 	this.dropCut2BufferIfNotEmpty();
 	this.dropBuffer2ResultIfNotEmpty();
@@ -785,15 +872,10 @@ ParseNexlExpression.prototype.addArrayIndexes = function () {
 	this.lastSearchPos += arrayIndexes.length;
 };
 
-ParseNexlExpression.prototype.finalizeExpression = function () {
-	this.dropCut2BufferIfNotEmpty();
-	this.dropBuffer2ResultIfNotEmpty();
-	this.lastSearchPos = this.searchPos + 1;
-	this.isFinished = true;
-};
-
 ParseNexlExpression.prototype.parseModifiers = function () {
-
+	var modifiers = new ParseModifiers(this.str, this.searchPos).parseModifiers();
+	this.result.modifiers = modifiers.modifiers;
+	this.lastSearchPos += modifiers.length;
 };
 
 
@@ -838,9 +920,9 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	}
 
 	// here are modifiers
+	this.addObject();
 	this.parseModifiers();
-
-	throw 'Something wrong in nexl expressions parser [#1]. Open me a bug !'
+	this.isFinished = true;
 };
 
 // pos points to a $ sign
@@ -891,7 +973,7 @@ function ParseNexlExpression(str, pos) {
 
 ParseStr.prototype.findFirstOccurrence = function () {
 	var pos1 = this.str.indexOf(NEXL_EXPRESSION_OPEN, this.lastSearchPos);
-	var pos2 = this.str.indexOf(this.stopAt, this.lastSearchPos);
+	var pos2 = this.str.substr(this.lastSearchPos).search(this.stopAt);
 
 	if (pos1 < 0 || pos2 < 0) {
 		return Math.max(pos1, pos2);
@@ -901,7 +983,7 @@ ParseStr.prototype.findFirstOccurrence = function () {
 };
 
 ParseStr.prototype.dropChunk2Result = function () {
-	if (this.newSearchPos - 1 > this.lastSearchPos) {
+	if (this.newSearchPos > this.lastSearchPos) {
 		var chunk = this.str.substring(this.lastSearchPos, this.newSearchPos);
 		this.result.chunks.push(chunk);
 		this.result.length += chunk.length;
@@ -926,7 +1008,7 @@ ParseStr.prototype.parseStrInner = function () {
 	// correcting str
 	this.str = escaping.escapedStr;
 	// correcting delta
-	this.length += (escaping.correctedPos - this.newSearchPos);
+	this.result.length += (this.newSearchPos - escaping.correctedPos );
 	// correcting newSearchPos
 	this.newSearchPos = escaping.correctedPos;
 
@@ -943,7 +1025,7 @@ ParseStr.prototype.parseStrInner = function () {
 	var chars = this.str.substr(this.newSearchPos);
 
 	// must stop here ?
-	if (isStartsFromZeroPos(chars, this.stopAt)) {
+	if (chars.search(this.stopAt) === 0) {
 		this.isFinished = true;
 		return;
 	}
@@ -992,6 +1074,10 @@ function ParseStr(str, stopAt) {
 module.exports.parseStr = function (str) {
 	return new ParseStr(str).parseStr();
 };
+
+
+var result = new ParseNexlExpression('${test@lol\\?,}', 0).parseNexlExpression();
+console.log(result);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
