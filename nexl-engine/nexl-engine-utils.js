@@ -55,6 +55,7 @@ const TWO_DOTS = '..';
 const MODIFIERS_VALUES = retrieveModifiersValues();
 const MODIFIERS_PARSER_REGEX = makeModifiersParseRegex();
 const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
+const TYPES_REGEX = makeTypesRegex();
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -108,6 +109,10 @@ function makeExpressionParserRegex() {
 function makeModifiersParseRegex() {
 	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_CLOSE]);
 	return makeOrRegexOfArray(result);
+}
+
+function makeTypesRegex() {
+	throw 'Implementing...';
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,9 +723,40 @@ function ParseArrayIndexes(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParseModifiers.prototype.discoverModifierType = function () {
-	// todo : introduce type and parse
-	return 'int';
+// type is a postfix which tells what a data type is it. for example 10:str has string type
+ParseModifiers.prototype.discoverModifierType = function (modifierMD) {
+	// modifierMD is a parsed string
+	// checking chunks. is it empty ?
+	if (modifierMD.value.chunks.length < 0) {
+		return;
+	}
+
+	// resolving last chunk
+	var lastItemNr = modifierMD.value.chunks.length - 1;
+	var lastChunk = modifierMD.value.chunks[lastItemNr];
+
+	// is lastChunk null ? null means this chunk will be replaced with nexl expression, so there no type
+	if (lastChunk === null) {
+		return;
+	}
+
+	// okay, lastChunk is not null. discovering data type
+	var pos = lastChunk.search(TYPES_REGEX);
+	if (pos < 0) {
+		return;
+	}
+
+	var escaping = escapePrecedingSlashes(lastChunk, pos);
+	lastChunk = escaping.escapedStr;
+	pos = escaping.correctedPos;
+
+	if (!escaping.escaped) {
+		// resolving type
+		modifierMD.type = lastChunk.substr(pos + 1);
+		lastChunk = lastChunk.substring(0, pos - 1);
+	}
+
+	modifierMD.value.chunks[lastItemNr] = lastChunk;
 };
 
 ParseModifiers.prototype.parseModifier = function () {
@@ -1106,6 +1142,12 @@ function ParseStr(str, stopAt) {
 module.exports.parseStr = function (str) {
 	return new ParseStr(str).parseStr();
 };
+
+
+var str;
+str = '${hello}';
+var result = new ParseNexlExpression(str, 0).parseNexlExpression();
+console.log(result);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
