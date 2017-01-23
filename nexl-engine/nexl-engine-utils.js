@@ -52,10 +52,11 @@ const ARRAY_INDEX_CLOSE = ']';
 const TWO_DOTS = '..';
 
 
-const MODIFIERS_VALUES = retrieveModifiersValues();
+const MODIFIERS_VALUES = getObjectValues(MODIFIERS);
 const MODIFIERS_PARSER_REGEX = makeModifiersParseRegex();
 const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
 const TYPES_REGEX = makeTypesRegex();
+
 
 var GLOBAL_SETTINGS = {
 	// is used when concatenating arrays
@@ -81,13 +82,14 @@ var MODIFIERS_ESCAPE_REGEX;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function retrieveModifiersValues() {
-	var modifiers = [];
-	for (var key in MODIFIERS) {
-		modifiers.push(MODIFIERS[key]);
+
+function getObjectValues(obj) {
+	var result = [];
+	for (var key in obj) {
+		result.push(obj[key]);
 	}
 
-	return modifiers;
+	return result;
 }
 
 function escapeRegex(str) {
@@ -97,7 +99,7 @@ function escapeRegex(str) {
 function makeOrRegexOfArray(arr) {
 	var result = arr.join('\n');
 	result = escapeRegex(result);
-	result = result.replace(/\n/g, ')|(').replace(/^/, '(').replace(/$/, ')');
+	result = result.replace(/\n/g, '|');
 	return result;
 }
 
@@ -112,7 +114,11 @@ function makeModifiersParseRegex() {
 }
 
 function makeTypesRegex() {
-	throw 'Implementing...';
+	var types = getObjectValues(PRIMITIVE_TYPES);
+	for (var index = 0; index < types.length; index++) {
+		types[index] = ':' + types[index];
+	}
+	return makeOrRegexOfArray(types);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -724,16 +730,15 @@ function ParseArrayIndexes(str, pos) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // type is a postfix which tells what a data type is it. for example 10:str has string type
-ParseModifiers.prototype.discoverModifierType = function (modifierMD) {
-	// modifierMD is a parsed string
+ParseModifiers.prototype.discoverModifierType = function (modifier) {
 	// checking chunks. is it empty ?
-	if (modifierMD.value.chunks.length < 0) {
+	if (modifier.value.chunks.length < 0) {
 		return;
 	}
 
 	// resolving last chunk
-	var lastItemNr = modifierMD.value.chunks.length - 1;
-	var lastChunk = modifierMD.value.chunks[lastItemNr];
+	var lastItemNr = modifier.value.chunks.length - 1;
+	var lastChunk = modifier.value.chunks[lastItemNr];
 
 	// is lastChunk null ? null means this chunk will be replaced with nexl expression, so there no type
 	if (lastChunk === null) {
@@ -752,11 +757,11 @@ ParseModifiers.prototype.discoverModifierType = function (modifierMD) {
 
 	if (!escaping.escaped) {
 		// resolving type
-		modifierMD.type = lastChunk.substr(pos + 1);
-		lastChunk = lastChunk.substring(0, pos - 1);
+		modifier.type = lastChunk.substr(pos + 1);
+		lastChunk = lastChunk.substring(0, pos);
 	}
 
-	modifierMD.value.chunks[lastItemNr] = lastChunk;
+	modifier.value.chunks[lastItemNr] = lastChunk;
 };
 
 ParseModifiers.prototype.parseModifier = function () {
@@ -779,7 +784,7 @@ ParseModifiers.prototype.parseModifier = function () {
 	var modifier = {};
 	modifier.id = modifierId;
 	modifier.value = modifierMD;
-	modifier.type = this.discoverModifierType(modifierMD);
+	this.discoverModifierType(modifier);
 
 	// adding to result
 	this.result.modifiers.push(modifier);
@@ -1142,13 +1147,6 @@ function ParseStr(str, stopAt) {
 module.exports.parseStr = function (str) {
 	return new ParseStr(str).parseStr();
 };
-
-
-var str;
-str = '${hello}';
-var result = new ParseNexlExpression(str, 0).parseNexlExpression();
-console.log(result);
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
