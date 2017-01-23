@@ -30,6 +30,14 @@ var MODIFIERS = {
 	'RESERVED6': '*'
 };
 
+var PRIMITIVE_TYPES = {
+	TYPE_NUM: 'num',
+	TYPE_BOOL: 'bool',
+	TYPE_STR: 'str',
+	TYPE_NULL: 'null',
+	TYPE_UNDEFINED: 'undefined'
+};
+
 
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
@@ -971,56 +979,80 @@ function ParseNexlExpression(str, pos) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParseStr.prototype.findFirstOccurrence = function () {
-	var pos1 = this.str.indexOf(NEXL_EXPRESSION_OPEN, this.lastSearchPos);
-	var pos2 = this.str.substr(this.lastSearchPos).search(this.stopAt);
-
-	if (pos1 < 0 || pos2 < 0) {
-		return Math.max(pos1, pos2);
-	}
-
-	return Math.min(pos1, pos2);
-};
-
-ParseStr.prototype.dropChunk2Result = function () {
-	if (this.newSearchPos > this.lastSearchPos) {
-		var chunk = this.str.substring(this.lastSearchPos, this.newSearchPos);
+ParseStr.prototype.dropChunk2Result = function (untilPos) {
+	if (untilPos > this.lastSearchPos) {
+		var chunk = this.str.substring(this.lastSearchPos, untilPos);
 		this.result.chunks.push(chunk);
 		this.result.length += chunk.length;
 	}
 };
 
+ParseStr.prototype.findAndEscapeIfNeededInner = function () {
+	var chars = this.str.substr(this.searchPosTmp);
+
+	// searching for for the following characters : NEXL_EXPRESSION_OPEN
+	var pos1 = chars.indexOf(NEXL_EXPRESSION_OPEN);
+	// searching for this.stopAt
+	var pos2 = !this.stopAt ? -1 : chars.search(this.stopAt);
+
+	// calculating who is nearest among pos1 & pos2
+	var pos;
+	if (pos1 < 0 || pos2 < 0) {
+		pos = Math.max(pos1, pos2);
+	} else {
+		pos = Math.min(pos1, pos2);
+	}
+
+	// nothing found ?
+	if (pos < 0) {
+		this.searchPosTmp = -1;
+		return false;
+	}
+
+	this.searchPosTmp += pos;
+
+	// escaping string if needed
+	var escapedStr = escapePrecedingSlashes(this.str, this.searchPosTmp);
+
+	// storing delta between searchPos and escapedStr.escapedStr
+	this.result.length += (this.searchPosTmp - escapedStr.correctedPos);
+
+	// correcting str and searchPos according to escaping
+	this.str = escapedStr.escapedStr;
+	this.searchPosTmp = escapedStr.correctedPos;
+
+	if (escapedStr.escaped) {
+		// continue searching
+		this.searchPosTmp++;
+		return true;
+	} else {
+		return false;
+	}
+};
+
+
+ParseStr.prototype.findAndEscapeIfNeeded = function () {
+	this.searchPosTmp = this.lastSearchPos;
+
+	while (this.findAndEscapeIfNeededInner()) {
+	}
+
+	this.newSearchPos = this.searchPosTmp;
+};
+
+
 ParseStr.prototype.parseStrInner = function () {
-	// this.lastSearchPos < this.str.length
-	this.newSearchPos = this.findFirstOccurrence();
+	this.findAndEscapeIfNeeded();
 
 	// no more expressions ?
 	if (this.newSearchPos < 0) {
-		this.newSearchPos = this.str.length;
-		this.dropChunk2Result();
+		this.dropChunk2Result(this.str.length);
 		this.isFinished = true;
 		return;
 	}
 
-	// Obamacare ( i.e. escaping care :P )
-	var escaping = escapePrecedingSlashes(this.str, this.newSearchPos);
-
-	// correcting str
-	this.str = escaping.escapedStr;
-	// correcting delta
-	this.result.length += (this.newSearchPos - escaping.correctedPos );
-	// correcting newSearchPos
-	this.newSearchPos = escaping.correctedPos;
-
-	// is escaped ?
-	if (escaping.escaped) {
-		// continue searching for the next occurrence
-		this.lastSearchPos = this.newSearchPos + 1;
-		return;
-	}
-
 	// dropping a chunk to result if its not empty
-	this.dropChunk2Result();
+	this.dropChunk2Result(this.newSearchPos);
 
 	var chars = this.str.substr(this.newSearchPos);
 
@@ -1074,10 +1106,6 @@ function ParseStr(str, stopAt) {
 module.exports.parseStr = function (str) {
 	return new ParseStr(str).parseStr();
 };
-
-
-var result = new ParseNexlExpression('${test@lol\\?,}', 0).parseNexlExpression();
-console.log(result);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
