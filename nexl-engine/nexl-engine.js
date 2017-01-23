@@ -430,13 +430,6 @@ NexlEngine.prototype.applyModifiers = function (value, varStuff) {
 	return result;
 };
 
-// evaluates nexl expression like ${test:1}
-// todo: take in account a !AA, !CC new modifiers
-NexlEngine.prototype.evalNexlExpressionNew = function (nexlExpression) {
-	// extracting variable stuff ( modifiers, var name, ... )
-	var varStuff = neu.extractVarStuff(nexlExpression);
-};
-
 NexlEngine.prototype.evalNexlExpression = function (nexlExpression) {
 	var result = [];
 
@@ -540,8 +533,78 @@ NexlEngine.prototype.processFunctionItem = function (func) {
 	throw 'Still not implemented';
 };
 
+NexlEngine.prototype.evalNexlExpressionNew = function (nexlExpressionMD) {
+
+};
+
+NexlEngine.prototype.substExpressionValuesNew = function (currentResult, chunkPosition, nexlExpressionValue) {
+	var result = [];
+
+	var valueItems = j79.wrapWithArrayIfNeeded(nexlExpressionValue);
+
+	for (var i = 0; i < valueItems.length; i++) {
+		var item = valueItems[i];
+
+		for (var j = 0; j < currentResult.length; j++) {
+			// cloning a currentResult[j]
+			var currentItem = currentResult[j].slice(0); // currentItem is an escapedChunks entity
+
+			// substituting a value
+			currentItem[chunkPosition] = item;
+
+			// adding to result
+			result.push(currentItem);
+		}
+	}
+
+	return result;
+};
+
 NexlEngine.prototype.processStringItemNew = function (inputAsStr, isOmit) {
-	var fle = neu.parse(inputAsStr);
+	var parsedStr = neu.parseStr(inputAsStr);
+
+	// assuming that result is a single value at the beginning. but it can be turn out to array
+	var isArrayFlag = false;
+
+	// wrapping with array. later, if the isArrayFlag it will be unwrapped back to single element
+	var result = [parsedStr.chunks];
+
+	// iterating over positions of chunkSubstitutions
+	for (var position in parsedStr.chunkSubstitutions) {
+		var nexlExpressionMD = parsedStr.chunkSubstitutions[position];
+
+		// evaluating nexl variable
+		var nexlExpressionValue = this.evalNexlExpressionNew(nexlExpressionMD);
+
+		// is to omit the inputAsStr expression if the value is null
+		if (nexlExpressionValue === null && isOmit) {
+			return '';
+		}
+
+		// setting the isArrayFlag to true if we've got an array
+		isArrayFlag = isArrayFlag || j79.isArray(nexlExpressionValue);
+
+		// substituting value
+		result = this.substExpressionValuesNew(result, position, nexlExpressionValue);
+	}
+
+	// iterating over result and joining all chunks ( all chunks are joining as strings ! )
+	var finalResult = [];
+	for (var i = 0; i < result.length; i++) {
+		if (result[i].length === 1) {
+			finalResult.push(result[i][0]);
+		} else {
+			finalResult.push(result[i].join(''));
+		}
+	}
+
+	// checking for isArrayFlag
+	if (!isArrayFlag) {
+		// it wasn't array at the beginning, extracting the first element from array ( it has only 1 element )
+		finalResult = finalResult[0];
+	}
+
+	return finalResult;
 };
 
 NexlEngine.prototype.processStringItem = function (inputAsStr, isOmit) {
