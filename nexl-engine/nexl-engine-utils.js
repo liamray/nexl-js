@@ -1,7 +1,7 @@
 /**************************************************************************************
  nexl-engine-utils
 
- Copyright (c) 2016 Yevgeny Sergeyev
+ Copyright (c) 2016-2017 Yevgeny Sergeyev
  License : Apache 2.0
 
  Set of utility functions for nexl-engine
@@ -52,7 +52,7 @@ const ARRAY_INDEX_CLOSE = ']';
 const TWO_DOTS = '..';
 
 
-const MODIFIERS_VALUES = getObjectValues(MODIFIERS);
+const MODIFIERS_VALUES = j79.getObjectValues(MODIFIERS);
 const MODIFIERS_PARSER_REGEX = makeModifiersParseRegex();
 const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
 const TYPES_REGEX = makeTypesRegex();
@@ -83,42 +83,22 @@ var MODIFIERS_ESCAPE_REGEX;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function getObjectValues(obj) {
-	var result = [];
-	for (var key in obj) {
-		result.push(obj[key]);
-	}
-
-	return result;
-}
-
-function escapeRegex(str) {
-	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-function makeOrRegexOfArray(arr) {
-	var result = arr.join('\n');
-	result = escapeRegex(result);
-	result = result.replace(/\n/g, '|');
-	return result;
-}
-
 function makeExpressionParserRegex() {
 	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_OPEN, OBJECTS_SEPARATOR, FUNCTION_CALL_OPEN, ARRAY_INDEX_OPEN, NEXL_EXPRESSION_CLOSE]);
-	return makeOrRegexOfArray(result);
+	return j79.makeOrRegexOfArray(result);
 }
 
 function makeModifiersParseRegex() {
 	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_CLOSE]);
-	return makeOrRegexOfArray(result);
+	return j79.makeOrRegexOfArray(result);
 }
 
 function makeTypesRegex() {
-	var types = getObjectValues(PRIMITIVE_TYPES);
+	var types = j79.getObjectValues(PRIMITIVE_TYPES);
 	for (var index = 0; index < types.length; index++) {
 		types[index] = ':' + types[index];
 	}
-	return makeOrRegexOfArray(types);
+	return j79.makeOrRegexOfArray(types);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1098,7 +1078,7 @@ ParseStr.prototype.parseStrInner = function () {
 	var chars = this.str.substr(this.newSearchPos);
 
 	// must stop here ?
-	if (chars.search(this.stopAt) === 0) {
+	if (this.stopAt && chars.search(this.stopAt) === 0) {
 		this.isFinished = true;
 		return;
 	}

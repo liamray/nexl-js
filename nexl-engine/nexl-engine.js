@@ -1,7 +1,7 @@
 /**************************************************************************************
  nexl-engine
 
- Copyright (c) 2016 Yevgeny Sergeyev
+ Copyright (c) 2016-2017 Yevgeny Sergeyev
  License : Apache 2.0
 
  nexl expressions processor
