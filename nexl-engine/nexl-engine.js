@@ -14,6 +14,7 @@ const fs = require('fs');
 const vm = require('vm');
 const j79 = require('j79-utils');
 const neu = require('./nexl-engine-utils');
+const nee = require('./nexl-expression-evaluator');
 
 
 var DEFAULT_GLOBAL_SETTINGS = {
@@ -533,9 +534,6 @@ NexlEngine.prototype.processFunctionItem = function (func) {
 	throw 'Still not implemented';
 };
 
-NexlEngine.prototype.evalNexlExpressionNew = function (nexlExpressionMD) {
-
-};
 
 NexlEngine.prototype.substExpressionValuesNew = function (currentResult, chunkPosition, nexlExpressionValue) {
 	var result = [];
