@@ -80,7 +80,7 @@ ChunksAssembler.prototype.assemble = function () {
 		var chunk2Substitute = this.chunkSubstitutions[pos];
 
 		// evaluating this chunk
-		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute);
+		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
 
 		this.validateChunkValue(chunkValue);
 
@@ -107,8 +107,6 @@ function ChunksAssembler(session, chunks, chunkSubstitutions) {
 	this.session = session;
 	this.chunks = chunks;
 	this.chunkSubstitutions = chunkSubstitutions;
-
-	return this.assemble();
 }
 
 
@@ -132,7 +130,7 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	// assembledChunks is string
-	var assembledChunks = new ChunksAssembler(this.session, this.action.chunks, this.action.chunkSubstitutions);
+	var assembledChunks = new ChunksAssembler(this.session, this.action.chunks, this.action.chunkSubstitutions).assemble();
 
 	// resolving value from last result
 	this.result = this.result[assembledChunks];
@@ -193,8 +191,6 @@ NexlExpressionEvaluator.prototype.eval = function () {
 function NexlExpressionEvaluator(session, nexlExpressionMD) {
 	this.session = session;
 	this.nexlExpressionMD = nexlExpressionMD;
-
-	return this.eval();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +238,7 @@ NexlItemsProcessor.prototype.processStringItem = function (str) {
 	var parsedStrMD = nep.parseStr(str);
 
 	// evaluating
-	return new ChunksAssembler(this.session, parsedStrMD.chunks, parsedStrMD.chunkSubstitutions);
+	return new ChunksAssembler(this.session, parsedStrMD.chunks, parsedStrMD.chunkSubstitutions).assemble();
 };
 
 NexlItemsProcessor.prototype.processItem = function (item) {
@@ -272,8 +268,6 @@ NexlItemsProcessor.prototype.processItem = function (item) {
 
 function NexlItemsProcessor(session, item) {
 	this.session = session;
-
-	return this.processItem(item);
 }
 
 
@@ -287,7 +281,7 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	session.externalArgs = externalArgs;
 	session.isOmit = false;
 
-	return new NexlItemsProcessor(session, item);
+	return new NexlItemsProcessor(session, item).processItem(item);
 };
 
 // exporting 'settings-list'

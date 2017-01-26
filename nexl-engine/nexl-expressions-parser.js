@@ -245,7 +245,7 @@ ParseModifiers.prototype.parseModifier = function () {
 	chars = chars.substr(1);
 
 	// parsing modifier
-	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX);
+	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parse();
 
 	var modifier = {};
 	modifier.id = modifierId;
@@ -279,8 +279,6 @@ ParseModifiers.prototype.parse = function () {
 function ParseModifiers(str, pos) {
 	this.str = str;
 	this.pos = pos;
-
-	return this.parse();
 }
 
 
@@ -296,7 +294,7 @@ ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 	var charsAtPos = this.str.substr(this.lastSearchPos);
 
 	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos);
+		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parse();
 		this.lastSearchPos += nexlExpressionMD.length;
 		this.result.funcCallAction.funcParams.push(nexlExpressionMD);
 
@@ -340,8 +338,6 @@ ParseFunctionCall.prototype.parse = function () {
 function ParseFunctionCall(str, pos) {
 	this.str = str;
 	this.pos = pos;
-
-	return this.parse();
 }
 
 
@@ -368,7 +364,7 @@ ParseArrayIndexes.prototype.parseArrayIndex = function () {
 
 	// is nexl expression ?
 	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
-		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos);
+		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parse();
 		this.lastSearchPos += nexlExpressionMD.length;
 		return nexlExpressionMD;
 	}
@@ -450,8 +446,6 @@ ParseArrayIndexes.prototype.parse = function () {
 function ParseArrayIndexes(str, pos) {
 	this.str = str;
 	this.pos = pos;
-
-	return this.parse();
 }
 
 
@@ -540,7 +534,7 @@ ParseNexlExpression.prototype.addObject = function () {
 
 ParseNexlExpression.prototype.addExpression = function () {
 	// parsing nexl expression
-	var nexlExpressionMD = new ParseNexlExpression(this.str, this.searchPos);
+	var nexlExpressionMD = new ParseNexlExpression(this.str, this.searchPos).parse();
 	// dropping existing data to buffer
 	this.dropCut2BufferIfNotEmpty();
 	// dropping nexl expression to buffer
@@ -550,19 +544,19 @@ ParseNexlExpression.prototype.addExpression = function () {
 };
 
 ParseNexlExpression.prototype.addFunction = function () {
-	var parsedFunctionCall = new ParseFunctionCall(this.str, this.searchPos);
+	var parsedFunctionCall = new ParseFunctionCall(this.str, this.searchPos).parse();
 	this.result.actions.push(parsedFunctionCall.funcCallAction);
 	this.lastSearchPos += parsedFunctionCall.length;
 };
 
 ParseNexlExpression.prototype.addArrayIndexes = function () {
-	var arrayIndexes = new ParseArrayIndexes(this.str, this.searchPos);
+	var arrayIndexes = new ParseArrayIndexes(this.str, this.searchPos).parse();
 	this.result.actions.push(arrayIndexes.arrayIndexes);
 	this.lastSearchPos += arrayIndexes.length;
 };
 
 ParseNexlExpression.prototype.parseModifiers = function () {
-	var modifiers = new ParseModifiers(this.str, this.searchPos);
+	var modifiers = new ParseModifiers(this.str, this.searchPos).parse();
 	this.result.modifiers = modifiers.modifiers;
 	this.lastSearchPos += modifiers.length;
 };
@@ -656,8 +650,6 @@ ParseNexlExpression.prototype.parse = function () {
 function ParseNexlExpression(str, pos) {
 	this.str = str;
 	this.pos = pos;
-
-	return this.parse();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -752,7 +744,7 @@ ParseStr.prototype.parseStrInner = function () {
 	var chunkNr = this.result.chunks.length - 1;
 
 	// extracting nexl expression stuff
-	var nexlExpressionMD = new ParseNexlExpression(this.str, this.newSearchPos);
+	var nexlExpressionMD = new ParseNexlExpression(this.str, this.newSearchPos).parse();
 
 	// adding to result.chunkSubstitutions as chunkNr
 	this.result.chunkSubstitutions[chunkNr] = nexlExpressionMD;
@@ -786,8 +778,6 @@ ParseStr.prototype.parse = function () {
 function ParseStr(str, stopAt) {
 	this.str = str;
 	this.stopAt = stopAt;
-
-	return this.parse();
 }
 
 
@@ -802,5 +792,5 @@ module.exports.PRIMITIVE_TYPES = PRIMITIVE_TYPES;
 module.exports.hasSubExpression = hasSubExpression;
 
 module.exports.parseStr = function (str) {
-	return new ParseStr(str);
+	return new ParseStr(str).parse();
 };
