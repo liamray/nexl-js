@@ -119,14 +119,6 @@ function ChunksAssembler(session, chunks, chunkSubstitutions) {
 // NexlExpressionEvaluator
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-NexlExpressionEvaluator.prototype.hasSubExpression = function () {
-
-};
-
-NexlExpressionEvaluator.prototype.processItem = function () {
-
-};
-
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	while (nep.hasSubExpression(this.result)) {
 		this.result = new NexlItemsProcessor(this.session).processItem(this.result);
@@ -268,7 +260,7 @@ NexlItemsProcessor.prototype.processItem = function (item) {
 	}
 
 	// all another primitives are not processable and being returned as is
-	return input;
+	return item;
 };
 
 function NexlItemsProcessor(session, item) {
