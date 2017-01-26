@@ -91,7 +91,12 @@ ChunksAssembler.prototype.assemble = function () {
 	var finalResult = [];
 	// iterating over additional array and joining chunks
 	for (var i = 0; i < this.result.length; i++) {
-		var item = this.result[i].join('');
+		var item = this.result[i];
+		if (item.length === 1) {
+			item = item[0];
+		} else {
+			item = item.join('');
+		}
 		finalResult.push(item);
 	}
 
