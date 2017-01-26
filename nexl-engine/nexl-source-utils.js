@@ -154,13 +154,16 @@ function assembleSourceCode(nexlSource) {
 }
 
 function createContext(nexlSource) {
+	var context = {};
 	var sourceCode = assembleSourceCode(nexlSource);
 
 	try {
-		vm.runInNewContext(sourceCode, this.context);
+		vm.runInNewContext(sourceCode, context);
 	} catch (e) {
 		throw "Got a problem with a nexl source : " + e;
 	}
+
+	return context;
 }
 
 
