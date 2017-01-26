@@ -58,6 +58,66 @@ const TYPES_REGEX = makeTypesRegex();
 // Parser utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function hasSubExpressionStr(str) {
+	var pos = 0;
+	while (pos < str.length) {
+		pos = str.indexOf(NEXL_EXPRESSION_OPEN, pos);
+		if (pos < 0) {
+			return false;
+		}
+		var escaping = escapePrecedingSlashes(str, pos);
+		if (!escaping.escaped) {
+			return true;
+		}
+		pos++;
+	}
+
+	return false;
+}
+
+function hasSubExpressionObj(obj) {
+	for (var key in obj) {
+		var val = obj[key];
+
+		if (hasSubExpression(key) || hasSubExpression(val)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function hasSubExpressionArr(arr) {
+	for (var index = 0; index < arr.length; index++) {
+		if (hasSubExpression(arr[index])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+function hasSubExpression(item) {
+	// nexl-engine doesn't parse function content
+	if (j79.isFunction(item)) {
+		return false;
+	}
+
+	if (j79.isObject(item)) {
+		return hasSubExpressionObj(item);
+	}
+
+	if (j79.isArray(item)) {
+		return hasSubExpressionArr(item);
+	}
+
+	if (j79.isString(item)) {
+		return hasSubExpressionStr(item);
+	}
+
+	// all other primitives can't have sub-expressions
+	return false;
+}
+
 function makeExpressionParserRegex() {
 	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_OPEN, OBJECTS_SEPARATOR, FUNCTION_CALL_OPEN, ARRAY_INDEX_OPEN, NEXL_EXPRESSION_CLOSE]);
 	return j79.makeOrRegexOfArray(result);
@@ -393,8 +453,6 @@ function ParseArrayIndexes(str, pos) {
 
 	return this.parse();
 }
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -740,6 +798,8 @@ function ParseStr(str, stopAt) {
 module.exports.MODIFIERS = MODIFIERS;
 
 module.exports.PRIMITIVE_TYPES = PRIMITIVE_TYPES;
+
+module.exports.hasSubExpression = hasSubExpression;
 
 module.exports.parseStr = function (str) {
 	return new ParseStr(str);

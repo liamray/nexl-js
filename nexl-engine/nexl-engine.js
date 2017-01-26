@@ -90,8 +90,8 @@ ChunksAssembler.prototype.assemble = function () {
 
 	var finalResult = [];
 	// iterating over additional array and joining chunks
-	for (var i = 0; i < result.length; i++) {
-		var item = result[i].join('');
+	for (var i = 0; i < this.result.length; i++) {
+		var item = this.result[i].join('');
 		finalResult.push(item);
 	}
 
@@ -125,8 +125,8 @@ NexlExpressionEvaluator.prototype.processItem = function () {
 };
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
-	while (this.hasSubExpression()) {
-		this.result = this.processItem();
+	while (nep.hasSubExpression(this.result)) {
+		this.result = new NexlItemsProcessor(this.session).processItem(this.result);
 	}
 };
 
@@ -294,4 +294,4 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 module.exports['settings-list'] = Object.keys(DEFAULT_GLOBAL_SETTINGS);
 
 // exporting resolveJsVariables
-module.exports.resolveJsVariables = neu.resolveJsVariables;
+module.exports.resolveJsVariables = nsu.resolveJsVariables;
