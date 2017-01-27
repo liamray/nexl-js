@@ -97,7 +97,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 		var chunkValues = j79.wrapWithArrayIfNeeded(chunkValue);
 
 		// validating
-		this.validateChunkValue(chunkValue, chunk2Substitute);
+		this.validateChunkValue(chunkValues, chunk2Substitute);
 
 		// substituting chunkValue to result
 		this.substitute(chunkValues, pos);
