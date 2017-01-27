@@ -35,9 +35,9 @@ var GLOBAL_SETTINGS = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ChunksAssembler
+// EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ChunksAssembler.prototype.substitute = function (chunkValue, pos) {
+EvalAndSubstChunks.prototype.substitute = function (chunkValue, pos) {
 	var newResult = [];
 	var value = j79.wrapWithArrayIfNeeded(chunkValue);
 
@@ -58,7 +58,7 @@ ChunksAssembler.prototype.substitute = function (chunkValue, pos) {
 	this.result = newResult;
 };
 
-ChunksAssembler.prototype.validateChunkValue = function (chunkValue) {
+EvalAndSubstChunks.prototype.validateChunkValue = function (chunkValue) {
 	// all chunks will be joined to one string. objects and function has the [Object object] and [Object function] string representation. It's unacceptable
 	if (j79.isObject(chunkValue) || j79.isFunction(chunkValue)) {
 		// todo : !!!
@@ -67,7 +67,7 @@ ChunksAssembler.prototype.validateChunkValue = function (chunkValue) {
 };
 
 
-ChunksAssembler.prototype.assemble = function () {
+EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 	// cloning chunks array and wrapping with additional array
 	this.result = [this.chunks.slice(0)];
 
@@ -108,7 +108,7 @@ ChunksAssembler.prototype.assemble = function () {
 	return finalResult;
 };
 
-function ChunksAssembler(session, chunks, chunkSubstitutions) {
+function EvalAndSubstChunks(session, chunks, chunkSubstitutions) {
 	this.session = session;
 	this.chunks = chunks;
 	this.chunkSubstitutions = chunkSubstitutions;
@@ -121,13 +121,13 @@ function ChunksAssembler(session, chunks, chunkSubstitutions) {
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	while (nep.hasSubExpression(this.result)) {
-		this.result = new NexlItemsProcessor(this.session).processItem(this.result);
+		this.result = new NexlEngine(this.session).processItem(this.result);
 	}
 };
 
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	// assembledChunks is string
-	var assembledChunks = new ChunksAssembler(this.session, this.action.chunks, this.action.chunkSubstitutions).assemble();
+	var assembledChunks = new EvalAndSubstChunks(this.session, this.action.chunks, this.action.chunkSubstitutions).evalAndSubstChunks();
 
 	// resolving value from last result
 	this.result = this.result[assembledChunks];
@@ -191,11 +191,11 @@ function NexlExpressionEvaluator(session, nexlExpressionMD) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// NexlItemsProcessor
+// NexlEngine
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-NexlItemsProcessor.prototype.processArrayItem = function (arr) {
+NexlEngine.prototype.processArrayItem = function (arr) {
 	var result = [];
 
 	for (var index in arr) {
@@ -212,7 +212,7 @@ NexlItemsProcessor.prototype.processArrayItem = function (arr) {
 	return result;
 };
 
-NexlItemsProcessor.prototype.processObjectItem = function (obj) {
+NexlEngine.prototype.processObjectItem = function (obj) {
 	var result = {};
 
 	// iterating over over keys:values and evaluating
@@ -230,15 +230,15 @@ NexlItemsProcessor.prototype.processObjectItem = function (obj) {
 	return result;
 };
 
-NexlItemsProcessor.prototype.processStringItem = function (str) {
+NexlEngine.prototype.processStringItem = function (str) {
 	// parsing string
 	var parsedStrMD = nep.parseStr(str);
 
 	// evaluating
-	return new ChunksAssembler(this.session, parsedStrMD.chunks, parsedStrMD.chunkSubstitutions).assemble();
+	return new EvalAndSubstChunks(this.session, parsedStrMD.chunks, parsedStrMD.chunkSubstitutions).evalAndSubstChunks();
 };
 
-NexlItemsProcessor.prototype.processItem = function (item) {
+NexlEngine.prototype.processItem = function (item) {
 	// iterates over each array element and processes every item
 	if (j79.isArray(item)) {
 		return this.processArrayItem(item);
@@ -263,7 +263,7 @@ NexlItemsProcessor.prototype.processItem = function (item) {
 	return item;
 };
 
-function NexlItemsProcessor(session, item) {
+function NexlEngine(session, item) {
 	this.session = session;
 }
 
@@ -278,7 +278,7 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	session.externalArgs = externalArgs;
 	session.isOmit = false;
 
-	return new NexlItemsProcessor(session, item).processItem(item);
+	return new NexlEngine(session, item).processItem(item);
 };
 
 // exporting 'settings-list'
