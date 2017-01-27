@@ -49,6 +49,10 @@ EvalAndSubstChunks.prototype.validateChunkValue = function (values, chunk2Substi
 	for (var i = 0; i < values.length; i++) {
 		var value = values[i];
 
+		if (value === null || value === undefined) {
+			throw util.format('Can\'t substitute [%s] value into [%s]', value, chunk2Substitute.str);
+		}
+
 		// in case of item is object or function and we have more than 1 chunk, throw error, because object|function can't be joined with another chunks
 		// this.result - is an additional array, this.result[0] - is chunks array
 		if (isObjectOrFunction(value) && this.result.length > 0 && this.result[0].length > 1) {
@@ -149,11 +153,32 @@ NexlExpressionEvaluator.prototype.validateType = function (assembledChunks) {
 
 };
 
+NexlExpressionEvaluator.prototype.resolveNextObject = function (key) {
+	if (j79.isObject(this.result)) {
+		this.result = this.result[key];
+		return;
+	}
+
+	if (j79.isArray(this.result)) {
+		for (var index = 0; index < this.result.length; index++) {
+			var currentItem = this.result[index];
+			if (j79.isObject(currentItem)) {
+				this.result[index] = currentItem[key];
+			} else {
+				this.result[index] = null;
+			}
+		}
+
+		return;
+	}
+
+	this.result[index] = null;
+};
+
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	var data = {};
 	data.chunks = this.action.chunks;
 	data.chunkSubstitutions = this.action.chunkSubstitutions;
-	data.str = this.str;
 
 	// assembledChunks is string
 	var assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
@@ -162,7 +187,7 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	this.validateType(assembledChunks);
 
 	// resolving value from last result
-	this.result = this.result[assembledChunks];
+	this.resolveNextObject(assembledChunks);
 
 	// result may contain additional nexl expression with unlimited depth. resolving
 	this.resolveSubExpressions();
@@ -213,6 +238,10 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	}
 
 	this.applyModifiers();
+
+	if (this.result === this.session.context) {
+		return null;
+	}
 
 	return this.result;
 };
@@ -322,4 +351,3 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 module.exports['settings-list'] = Object.keys(DEFAULT_GLOBAL_SETTINGS);
 
 // exporting resolveJsVariables
-module.exports.resolveJsVariables = nsu.resolveJsVariables;
