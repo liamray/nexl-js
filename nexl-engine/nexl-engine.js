@@ -52,7 +52,7 @@ EvalAndSubstChunks.prototype.validateChunkValue = function (values, chunk2Substi
 		// in case of item is object or function and we have more than 1 chunk, throw error, because object|function can't be joined with another chunks
 		// this.result - is an additional array, this.result[0] - is chunks array
 		if (isObjectOrFunction(value) && this.result.length > 0 && this.result[0].length > 1) {
-			throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as [%s] ( must be a primitive, string or array )', chunk2Substitute, this.data.str, j79.getType(value));
+			throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as %s ( must be a primitive, string or array )', chunk2Substitute.str, this.data.str, j79.getType(value));
 		}
 	}
 };

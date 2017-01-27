@@ -639,7 +639,6 @@ ParseNexlExpression.prototype.parse = function () {
 	this.result = {};
 	this.result.actions = []; // get object field, execute function, access array elements
 	this.result.modifiers = []; // parsed nexl expression modifiers
-	this.result.str = this.str;
 
 	// iterating and parsing
 	while (!this.isFinished) {
@@ -648,6 +647,7 @@ ParseNexlExpression.prototype.parse = function () {
 
 	// nexl expression length in characters. need it to know where nexl expression ends
 	this.result.length = this.lastSearchPos - this.pos + this.escapingDeltaLength;
+	this.result.str = this.str.substr(this.pos, this.result.length);
 
 	return this.result;
 };
