@@ -35,14 +35,34 @@ var GLOBAL_SETTINGS = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Utility functions
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function isObjectOrFunction(item) {
+	return j79.isObject(item) || j79.isFunction(item);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-EvalAndSubstChunks.prototype.substitute = function (chunkValue, pos) {
-	var newResult = [];
-	var value = j79.wrapWithArrayIfNeeded(chunkValue);
+EvalAndSubstChunks.prototype.validateChunkValue = function (values, chunk2Substitute) {
+	for (var i = 0; i < values.length; i++) {
+		var value = values[i];
 
-	for (var i = 0; i < value.length; i++) {
-		var item = value[i];
+		// in case of item is object or function and we have more than 1 chunk, throw error, because object|function can't be joined with another chunks
+		// this.result - is an additional array, this.result[0] - is chunks array
+		if (isObjectOrFunction(value) && this.result.length > 0 && this.result[0].length > 1) {
+			throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as [%s] ( must be a primitive, string or array )', chunk2Substitute, this.data.str, j79.getType(value));
+		}
+	}
+};
+
+EvalAndSubstChunks.prototype.substitute = function (values, pos) {
+	var newResult = [];
+
+	for (var i = 0; i < values.length; i++) {
+		var item = values[i];
+
 		for (var j = 0; j < this.result.length; j++) {
 			// cloning array
 			var currentItem = this.result[j].slice(0);
@@ -58,34 +78,29 @@ EvalAndSubstChunks.prototype.substitute = function (chunkValue, pos) {
 	this.result = newResult;
 };
 
-EvalAndSubstChunks.prototype.validateChunkValue = function (chunkValue) {
-	// all chunks will be joined to one string. objects and function has the [Object object] and [Object function] string representation. It's unacceptable
-	if (j79.isObject(chunkValue) || j79.isFunction(chunkValue)) {
-		// todo : !!!
-		throw util.format('todo : make good error message');
-	}
-};
-
-
 EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 	// cloning chunks array and wrapping with additional array
-	this.result = [this.chunks.slice(0)];
+	this.result = [this.data.chunks.slice(0)];
 
 	// tells if additional array should remain
 	var isArrayFlag = false;
 
 	// iterating over chunkSubstitutions
-	for (var pos in this.chunkSubstitutions) {
+	for (var pos in this.data.chunkSubstitutions) {
 		// current chunk ( which is parsed nexl expression itself )
-		var chunk2Substitute = this.chunkSubstitutions[pos];
+		var chunk2Substitute = this.data.chunkSubstitutions[pos];
 
 		// evaluating this chunk
 		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
 
-		this.validateChunkValue(chunkValue);
+		// wrapping with array
+		var chunkValues = j79.wrapWithArrayIfNeeded(chunkValue);
+
+		// validating
+		this.validateChunkValue(chunkValue, chunk2Substitute);
 
 		// substituting chunkValue to result
-		this.substitute(chunkValue, pos);
+		this.substitute(chunkValues, pos);
 	}
 
 	var finalResult = [];
@@ -104,16 +119,17 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 		finalResult = finalResult[0];
 	}
 
+	if (finalResult === this.session.context) {
+		return null;
+	}
 
 	return finalResult;
 };
 
-function EvalAndSubstChunks(session, chunks, chunkSubstitutions) {
+function EvalAndSubstChunks(session, data) {
 	this.session = session;
-	this.chunks = chunks;
-	this.chunkSubstitutions = chunkSubstitutions;
+	this.data = data;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // NexlExpressionEvaluator
@@ -125,9 +141,25 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	}
 };
 
+NexlExpressionEvaluator.prototype.validateType = function (assembledChunks) {
+	// the type of assembledChunks mustn't be an object or function
+	if (isObjectOrFunction(assembledChunks)) {
+		throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]', this.nexlExpressionMD, j79.getType(assembledChunks));
+	}
+
+};
+
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
+	var data = {};
+	data.chunks = this.action.chunks;
+	data.chunkSubstitutions = this.action.chunkSubstitutions;
+	data.str = this.str;
+
 	// assembledChunks is string
-	var assembledChunks = new EvalAndSubstChunks(this.session, this.action.chunks, this.action.chunkSubstitutions).evalAndSubstChunks();
+	var assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+
+	// validating assembledChunks type. The type can't be object or function
+	this.validateType(assembledChunks);
 
 	// resolving value from last result
 	this.result = this.result[assembledChunks];
@@ -234,8 +266,13 @@ NexlEngine.prototype.processStringItem = function (str) {
 	// parsing string
 	var parsedStrMD = nep.parseStr(str);
 
+	var data = {};
+	data.chunks = parsedStrMD.chunks;
+	data.chunkSubstitutions = parsedStrMD.chunkSubstitutions;
+	data.str = str;
+
 	// evaluating
-	return new EvalAndSubstChunks(this.session, parsedStrMD.chunks, parsedStrMD.chunkSubstitutions).evalAndSubstChunks();
+	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 };
 
 NexlEngine.prototype.processItem = function (item) {

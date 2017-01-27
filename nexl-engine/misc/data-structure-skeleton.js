@@ -1,4 +1,5 @@
 var PARSED_STR = {
+	str: 'the original str',
 	chunks: ['hello', 'world', null, 'test'],
 	chunkSubstitutions: {
 		2: 'NEXL_EXPRESSION_DEFINITION' // key points to a null value in chunks
@@ -7,6 +8,8 @@ var PARSED_STR = {
 
 
 var NEXL_EXPRESSION_DEFINITION = {
+
+	str: 'the original expression',
 
 	length: 15,
 

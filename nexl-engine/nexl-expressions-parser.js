@@ -198,7 +198,7 @@ function skipCommaIfPresents(str, pos) {
 // type is a postfix which tells what a data type is it. for example 10:str has string type
 ParseModifiers.prototype.discoverModifierType = function (modifier) {
 	// checking chunks. is it empty ?
-	if (modifier.value.chunks.length < 0) {
+	if (modifier.value.chunks.length < 1) {
 		return;
 	}
 
@@ -243,6 +243,11 @@ ParseModifiers.prototype.parseModifier = function () {
 
 	this.lastSearchPos++;
 	chars = chars.substr(1);
+
+	// is end of expression ?
+	if (isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
+		chars = '';
+	}
 
 	// parsing modifier
 	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parse();
@@ -634,6 +639,7 @@ ParseNexlExpression.prototype.parse = function () {
 	this.result = {};
 	this.result.actions = []; // get object field, execute function, access array elements
 	this.result.modifiers = []; // parsed nexl expression modifiers
+	this.result.str = this.str;
 
 	// iterating and parsing
 	while (!this.isFinished) {
@@ -649,7 +655,7 @@ ParseNexlExpression.prototype.parse = function () {
 // pos points to ${ chars of expression
 function ParseNexlExpression(str, pos) {
 	this.str = str;
-	this.pos = pos;
+	this.pos = pos || 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -761,6 +767,7 @@ ParseStr.prototype.parse = function () {
 	this.result.chunks = [];
 	this.result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
 	this.result.length = 0;
+	this.result.str = this.str;
 
 	// last search position in str
 	this.lastSearchPos = 0;
