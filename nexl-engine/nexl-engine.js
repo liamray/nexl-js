@@ -144,7 +144,7 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 NexlExpressionEvaluator.prototype.validateType = function (assembledChunks) {
 	// the type of assembledChunks mustn't be an object or function
 	if (isObjectOrFunction(assembledChunks)) {
-		throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]', this.nexlExpressionMD, j79.getType(assembledChunks));
+		throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]', this.nexlExpressionMD.str, j79.getType(assembledChunks));
 	}
 
 };
