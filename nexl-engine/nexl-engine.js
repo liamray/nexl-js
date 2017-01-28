@@ -176,7 +176,7 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (assembledChunks) {
+NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
 	// was it array in the beginning ?
 	var isArrayFlag = j79.isArray(assembledChunks) || j79.isArray(this.result);
 	var result = [];
@@ -215,7 +215,7 @@ NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (assembledCh
 	this.resolveSubExpressions();
 };
 
-NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
+NexlExpressionEvaluator.prototype.validate = function (assembledChunks) {
 	// null check
 	if (!j79.isValSet(assembledChunks)) {
 		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
@@ -225,8 +225,6 @@ NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks)
 	if (isObjectOrFunction(assembledChunks)) {
 		throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(assembledChunks), this.chunkNr + 1);
 	}
-
-	this.resolveNextObjectInner(assembledChunks);
 };
 
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
@@ -236,6 +234,8 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 
 	// assembledChunks is string
 	var assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+
+	this.validate(assembledChunks);
 
 	// resolving value from last this.result
 	this.resolveNextObject(assembledChunks);
