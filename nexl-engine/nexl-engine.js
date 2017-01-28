@@ -52,11 +52,11 @@ function isObjectFunctionOrArray(item) {
 
 EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 	if (!j79.isValSet(item)) {
-		throw util.format('Can\'t substitute [%s] value into [%s]', item, chunk2Substitute.str);
+		throw util.format('Cannot substitute [%s] value into [%s]', item, chunk2Substitute.str);
 	}
 
 	if (isObjectFunctionOrArray(item)) {
-		throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as %s ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
+		throw util.format('The subexpression [%s] of [%s] expression cannot be evaluated as %s ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
 	}
 };
 
@@ -188,13 +188,13 @@ NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (assembledCh
 
 		// keyItem must be only a primitive. checking
 		if (isObjectFunctionOrArray(keyItem)) {
-			throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]. Expression is [%s]', this.nexlExpressionMD.str, j79.getType(keyItem), this.nexlExpressionMD.str);
+			throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(keyItem), this.chunkNr + 1);
 		}
 
 		for (var j in currentResult) {
 			var item = currentResult[j];
 			if (!j79.isObject(item)) {
-				throw util.format('Can\'t resolve a [%s] property from non-object item. Item type is [%s], item value is [%s]. Expression is [%s]', keyItem, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str);
+				throw util.format('Cannot resolve a [%s] property from non-object item. Item type is [%s], item value is [%s]. Expression is [%s]. chunkNr is [%s]', keyItem, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str, this.chunkNr + 1);
 			}
 			if (keyItem !== '') {
 				result.push(item[keyItem]);
@@ -216,15 +216,14 @@ NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (assembledCh
 };
 
 NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
-	// null
+	// null check
 	if (!j79.isValSet(assembledChunks)) {
-		this.result = null;
-		return;
+		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	// the type of assembledChunks mustn't be an object or function
 	if (isObjectOrFunction(assembledChunks)) {
-		throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]', this.nexlExpressionMD.str, j79.getType(assembledChunks));
+		throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(assembledChunks), this.chunkNr + 1);
 	}
 
 	this.resolveNextObjectInner(assembledChunks);
@@ -282,9 +281,9 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	this.externalArgsPointer = this.session.externalArgs;
 
 	// iterating over actions
-	for (var index = 0; index < this.nexlExpressionMD.actions.length; index++) {
+	for (this.chunkNr = 0; this.chunkNr < this.nexlExpressionMD.actions.length; this.chunkNr++) {
 		// current action
-		this.action = this.nexlExpressionMD.actions[index];
+		this.action = this.nexlExpressionMD.actions[this.chunkNr];
 
 		// evaluating current action
 		this.evalAction();
@@ -334,7 +333,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		var evaluatedKey = this.processItem(key);
 		if (j79.isArray(evaluatedKey) || j79.isObject(evaluatedKey) || j79.isFunction(evaluatedKey)) {
 			var type = j79.getType(evaluatedKey);
-			throw util.format('Can\'t assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
+			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
 		}
 
 		var value = obj[key];
