@@ -176,6 +176,43 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	}
 };
 
+NexlExpressionEvaluator.prototype.resolveExternalArg = function (key) {
+	if (!j79.isValSet(this.externalArgsPointer)) {
+		return null;
+	}
+
+	this.externalArgsPointer = this.externalArgsPointer[key];
+
+	// if this.externalArgsPointer is primitive
+	if (j79.isValSet(this.externalArgsPointer) && !isObjectFunctionOrArray(this.externalArgsPointer)) {
+		return this.externalArgsPointer;
+	}
+
+	return null;
+};
+
+NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (key, currentItem, result) {
+	if (!j79.isObject(currentItem)) {
+		throw util.format('Cannot resolve a [%s] property from non-object item. Item type is [%s], item value is [%s]. Expression is [%s]. chunkNr is [%s]', key, j79.getType(currentItem), JSON.stringify(currentItem), this.nexlExpressionMD.str, this.chunkNr + 1);
+	}
+
+	// if key is empty, remaining current value
+	if (key === '') {
+		result.push(currentItem);
+		return;
+	}
+
+	// external argument stuff
+	var externalArg = this.resolveExternalArg(key);
+
+	// what is to apply ?
+	if (externalArg !== null) {
+		result.push(externalArg);
+	} else {
+		result.push(currentItem[key]);
+	}
+};
+
 NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
 	// was it array in the beginning ?
 	var isArrayFlag = j79.isArray(assembledChunks) || j79.isArray(this.result);
@@ -184,23 +221,16 @@ NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks)
 	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
 
 	for (var i in keys) {
-		var keyItem = keys[i];
+		var key = keys[i];
 
-		// keyItem must be only a primitive. checking
-		if (isObjectFunctionOrArray(keyItem)) {
-			throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(keyItem), this.chunkNr + 1);
+		// key must be only a primitive. checking
+		if (isObjectFunctionOrArray(key)) {
+			throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(key), this.chunkNr + 1);
 		}
 
 		for (var j in currentResult) {
-			var item = currentResult[j];
-			if (!j79.isObject(item)) {
-				throw util.format('Cannot resolve a [%s] property from non-object item. Item type is [%s], item value is [%s]. Expression is [%s]. chunkNr is [%s]', keyItem, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str, this.chunkNr + 1);
-			}
-			if (keyItem !== '') {
-				result.push(item[keyItem]);
-			} else {
-				result.push(item);
-			}
+			var currentValue = currentResult[j];
+			this.resolveNextObjectInner(key, currentValue, result);
 		}
 	}
 
