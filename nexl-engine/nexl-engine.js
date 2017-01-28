@@ -41,31 +41,32 @@ function isObjectOrFunction(item) {
 	return j79.isObject(item) || j79.isFunction(item);
 }
 
+function isObjectFunctionOrArray(item) {
+	return isObjectOrFunction(item) || j79.isArray(item);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-EvalAndSubstChunks.prototype.validateChunkValue = function (values, chunk2Substitute) {
-	for (var i = 0; i < values.length; i++) {
-		var value = values[i];
 
-		if (value === null || value === undefined) {
-			throw util.format('Can\'t substitute [%s] value into [%s]', value, chunk2Substitute.str);
-		}
+EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
+	if (!j79.isValSet(item)) {
+		throw util.format('Can\'t substitute [%s] value into [%s]', item, chunk2Substitute.str);
+	}
 
-		// in case of item is object or function and we have more than 1 chunk, throw error, because object|function can't be joined with another chunks
-		// this.result - is an additional array, this.result[0] - is chunks array
-		if (isObjectOrFunction(value) && this.result.length > 0 && this.result[0].length > 1) {
-			throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as %s ( must be a primitive, string or array )', chunk2Substitute.str, this.data.str, j79.getType(value));
-		}
+	if (isObjectFunctionOrArray(item)) {
+		throw util.format('The subexpression [%s] of [%s] expression can\'t be evaluated as %s ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
 	}
 };
 
-EvalAndSubstChunks.prototype.substitute = function (values, pos) {
+EvalAndSubstChunks.prototype.validateAndSubstitute = function (chunk2Substitute, values, pos) {
 	var newResult = [];
 
 	for (var i = 0; i < values.length; i++) {
 		var item = values[i];
+
+		this.validate(chunk2Substitute, item);
 
 		for (var j = 0; j < this.result.length; j++) {
 			// cloning array
@@ -82,7 +83,8 @@ EvalAndSubstChunks.prototype.substitute = function (values, pos) {
 	this.result = newResult;
 };
 
-EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
+
+EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 	// cloning chunks array and wrapping with additional array
 	this.result = [this.data.chunks.slice(0)];
 
@@ -95,16 +97,14 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 		var chunk2Substitute = this.data.chunkSubstitutions[pos];
 
 		// evaluating this chunk
+		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
 		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
 
 		// wrapping with array
 		var chunkValues = j79.wrapWithArrayIfNeeded(chunkValue);
 
-		// validating
-		this.validateChunkValue(chunkValues, chunk2Substitute);
-
-		// substituting chunkValue to result
-		this.substitute(chunkValues, pos);
+		// validating and substituting chunkValue to result
+		this.validateAndSubstitute(chunk2Substitute, chunkValues, pos);
 	}
 
 	var finalResult = [];
@@ -130,6 +130,37 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 	return finalResult;
 };
 
+EvalAndSubstChunks.prototype.throwParserErrorIfNeeded = function (condition, errorMessage) {
+	if (condition) {
+		throw errorMessage;
+	}
+};
+
+EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
+	var chunksCnt = this.data.chunks.length;
+	var chunkSubstitutionsCnt = Object.keys(this.data.chunkSubstitutions).length;
+
+	// no chunks ? do get a null !
+	if (chunksCnt < 1) {
+		this.throwParserErrorIfNeeded(chunkSubstitutionsCnt !== 0, util.format('Parser error ! Got a chunkSubstitutionsCnt = %s when the chunksCnt = %s for [%s] expression', chunkSubstitutionsCnt, chunksCnt, this.data.str));
+		return null;
+	}
+
+	// when there is nothing to substitute, return just the one item from chunks
+	if (chunkSubstitutionsCnt < 1) {
+		this.throwParserErrorIfNeeded(chunksCnt > 1, util.format('Parser error ! Got a chunkSubstitutionsCnt = %s when the chunksCnt = %s for [%s] expression', chunkSubstitutionsCnt, chunksCnt, this.data.str));
+		return this.data.chunks[0];
+	}
+
+	// when we have the only 1 item to substitute
+	if (this.data.chunks.length === 1 && chunkSubstitutionsCnt === 1) {
+		this.throwParserErrorIfNeeded(this.data.chunks[0] !== null, util.format('Parser error ! There is only 1 chunk to substitute, but his cell is not null for [%s] expression', this.data.str));
+		return new NexlExpressionEvaluator(this.session, j79.getObjectValues(this.data.chunkSubstitutions)[0]).eval();
+	}
+
+	return this.evalAndSubstChunksInner();
+};
+
 function EvalAndSubstChunks(session, data) {
 	this.session = session;
 	this.data = data;
@@ -145,34 +176,58 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.validateType = function (assembledChunks) {
+NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (assembledChunks) {
+	// was it array in the beginning ?
+	var isArrayFlag = j79.isArray(assembledChunks) || j79.isArray(this.result);
+	var result = [];
+	var keys = j79.wrapWithArrayIfNeeded(assembledChunks);
+	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
+
+	for (var i in keys) {
+		var keyItem = keys[i];
+
+		// keyItem must be only a primitive. checking
+		if (isObjectFunctionOrArray(keyItem)) {
+			throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]. Expression is [%s]', this.nexlExpressionMD.str, j79.getType(keyItem), this.nexlExpressionMD.str);
+		}
+
+		for (var j in currentResult) {
+			var item = currentResult[j];
+			if (!j79.isObject(item)) {
+				throw util.format('Can\'t resolve a [%s] property from non-object item. Item type is [%s], item value is [%s]. Expression is [%s]', keyItem, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str);
+			}
+			if (keyItem !== '') {
+				result.push(item[keyItem]);
+			} else {
+				result.push(item);
+			}
+		}
+	}
+
+	// unwrap array if needed
+	if (result.length === 1 && !isArrayFlag) {
+		result = result[0];
+	}
+
+	this.result = result;
+
+	// result may contain additional nexl expression with unlimited depth. resolving
+	this.resolveSubExpressions();
+};
+
+NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
+	// null
+	if (!j79.isValSet(assembledChunks)) {
+		this.result = null;
+		return;
+	}
+
 	// the type of assembledChunks mustn't be an object or function
 	if (isObjectOrFunction(assembledChunks)) {
 		throw util.format('The subexpression of [%s] expression can\'t be evaluated as [%s]', this.nexlExpressionMD.str, j79.getType(assembledChunks));
 	}
 
-};
-
-NexlExpressionEvaluator.prototype.resolveNextObject = function (key) {
-	if (j79.isObject(this.result)) {
-		this.result = this.result[key];
-		return;
-	}
-
-	if (j79.isArray(this.result)) {
-		for (var index = 0; index < this.result.length; index++) {
-			var currentItem = this.result[index];
-			if (j79.isObject(currentItem)) {
-				this.result[index] = currentItem[key];
-			} else {
-				this.result[index] = null;
-			}
-		}
-
-		return;
-	}
-
-	this.result[index] = null;
+	this.resolveNextObjectInner(assembledChunks);
 };
 
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
@@ -183,14 +238,8 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	// assembledChunks is string
 	var assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 
-	// validating assembledChunks type. The type can't be object or function
-	this.validateType(assembledChunks);
-
-	// resolving value from last result
+	// resolving value from last this.result
 	this.resolveNextObject(assembledChunks);
-
-	// result may contain additional nexl expression with unlimited depth. resolving
-	this.resolveSubExpressions();
 };
 
 NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
@@ -206,6 +255,9 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 	if (j79.isArray(this.action.chunks) && j79.isObject(this.action.chunkSubstitutions)) {
 		return this.evalObjectAction();
 	}
+
+	// external args are actual only for object actions. resetting
+	this.externalArgsPointer = null;
 
 	throw 'Will be implemented soon';
 
@@ -227,6 +279,7 @@ NexlExpressionEvaluator.prototype.applyModifiers = function () {
 
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
+	this.externalArgsPointer = this.session.externalArgs;
 
 	// iterating over actions
 	for (var index = 0; index < this.nexlExpressionMD.actions.length; index++) {
@@ -351,3 +404,4 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 module.exports['settings-list'] = Object.keys(DEFAULT_GLOBAL_SETTINGS);
 
 // exporting resolveJsVariables
+module.exports.resolveJsVariables = nsu.resolveJsVariables;
