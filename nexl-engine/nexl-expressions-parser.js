@@ -626,11 +626,8 @@ ParseNexlExpression.prototype.parse = function () {
 	// skipping first ${ characters
 	this.lastSearchPos = this.pos + NEXL_EXPRESSION_OPEN.length;
 
-	// buffer is using to accumulate chunks
-	this.buffer = {
-		chunks: [],
-		chunkSubstitutions: {}
-	};
+	// buffer is using to accumulate chunks within one object action. for example : ${x${y}z}. x, ${y} and z will be stored in buffer
+	this.cleanBuffer();
 
 	// the } character found indication
 	this.isFinished = false;
