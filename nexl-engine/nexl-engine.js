@@ -191,7 +191,7 @@ NexlExpressionEvaluator.prototype.resolveExternalArg = function (key) {
 	return null;
 };
 
-NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (key, currentItem, result) {
+NexlExpressionEvaluator.prototype.resolveObject = function (key, currentItem, result) {
 	if (!isObjectFunctionOrArray(currentItem)) {
 		throw util.format('Cannot resolve a [%s] property from non-object item. Item type is %s, item value is [%s]. Expression is [%s]. chunkNr is [%s]', key, j79.getType(currentItem), JSON.stringify(currentItem), this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
@@ -213,9 +213,7 @@ NexlExpressionEvaluator.prototype.resolveNextObjectInner = function (key, curren
 	}
 };
 
-NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks) {
-	// was it array in the beginning ?
-	var isArrayFlag = j79.isArray(assembledChunks) || j79.isArray(this.result);
+NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChunks) {
 	var result = [];
 	var keys = j79.wrapWithArrayIfNeeded(assembledChunks);
 	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
@@ -230,12 +228,12 @@ NexlExpressionEvaluator.prototype.resolveNextObject = function (assembledChunks)
 
 		for (var j in currentResult) {
 			var currentValue = currentResult[j];
-			this.resolveNextObjectInner(key, currentValue, result);
+			this.resolveObject(key, currentValue, result);
 		}
 	}
 
 	// unwrap array if needed
-	if (result.length === 1 && !isArrayFlag) {
+	if (result.length === 1) {
 		result = result[0];
 	}
 
@@ -265,7 +263,7 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	this.validate(assembledChunks);
 
 	// resolving value from last this.result
-	this.resolveNextObject(assembledChunks);
+	this.evalObjectActionInner(assembledChunks);
 };
 
 NexlExpressionEvaluator.prototype.evalFunctionActionInner = function (func, params) {
@@ -286,17 +284,26 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	}
 
 	// is single element ?
-	if (!j79.isArray()) {
+	if (!j79.isArray(this.result)) {
 		this.result = this.evalFunctionActionInner(this.result, params);
 		return;
 	}
+
+	var newResult = [];
 
 	// ok, it's an array. iterating over
 	for (var index in this.result) {
 		var func = this.result[index];
 		var funcResult = this.evalFunctionActionInner(func, params);
-		this.result[index] = funcResult;
+
+		if (j79.isArray(funcResult)) {
+			newResult = newResult.concat(funcResult);
+		} else {
+			newResult.push(funcResult);
+		}
 	}
+
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.evalItemIfNeeed = function (item) {
@@ -307,12 +314,12 @@ NexlExpressionEvaluator.prototype.evalItemIfNeeed = function (item) {
 
 	var result = new NexlExpressionEvaluator(this.session, item).eval();
 	if (!j79.isNumber(result)) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as [%s]. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	var resultAsStr = result + '';
-	if (!resultAsStr.match(/[0-9]+/)) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as [%s]. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+	if (!resultAsStr.match(/^[0-9]+$/)) {
+		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expressions is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	return result;
@@ -327,6 +334,12 @@ NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
 		throw util.format('Wrong array indexes : ( max = [%s] ) < ( min = [%s] ). Expressions is [%s], chunkNr is [%s]', max, min, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
+	// validating range
+	if (min < 0 || max >= this.result.length) {
+		throw util.format('Array index out of bound. Array length is [%s] is out of (%s..%s) range. Expressions is [%s], chunkNr is [%s]', this.result.length, min, max, this.nexlExpressionMD.str, this.chunkNr + 1);
+
+	}
+
 	return {
 		min: min,
 		max: max
@@ -336,22 +349,39 @@ NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
 NexlExpressionEvaluator.prototype.resolveArrayElements = function (range) {
 	var result = [];
 
-	for ( var i = range.min; i <= range.max; i++ ) {
-		
+	for (var i = range.min; i <= range.max; i++) {
+		var item = this.result[i];
+		if (j79.isArray(item)) {
+			result = result.concat(item);
+		} else {
+			result.push(item);
+		}
 	}
+
+	return result;
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction = function () {
-	var result = [];
+	// validating this.result
+	if (!j79.isArray(this.result)) {
+		throw util.format('Array indexes are not applicable item of [%s] type. Expressions is [%s], chunkNr is [%s]', j79.getType(this.result), this.nexlExpressionMD.str, this.chunkNr + 1);
+	}
+
+	var newResult = [];
 
 	// iterating over arrayIndexes
 	for (var index in this.action.arrayIndexes) {
 		var item = this.action.arrayIndexes[index];
 		var range = this.resolveArrayRange(item);
 		var arrayElements = this.resolveArrayElements(range);
-		result = result.concat(arrayElements);
+		newResult = newResult.concat(arrayElements);
 	}
 
+	if (newResult.length === 1) {
+		newResult = newResult[0];
+	}
+
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.evalAction = function () {
