@@ -299,7 +299,58 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	}
 };
 
+NexlExpressionEvaluator.prototype.evalItemIfNeeed = function (item) {
+	// not a nexl variable ? return as is ( it must be a primitive number )
+	if (!j79.isObject(item)) {
+		return item;
+	}
+
+	var result = new NexlExpressionEvaluator(this.session, item).eval();
+	if (!j79.isNumber(result)) {
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as [%s]. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+	}
+
+	var resultAsStr = result + '';
+	if (!resultAsStr.match(/[0-9]+/)) {
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as [%s]. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+	}
+
+	return result;
+};
+
+NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
+	var min = this.evalItemIfNeeed(item['min']);
+	var max = this.evalItemIfNeeed(item['max']);
+
+	// is max lower than min ?
+	if (max < min) {
+		throw util.format('Wrong array indexes : ( max = [%s] ) < ( min = [%s] ). Expressions is [%s], chunkNr is [%s]', max, min, this.nexlExpressionMD.str, this.chunkNr + 1);
+	}
+
+	return {
+		min: min,
+		max: max
+	};
+};
+
+NexlExpressionEvaluator.prototype.resolveArrayElements = function (range) {
+	var result = [];
+
+	for ( var i = range.min; i <= range.max; i++ ) {
+		
+	}
+};
+
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction = function () {
+	var result = [];
+
+	// iterating over arrayIndexes
+	for (var index in this.action.arrayIndexes) {
+		var item = this.action.arrayIndexes[index];
+		var range = this.resolveArrayRange(item);
+		var arrayElements = this.resolveArrayElements(range);
+		result = result.concat(arrayElements);
+	}
 
 };
 
@@ -318,8 +369,6 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 		this.evalFunctionAction();
 		return;
 	}
-
-	throw 'Will be implemented soon';
 
 	// is array index action ?
 	if (j79.isArray(this.action.arrayIndexes)) {
