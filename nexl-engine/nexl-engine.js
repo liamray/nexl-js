@@ -409,7 +409,91 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 	throw 'nexl expression wasn\'t parsed properly, got unknown action. Please open me a bug'
 };
 
+NexlExpressionEvaluator.prototype.isValSet = function () {
+	// is value not set ?
+	if (!j79.isValSet(this.result)) {
+		return false;
+	}
+
+	// if is not an array, the value is set ( can be a primitive, object or function )
+	if (!j79.isArray(this.result)) {
+		return true;
+	}
+
+	// iterating over array elements and checking every element
+	for (var index in this.result) {
+		var item = this.result[index];
+		// is value not set ?
+		if (!j79.isValSet(item)) {
+			return false;
+		}
+	}
+
+	return true;
+};
+
+NexlExpressionEvaluator.prototype.assignModifierValue = function (value, type) {
+	this.result = value;
+};
+
+NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
+	var data = {};
+	data.chunks = modifier.chunks;
+	data.chunkSubstitutions = modifier.chunkSubstitutions;
+
+	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+};
+
+NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
+	// is value set for this.result ?
+	if (this.isValSet()) {
+		// don't need to apply default value modifier
+		return;
+	}
+
+	// resolving modifier stuff by his id
+	var defValueModifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.DEF_VALUE];
+
+	// is default value modifier not present ?
+	if (!j79.isValSet(defValueModifiers)) {
+		return;
+	}
+
+	// iterating over values of default value modifier
+	for (var index in defValueModifiers) {
+		var modifier = defValueModifiers[index];
+
+		var modifierMd = modifier.modifierMD;
+		var type = modifier.type;
+
+		var modifierValue = this.resolveModifierValue(modifierMd);
+
+		if (j79.isValSet(modifierValue)) {
+			this.assignModifierValue(modifierValue, type);
+			return;
+		}
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyModifiers = function () {
+	var result = this.result;
+
+	// applying OMIT_WHOLE_EXPRESSION modifier
+	// result = this.applyOmitModifier(result, varStuff);
+
+	// applying object reverse resolution modifier
+	// result = this.applyObjectReverseResolutionModifier(result, varStuff);
+
+	// apply treat as modifier
+	// result = this.applyTreatAsModifier(result, varStuff);
+
+	// applying concat array elements modifier
+	// result = this.applyConcatArrayElementsModifier(result, varStuff);
+
+	// applying default value modifier
+	result = this.applyDefaultValueModifier();
+
+	return result;
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {

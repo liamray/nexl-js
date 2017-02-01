@@ -13,17 +13,18 @@ const j79 = require('j79-utils');
 var MODIFIERS = {
 	'DELIMITER': '?',
 	'DEF_VALUE': '@',
-	'DONT_OMIT_WHOLE_EXPRESSION': '+',
 	'OMIT_WHOLE_EXPRESSION': '-',
 	'TREAT_AS': '~',
 	'REVERSE_RESOLUTION': '<',
+
 	// the following modifiers are reserved for future usage
 	'RESERVED1': '!',
 	'RESERVED2': '#',
 	'RESERVED3': '%',
 	'RESERVED4': '^',
 	'RESERVED5': '&',
-	'RESERVED6': '*'
+	'RESERVED6': '*',
+	'RESERVED7': '+'
 };
 
 var PRIMITIVE_TYPES = {
@@ -198,36 +199,57 @@ function skipCommaIfPresents(str, pos) {
 // type is a postfix which tells what a data type is it. for example 10:str has string type
 ParseModifiers.prototype.discoverModifierType = function (modifier) {
 	// checking chunks. is it empty ?
-	if (modifier.value.chunks.length < 1) {
-		return;
+	if (modifier.chunks.length < 1) {
+		return null;
 	}
 
 	// resolving last chunk
-	var lastItemNr = modifier.value.chunks.length - 1;
-	var lastChunk = modifier.value.chunks[lastItemNr];
+	var lastItemNr = modifier.chunks.length - 1;
+	var lastChunk = modifier.chunks[lastItemNr];
 
 	// is lastChunk null ? null means this chunk will be replaced with nexl expression, so there no type
 	if (lastChunk === null) {
-		return;
+		return null;
 	}
 
 	// okay, lastChunk is not null. discovering data type
 	var pos = lastChunk.search(TYPES_REGEX);
 	if (pos < 0) {
-		return;
+		return null;
 	}
 
 	var escaping = escapePrecedingSlashes(lastChunk, pos);
 	lastChunk = escaping.escapedStr;
 	pos = escaping.correctedPos;
 
+	var modifierType = null;
+
 	if (!escaping.escaped) {
 		// resolving type
-		modifier.type = lastChunk.substr(pos + 1);
+		modifierType = lastChunk.substr(pos + 1);
 		lastChunk = lastChunk.substring(0, pos);
 	}
 
-	modifier.value.chunks[lastItemNr] = lastChunk;
+	modifier.chunks[lastItemNr] = lastChunk;
+
+	return modifierType;
+};
+
+ParseModifiers.prototype.pushModifier = function (modifierId, modifierMD, modifierType) {
+	// resolving existing modifier
+	var existingModifierRoot = this.result.modifiers[modifierId];
+
+	// is not exists, adding
+	if (!j79.isValSet(existingModifierRoot)) {
+		existingModifierRoot = [];
+		this.result.modifiers[modifierId] = existingModifierRoot;
+	}
+
+	var newModifier = {};
+	newModifier.modifierMD = modifierMD;
+	newModifier.type = modifierType;
+
+	existingModifierRoot.push(newModifier);
 };
 
 ParseModifiers.prototype.parseModifier = function () {
@@ -251,14 +273,9 @@ ParseModifiers.prototype.parseModifier = function () {
 
 	// parsing modifier
 	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parse();
+	var modifierType = this.discoverModifierType(modifierMD);
 
-	var modifier = {};
-	modifier.id = modifierId;
-	modifier.value = modifierMD;
-	this.discoverModifierType(modifier);
-
-	// adding to result
-	this.result.modifiers.push(modifier);
+	this.pushModifier(modifierId, modifierMD, modifierType);
 
 	// increasing lastSearchPos
 	this.lastSearchPos += modifierMD.length;
@@ -267,7 +284,7 @@ ParseModifiers.prototype.parseModifier = function () {
 ParseModifiers.prototype.parse = function () {
 	// preparing result
 	this.result = {};
-	this.result.modifiers = [];
+	this.result.modifiers = {};
 
 	this.lastSearchPos = this.pos;
 	this.isFinished = false;

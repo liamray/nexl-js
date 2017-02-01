@@ -36,11 +36,10 @@ var NEXL_EXPRESSION_DEFINITION = {
 		}
 	],
 
-	modifiers: [
-		{
-			id: ':',
-			value: 'PARSED_STR',
+	modifiers: {
+		modifierId: {
+			modifierMD: 'NEXL_EXPRESSION_DEFINITION',
 			type: 'num'
 		}
-	]
+	}
 };
