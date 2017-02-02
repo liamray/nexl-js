@@ -27,12 +27,22 @@ var MODIFIERS = {
 	'RESERVED7': '+'
 };
 
-var PRIMITIVE_TYPES = {
-	TYPE_NUM: 'num',
-	TYPE_BOOL: 'bool',
-	TYPE_STR: 'str',
-	TYPE_NULL: 'null',
-	TYPE_UNDEFINED: 'undefined'
+var JS_PRIMITIVE_TYPES = {
+	NUM: '[object Number]',
+	BOOL: '[object Boolean]',
+	STR: '[object String]',
+	NULL: '[object Null]',
+	UNDEFINED: '[object Undefined]'
+};
+
+var JS_PRIMITIVE_TYPES_VALUES = j79.getObjectValues(JS_PRIMITIVE_TYPES);
+
+var NEXL_TYPES = {
+	'num': JS_PRIMITIVE_TYPES.NUM,
+	'bool': JS_PRIMITIVE_TYPES.BOOL,
+	'str': JS_PRIMITIVE_TYPES.STR,
+	'null': JS_PRIMITIVE_TYPES.NULL,
+	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
 };
 
 
@@ -130,11 +140,11 @@ function makeModifiersParseRegex() {
 }
 
 function makeTypesRegex() {
-	var types = j79.getObjectValues(PRIMITIVE_TYPES);
+	var types = Object.keys(NEXL_TYPES);
 	for (var index = 0; index < types.length; index++) {
-		types[index] = ':' + types[index];
+		types[index] = ':' + types[index] + '$';
 	}
-	return j79.makeOrRegexOfArray(types);
+	return types.join('|');
 }
 
 function isStartsFromZeroPos(str, chars) {
@@ -230,7 +240,12 @@ ParseModifiers.prototype.discoverModifierType = function (modifier) {
 		lastChunk = lastChunk.substring(0, pos);
 	}
 
-	modifier.chunks[lastItemNr] = lastChunk;
+	if (lastChunk.length < 1) {
+		// removing last chunk because last chunk = type ( if I don't remove empty last chunk, the whole modifier will be always evaluated as string )
+		modifier.chunks.pop();
+	} else {
+		modifier.chunks[lastItemNr] = lastChunk;
+	}
 
 	return modifierType;
 };
@@ -781,7 +796,6 @@ ParseStr.prototype.parse = function () {
 	this.result.chunks = [];
 	this.result.chunkSubstitutions = {}; // map of position:nexl-expr-definition
 	this.result.length = 0;
-	this.result.str = this.str;
 
 	// last search position in str
 	this.lastSearchPos = 0;
@@ -793,6 +807,7 @@ ParseStr.prototype.parse = function () {
 		this.parseStrInner();
 	}
 
+	this.result.str = this.str.substr(0, this.result.length);
 	return this.result;
 };
 
@@ -808,7 +823,9 @@ function ParseStr(str, stopAt) {
 
 module.exports.MODIFIERS = MODIFIERS;
 
-module.exports.PRIMITIVE_TYPES = PRIMITIVE_TYPES;
+module.exports.JS_PRIMITIVE_TYPES = JS_PRIMITIVE_TYPES;
+module.exports.JS_PRIMITIVE_TYPES_VALUES = JS_PRIMITIVE_TYPES_VALUES;
+module.exports.NEXL_TYPES = NEXL_TYPES;
 
 module.exports.hasSubExpression = hasSubExpression;
 

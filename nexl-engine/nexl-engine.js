@@ -432,8 +432,86 @@ NexlExpressionEvaluator.prototype.isValSet = function () {
 	return true;
 };
 
-NexlExpressionEvaluator.prototype.assignModifierValue = function (value, type) {
-	this.result = value;
+// continuing cast
+NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requiredTypeJs) {
+	// NUM -> BOOL
+	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
+		return value !== 0;
+	}
+
+	// NUM -> STR
+	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
+		return value + '';
+	}
+
+	// BOOL -> NUM
+	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
+		return value ? 1 : 0;
+	}
+
+	// BOOL -> STR
+	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
+		return value + '';
+	}
+
+	// STR -> NUM
+	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
+		var result = parseFloat(value);
+		if (isNaN(result)) {
+			throw util.format('Cannot cast a [%s] value to [%s] type', value, nep.JS_PRIMITIVE_TYPES.NUM);
+		}
+		return result;
+	}
+
+	// STR -> BOOL
+	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
+		if (value === 'false') {
+			return false;
+		}
+		if (value === 'true') {
+			return true;
+		}
+
+		throw util.format('Cannot cast a [%s] value to %s type', value, nep.JS_PRIMITIVE_TYPES.BOOL);
+	}
+
+	throw util.format('Unknown types permutation in casting. currentType is %s, requiredType type is %s', currentType, requiredTypeJs);
+};
+
+// example : value = 101; nexlType = 'bool';
+NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
+	// if type is not specified, return value as is
+	if (!j79.isValSet(nexlType)) {
+		return value;
+	}
+
+	// resolving JavaScript type
+	var requiredTypeJs = nep.NEXL_TYPES[nexlType];
+
+	// validating
+	if (!j79.isValSet(requiredTypeJs)) {
+		throw util.format('Unknown [%s] type', nexlType);
+	}
+
+	// resolving type for value
+	var currentType = j79.getType(value);
+
+	// is currentType not a part of JS_PRIMITIVE_TYPES ?
+	if (nep.JS_PRIMITIVE_TYPES_VALUES.indexOf(currentType) < 0) {
+		throw util.format('The %s type cannot be casted to [%s]', currentType, nexlType);
+	}
+
+	// if both types are same, return value as is
+	if (currentType === requiredTypeJs) {
+		return value;
+	}
+
+	// if one of currentType|requiredJsType is null|undefined, throw exception ( it's impossible to convert to/from null|undefined )
+	if (currentType === nep.JS_PRIMITIVE_TYPES.NULL || currentType === nep.JS_PRIMITIVE_TYPES.UNDEFINED || requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NULL || requiredTypeJs === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
+		throw util.format('Cannot convert a %s to %s', currentType, requiredTypeJs);
+	}
+
+	return this.castInner(value, currentType, requiredTypeJs);
 };
 
 NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
@@ -444,9 +522,17 @@ NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
 	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 };
 
+NexlExpressionEvaluator.prototype.castDefaultValue = function (modifierMd, modifierValue, type) {
+	try {
+		return this.cast(modifierValue, type);
+	} catch (e) {
+		throw util.format('Casting failed for [%s] expression. Reason : %s', modifierMd.str, e);
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 	// is value set for this.result ?
-	if (this.isValSet()) {
+	if (this.isValSet(this.result)) {
 		// don't need to apply default value modifier
 		return;
 	}
@@ -467,9 +553,10 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 		var type = modifier.type;
 
 		var modifierValue = this.resolveModifierValue(modifierMd);
+		modifierValue = this.castDefaultValue(modifierMd, modifierValue, type);
 
 		if (j79.isValSet(modifierValue)) {
-			this.assignModifierValue(modifierValue, type);
+			this.result = modifierValue;
 			return;
 		}
 	}
