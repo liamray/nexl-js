@@ -11,20 +11,24 @@ const util = require('util');
 const j79 = require('j79-utils');
 
 var MODIFIERS = {
-	'DELIMITER': '?',
 	'DEF_VALUE': '@',
-	'OMIT_WHOLE_EXPRESSION': '-',
-	'TREAT_AS': '~',
+
+	'OBJECT_OPERATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object
 	'REVERSE_RESOLUTION': '<',
 
+	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #C count elements
+	'ELIMINATE_ARRAY_ELEMENTS': '-',
+	'JOIN_ARRAY_ELEMENTS': '&',
+
+	'STRING_OPERATIONS': '^', // ^U upper case, ^L power case, ^LEN length, ^TL trim left, ^TR trim right, ^T trim both
+
+	'EVALUATE_AS_UNDEFINED': '!',
+
 	// the following modifiers are reserved for future usage
-	'RESERVED1': '!',
-	'RESERVED2': '#',
+	'RESERVED1': '*',
+	'RESERVED2': '?',
 	'RESERVED3': '%',
-	'RESERVED4': '^',
-	'RESERVED5': '&',
-	'RESERVED6': '*',
-	'RESERVED7': '+'
+	'RESERVED5': '+'
 };
 
 var JS_PRIMITIVE_TYPES = {

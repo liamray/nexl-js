@@ -530,6 +530,21 @@ NexlExpressionEvaluator.prototype.castDefaultValue = function (modifierMd, modif
 	}
 };
 
+NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
+	if (!j79.isArray(this.result)) {
+		this.result = value;
+		return;
+	}
+
+	// iterating over array element and updating empty values
+	for (var index in this.result) {
+		var item = this.result[index];
+		if (!j79.isValSet(item)) {
+			this.result[index] = value;
+		}
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 	// is value set for this.result ?
 	if (this.isValSet(this.result)) {
@@ -556,7 +571,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 		modifierValue = this.castDefaultValue(modifierMd, modifierValue, type);
 
 		if (j79.isValSet(modifierValue)) {
-			this.result = modifierValue;
+			this.setDefaultValue(modifierValue);
 			return;
 		}
 	}
