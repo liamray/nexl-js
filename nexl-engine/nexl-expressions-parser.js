@@ -240,7 +240,9 @@ ParseModifiers.prototype.discoverModifierType = function (modifier) {
 		lastChunk = lastChunk.substring(0, pos);
 	}
 
-	if (lastChunk.length < 1) {
+	// if lastChunk is empty it can be because of : (1) it is become empty after modifier type was removed (2) it is the only one chunk and it's empty
+	// we need to remove empty chunk only in (1) case if we have more than 1 chunks
+	if (lastChunk.length < 1 && modifier.chunks.length > 1) {
 		// removing last chunk because last chunk = type ( if I don't remove empty last chunk, the whole modifier will be always evaluated as string )
 		modifier.chunks.pop();
 	} else {
@@ -808,6 +810,12 @@ ParseStr.prototype.parse = function () {
 	}
 
 	this.result.str = this.str.substr(0, this.result.length);
+
+	// adding empty chunk for empty string, otherwise it will be substituted as null
+	if (this.result.str.length < 1) {
+		this.result.chunks.push('');
+	}
+
 	return this.result;
 };
 
