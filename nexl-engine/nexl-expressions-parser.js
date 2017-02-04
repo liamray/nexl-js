@@ -14,7 +14,7 @@ var MODIFIERS = {
 	'DEF_VALUE': '@',
 
 	'OBJECT_OPERATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object
-	'REVERSE_RESOLUTION': '<',
+	'OBJECT_REVERSE_RESOLUTION': '<',
 
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #C count elements
 	'ELIMINATE_ARRAY_ELEMENTS': '-',
