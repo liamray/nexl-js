@@ -176,47 +176,58 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.pushForwardExternalArg = function (key) {
-	if (this.externalArgsPointer === undefined) {
-		return;
+
+NexlExpressionEvaluator.prototype.forwardUpAmdPush = function (key, item) {
+	if (!isObjectFunctionOrArray(item)) {
+		throw util.format('Cannot resolve a [%s] property from non-object item. Item type is %s, item value is [%s]. Expression is [%s]. chunkNr is [%s]', key, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
-	// pushing forward
-	this.externalArgsPointer = this.externalArgsPointer[key];
-
-	// externalArgs can be only a primitive. so if I've got a function or array, throw exception
-	if (j79.isFunction(this.externalArgsPointer) || j79.isArray(this.externalArgsPointer)) {
-		throw util.format('External argument %s can be only of primitive data type', j79.getType(this.externalArgsPointer));
-	}
+	item = item[key];
+	this.newResult.push(item);
 };
 
-NexlExpressionEvaluator.prototype.resolveObject = function (key, currentItem, result) {
-	if (!isObjectFunctionOrArray(currentItem)) {
-		throw util.format('Cannot resolve a [%s] property from non-object item. Item type is %s, item value is [%s]. Expression is [%s]. chunkNr is [%s]', key, j79.getType(currentItem), JSON.stringify(currentItem), this.nexlExpressionMD.str, this.chunkNr + 1);
-	}
+NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultItem, currentResultItemIndex) {
+	var currentExternalArg = this.externalArgsPointer[currentResultItemIndex];
+	var newResultLastItemIndex = this.newResult.length;
 
 	// if key is empty, remaining current value
 	if (key === '') {
-		result.push(currentItem);
+		this.newResult.push(currentResultItem);
+		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
 		return;
 	}
 
-	result.push(currentItem[key]);
-	return;
-
-	// external argument stuff
-	// var externalArg = this.pushForwardExternalArg(key);
-
-	// what is to apply ?
-	if (externalArg !== null) {
-		result.push(externalArg);
-	} else {
-		result.push(currentItem[key]);
+	// is current item in external arguments undefined ?
+	if (currentExternalArg === undefined) {
+		this.forwardUpAmdPush(key, currentResultItem);
+		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+		return;
 	}
+
+	// forwarding up the external arg
+	currentExternalArg = currentExternalArg[key];
+
+	if (currentExternalArg === undefined) {
+		this.forwardUpAmdPush(key, currentResultItem);
+		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+		return;
+	}
+
+	// is it object ? ( array and function are also kind of objects )
+	if (isObjectFunctionOrArray(currentExternalArg)) {
+		this.forwardUpAmdPush(key, currentResultItem);
+		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
+		return;
+	}
+
+	// ok, it's a primitive. overriding
+	this.newResult.push(currentExternalArg);
+	this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 };
 
 NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChunks) {
-	var newResult = [];
+	this.newResult = [];
+	this.newExternalArgsPointer = [];
 	var keys = j79.wrapWithArrayIfNeeded(assembledChunks);
 	var isArrayFlag = j79.isArray(this.result);
 	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
@@ -232,17 +243,17 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChu
 
 		// iterating over current result items
 		for (var j in currentResult) {
-			var currentValue = currentResult[j];
-			this.resolveObject(key, currentValue, newResult);
+			this.resolveObject(key, currentResult[j], j);
 		}
 	}
 
 	// unwrap array if needed
-	if (newResult.length === 1 && !isArrayFlag) {
-		newResult = newResult[0];
+	if (this.newResult.length === 1 && !isArrayFlag) {
+		this.newResult = this.newResult[0];
 	}
 
-	this.result = newResult;
+	this.externalArgsPointer = this.newExternalArgsPointer;
+	this.result = this.newResult;
 };
 
 NexlExpressionEvaluator.prototype.validate = function (assembledChunks) {
@@ -404,8 +415,8 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 		return;
 	}
 
-	// external args are actual only for object actions. resetting
-	this.externalArgsPointer = undefined;
+	// external args are actual only for object actions. invalidating
+	this.externalArgsPointer = [];
 
 	// is func action ?
 	if (j79.isArray(this.action.funcParams)) {
@@ -613,7 +624,7 @@ NexlExpressionEvaluator.prototype.applyModifiers = function () {
 
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
-	this.externalArgsPointer = this.session.externalArgs;
+	this.externalArgsPointer = [this.session.externalArgs];
 
 	// iterating over actions
 	for (this.chunkNr = 0; this.chunkNr < this.nexlExpressionMD.actions.length; this.chunkNr++) {
