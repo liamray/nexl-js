@@ -271,7 +271,7 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChu
 };
 
 NexlExpressionEvaluator.prototype.validate = function (assembledChunks) {
-	// null check
+	// null/undefined check
 	if (!j79.isValSet(assembledChunks)) {
 		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
@@ -447,29 +447,6 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 	throw 'nexl expression wasn\'t parsed properly, got unknown action. Please open me a bug'
 };
 
-NexlExpressionEvaluator.prototype.isValSet = function () {
-	// is value not set ?
-	if (!j79.isValSet(this.result)) {
-		return false;
-	}
-
-	// if is not an array, the value is set ( can be a primitive, object or function )
-	if (!j79.isArray(this.result)) {
-		return true;
-	}
-
-	// iterating over array elements and checking every element
-	for (var index in this.result) {
-		var item = this.result[index];
-		// is value not set ?
-		if (!j79.isValSet(item)) {
-			return false;
-		}
-	}
-
-	return true;
-};
-
 // continuing cast
 NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requiredTypeJs) {
 	// NUM -> BOOL
@@ -518,35 +495,35 @@ NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requ
 
 // example : value = 101; nexlType = 'bool';
 NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
-	// if type is not specified, return value as is
-	if (!j79.isValSet(nexlType)) {
+	// if type is not specified
+	if (nexlType === undefined) {
 		return value;
 	}
 
 	// resolving JavaScript type
 	var requiredTypeJs = nep.NEXL_TYPES[nexlType];
 
-	// validating
-	if (!j79.isValSet(requiredTypeJs)) {
+	// validating ( should not happen )
+	if (requiredTypeJs === undefined) {
 		throw util.format('Unknown [%s] type', nexlType);
 	}
 
 	// resolving type for value
 	var currentType = j79.getType(value);
 
-	// is currentType not a part of JS_PRIMITIVE_TYPES ?
-	if (nep.JS_PRIMITIVE_TYPES_VALUES.indexOf(currentType) < 0) {
-		throw util.format('The %s type cannot be casted to [%s]', currentType, nexlType);
-	}
-
 	// if both types are same, return value as is
 	if (currentType === requiredTypeJs) {
 		return value;
 	}
 
-	// if one of currentType|requiredJsType is null|undefined, throw exception ( it's impossible to convert to/from null|undefined )
-	if (currentType === nep.JS_PRIMITIVE_TYPES.NULL || currentType === nep.JS_PRIMITIVE_TYPES.UNDEFINED || requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NULL || requiredTypeJs === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
-		throw util.format('Cannot convert a %s to %s', currentType, requiredTypeJs);
+	// everything is being casted to null
+	if (requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NULL) {
+		return null;
+	}
+
+	// is currentType not a part of JS_PRIMITIVE_TYPES ?
+	if (nep.JS_PRIMITIVE_TYPES_VALUES.indexOf(currentType) < 0) {
+		throw util.format('The %s type cannot be casted to [%s]', currentType, nexlType);
 	}
 
 	return this.castInner(value, currentType, requiredTypeJs);
@@ -577,7 +554,7 @@ NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
 	// iterating over array element and updating empty values
 	for (var index in this.result) {
 		var item = this.result[index];
-		if (!j79.isValSet(item)) {
+		if (item === undefined) {
 			this.result[index] = value;
 		}
 	}
@@ -585,7 +562,7 @@ NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
 
 NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 	// is value set for this.result ?
-	if (this.isValSet(this.result)) {
+	if (this.result !== undefined) {
 		// don't need to apply default value modifier
 		return;
 	}
@@ -594,7 +571,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 	var defValueModifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.DEF_VALUE];
 
 	// is default value modifier not present ?
-	if (!j79.isValSet(defValueModifiers)) {
+	if (defValueModifiers === undefined) {
 		return;
 	}
 
@@ -608,7 +585,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 		var modifierValue = this.resolveModifierValue(modifierMd);
 		modifierValue = this.castDefaultValue(modifierMd, modifierValue, type);
 
-		if (j79.isValSet(modifierValue)) {
+		if (modifierValue !== undefined) {
 			this.setDefaultValue(modifierValue);
 			return;
 		}
@@ -652,11 +629,11 @@ NexlExpressionEvaluator.prototype.eval = function () {
 		this.resolveSubExpressions();
 	}
 
-	this.applyModifiers();
-
 	if (this.result === this.session.context) {
-		return null;
+		this.result = undefined;
 	}
+
+	this.applyModifiers();
 
 	return this.result;
 };

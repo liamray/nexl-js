@@ -35,8 +35,7 @@ var JS_PRIMITIVE_TYPES = {
 	NUM: '[object Number]',
 	BOOL: '[object Boolean]',
 	STR: '[object String]',
-	NULL: '[object Null]',
-	UNDEFINED: '[object Undefined]'
+	NULL: '[object Null]'
 };
 
 var JS_PRIMITIVE_TYPES_VALUES = j79.getObjectValues(JS_PRIMITIVE_TYPES);
@@ -45,8 +44,7 @@ var NEXL_TYPES = {
 	'num': JS_PRIMITIVE_TYPES.NUM,
 	'bool': JS_PRIMITIVE_TYPES.BOOL,
 	'str': JS_PRIMITIVE_TYPES.STR,
-	'null': JS_PRIMITIVE_TYPES.NULL,
-	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
+	'null': JS_PRIMITIVE_TYPES.NULL
 };
 
 
@@ -214,7 +212,7 @@ function skipCommaIfPresents(str, pos) {
 ParseModifiers.prototype.discoverModifierType = function (modifier) {
 	// checking chunks. is it empty ?
 	if (modifier.chunks.length < 1) {
-		return null;
+		return undefined;
 	}
 
 	// resolving last chunk
@@ -223,20 +221,20 @@ ParseModifiers.prototype.discoverModifierType = function (modifier) {
 
 	// is lastChunk null ? null means this chunk will be replaced with nexl expression, so there no type
 	if (lastChunk === null) {
-		return null;
+		return undefined;
 	}
 
 	// okay, lastChunk is not null. discovering data type
 	var pos = lastChunk.search(TYPES_REGEX);
 	if (pos < 0) {
-		return null;
+		return undefined;
 	}
 
 	var escaping = escapePrecedingSlashes(lastChunk, pos);
 	lastChunk = escaping.escapedStr;
 	pos = escaping.correctedPos;
 
-	var modifierType = null;
+	var modifierType;
 
 	if (!escaping.escaped) {
 		// resolving type
