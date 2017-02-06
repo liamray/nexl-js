@@ -8,6 +8,7 @@
  **************************************************************************************/
 
 const util = require('util');
+const deepMerge = require('deepmerge');
 const j79 = require('j79-utils');
 const nsu = require('./nexl-source-utils');
 const nep = require('./nexl-expressions-parser');
@@ -45,6 +46,13 @@ function isObjectFunctionOrArray(item) {
 	return isObjectOrFunction(item) || j79.isArray(item);
 }
 
+function deepMergeInner(obj1, obj2) {
+	if (obj2 === undefined) {
+		return obj1;
+	}
+
+	return deepMerge(obj1, obj2);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
@@ -220,7 +228,13 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 		return;
 	}
 
-	// ok, it's a primitive. overriding
+	// ok, it's a primitive. going to override the currentResultItem.
+	// but first validating. is cannot contain nexl expression
+	if (nep.hasSubExpression(currentExternalArg)) {
+		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', currentExternalArg);
+	}
+
+	// it's ok, overriding
 	this.newResult.push(currentExternalArg);
 	this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 };
@@ -754,8 +768,12 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	session.context.nexl.args = externalArgs;
 
 	// supplying nexl engine for functions in nexl-sources
-	session.context.nexl.processItem = function (nexlExpression) {
-		return new NexlEngine(session).processItem(nexlExpression);
+	session.context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
+		// merging existing external args
+		session.externalArgs = deepMergeInner(externalArgs, externalArgs4Function);
+		var result = new NexlEngine(session).processItem(nexlExpression);
+		session.externalArgs = externalArgs;
+		return result;
 	};
 
 	// supplying standard libraries
