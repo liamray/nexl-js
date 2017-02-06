@@ -581,9 +581,6 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
 NexlExpressionEvaluator.prototype.applyModifiers = function () {
 	var result = this.result;
 
-	// applying OMIT_WHOLE_EXPRESSION modifier
-	// result = this.applyOmitModifier(result, varStuff);
-
 	// applying object reverse resolution modifier
 	// result = this.applyObjectReverseResolutionModifier(result, varStuff);
 
