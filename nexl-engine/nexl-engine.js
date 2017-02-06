@@ -13,28 +13,6 @@ const j79 = require('j79-utils');
 const nsu = require('./nexl-source-utils');
 const nep = require('./nexl-expressions-parser');
 
-
-var DEFAULT_GLOBAL_SETTINGS = {
-	DEFAULT_DELIMITER: "\n",
-	ABORT_ON_UNDEFINED_VAR: true,
-	ARGS_ARE_OVERRIDING_SRC: true,
-	SKIP_UNDEFINED_VARS: false
-};
-
-var GLOBAL_SETTINGS = {
-	// is used when concatenating arrays
-	DEFAULT_DELIMITER: "\n",
-
-	// abort/not abort script execution if it's met an undefined variable
-	ABORT_ON_UNDEFINED_VAR: true,
-
-	// who is stronger the external arguments or variables in source script with the same name ?
-	ARGS_ARE_OVERRIDING_SRC: true,
-
-	// if true and has an undefined variables, the whole expression will be omitted
-	SKIP_UNDEFINED_VARS: false
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,6 +77,9 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 	// tells if additional array should remain
 	var isArrayFlag = false;
 
+	// storing EVALUATE_AS_UNDEFINED because NexlExpressionEvaluator can change it in session
+	var isEvaluateAsUndefined = this.session.EVALUATE_AS_UNDEFINED;
+
 	// iterating over chunkSubstitutions
 	for (var pos in this.data.chunkSubstitutions) {
 		// current chunk ( which is parsed nexl expression itself )
@@ -107,6 +88,11 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 		// evaluating this chunk
 		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
 		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
+
+		// EVALUATE_AS_UNDEFINED modifier
+		if (chunkValue === undefined && isEvaluateAsUndefined) {
+			return undefined;
+		}
 
 		// wrapping with array
 		var chunkValues = j79.wrapWithArrayIfNeeded(chunkValue);
@@ -616,6 +602,7 @@ NexlExpressionEvaluator.prototype.applyModifiers = function () {
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
 	this.externalArgsPointer = [this.session.externalArgs];
+	this.session.EVALUATE_AS_UNDEFINED = ( this.nexlExpressionMD.modifiers[nep.MODIFIERS.EVALUATE_AS_UNDEFINED] !== undefined );
 
 	// iterating over actions
 	for (this.chunkNr = 0; this.chunkNr < this.nexlExpressionMD.actions.length; this.chunkNr++) {
@@ -655,6 +642,11 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 		var arrItem = arr[index];
 		var item = this.processItem(arrItem);
 
+		// EVALUATE_AS_UNDEFINED modifier
+		if (item === undefined && this.isEvaluateAsUndefined) {
+			return undefined;
+		}
+
 		if (j79.isArray(item)) {
 			result = result.concat(item)
 		} else {
@@ -671,13 +663,26 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 	// iterating over over keys:values and evaluating
 	for (var key in obj) {
 		var evaluatedKey = this.processItem(key);
+
+		// EVALUATE_AS_UNDEFINED modifier
+		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
+			return undefined;
+		}
+
 		if (j79.isArray(evaluatedKey) || j79.isObject(evaluatedKey) || j79.isFunction(evaluatedKey)) {
 			var type = j79.getType(evaluatedKey);
 			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
 		}
 
 		var value = obj[key];
-		result[evaluatedKey] = this.processItem(value);
+		value = this.processItem(value);
+
+		// EVALUATE_AS_UNDEFINED modifier
+		if (value === undefined && this.isEvaluateAsUndefined) {
+			return undefined;
+		}
+
+		result[evaluatedKey] = value;
 	}
 
 	return result;
@@ -691,6 +696,7 @@ NexlEngine.prototype.processStringItem = function (str) {
 	data.chunks = parsedStrMD.chunks;
 	data.chunkSubstitutions = parsedStrMD.chunkSubstitutions;
 	data.str = str;
+	this.session.EVALUATE_AS_UNDEFINED = this.isEvaluateAsUndefined;
 
 	// evaluating
 	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
@@ -723,6 +729,7 @@ NexlEngine.prototype.processItem = function (item) {
 
 function NexlEngine(session) {
 	this.session = session;
+	this.isEvaluateAsUndefined = this.session.EVALUATE_AS_UNDEFINED;
 }
 
 
@@ -733,7 +740,7 @@ function NexlEngine(session) {
 module.exports.processItem = function (nexlSource, item, externalArgs) {
 	var session = {};
 	session.externalArgs = externalArgs;
-	session.isOmit = false;
+	session.EVALUATE_AS_UNDEFINED = ( ( externalArgs || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 
 	// creating context
 	session.context = nsu.createContext(nexlSource);
@@ -764,9 +771,6 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 
 	return new NexlEngine(session).processItem(item);
 };
-
-// exporting 'settings-list'
-module.exports['settings-list'] = Object.keys(DEFAULT_GLOBAL_SETTINGS);
 
 // exporting resolveJsVariables
 module.exports.resolveJsVariables = nsu.resolveJsVariables;
