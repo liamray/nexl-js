@@ -32,6 +32,11 @@ function deepMergeInner(obj1, obj2) {
 	return deepMerge(obj1, obj2);
 }
 
+function resolveValueDirectlyFromChunk(parsedStrMD) {
+	return parsedStrMD.chunks.length < 1 ? '' : parsedStrMD.chunks[0];
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,10 +230,10 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 	this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 };
 
-NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChunks) {
+NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 	this.newResult = [];
 	this.newExternalArgsPointer = [];
-	var keys = j79.wrapWithArrayIfNeeded(assembledChunks);
+	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
 	var isArrayFlag = j79.isArray(this.result);
 	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
 
@@ -256,15 +261,15 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function (assembledChu
 	this.result = this.newResult;
 };
 
-NexlExpressionEvaluator.prototype.validate = function (assembledChunks) {
+NexlExpressionEvaluator.prototype.validate = function () {
 	// null/undefined check
-	if (!j79.isValSet(assembledChunks)) {
-		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
+	if (!j79.isValSet(this.assembledChunks)) {
+		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', this.assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	// the type of assembledChunks mustn't be an object or function
-	if (isObjectOrFunction(assembledChunks)) {
-		throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(assembledChunks), this.chunkNr + 1);
+	if (isObjectOrFunction(this.assembledChunks)) {
+		throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(this.assembledChunks), this.chunkNr + 1);
 	}
 };
 
@@ -274,12 +279,12 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	data.chunkSubstitutions = this.action.chunkSubstitutions;
 
 	// assembledChunks is string
-	var assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+	this.assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 
-	this.validate(assembledChunks);
+	this.validate();
 
 	// resolving value from last this.result
-	this.evalObjectActionInner(assembledChunks);
+	this.evalObjectActionInner();
 };
 
 NexlExpressionEvaluator.prototype.evalFunction = function (func, params) {
@@ -595,7 +600,60 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionModifier = functio
 	this.resolveReverseKey(modifierValue);
 };
 
+NexlExpressionEvaluator.prototype.forceMakeObject = function () {
+	var key = this.assembledChunks;
+
+	if (key === undefined) {
+		key = 'obj';
+	}
+
+	if (j79.isArray(key)) {
+		key = key.join('.');
+	}
+
+	var obj = {};
+	obj[key] = this.result;
+	this.result = obj;
+};
+
 NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function () {
+	// resolving modifier stuff by his id
+	var modifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.OBJECT_OPERATIONS];
+
+	// no modifier ? good bye !
+	if (modifiers === undefined) {
+		return;
+	}
+
+	// value of object operations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
+	var modificators = [];
+	for (var index in modifiers) {
+		var item = modifiers[index];
+		item = resolveValueDirectlyFromChunk(item.modifierMD);
+		modificators.push(item);
+	}
+
+	// applying ~O for non-objects
+	if (!j79.isObject(this.result) && modificators.indexOf('O') >= 0) {
+		this.forceMakeObject();
+	}
+
+	// not an object ? bye bye
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	// resolving keys for ~K
+	if (modificators.indexOf('K') >= 0) {
+		this.result = Object.keys(this.result);
+		return;
+	}
+
+	// resolving values for ~V
+	if (modificators.indexOf('V') >= 0) {
+		this.result = j79.obj2ArrayIfNeeded(this.result);
+		return;
+	}
 
 };
 
@@ -716,13 +774,13 @@ NexlExpressionEvaluator.prototype.eval = function () {
 		this.resolveSubExpressions();
 	}
 
-	// reprocessing final result, it can contain sub expressions
-	this.result = new NexlEngine(this.session).processItem(this.result);
-
 	// empty expression like ${}
 	if (this.result === this.session.context) {
 		this.result = undefined;
 	}
+
+	// reprocessing final result, it can contain sub expressions
+	this.result = new NexlEngine(this.session).processItem(this.result);
 
 	this.applyModifiers();
 
