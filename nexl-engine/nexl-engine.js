@@ -165,7 +165,7 @@ function EvalAndSubstChunks(session, data) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
-	if (nep.hasSubExpression(this.result)) {
+	if (j79.isString(this.result) && nep.hasSubExpression(this.result)) {
 		this.result = new NexlEngine(this.session).processItem(this.result);
 	}
 };
@@ -715,6 +715,9 @@ NexlExpressionEvaluator.prototype.eval = function () {
 		// result may contain additional nexl expression with unlimited depth. resolving
 		this.resolveSubExpressions();
 	}
+
+	// reprocessing final result, it can contain sub expressions
+	this.result = new NexlEngine(this.session).processItem(this.result);
 
 	// empty expression like ${}
 	if (this.result === this.session.context) {

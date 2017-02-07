@@ -71,7 +71,7 @@ const TYPES_REGEX = makeTypesRegex();
 // Parser utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function hasSubExpressionStr(str) {
+function hasSubExpression(str) {
 	var pos = 0;
 	while (pos < str.length) {
 		pos = str.indexOf(NEXL_EXPRESSION_OPEN, pos);
@@ -85,49 +85,6 @@ function hasSubExpressionStr(str) {
 		pos++;
 	}
 
-	return false;
-}
-
-function hasSubExpressionObj(obj) {
-	for (var key in obj) {
-		var val = obj[key];
-
-		if (hasSubExpression(key) || hasSubExpression(val)) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-function hasSubExpressionArr(arr) {
-	for (var index = 0; index < arr.length; index++) {
-		if (hasSubExpression(arr[index])) {
-			return true;
-		}
-	}
-
-	return false;
-}
-function hasSubExpression(item) {
-	// nexl-engine doesn't parse function content
-	if (j79.isFunction(item)) {
-		return false;
-	}
-
-	if (j79.isObject(item)) {
-		return hasSubExpressionObj(item);
-	}
-
-	if (j79.isArray(item)) {
-		return hasSubExpressionArr(item);
-	}
-
-	if (j79.isString(item)) {
-		return hasSubExpressionStr(item);
-	}
-
-	// all other primitives can't have sub-expressions
 	return false;
 }
 
@@ -275,7 +232,7 @@ ParseModifiers.prototype.parseModifier = function () {
 	var chars = this.str.substr(this.lastSearchPos);
 
 	// is end of expression ?
-	if (isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
+	if (chars.length < 1 || isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
 		this.isFinished = true;
 		return;
 	}
@@ -286,7 +243,7 @@ ParseModifiers.prototype.parseModifier = function () {
 	chars = chars.substr(1);
 
 	// is end of expression ?
-	if (isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
+	if (chars.length < 1 || isStartsFromZeroPos(chars, NEXL_EXPRESSION_CLOSE)) {
 		chars = '';
 	}
 
@@ -647,6 +604,11 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	this.addObject();
 	this.parseModifiers();
 	this.isFinished = true;
+
+	// validating expression integrity. it must be finished with NEXL_EXPRESSION_CLOSE
+	if (this.str.charAt(this.lastSearchPos - 1) !== NEXL_EXPRESSION_CLOSE) {
+		throw util.format('Invalid nexl expression. The [%s] expression doesn\'t have a close bracket }', this.str.substring(this.pos, this.lastSearchPos));
+	}
 };
 
 // pos points to a $ sign
