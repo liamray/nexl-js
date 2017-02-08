@@ -182,9 +182,10 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 };
 
 
-NexlExpressionEvaluator.prototype.forwardUpAmdPush = function (key, item) {
+NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key, item) {
 	if (!isObjectFunctionOrArray(item)) {
-		throw util.format('Cannot resolve a [%s] property from non-object item. Item type is %s, item value is [%s]. Expression is [%s]. chunkNr is [%s]', key, j79.getType(item), JSON.stringify(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+		this.newResult.push(item);
+		return;
 	}
 
 	item = item[key];
@@ -204,7 +205,7 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 
 	// is current item in external arguments undefined ?
 	if (currentExternalArg === undefined) {
-		this.forwardUpAmdPush(key, currentResultItem);
+		this.forwardUpAndPush(key, currentResultItem);
 		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 		return;
 	}
@@ -213,14 +214,14 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 	currentExternalArg = currentExternalArg[key];
 
 	if (currentExternalArg === undefined) {
-		this.forwardUpAmdPush(key, currentResultItem);
+		this.forwardUpAndPush(key, currentResultItem);
 		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 		return;
 	}
 
 	// is it object ? ( array and function are also kind of objects )
 	if (isObjectFunctionOrArray(currentExternalArg)) {
-		this.forwardUpAmdPush(key, currentResultItem);
+		this.forwardUpAndPush(key, currentResultItem);
 		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
 		return;
 	}
@@ -249,7 +250,7 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 
 		// key must be only a primitive. checking
 		if (isObjectFunctionOrArray(key)) {
-			throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(key), this.chunkNr + 1);
+			throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(key), this.chunkNr + 1);
 		}
 
 		// iterating over current result items
@@ -268,14 +269,14 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 };
 
 NexlExpressionEvaluator.prototype.validate = function () {
-	// null/undefined check
+	// null/NaN check ( undefined is ok, but it was checked before )
 	if (!j79.isValSet(this.assembledChunks)) {
 		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', this.assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	// the type of assembledChunks mustn't be an object or function
 	if (isObjectOrFunction(this.assembledChunks)) {
-		throw util.format('The subexpression of [%s] expression cannot be evaluated as [%s] at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(this.assembledChunks), this.chunkNr + 1);
+		throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(this.assembledChunks), this.chunkNr + 1);
 	}
 };
 
@@ -286,6 +287,11 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 
 	// assembledChunks is string
 	this.assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+
+	// skipping object resolution for undefined key
+	if (this.assembledChunks === undefined) {
+		return;
+	}
 
 	this.validate();
 
@@ -323,7 +329,7 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.evalItemIfNeeed = function (item) {
+NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
 	// not a nexl variable ? return as is ( it must be a primitive number )
 	if (!j79.isObject(item)) {
 		return item;
@@ -343,19 +349,8 @@ NexlExpressionEvaluator.prototype.evalItemIfNeeed = function (item) {
 };
 
 NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
-	var min = this.evalItemIfNeeed(item['min']);
-	var max = this.evalItemIfNeeed(item['max']);
-
-	// is max lower than min ?
-	if (max < min) {
-		throw util.format('Wrong array indexes : ( max = [%s] ) < ( min = [%s] ). Expressions is [%s], chunkNr is [%s]', max, min, this.nexlExpressionMD.str, this.chunkNr + 1);
-	}
-
-	// validating range
-	if (min < 0 || max >= this.result.length) {
-		throw util.format('Array index out of bound. Array length is [%s]. You are trying to access a (%s..%s) range. Expressions is [%s], chunkNr is [%s]', this.result.length, min, max, this.nexlExpressionMD.str, this.chunkNr + 1);
-
-	}
+	var min = this.evalItemIfNeeded(item['min']);
+	var max = this.evalItemIfNeeded(item['max']);
 
 	return {
 		min: min,
@@ -406,17 +401,15 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction = function () {
-	if (j79.isArray(this.result)) {
-		this.evalArrayIndexesAction4Array();
-		return;
-	}
-
 	if (j79.isString(this.result)) {
 		this.evalArrayIndexesAction4String();
 		return;
 	}
 
-	throw util.format('Array indexes are not applicable item of [%s] type. Expressions is [%s], chunkNr is [%s]', j79.getType(this.result), this.nexlExpressionMD.str, this.chunkNr + 1);
+	if (j79.isValSet(this.result)) {
+		this.evalArrayIndexesAction4Array();
+		return;
+	}
 };
 
 NexlExpressionEvaluator.prototype.evalAction = function () {
@@ -445,7 +438,7 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 };
 
 // continuing cast
-NexlExpressionEvaluator.prototype.castInnerInner = function (value, currentType, requiredTypeJs) {
+NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requiredTypeJs) {
 	// NUM -> BOOL
 	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
 		return value !== 0;
@@ -470,7 +463,7 @@ NexlExpressionEvaluator.prototype.castInnerInner = function (value, currentType,
 	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
 		var result = parseFloat(value);
 		if (isNaN(result)) {
-			throw util.format('Cannot cast a [%s] value to [%s] type', value, nep.JS_PRIMITIVE_TYPES.NUM);
+			result = undefined;
 		}
 		return result;
 	}
@@ -484,14 +477,14 @@ NexlExpressionEvaluator.prototype.castInnerInner = function (value, currentType,
 			return true;
 		}
 
-		throw util.format('Cannot cast a [%s] value to %s type', value, nep.JS_PRIMITIVE_TYPES.BOOL);
+		return undefined;
 	}
 
-	throw util.format('Unknown types permutation in casting. currentType is %s, requiredType type is %s', currentType, requiredTypeJs);
+	return value;
 };
 
 // example : value = 101; nexlType = 'bool';
-NexlExpressionEvaluator.prototype.castInner = function (value, nexlType) {
+NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
 	// if type is not specified
 	if (nexlType === undefined) {
 		return value;
@@ -518,12 +511,7 @@ NexlExpressionEvaluator.prototype.castInner = function (value, nexlType) {
 		return null;
 	}
 
-	// is currentType not a part of JS_PRIMITIVE_TYPES ?
-	if (nep.JS_PRIMITIVE_TYPES_VALUES.indexOf(currentType) < 0) {
-		throw util.format('The %s type cannot be casted to [%s]', currentType, nexlType);
-	}
-
-	return this.castInnerInner(value, currentType, requiredTypeJs);
+	return this.castInner(value, currentType, requiredTypeJs);
 };
 
 NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
@@ -536,7 +524,7 @@ NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
 	data.chunkSubstitutions = modifierMd.chunkSubstitutions;
 
 	var modifierValue = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
-	return this.cast(modifierMd, modifierValue, type);
+	return this.cast(modifierValue, type);
 };
 
 NexlExpressionEvaluator.prototype.isContainsValue = function (val, reversedKey) {
@@ -688,7 +676,7 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function (modif
 
 	}
 
-	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierVal, modifier.id);
+	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierValue, modifier.id);
 };
 
 NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (modifier) {
@@ -697,15 +685,6 @@ NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (mod
 
 NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modifier) {
 
-};
-
-
-NexlExpressionEvaluator.prototype.cast = function (modifierMd, modifierValue, type) {
-	try {
-		return this.castInner(modifierValue, type);
-	} catch (e) {
-		throw util.format('Casting failed for [%s] expression. Reason : %s', modifierMd.str, e);
-	}
 };
 
 NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
@@ -918,7 +897,7 @@ NexlEngine.prototype.processItem = function (item) {
 
 	// not supported !
 	if (j79.isFunction(item)) {
-		throw 'nexl engine doesn\'t know how to process javascript function';
+		return item;
 	}
 
 	// actually the only string elements are really being processed
