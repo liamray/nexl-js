@@ -211,23 +211,6 @@ ParseModifiers.prototype.discoverModifierType = function (modifier) {
 	return modifierType;
 };
 
-ParseModifiers.prototype.pushModifier = function (modifierId, modifierMD, modifierType) {
-	// resolving existing modifier
-	var existingModifierRoot = this.result.modifiers[modifierId];
-
-	// is not exists, adding
-	if (!j79.isValSet(existingModifierRoot)) {
-		existingModifierRoot = [];
-		this.result.modifiers[modifierId] = existingModifierRoot;
-	}
-
-	var newModifier = {};
-	newModifier.modifierMD = modifierMD;
-	newModifier.type = modifierType;
-
-	existingModifierRoot.push(newModifier);
-};
-
 ParseModifiers.prototype.parseModifier = function () {
 	var chars = this.str.substr(this.lastSearchPos);
 
@@ -251,7 +234,12 @@ ParseModifiers.prototype.parseModifier = function () {
 	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parse();
 	var modifierType = this.discoverModifierType(modifierMD);
 
-	this.pushModifier(modifierId, modifierMD, modifierType);
+	var modifier = {
+		id: modifierId,
+		md: modifierMD,
+		type: modifierType
+	};
+	this.result.modifiers.push(modifier);
 
 	// increasing lastSearchPos
 	this.lastSearchPos += modifierMD.length;
@@ -260,7 +248,7 @@ ParseModifiers.prototype.parseModifier = function () {
 ParseModifiers.prototype.parse = function () {
 	// preparing result
 	this.result = {};
-	this.result.modifiers = {};
+	this.result.modifiers = [];
 
 	this.lastSearchPos = this.pos;
 	this.isFinished = false;

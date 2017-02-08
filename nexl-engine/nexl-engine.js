@@ -32,8 +32,14 @@ function deepMergeInner(obj1, obj2) {
 	return deepMerge(obj1, obj2);
 }
 
-function resolveValueDirectlyFromChunk(parsedStrMD) {
-	return parsedStrMD.chunks.length < 1 ? '' : parsedStrMD.chunks[0];
+function resolveModifierConstantValue(modifier) {
+	var parsedStrMD = modifier.md;
+
+	if (parsedStrMD.chunks.length !== 1 || parsedStrMD.chunks[0] === null) {
+		throw util.format('Invalid nexl expression. The [%s] modifier can have only constant value and cannot contain sub expressions', modifier.id);
+	}
+
+	return parsedStrMD.chunks[0];
 }
 
 
@@ -522,7 +528,7 @@ NexlExpressionEvaluator.prototype.castInner = function (value, nexlType) {
 
 NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
 	// evaluating modifier value
-	var modifierMd = modifier.modifierMD;
+	var modifierMd = modifier.md;
 	var type = modifier.type;
 
 	var data = {};
@@ -571,27 +577,11 @@ NexlExpressionEvaluator.prototype.resolveReverseKey = function (reverseKey) {
 	this.result = newResult.length > 0 ? newResult : undefined;
 };
 
-NexlExpressionEvaluator.prototype.applyObjectReverseResolutionModifier = function () {
+NexlExpressionEvaluator.prototype.applyObjectReverseResolutionModifier = function (modifier) {
 	// reverse resolution modifier is applying only for objects
 	if (!j79.isObject(this.result)) {
 		return;
 	}
-
-	// resolving modifier stuff by his id
-	var objectReverseResolutionModifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.OBJECT_REVERSE_RESOLUTION];
-
-	// is modifier present ?
-	if (objectReverseResolutionModifiers === undefined) {
-		return;
-	}
-
-	// no modifiers ? leitraot ;)
-	if (objectReverseResolutionModifiers.length < 1) {
-		return;
-	}
-
-	// using only first one
-	var modifier = objectReverseResolutionModifiers[0];
 
 	// resolving modifier value
 	var modifierValue = this.resolveModifierValue(modifier);
@@ -616,25 +606,12 @@ NexlExpressionEvaluator.prototype.forceMakeObject = function () {
 	this.result = obj;
 };
 
-NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function () {
-	// resolving modifier stuff by his id
-	var modifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.OBJECT_OPERATIONS];
-
-	// no modifier ? good bye !
-	if (modifiers === undefined) {
-		return;
-	}
-
+NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function (modifier) {
 	// value of object operations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
-	var modificators = [];
-	for (var index in modifiers) {
-		var item = modifiers[index];
-		item = resolveValueDirectlyFromChunk(item.modifierMD);
-		modificators.push(item);
-	}
+	var modifierVal = resolveModifierConstantValue(modifier);
 
 	// applying ~O for non-objects
-	if (!j79.isObject(this.result) && modificators.indexOf('O') >= 0) {
+	if (!j79.isObject(this.result) && modifierVal === 'O') {
 		this.forceMakeObject();
 	}
 
@@ -644,32 +621,81 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function () {
 	}
 
 	// resolving keys for ~K
-	if (modificators.indexOf('K') >= 0) {
+	if (modifierVal === 'K') {
 		this.result = Object.keys(this.result);
 		return;
 	}
 
 	// resolving values for ~V
-	if (modificators.indexOf('V') >= 0) {
+	if (modifierVal === 'V') {
 		this.result = j79.obj2ArrayIfNeeded(this.result);
 		return;
 	}
 
+	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierVal, modifier.id);
 };
 
-NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function () {
-
-};
-
-NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function () {
+NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function (modifier) {
 
 };
 
-NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function () {
+NexlExpressionEvaluator.prototype.makeUniq = function () {
+	var newResult = [];
+	for (var index in this.result) {
+		var item = this.result[index];
+		if (newResult.indexOf(item) < 0) {
+			newResult.push(item);
+		}
+	}
+
+	this.result = newResult;
+};
+
+// #S, #s, #U, #C array operations modifier
+NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function (modifier) {
+	// not an array ? bye bye
+	if (!j79.isArray(this.result)) {
+		return;
+	}
+
+	var modifierValue = resolveModifierConstantValue(modifier);
+
+	switch (modifierValue) {
+		// sort ascent
+		case 'S': {
+			this.result = this.result.sort();
+			return;
+		}
+
+		// sort descent
+		case 's': {
+			this.result = this.result.sort();
+			this.result = this.result.reverse();
+			return;
+		}
+
+		// uniq
+		case 'U': {
+			this.makeUniq();
+			return;
+		}
+
+		// count
+		case 'C': {
+			this.result = this.result.length;
+			return;
+		}
+
+	}
+
+	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierVal, modifier.id);
+};
+
+NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (modifier) {
 
 };
 
-NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function () {
+NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modifier) {
 
 };
 
@@ -697,64 +723,79 @@ NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function () {
+NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier) {
 	// is value set for this.result ?
 	if (this.result !== undefined) {
 		// don't need to apply default value modifier
 		return;
 	}
 
-	// resolving modifier stuff by his id
-	var defValueModifiers = this.nexlExpressionMD.modifiers[nep.MODIFIERS.DEF_VALUE];
+	var modifierValue = this.resolveModifierValue(modifier);
 
-	// is default value modifier not present ?
-	if (defValueModifiers === undefined) {
-		return;
-	}
-
-	// iterating over values of default value modifier
-	for (var index in defValueModifiers) {
-		var modifier = defValueModifiers[index];
-
-		var modifierValue = this.resolveModifierValue(modifier);
-
-		if (modifierValue !== undefined) {
-			this.setDefaultValue(modifierValue);
-			return;
-		}
+	if (modifierValue !== undefined) {
+		this.setDefaultValue(modifierValue);
 	}
 };
 
+NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
+	switch (modifier.id) {
+		// @ default value modifier
+		case nep.MODIFIERS.DEF_VALUE: {
+			this.applyDefaultValueModifier(modifier);
+			return;
+		}
+
+		// ~K, ~V, ~O object operations modifier
+		case nep.MODIFIERS.OBJECT_OPERATIONS: {
+			this.applyObjectOperationsModifier(modifier);
+			return;
+		}
+
+		// < object reverse resolution modifier
+		case nep.MODIFIERS.OBJECT_REVERSE_RESOLUTION: {
+			this.applyObjectReverseResolutionModifier(modifier);
+			return;
+		}
+
+		// #S, #s, #U, #C array operations modifier
+		case nep.MODIFIERS.ARRAY_OPERATIONS: {
+			this.applyArrayOperationsModifier(modifier);
+			return;
+		}
+
+		// - eliminate array elements modifier
+		case nep.MODIFIERS.ELIMINATE_ARRAY_ELEMENTS: {
+			this.applyEliminateArrayElementsModifier(modifier);
+			return;
+		}
+
+		// & join array elements modifier
+		case nep.MODIFIERS.JOIN_ARRAY_ELEMENTS: {
+			this.applyJoinArrayElementsModifier(modifier);
+			return;
+		}
+
+		// ^U, ^L, ^LEN, ^TL, ^TR, ^T string operations modifier
+		case nep.MODIFIERS.STRING_OPERATIONS: {
+			this.applyStringOperationsModifier(modifier);
+			return;
+		}
+
+		// eval as undefined modifier
+		case nep.MODIFIERS.EVALUATE_AS_UNDEFINED: {
+			return;
+		}
+	}
+
+	throw util.format('Probably parser error, got unknown modifier [%s]', modifier.id);
+};
+
 NexlExpressionEvaluator.prototype.applyModifiers = function () {
-	// applying object reverse resolution modifier ( OBJECT_REVERSE_RESOLUTION )
-	// <
-	this.applyObjectReverseResolutionModifier();
-
-	// applying object operations modifier ( OBJECT_OPERATIONS )
-	// ~K, ~V, ~O
-	this.applyObjectOperationsModifier();
-
-	// applying eliminate array elements modifier ( ELIMINATE_ARRAY_ELEMENTS )
-	// -
-	this.applyEliminateArrayElementsModifier();
-
-	// applying array operations modifier ( ARRAY_OPERATIONS )
-	// #S, #s, #U, #C
-	this.applyArrayOperationsModifier();
-
-	// applying join array elements modifier ( JOIN_ARRAY_ELEMENTS )
-	// &
-	this.applyJoinArrayElementsModifier();
-
-	// applying string operations modifier ( STRING_OPERATIONS )
-	// ^U, ^L, ^LEN, ^TL, ^TR, ^T
-	this.applyStringOperationsModifier();
-
-	// applying default value modifier ( DEF_VALUE )
-	// @
-	result = this.applyDefaultValueModifier();
-
-	return result;
+	// iterating over modifiers and applying them
+	for (var index in this.nexlExpressionMD.modifiers) {
+		var modifier = this.nexlExpressionMD.modifiers[index];
+		this.applyModifier(modifier);
+	}
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
