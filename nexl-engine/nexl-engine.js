@@ -731,6 +731,35 @@ NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modi
 		return;
 	}
 
+	var modifierValue = resolveModifierConstantValue(modifier);
+
+	switch (modifierValue) {
+		// upper case
+		case 'U': {
+			this.result = this.result.toUpperCase();
+			return;
+		}
+
+		// lower case
+		case 'L': {
+			this.result = this.result.toLowerCase();
+			return;
+		}
+
+		// length
+		case 'LEN': {
+			this.result = this.result.length;
+			return;
+		}
+
+		// trim
+		case 'T': {
+			this.result = this.result.trim();
+			return;
+		}
+	}
+
+	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierValue, modifier.id);
 
 };
 
@@ -772,7 +801,7 @@ NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 			return;
 		}
 
-		// ^U, ^L, ^LEN, ^TL, ^TR, ^T string operations modifier
+		// ^U, ^L, ^LEN, ^T string operations modifier
 		case nep.MODIFIERS.STRING_OPERATIONS: {
 			this.applyStringOperationsModifier(modifier);
 			return;
