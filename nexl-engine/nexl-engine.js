@@ -629,7 +629,10 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function
 		return;
 	}
 
+	// resolving modifier value
 	var modifierValue = this.resolveModifierValue(modifier);
+
+	// wrapping with array
 	modifierValue = j79.wrapWithArrayIfNeeded(modifierValue);
 
 	// iterating over modifierValue and eliminating array elements
@@ -697,10 +700,28 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function (modif
 };
 
 NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (modifier) {
+	// not an array ? bye bye
+	if (!j79.isArray(this.result)) {
+		return;
+	}
 
+	// resolving modifier value
+	var modifierValue = this.resolveModifierValue(modifier);
+
+	// validating modifier value
+	if (!j79.isValSet(modifierValue) || isObjectFunctionOrArray(modifierValue)) {
+		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use primitive data types to join array elements', j79.getType(modifierValue), this.nexlExpressionMD.str);
+	}
+
+	this.result = this.result.join(modifierValue);
 };
 
 NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modifier) {
+	// not a string ? good bye
+	if (!j79.isString(this.result)) {
+		return;
+	}
+
 
 };
 
