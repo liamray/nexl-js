@@ -624,7 +624,24 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function (modi
 };
 
 NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function (modifier) {
+	// not an array ? bye bye
+	if (!j79.isArray(this.result)) {
+		return;
+	}
 
+	var modifierValue = this.resolveModifierValue(modifier);
+	modifierValue = j79.wrapWithArrayIfNeeded(modifierValue);
+
+	// iterating over modifierValue and eliminating array elements
+	for (var index in modifierValue) {
+		var item = modifierValue[index];
+		var removeCandidate = this.result.indexOf(item);
+		if (removeCandidate < 0) {
+			continue;
+		}
+
+		this.result.splice(removeCandidate, 1);
+	}
 };
 
 NexlExpressionEvaluator.prototype.makeUniq = function () {
@@ -687,21 +704,6 @@ NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modi
 
 };
 
-NexlExpressionEvaluator.prototype.setDefaultValue = function (value) {
-	if (!j79.isArray(this.result)) {
-		this.result = value;
-		return;
-	}
-
-	// iterating over array element and updating empty values
-	for (var index in this.result) {
-		var item = this.result[index];
-		if (item === undefined) {
-			this.result[index] = value;
-		}
-	}
-};
-
 NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier) {
 	// is value set for this.result ?
 	if (this.result !== undefined) {
@@ -709,11 +711,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier
 		return;
 	}
 
-	var modifierValue = this.resolveModifierValue(modifier);
-
-	if (modifierValue !== undefined) {
-		this.setDefaultValue(modifierValue);
-	}
+	this.result = this.resolveModifierValue(modifier);
 };
 
 NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
