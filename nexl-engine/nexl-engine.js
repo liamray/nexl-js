@@ -16,13 +16,6 @@ const nep = require('./nexl-expressions-parser');
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function isObjectOrFunction(item) {
-	return j79.isObject(item) || j79.isFunction(item);
-}
-
-function isObjectFunctionOrArray(item) {
-	return isObjectOrFunction(item) || j79.isArray(item);
-}
 
 function deepMergeInner(obj1, obj2) {
 	if (obj2 === undefined) {
@@ -42,7 +35,6 @@ function resolveModifierConstantValue(modifier) {
 	return parsedStrMD.chunks[0];
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +44,7 @@ EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 		throw util.format('Cannot substitute [%s] value into [%s]', item, chunk2Substitute.str);
 	}
 
-	if (isObjectFunctionOrArray(item)) {
+	if (!j79.isPrimitive(item)) {
 		throw util.format('The subexpression [%s] of [%s] expression cannot be evaluated as %s ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
 	}
 };
@@ -175,15 +167,44 @@ function EvalAndSubstChunks(session, data) {
 // NexlExpressionEvaluator
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
+	var newResult = {};
+	var nexlEngine = new NexlEngine(this.session);
+
+	for (var key in this.result) {
+		if (!nep.hasSubExpression(key)) {
+			newResult[key] = this.result[key];
+			continue;
+		}
+
+		// nexilized key
+		var newKey = nexlEngine.processItem(key);
+
+		// key must be a primitive. checking...
+		if (!j79.isPrimitive(newKey)) {
+			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(newKey));
+		}
+
+		newResult[newKey] = this.result[key];
+	}
+
+	this.result = newResult;
+};
+
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	if (j79.isString(this.result) && nep.hasSubExpression(this.result)) {
 		this.result = new NexlEngine(this.session).processItem(this.result);
+	}
+
+	// evaluating object keys if they have nexl expressions
+	if (j79.isObject(this.result)) {
+		this.expandObjectKeys();
 	}
 };
 
 
 NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key, item) {
-	if (!isObjectFunctionOrArray(item)) {
+	if (!j79.isValSet(item) || j79.isPrimitive(item)) {
 		this.newResult.push(item);
 		return;
 	}
@@ -220,7 +241,7 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 	}
 
 	// is it object ? ( array and function are also kind of objects )
-	if (isObjectFunctionOrArray(currentExternalArg)) {
+	if (!j79.isPrimitive(currentExternalArg)) {
 		this.forwardUpAndPush(key, currentResultItem);
 		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
 		return;
@@ -249,7 +270,7 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 		var key = keys[i];
 
 		// key must be only a primitive. checking
-		if (isObjectFunctionOrArray(key)) {
+		if (!j79.isPrimitive(key)) {
 			throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(key), this.chunkNr + 1);
 		}
 
@@ -269,13 +290,7 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 };
 
 NexlExpressionEvaluator.prototype.validate = function () {
-	// null/NaN check ( undefined is ok, but it was checked before )
-	if (!j79.isValSet(this.assembledChunks)) {
-		throw util.format('Cannot resolve a [%s] property from object in [%s] expression at the [%s] chunk', this.assembledChunks, this.nexlExpressionMD.str, this.chunkNr + 1);
-	}
-
-	// the type of assembledChunks mustn't be an object or function
-	if (isObjectOrFunction(this.assembledChunks)) {
+	if (!j79.isPrimitive(this.assembledChunks) && !j79.isArray(this.assembledChunks)) {
 		throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(this.assembledChunks), this.chunkNr + 1);
 	}
 };
@@ -718,7 +733,7 @@ NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (mod
 	var modifierValue = this.resolveModifierValue(modifier);
 
 	// validating modifier value
-	if (!j79.isValSet(modifierValue) || isObjectFunctionOrArray(modifierValue)) {
+	if (!j79.isPrimitive(modifierValue)) {
 		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use primitive data types to join array elements', j79.getType(modifierValue), this.nexlExpressionMD.str);
 	}
 
@@ -898,9 +913,9 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 			return undefined;
 		}
 
-		if (j79.isArray(evaluatedKey) || j79.isObject(evaluatedKey) || j79.isFunction(evaluatedKey)) {
-			var type = j79.getType(evaluatedKey);
-			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a [%s] value which is not a primitive data type ( it has a [%s] data type )', key, JSON.stringify(evaluatedKey), type);
+		// key must be a primitive. validating
+		if (!j79.isPrimitive(evaluatedKey)) {
+			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(evaluatedKey));
 		}
 
 		var value = obj[key];

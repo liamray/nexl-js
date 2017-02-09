@@ -39,10 +39,10 @@ UNITED_KEY_DEF = {
 	'price': ['price', 'disturbed', 'beneficial']
 };
 
-unitedKey = '${UNITED_KEY_DEF<${KEY}:${KEY}}';
+unitedKey = '${UNITED_KEY_DEF<${KEY}@${KEY}}';
 
-var omitArr1 = ['disconnect', 24, '${undefinedVariable!C}', null, false];
-omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar!C}';
+var omitArr1 = ['disconnect', 24, '${undefinedVariable}', null, false];
+omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar}';
 
 function reverseArray(arr) {
 	return arr.reverse();

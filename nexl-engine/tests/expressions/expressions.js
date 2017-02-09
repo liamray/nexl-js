@@ -13,18 +13,17 @@
 var expressions = [];
 module.exports = expressions;
 
-// parser bug !!!
 expressions.push({
 	expression: '${obj1.71}',
 	result: 'berry'
 });
 
 
-// parser bug !!!
 expressions.push({
-	expression: 'hello ${escapeDrpProd("}1")}',
-	result: '}1'
+	expression: 'hello ${escapeDrpProd(${@DRP\\-PROD})}',
+	result: 'hello DRP\\-PROD'
 });
+
 
 // empty input
 expressions.push({
@@ -32,7 +31,9 @@ expressions.push({
 	result: ''
 });
 
-// no expression test
+/*
+
+ // no expression test
 expressions.push({
 	expression: 'no expression',
 	result: 'no expression'
@@ -427,3 +428,4 @@ expressions.push({
 		IFC: 'iMaximum'
 	}
 });
+ */
