@@ -43,7 +43,7 @@ function testExpression(exprDef) {
 	try {
 		var result = nexlEngine.processItem(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
-		if (exprDef.result !== undefined) {
+		if (!exprDef.throwsException) {
 			failureMessage(exprDef, e);
 			return false;
 		}
@@ -52,9 +52,8 @@ function testExpression(exprDef) {
 		return true;
 	}
 
-	// if the exprDef.result is not defined, expression must fail. checking
-	if (exprDef.result === undefined) {
-		failureMessage(exprDef, 'This test MUST FAIL, but hasn\'t');
+	if (exprDef.throwsException) {
+		failureMessage(exprDef, 'This expression must throw exception, but did\'nt');
 		return false;
 	}
 

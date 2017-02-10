@@ -28,6 +28,7 @@ var MODIFIERS = {
 	'RESERVED1': '*',
 	'RESERVED2': '?',
 	'RESERVED3': '%',
+	'RESERVED4': '>',
 	'RESERVED5': '+'
 };
 

@@ -552,7 +552,11 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier
 	this.result = this.resolveModifierValue(modifier);
 };
 
-NexlExpressionEvaluator.prototype.forceMakeObject = function () {
+NexlExpressionEvaluator.prototype.forceMakeObjectIfNeeded = function (isObject) {
+	if (isObject) {
+		return;
+	}
+
 	var key = this.assembledChunks;
 
 	if (key === undefined) {
@@ -572,13 +576,16 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function (modi
 	// value of object operations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
 	var modifierVal = resolveModifierConstantValue(modifier);
 
+	var isObject = j79.isObject(this.result);
+
 	// applying ~O for non-objects
-	if (!j79.isObject(this.result) && modifierVal === 'O') {
-		this.forceMakeObject();
+	if (modifierVal === 'O') {
+		this.forceMakeObjectIfNeeded(isObject);
+		return;
 	}
 
-	// not an object ? bye bye
-	if (!j79.isObject(this.result)) {
+	// not an object ? nothing to do here
+	if (!isObject) {
 		return;
 	}
 
