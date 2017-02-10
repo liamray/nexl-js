@@ -45,7 +45,7 @@ function hasEvaluateAsUndefinedFlag(obj) {
 
 EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 	if (!j79.isValSet(item)) {
-		throw util.format('Cannot substitute [%s] value into [%s]', item, chunk2Substitute.str);
+		throw util.format('Cannot substitute [%s] value into [%s] for [%s] expression', item, chunk2Substitute.str, this.data.str);
 	}
 
 	if (!j79.isPrimitive(item)) {
@@ -917,7 +917,7 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 
 		// EVALUATE_AS_UNDEFINED modifier
 		if (item === undefined && this.isEvaluateAsUndefined) {
-			return undefined;
+			continue;
 		}
 
 		if (j79.isArray(item)) {

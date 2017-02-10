@@ -13,6 +13,7 @@
 var expressions = [];
 module.exports = expressions;
 
+
 expressions.push({
 	expression: '${obj1.71}',
 	result: 'berry'
@@ -230,8 +231,8 @@ expressions.push({
 
 // evaluate as undefined modifier
 expressions.push({
-	expression: '${evaluateAsUndefined1!@} ${evaluateAsUndefined1&,}',
-	result: ' disconnect,24,,,false'
+	expression: '${evaluateAsUndefined1!&,} ${evaluateAsUndefined1&,}',
+	result: 'disconnect,24,,false disconnect,24,,,false'
 });
 
 // omit whole expression modifier
@@ -258,99 +259,101 @@ expressions.push({
 	result: 'queen,muscle,79,false'
 });
 
+// unitedKey
+expressions.push({
+	expression: '${unitedKey}',
+	result: ['price'],
+	args: {
+		KEY: 'disturbed'
+	}
+});
+
+expressions.push({
+	expression: '${unitedKey}',
+	result: '()',
+	args: {
+		KEY: '()'
+	}
+});
+
+
+// object reverse resolution
+expressions.push({
+	expression: '${obj1<undefinedVariable}',
+	result: undefined
+});
+
+////////////////////////////////////// ALL_APP_SERVER_INTERFACES //////////////////////////////////////
+// ENV = DEV
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV'
+	}
+});
+
+// ENV = DEV, INSTANCE = FIRST
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV',
+		INSTANCE: 'FIRST'
+	}
+});
+
+// ENV = DEV, INSTANCE = THIRD
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['zombie', 'arrows', 'zebra'],
+	args: {
+		ENV: 'DEV',
+		INSTANCE: 'THIRD'
+	}
+});
+
+// ENV = QA
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['autonomous1', 'criminal1', 'adrenaline2', 'prophetic2'],
+	args: {
+		ENV: 'QA'
+	}
+});
+
+// ENV = PROD
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
+	args: {
+		ENV: 'PROD'
+	}
+});
+
+
+// ENV = PROD, INSTANCE = SECOND
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
+	args: {
+		ENV: 'PROD',
+		INSTANCE: 'SECOND'
+	}
+});
+
+// ENV = PROD, INSTANCE = XXX
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['drp-prod'],
+	args: {
+		ENV: 'PROD',
+		INSTANCE: 'xxx'
+	}
+});
+
+
 /*
-
- // unitedKey
- expressions.push({
- expression: '${unitedKey}',
- result: 'price',
- args: {
- KEY: 'disturbed'
- }
- });
-
- expressions.push({
- expression: '${unitedKey}',
- result: '()',
- args: {
- KEY: '()'
- }
- });
-
-
- // object reverse resolution
- expressions.push({
- expression: '${obj1<undefinedVariable}}'
- });
-
- ////////////////////////////////////// ALL_APP_SERVER_INTERFACES //////////////////////////////////////
- // ENV = DEV
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['zombie', 'arrows', 'zebra'],
- args: {
- ENV: 'DEV'
- }
- });
-
- // ENV = DEV, INSTANCE = FIRST
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['zombie', 'arrows', 'zebra'],
- args: {
- ENV: 'DEV',
- INSTANCE: 'FIRST'
- }
- });
-
- // ENV = DEV, INSTANCE = THIRD
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['zombie', 'arrows', 'zebra'],
- args: {
- ENV: 'DEV',
- INSTANCE: 'THIRD'
- }
- });
-
- // ENV = QA
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['autonomous1', 'criminal1', 'adrenaline2', 'prophetic2'],
- args: {
- ENV: 'QA'
- }
- });
-
- // ENV = PROD
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
- args: {
- ENV: 'PROD'
- }
- });
-
- // ENV = PROD, INSTANCE = SECOND
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
- args: {
- ENV: 'PROD',
- INSTANCE: 'SECOND'
- }
- });
-
- // ENV = PROD, INSTANCE = XXX
- expressions.push({
- expression: '${ALL_APP_SERVER_INTERFACES}',
- result: ['drp-prod'],
- args: {
- ENV: 'PROD',
- INSTANCE: 'xxx'
- }
- });
-
  // WS.URL1, ENV = LOCAL
  expressions.push({
  expression: '${WS.URL1}',
