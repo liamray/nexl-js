@@ -353,120 +353,120 @@ expressions.push({
 });
 
 
-/*
- // WS.URL1, ENV = LOCAL
- expressions.push({
- expression: '${WS.URL1}',
- result: ['http://test-url:9595/LOCAL', 'http://test-url:9696/LOCAL'],
- args: {
- ENV: 'LOCAL'
- }
- });
+// WS.URL1, ENV = LOCAL
+expressions.push({
+	expression: '${WS.URL1}',
+	result: ['http://test-url:9595/LOCAL', 'http://test-url:9696/LOCAL'],
+	args: {
+		ENV: 'LOCAL'
+	}
+});
 
- // WS.URL1, ENV = PROD
- expressions.push({
- expression: '${WS.URL1}',
- result: 'http://test-url:8080/PROD',
- args: {
- ENV: 'PROD'
- }
- });
+// WS.URL1, ENV = PROD
+expressions.push({
+	expression: '${WS.URL1}',
+	result: 'http://test-url:8080/PROD',
+	args: {
+		ENV: 'PROD'
+	}
+});
 
- // ALL_HOSTS_AND_PORTS1
- expressions.push({
- expression: '${ALL_HOSTS_AND_PORTS1?,}',
- result: 'hothead1[9595],awakening1[9595],dynamite1[9595],military1[9595],cuddly2[9595],grease2[9595],fate2[9595],atmosphere2[9595],zombie[9595],arrows[9595],zebra[9595],autonomous1[9595],criminal1[9595],adrenaline2[9595],prophetic2[9595],drp-prod[9595],yest[9595],jstaging[9595],hothead1[9696],awakening1[9696],dynamite1[9696],military1[9696],cuddly2[9696],grease2[9696],fate2[9696],atmosphere2[9696],zombie[9696],arrows[9696],zebra[9696],autonomous1[9696],criminal1[9696],adrenaline2[9696],prophetic2[9696],drp-prod[9696],yest[9696],jstaging[9696],hothead1[8080],awakening1[8080],dynamite1[8080],military1[8080],cuddly2[8080],grease2[8080],fate2[8080],atmosphere2[8080],zombie[8080],arrows[8080],zebra[8080],autonomous1[8080],criminal1[8080],adrenaline2[8080],prophetic2[8080],drp-prod[8080],yest[8080],jstaging[8080]'
- });
+// ALL_HOSTS_AND_PORTS1
+expressions.push({
+	expression: '${ALL_HOSTS_AND_PORTS1&,}',
+	result: 'hothead1[9595],awakening1[9595],dynamite1[9595],military1[9595],cuddly2[9595],grease2[9595],fate2[9595],atmosphere2[9595],zombie[9595],arrows[9595],zebra[9595],autonomous1[9595],criminal1[9595],adrenaline2[9595],prophetic2[9595],drp-prod[9595],yest[9595],jstaging[9595],hothead1[9696],awakening1[9696],dynamite1[9696],military1[9696],cuddly2[9696],grease2[9696],fate2[9696],atmosphere2[9696],zombie[9696],arrows[9696],zebra[9696],autonomous1[9696],criminal1[9696],adrenaline2[9696],prophetic2[9696],drp-prod[9696],yest[9696],jstaging[9696],hothead1[8080],awakening1[8080],dynamite1[8080],military1[8080],cuddly2[8080],grease2[8080],fate2[8080],atmosphere2[8080],zombie[8080],arrows[8080],zebra[8080],autonomous1[8080],criminal1[8080],adrenaline2[8080],prophetic2[8080],drp-prod[8080],yest[8080],jstaging[8080]'
+});
 
- // ALL_HOSTS_AND_PORTS2 ( PROD )
- expressions.push({
- expression: '${ALL_HOSTS_AND_PORTS2?,}',
- result: 'hothead1[8080],awakening1[8080],dynamite1[8080],military1[8080],cuddly2[8080],grease2[8080],fate2[8080],atmosphere2[8080],drp-prod[8080]',
- args: {
- ENV: 'PROD'
- }
- });
+// ALL_HOSTS_AND_PORTS2 ( PROD )
+expressions.push({
+	expression: '${ALL_HOSTS_AND_PORTS2&,}',
+	result: 'hothead1[8080],awakening1[8080],dynamite1[8080],military1[8080],cuddly2[8080],grease2[8080],fate2[8080],atmosphere2[8080],drp-prod[8080]',
+	args: {
+		ENV: 'PROD'
+	}
+});
 
- // ALL_HOSTS_AND_PORTS2 ( YEST )
- expressions.push({
- expression: '${ALL_HOSTS_AND_PORTS2?,}',
- result: 'yest[8080]',
- args: {
- ENV: 'YEST'
- }
- });
+// ALL_HOSTS_AND_PORTS2 ( YEST )
+expressions.push({
+	expression: '${ALL_HOSTS_AND_PORTS2&,}',
+	result: 'yest[8080]',
+	args: {
+		ENV: 'YEST'
+	}
+});
 
- // makeUrls() function
- expressions.push({
- expression: '${makeUrls()}',
- result: {
- "PROD": ["http://hothead1", "http://awakening1", "http://dynamite1", "http://military1", "http://cuddly2", "http://grease2", "http://fate2", "http://atmosphere2"],
- "DEV": ["http://zombie", "http://arrows", "http://zebra"],
- "QA": ["http://autonomous1", "http://criminal1", "http://adrenaline2", "http://prophetic2"],
- "DRP-PROD": "http://drp-prod",
- "YEST": "http://yest",
- "STAGING": "http://jstaging"
- }
- });
+// makeUrls() function
+expressions.push({
+	expression: '${makeUrls()}',
+	result: {
+		"PROD": ["http://hothead1", "http://awakening1", "http://dynamite1", "http://military1", "http://cuddly2", "http://grease2", "http://fate2", "http://atmosphere2"],
+		"DEV": ["http://zombie", "http://arrows", "http://zebra"],
+		"QA": ["http://autonomous1", "http://criminal1", "http://adrenaline2", "http://prophetic2"],
+		"DRP-PROD": "http://drp-prod",
+		"YEST": "http://yest",
+		"STAGING": "http://jstaging"
+	}
+});
 
- // resolve ENV by IFC
- expressions.push({
- expression: '${ENV}',
- result: 'SPECIAL',
- args: {
- IFC: 'iDeer'
- }
- });
+// resolve ENV by IFC
+expressions.push({
+	expression: '${ENV}',
+	result: ['SPECIAL'],
+	args: {
+		IFC: 'iDeer'
+	}
+});
 
- // DATABASE_DEF, IFC = hothead1
- expressions.push({
- expression: '${DATABASE_DEF}',
- result: '-DDB_NAME=PROD',
- args: {
- IFC: 'hothead1'
- }
- });
+// DATABASE_DEF, IFC = hothead1
+expressions.push({
+	expression: '${DATABASE_DEF}',
+	result: '-DDB_NAME=PROD',
+	args: {
+		IFC: 'hothead1'
+	}
+});
 
- // DATABASE_DEF, IFC = drp-prod
- expressions.push({
- expression: '${DATABASE_DEF}',
- result: '-DDB_NAME=DRP-PROD',
- args: {
- IFC: 'drp-prod'
- }
- });
+// DATABASE_DEF, IFC = drp-prod
+expressions.push({
+	expression: '${DATABASE_DEF}',
+	result: '-DDB_NAME=DRP-PROD',
+	args: {
+		IFC: 'drp-prod'
+	}
+});
 
- // DATABASE_DEF, IFC = iPromised
- expressions.push({
- expression: '${DATABASE_DEF}',
- result: '-DDB_NAME=iDB',
- args: {
- IFC: 'iPromised'
- }
- });
+// DATABASE_DEF, IFC = iPromised
+expressions.push({
+	expression: '${DATABASE_DEF}',
+	result: '-DDB_NAME=iDB',
+	args: {
+		IFC: 'iPromised'
+	}
+});
 
- // discoverInstance(), SECOND
- expressions.push({
- expression: '${discoverInstance("${IFC}")}',
- result: 'SECOND',
- args: {
- IFC: 'grease2'
- }
- });
+// discoverInstance(), SECOND
+expressions.push({
+	expression: '${discoverInstance(${IFC})}',
+	result: 'SECOND',
+	args: {
+		IFC: 'grease2'
+	}
+});
 
- // discoverInstance(), yest
- expressions.push({
- expression: '${discoverInstance("${IFC}")}',
- args: {
- IFC: 'yest'
- }
- });
+// discoverInstance(), yest
+expressions.push({
+	expression: '${discoverInstance(${IFC})}',
+	result: null,
+	args: {
+		IFC: 'yest'
+	}
+});
 
- // discoverInstance(), yest
- expressions.push({
- expression: '${discoverInstance("${IFC}")}',
- args: {
- IFC: 'iMaximum'
- }
- });
- */
+// discoverInstance(), yest
+expressions.push({
+	expression: '${discoverInstance(${IFC})}',
+	result: null,
+	args: {
+		IFC: 'iMaximum'
+	}
+});
