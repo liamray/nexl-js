@@ -227,37 +227,38 @@ expressions.push({
 		IS_DEBUG_ON: 'on'
 	}
 });
+
+// evaluate as undefined modifier
+expressions.push({
+	expression: '${evaluateAsUndefined1!@} ${evaluateAsUndefined1&,}',
+	result: ' disconnect,24,,,false'
+});
+
+// omit whole expression modifier
+expressions.push({
+	expression: '${evaluateAsUndefined2!}',
+	result: undefined
+});
+
+// funcs
+expressions.push({
+	expression: '${reverseArray(${arr1})}',
+	result: [false, 79, 'muscle', 'queen']
+});
+
+// funcs
+expressions.push({
+	expression: '${obj2.pack.wrapWithBrackets(${@1:num})}',
+	result: '{1}'
+});
+
+// funcs
+expressions.push({
+	expression: '${nexlEngineInternalCall()}',
+	result: 'queen,muscle,79,false'
+});
+
 /*
-
- // omit whole expression modifier
- expressions.push({
- expression: '${omitArr1-?,} ${omitArr1+?,} ${omitArr1?,}',
- result: 'disconnect,24,false disconnect,24,,,false disconnect,24,,,false'
- });
-
- // omit whole expression modifier
- expressions.push({
- expression: '[${omitStr1-}] | ${omitStr1+} | ${omitStr1}',
- result: '[] | 71 berry true  | 71 berry true '
- });
-
- // funcs
- expressions.push({
- expression: '${reverseArray([1, 2, 3])}',
- result: [3, 2, 1]
- });
-
- // funcs
- expressions.push({
- expression: '${obj2.pack.wrapWithBrackets("1")}',
- result: '{1}'
- });
-
- // funcs
- expressions.push({
- expression: '${nexlEngineInternalCall()}',
- result: 'queen,muscle,79,false'
- });
 
  // unitedKey
  expressions.push({

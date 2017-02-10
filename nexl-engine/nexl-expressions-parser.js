@@ -297,7 +297,7 @@ ParseFunctionCall.prototype.parseFunctionCallInner = function () {
 		return;
 	}
 
-	throw util.format('Invalid nexl expression. Function arguments in nexl expression can be only another nexl expression. Occurred in [%s] nexl expression at [%s] position', this.str, this.lastSearchPos);
+	throw util.format('Invalid nexl expression. Function arguments in nexl expression can be only another nexl expressions. Occurred in [%s] nexl expression at [%s] position', this.str, this.lastSearchPos);
 };
 
 ParseFunctionCall.prototype.parse = function () {

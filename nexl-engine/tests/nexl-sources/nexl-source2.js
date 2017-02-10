@@ -41,8 +41,8 @@ UNITED_KEY_DEF = {
 
 unitedKey = '${UNITED_KEY_DEF<${KEY}@${KEY}}';
 
-var omitArr1 = ['disconnect', 24, '${undefinedVariable}', null, false];
-omitStr1 = '${intItem} ${strItem} ${boolItem} ${undefinedVar}';
+var evaluateAsUndefined1 = ['disconnect', 24, '${undefinedVariable}', null, false];
+evaluateAsUndefined2 = '${intItem} ${strItem} ${boolItem} ${undefinedVar}';
 
 function reverseArray(arr) {
 	return arr.reverse();
@@ -55,5 +55,5 @@ obj2.pack.wrapWithBrackets = function (str) {
 };
 
 function nexlEngineInternalCall() {
-	return nexl.processItem('${arr1?,}');
+	return nexl.processItem('${arr1&,}');
 }
