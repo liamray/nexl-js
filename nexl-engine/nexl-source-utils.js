@@ -155,6 +155,8 @@ function assembleSourceCode(nexlSource) {
 
 function createContext(nexlSource) {
 	var context = {};
+	context.nexl = {};
+
 	var sourceCode = assembleSourceCode(nexlSource);
 
 	try {

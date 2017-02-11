@@ -9,6 +9,12 @@
 // test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
 // test omit modifier on objects ( to omit null values from object )
 
+// test for reserved modifiers
+// test for each modifier
+// test for default nexl expression and default args
+// test for data types ( include null and undefined )
+
+// test for dotted resolution when one or few items are undefined : ${a.${b}.c} where ${b} is undefined. do not continue resolution if resolved undefined or null
 
 var expressions = [];
 module.exports = expressions;
@@ -199,13 +205,13 @@ expressions.push({
 // reverse resolution - type check
 expressions.push({
 	expression: '${obj1<true:bool}',
-	result: ['price']
+	result: 'price'
 });
 
 // reverse resolution - type check
 expressions.push({
 	expression: '${obj1<46:num}',
-	result: ['disturbed']
+	result: 'disturbed'
 });
 
 // reverse resolution - array as input and output
@@ -217,13 +223,13 @@ expressions.push({
 // reverse resolution - should resolve the highest key
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES<cuddly2}',
-	result: ['PROD']
+	result: 'PROD'
 });
 
 // reverse resolution - debug_opts
 expressions.push({
 	expression: '${DEBUG_OPTS}',
-	result: ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8790'],
+	result: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8790',
 	args: {
 		IS_DEBUG_ON: 'on'
 	}
@@ -262,7 +268,7 @@ expressions.push({
 // unitedKey
 expressions.push({
 	expression: '${unitedKey}',
-	result: ['price'],
+	result: 'price',
 	args: {
 		KEY: 'disturbed'
 	}
@@ -411,7 +417,7 @@ expressions.push({
 // resolve ENV by IFC
 expressions.push({
 	expression: '${ENV}',
-	result: ['SPECIAL'],
+	result: 'SPECIAL',
 	args: {
 		IFC: 'iDeer'
 	}

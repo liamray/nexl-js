@@ -22,6 +22,10 @@ function deepMergeInner(obj1, obj2) {
 		return obj1;
 	}
 
+	if (!j79.isObject(obj2)) {
+		return obj1;
+	}
+
 	return deepMerge(obj1, obj2);
 }
 
@@ -37,6 +41,39 @@ function resolveModifierConstantValue(modifier) {
 
 function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
+}
+
+function makeSession(nexlSource, externalArgs) {
+	var session = {};
+
+	// creating context
+	session.context = nsu.createContext(nexlSource);
+
+	// assigning extermal args
+	session.externalArgs = externalArgs;
+	if (session.externalArgs === undefined) {
+		session.externalArgs = session.context.nexl.defaultArgs;
+	}
+
+	// args must be an object !
+	if (!j79.isObject(session.externalArgs)) {
+		session.externalArgs = {};
+	}
+
+	// giving an access to arguments for functions in nexl-sources
+	session.context.nexl.args = externalArgs;
+
+	return session;
+}
+
+function supplyStandartLibs(context) {
+	context.Number = Number;
+	context.Math = Math;
+	context.Date = Date;
+	context.isFinite = isFinite;
+	context.isNaN = isNaN;
+	context.parseFloat = parseFloat;
+	context.parseInt = parseInt;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,9 +422,15 @@ NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
 NexlExpressionEvaluator.prototype.assignResult4ArrayIndexes = function (newResult) {
 	if (newResult.length === 1) {
 		this.result = newResult[0];
-	} else {
-		this.result = newResult;
+		return;
 	}
+
+	if (newResult.length < 1) {
+		this.result = undefined;
+		return;
+	}
+
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
@@ -400,6 +443,9 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
 
 		for (var i = range.min; i <= range.max; i++) {
 			var item = this.result[i];
+			if (item === undefined) {
+				continue;
+			}
 			newResult.push(item);
 		}
 	}
@@ -647,7 +693,17 @@ NexlExpressionEvaluator.prototype.resolveReverseKey = function (reverseKey) {
 		}
 	}
 
-	this.result = newResult.length > 0 ? newResult : undefined;
+	if (newResult.length < 1) {
+		this.result = undefined;
+		return;
+	}
+
+	if (newResult.length === 1) {
+		this.result = newResult[0];
+		return;
+	}
+
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.applyObjectReverseResolutionModifier = function (modifier) {
@@ -1011,39 +1067,33 @@ function NexlEngine(session, isEvaluateAsUndefined) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports.processItem = function (nexlSource, item, externalArgs) {
-	var session = {};
-	session.externalArgs = externalArgs;
-
-	// creating context
-	session.context = nsu.createContext(nexlSource);
-
-	// adding nexl object to the context
-	session.context.nexl = {};
-
-	// giving an access to arguments for functions in nexl-sources
-	session.context.nexl.args = externalArgs;
+	var session = makeSession(nexlSource, externalArgs);
 
 	// supplying nexl engine for functions in nexl-sources
 	session.context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
 		// merging existing external args
-		session.externalArgs = deepMergeInner(externalArgs, externalArgs4Function);
+		session.externalArgs = deepMergeInner(session.externalArgs, externalArgs4Function);
 		var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(session.externalArgs);
+
+		// running nexl engine
 		var result = new NexlEngine(session, isEvaluateAsUndefined).processItem(nexlExpression);
+
+		// restoring external args
 		session.externalArgs = externalArgs;
 		return result;
 	};
 
 	// supplying standard libraries
-	session.context.Number = Number;
-	session.context.Math = Math;
-	session.context.Date = Date;
-	session.context.isFinite = isFinite;
-	session.context.isNaN = isNaN;
-	session.context.parseFloat = parseFloat;
-	session.context.parseInt = parseInt;
+	supplyStandartLibs(session.context);
 
+	// should item be evaluated as undefined if it contains undefined variables ?
 	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(externalArgs);
-	return new NexlEngine(session, isEvaluateAsUndefined).processItem(item);
+
+	// is item not specified, using a default nexl expression
+	var item2Process = item === undefined ? session.context.nexl.defaultExpression : item;
+
+	// running nexl engine
+	return new NexlEngine(session, isEvaluateAsUndefined).processItem(item2Process);
 };
 
 // exporting resolveJsVariables
