@@ -11,6 +11,7 @@ var boolItem = true;
 var arr1 = ['queen', 'muscle', 79, false];
 var arr2 = ['air', 16, 99, true, 'smooth'];
 var arr3 = ['${arr1}', '${arr2}'];
+var arr4 = ['${arr3}', true, false, 'true', 79, 'queen'];
 
 obj1PropName = '()';
 
@@ -57,3 +58,35 @@ obj2.pack.wrapWithBrackets = function (str) {
 function nexlEngineInternalCall() {
 	return nexl.processItem('${arr1&,}');
 }
+
+function multiParamsTest(a, b, c) {
+	return a.beneficial + ' ' + b[3] + ' ' + c;
+}
+
+function returnsObjectArrayFunction(param) {
+	if (param === 'object') {
+		return {hello: 'world'};
+	}
+
+	if (param === 'array') {
+		return ['hello', 2017, 'world', true];
+	}
+
+	if (param === 'function') {
+		return function () {
+			return 'Okay;)';
+		}
+	}
+
+	return 'Bad param !'
+}
+
+obj3 = {
+	item1: 'test',
+	item2: '${undefinedVar}',
+	item3: 34
+};
+
+longStr = 'The distance to the work is 155 km';
+index = 32;
+strForTrim = ' ' + longStr + '     ';

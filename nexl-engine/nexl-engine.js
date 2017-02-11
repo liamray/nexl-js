@@ -209,6 +209,11 @@ function EvalAndSubstChunks(session, data) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
+	// not relevant for standard libraries
+	if (this.result === Math || this.result === Number || this.result === Date) {
+		return;
+	}
+
 	var newResult = {};
 	var nexlEngine = new NexlEngine(this.session, this.isEvaluateAsUndefined);
 
@@ -398,7 +403,7 @@ NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
 
 	var result = new NexlExpressionEvaluator(this.session, item).eval();
 	if (!j79.isNumber(result)) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(item), this.nexlExpressionMD.str, this.chunkNr + 1);
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(result), this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	var resultAsStr = result + '';
@@ -1003,7 +1008,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 
 		// EVALUATE_AS_UNDEFINED modifier
 		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
-			return undefined;
+			continue;
 		}
 
 		// key must be a primitive. validating
@@ -1016,7 +1021,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 
 		// EVALUATE_AS_UNDEFINED modifier
 		if (value === undefined && this.isEvaluateAsUndefined) {
-			return undefined;
+			continue;
 		}
 
 		result[evaluatedKey] = value;

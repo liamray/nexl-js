@@ -1,19 +1,5 @@
-// test multi escaping for : brackets, $, modifiers, dots
-
-// test standard functions call like Math.random() ( actually Math\\.random() )
-// test function call when function gets an object/array and returns object/array/array of objects
-// test function with multi params of different types
-
-// test access to fields in sub objects like ${obj1.x.deer}
-// test array of objects resolution like a.${arrOfObjs}.b.c
-// test multiple results with dotted access ( ${a.b().c} ${z.${y}.z} where b() and ${y} return different data type array/obj/... )
-// test omit modifier on objects ( to omit null values from object )
-
-// test for reserved modifiers
-// test for each modifier
 // test for default nexl expression and default args
 // test for data types ( include null and undefined )
-
 // test for dotted resolution when one or few items are undefined : ${a.${b}.c} where ${b} is undefined. do not continue resolution if resolved undefined or null
 // eliminate array elements for null, undefined and other type. also when array becomes empty
 // object reverse resolution for empty result, for single result, for multi result
@@ -22,13 +8,13 @@
 var expressions = [];
 module.exports = expressions;
 
-
+// key is nexl expressoin
 expressions.push({
 	expression: '${obj1.71}',
 	result: 'berry'
 });
 
-
+// function call
 expressions.push({
 	expression: 'hello ${escapeDrpProd(${@DRP\\-PROD})}',
 	result: 'hello DRP\\-PROD'
@@ -238,16 +224,25 @@ expressions.push({
 	}
 });
 
-// evaluate as undefined modifier
+// evaluate as undefined modifier -> string
+expressions.push({
+	expression: '${evaluateAsUndefined2!}',
+	result: undefined
+});
+
+// evaluate as undefined modifier -> array
 expressions.push({
 	expression: '${evaluateAsUndefined1!&,} ${evaluateAsUndefined1&,}',
 	result: 'disconnect,24,,false disconnect,24,,,false'
 });
 
-// omit whole expression modifier
+// evaluate as undefined modifier -> object
 expressions.push({
-	expression: '${evaluateAsUndefined2!}',
-	result: undefined
+	expression: '${obj3!}',
+	result: {
+		item1: 'test',
+		item3: 34
+	}
 });
 
 // funcs
@@ -478,4 +473,144 @@ expressions.push({
 	args: {
 		IFC: 'iMaximum'
 	}
+});
+
+///////////////// Additional tests //////////////////
+// escaping test
+expressions.push({
+	expression: '${undefinedVar@\\${\\}\\\\\\}}',
+	result: '${}\\}'
+});
+
+// Math.round() test
+expressions.push({
+	expression: '${Math.round(${@1.1:num})}',
+	result: 1
+});
+
+// parseInt() test
+expressions.push({
+	expression: '${parseInt(${@123:num})}',
+	result: 123
+});
+
+// parseFloat() test
+expressions.push({
+	expression: '${parseFloat(${@123.456:num})}',
+	result: 123.456
+});
+
+// function with multi params
+expressions.push({
+	expression: '${multiParamsTest(${obj1}, ${arr1}, ${@something} )}',
+	result: 'mint false something'
+});
+
+// function returns different results -> object
+expressions.push({
+	expression: '${returnsObjectArrayFunction(${@object})}',
+	result: {hello: 'world'}
+});
+
+// function returns different results -> array
+expressions.push({
+	expression: '${returnsObjectArrayFunction(${@array})}',
+	result: ['hello', 2017, 'world', true]
+});
+
+// function returns different results -> function
+expressions.push({
+	expression: '${returnsObjectArrayFunction(${@function})()}',
+	result: 'Okay;)'
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${*?%>+}',
+	throwsException: true
+});
+
+// # array operations modifier
+expressions.push({
+	expression: '${arr1#S}',
+	result: [79, false, "muscle", "queen"]
+});
+
+// # array operations modifier
+expressions.push({
+	expression: '${arr1#s}',
+	result: ["queen", "muscle", false, 79]
+});
+
+// # array operations modifier
+expressions.push({
+	expression: '${arr4#U#S}',
+	result: [16, 79, 99, "air", false, "muscle", "queen", "smooth", true, "true"]
+});
+
+// # array operations modifier
+expressions.push({
+	expression: '${arr4#U#S#CNT}',
+	result: 10,
+	throwsException: true
+});
+
+// # array operations modifier
+expressions.push({
+	expression: '${arr4#U#S#C}',
+	result: 10
+});
+
+// # eliminate array elements
+expressions.push({
+	expression: '${arr1-false}', // not eliminating, because false is string
+	result: ['queen', 'muscle', 79, false]
+});
+
+// # eliminate multiple
+expressions.push({
+	expression: '${arr1-false:bool-79-79:num-queen}',
+	result: ['muscle']
+});
+
+// # eliminate array elements ( eliminate itself )
+expressions.push({
+	expression: '${arr1-${arr1}}',
+	result: undefined
+});
+
+// # substring
+expressions.push({
+	expression: '${longStr[0..30,${index}..999]& }',
+	result: 'The distance to the work is 15 km'
+});
+
+// # substring
+expressions.push({
+	expression: '${longStr[0..30,${strItem}..999]& }',
+	throwsException: true
+});
+
+// # string operations - ^U
+expressions.push({
+	expression: '${longStr^U}',
+	result: 'THE DISTANCE TO THE WORK IS 155 KM'
+});
+
+// # string operations - ^L
+expressions.push({
+	expression: '${longStr^L}',
+	result: 'the distance to the work is 155 km'
+});
+
+// # string operations - ^T
+expressions.push({
+	expression: '${strForTrim^T^L}',
+	result: 'the distance to the work is 155 km'
+});
+
+// # string operations - ^LEN
+expressions.push({
+	expression: '${strForTrim^T^L^LEN}',
+	result: 34
 });
