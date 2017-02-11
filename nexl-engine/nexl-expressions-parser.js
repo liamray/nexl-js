@@ -36,7 +36,8 @@ var JS_PRIMITIVE_TYPES = {
 	NUM: '[object Number]',
 	BOOL: '[object Boolean]',
 	STR: '[object String]',
-	NULL: '[object Null]'
+	NULL: '[object Null]',
+	UNDEFINED: '[object Undefined]'
 };
 
 var JS_PRIMITIVE_TYPES_VALUES = j79.getObjectValues(JS_PRIMITIVE_TYPES);
@@ -45,7 +46,8 @@ var NEXL_TYPES = {
 	'num': JS_PRIMITIVE_TYPES.NUM,
 	'bool': JS_PRIMITIVE_TYPES.BOOL,
 	'str': JS_PRIMITIVE_TYPES.STR,
-	'null': JS_PRIMITIVE_TYPES.NULL
+	'null': JS_PRIMITIVE_TYPES.NULL,
+	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
 };
 
 

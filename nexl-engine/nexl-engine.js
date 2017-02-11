@@ -568,7 +568,6 @@ NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
 		throw util.format('Unknown [%s] type', nexlType);
 	}
 
-	// resolving type for value
 	var currentType = j79.getType(value);
 
 	// if both types are same, return value as is
@@ -576,9 +575,14 @@ NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
 		return value;
 	}
 
-	// everything is being casted to null
+	// cast to null
 	if (requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NULL) {
 		return null;
+	}
+
+	// cast to undefined
+	if (requiredTypeJs === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
+		return undefined;
 	}
 
 	return this.castInner(value, currentType, requiredTypeJs);
@@ -792,6 +796,10 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function
 		}
 
 		this.result.splice(removeCandidate, 1);
+	}
+
+	if (this.result.length < 1) {
+		this.result = undefined;
 	}
 };
 

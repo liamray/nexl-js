@@ -15,6 +15,9 @@
 // test for data types ( include null and undefined )
 
 // test for dotted resolution when one or few items are undefined : ${a.${b}.c} where ${b} is undefined. do not continue resolution if resolved undefined or null
+// eliminate array elements for null, undefined and other type. also when array becomes empty
+// object reverse resolution for empty result, for single result, for multi result
+// array indexes for empty result, for single result, for multi result, when index out of bounds
 
 var expressions = [];
 module.exports = expressions;
