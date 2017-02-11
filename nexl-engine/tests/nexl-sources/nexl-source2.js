@@ -90,3 +90,7 @@ obj3 = {
 longStr = 'The distance to the work is 155 km';
 index = 32;
 strForTrim = ' ' + longStr + '     ';
+
+
+nexl.defaultExpression = '${test1}';
+nexl.defaultArgs = {test1: 25};

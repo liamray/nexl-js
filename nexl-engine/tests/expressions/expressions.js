@@ -1,14 +1,12 @@
-// test for default nexl expression and default args
-// test for data types ( include null and undefined )
 // test for dotted resolution when one or few items are undefined : ${a.${b}.c} where ${b} is undefined. do not continue resolution if resolved undefined or null
-// eliminate array elements for null, undefined and other type. also when array becomes empty
 // object reverse resolution for empty result, for single result, for multi result
 // array indexes for empty result, for single result, for multi result, when index out of bounds
+// text external args, include null values
 
 var expressions = [];
 module.exports = expressions;
 
-// key is nexl expressoin
+// key is nexl expression
 expressions.push({
 	expression: '${obj1.71}',
 	result: 'berry'
@@ -613,4 +611,78 @@ expressions.push({
 expressions.push({
 	expression: '${strForTrim^T^L^LEN}',
 	result: 34
+});
+
+// default expression and default args
+expressions.push({
+	result: 25
+});
+
+// default expression and default args
+expressions.push({
+	args: {
+		test1: 'omg'
+	},
+	result: 'omg'
+});
+
+
+// types check
+expressions.push({
+	expression: '${@1:num}',
+	result: 1
+});
+
+// types check
+expressions.push({
+	expression: '${@1:str}',
+	result: '1'
+});
+
+// types check
+expressions.push({
+	expression: '${@1:bool}',
+	result: undefined
+});
+
+// types check
+expressions.push({
+	expression: '${@true:bool}',
+	result: true
+});
+
+// types check
+expressions.push({
+	expression: '${@${intItem}:bool}',
+	result: true
+});
+
+// types check
+expressions.push({
+	expression: '${@1:null}',
+	result: null
+});
+
+// types check
+expressions.push({
+	expression: '${@${strItem}:undefined}',
+	result: undefined
+});
+
+// long object resolution
+expressions.push({
+	expression: '${a.b.${undefinedVariable}.d}',
+	result: undefined
+});
+
+// long object resolution
+expressions.push({
+	expression: '${${xxx} .b.c.d}',
+	throwsException: true
+});
+
+// long object resolution
+expressions.push({
+	expression: '${obj1.pack.strong.balance}',
+	result: undefined
 });
