@@ -255,23 +255,28 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 
 
 NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key, item) {
-	if (!j79.isValSet(item) || j79.isPrimitive(item)) {
-		this.newResult.push(item);
-		return;
+	if (j79.isObject(item)) {
+		this.newResult.push(item[key]);
+	} else {
+		this.newResult.push(undefined);
 	}
-
-	item = item[key];
-	this.newResult.push(item);
 };
 
 NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultItem, currentResultItemIndex) {
 	var currentExternalArg = this.externalArgsPointer[currentResultItemIndex];
 	var newResultLastItemIndex = this.newResult.length;
 
-	// if key is empty, remaining current value
-	if (key === '') {
+	// skipping undefined key
+	if (key === undefined) {
 		this.newResult.push(currentResultItem);
 		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
+		return;
+	}
+
+	// not a primitive ? make result undefined
+	if (!j79.isPrimitive(key)) {
+		this.newResult.push(undefined);
+		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 		return;
 	}
 
@@ -291,21 +296,29 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultIt
 		return;
 	}
 
-	// is it object ? ( array and function are also kind of objects )
-	if (!j79.isPrimitive(currentExternalArg)) {
+	// is pointer to current external arg object ?
+	if (j79.isObject(currentExternalArg)) {
 		this.forwardUpAndPush(key, currentResultItem);
+		// forwarding up the pointer to current external args
 		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
 		return;
 	}
 
-	// ok, it's a primitive. going to override the currentResultItem.
-	// but first validating. is cannot contain nexl expression
-	if (nep.hasSubExpression(currentExternalArg)) {
+	// validating. it cannot contain nexl expressions
+	if (j79.isString(currentExternalArg) && nep.hasSubExpression(currentExternalArg)) {
 		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', currentExternalArg);
+	}
+
+	// functions and arrays are not acceptable for external args
+	if (j79.isFunction(currentExternalArg) || j79.isArray(currentExternalArg)) {
+		this.forwardUpAndPush(key, currentResultItem);
+		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+		return;
 	}
 
 	// it's ok, overriding
 	this.newResult.push(currentExternalArg);
+	// resetting currentExternalArg
 	this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
 };
 
@@ -319,11 +332,6 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 	// iterating over keys
 	for (var i in keys) {
 		var key = keys[i];
-
-		// key must be only a primitive. checking
-		if (!j79.isPrimitive(key)) {
-			throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(key), this.chunkNr + 1);
-		}
 
 		// iterating over current result items
 		for (var j in currentResult) {

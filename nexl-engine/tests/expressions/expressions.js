@@ -1,4 +1,3 @@
-// test for dotted resolution when one or few items are undefined : ${a.${b}.c} where ${b} is undefined. do not continue resolution if resolved undefined or null
 // object reverse resolution for empty result, for single result, for multi result
 // array indexes for empty result, for single result, for multi result, when index out of bounds
 // text external args, include null values
@@ -175,12 +174,6 @@ expressions.push({
 expressions.push({
 	expression: 'KEYS=[${obj1~K&,}] VALUES=[${obj1~V&,}]',
 	result: 'KEYS=[71,beneficial,religion,(),disturbed,price,pack] VALUES=[berry,mint,righteous,trick,46,true,balance,7]'
-});
-
-// accessing props
-expressions.push({
-	expression: '${obj1.price} ${..obj1....beneficial...} ${obj1.pack~K&,} ${obj1.pack~V&,} ${obj1.${undefinedVariable@}~V&,} ${obj1.${obj1PropName}}',
-	result: 'true mint strong,deer balance,7 berry,mint,righteous,trick,46,true,balance,7 trick'
 });
 
 // reverse resolution
@@ -686,3 +679,14 @@ expressions.push({
 	expression: '${obj1.pack.strong.balance}',
 	result: undefined
 });
+
+// long object resolution
+expressions.push({
+	expression: '${obj1.${undefinedVar}.pack.strong.${balance}}',
+	result: 'balance'
+});
+
+
+// ${obj1.${undefinedVariable@}~V&,} ${obj1.${obj1PropName}
+// test when key is null/undefined
+// test ${a.b.c.d} ( deep resolution with undefined )
