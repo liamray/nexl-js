@@ -32,6 +32,18 @@ expressions.push({
 	result: undefined
 });
 
+// undefined
+expressions.push({
+	expression: '${${}.a.b.c}',
+	result: undefined
+});
+
+// undefined
+expressions.push({
+	expression: '${${} .a.b.c}',
+	throwsException: true
+});
+
 // undefined variable
 expressions.push({
 	expression: '${undefinedVariable} ${undefinedVariable}',
