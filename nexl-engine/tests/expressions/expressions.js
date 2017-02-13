@@ -1,7 +1,3 @@
-// object reverse resolution for empty result, for single result, for multi result
-// array indexes for empty result, for single result, for multi result, when index out of bounds
-// text external args, include null values
-
 var expressions = [];
 module.exports = expressions;
 
@@ -729,3 +725,9 @@ expressions.push({
 	expression: '${obj1.${undefinedVariable@:null}.pack~V&,}',
 	result: undefined
 });
+
+// object reverse resolution for empty result, for single result, for multi result
+// array indexes for empty result, for single result, for multi result, when index out of bounds
+// text external args, include null values
+// test all throw exception cases
+// pass over nexl-engine and decide what to test
