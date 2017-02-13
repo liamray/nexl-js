@@ -340,10 +340,36 @@ expressions.push({
 // ENV = PROD, INSTANCE = XXX
 expressions.push({
 	expression: '${ALL_APP_SERVER_INTERFACES}',
-	result: ['drp-prod'],
+	result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
 	args: {
 		ENV: 'PROD',
 		INSTANCE: 'xxx'
+	}
+});
+
+// ENV = PROD, INSTANCE = XXX
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
+	args: {
+		ENV: 'PROD',
+		INSTANCE: 'xxx'
+	}
+});
+
+// ENV = PROD, INSTANCE = XXX
+expressions.push({
+	expression: '${ALL_APP_SERVER_INTERFACES}',
+	result: 'omg',
+	args: {
+		ENV: 'QA',
+		INSTANCE: 'FIRST',
+		HOSTS: {
+			APP_SERVER_INTERFACES: {
+				PROD: 'omg',
+				QA: 'omg'
+			}
+		}
 	}
 });
 
@@ -686,7 +712,20 @@ expressions.push({
 	result: 'balance'
 });
 
+// resolution from primitive
+expressions.push({
+	expression: '${intItem.a.b.c}',
+	result: undefined
+});
 
-// ${obj1.${undefinedVariable@}~V&,} ${obj1.${obj1PropName}
-// test when key is null/undefined
-// test ${a.b.c.d} ( deep resolution with undefined )
+// when key is undefined
+expressions.push({
+	expression: '${obj1.${undefinedVariable}~V&,} ${obj1.${undefinedVariable}.pack~V&,} ${obj1.${undefinedVariable}.pack~V&,}',
+	result: 'berry,mint,righteous,trick,46,true,balance,7 balance,7 balance,7'
+});
+
+// when key is undefined#2
+expressions.push({
+	expression: '${obj1.${undefinedVariable@:null}.pack~V&,}',
+	result: undefined
+});

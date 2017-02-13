@@ -238,6 +238,10 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 };
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
+	if (this.result === this.session.context) {
+		return;
+	}
+
 	if (j79.isString(this.result) && nep.hasSubExpression(this.result)) {
 		this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
 	}
@@ -254,104 +258,88 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 };
 
 
-NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key, item) {
-	if (j79.isObject(item)) {
-		this.newResult.push(item[key]);
+NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key) {
+	if (j79.isObject(this.result)) {
+		this.newResult.push(this.result[key]);
 	} else {
 		this.newResult.push(undefined);
 	}
 };
 
-NexlExpressionEvaluator.prototype.resolveObject = function (key, currentResultItem, currentResultItemIndex) {
-	var currentExternalArg = this.externalArgsPointer[currentResultItemIndex];
-	var newResultLastItemIndex = this.newResult.length;
-
+NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	// skipping undefined key
 	if (key === undefined) {
-		this.newResult.push(currentResultItem);
-		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
+		this.newResult.push(this.result);
 		return;
 	}
 
 	// not a primitive ? make result undefined
 	if (!j79.isPrimitive(key)) {
 		this.newResult.push(undefined);
-		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+		this.externalArgsPointer = undefined;
 		return;
 	}
 
 	// is current item in external arguments undefined ?
-	if (currentExternalArg === undefined) {
-		this.forwardUpAndPush(key, currentResultItem);
-		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+	if (this.externalArgsPointer === undefined) {
+		this.forwardUpAndPush(key);
 		return;
 	}
 
 	// forwarding up the external arg
-	currentExternalArg = currentExternalArg[key];
+	if (j79.isObject(this.externalArgsPointer)) {
+		this.externalArgsPointer = this.externalArgsPointer[key];
+	} else {
+		this.externalArgsPointer = undefined;
+	}
 
-	if (currentExternalArg === undefined) {
-		this.forwardUpAndPush(key, currentResultItem);
-		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+	if (this.externalArgsPointer === undefined) {
+		this.forwardUpAndPush(key);
 		return;
 	}
 
-	// is pointer to current external arg object ?
-	if (j79.isObject(currentExternalArg)) {
-		this.forwardUpAndPush(key, currentResultItem);
-		// forwarding up the pointer to current external args
-		this.newExternalArgsPointer[newResultLastItemIndex] = currentExternalArg;
+	// is externalArgsPointer still object ?
+	if (j79.isObject(this.externalArgsPointer)) {
+		this.forwardUpAndPush(key);
 		return;
 	}
 
 	// validating. it cannot contain nexl expressions
-	if (j79.isString(currentExternalArg) && nep.hasSubExpression(currentExternalArg)) {
+	if (j79.isString(this.externalArgsPointer) && nep.hasSubExpression(this.externalArgsPointer)) {
 		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', currentExternalArg);
 	}
 
 	// functions and arrays are not acceptable for external args
-	if (j79.isFunction(currentExternalArg) || j79.isArray(currentExternalArg)) {
-		this.forwardUpAndPush(key, currentResultItem);
-		this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+	if (j79.isFunction(this.externalArgsPointer) || j79.isArray(this.externalArgsPointer)) {
+		this.forwardUpAndPush(key);
+		this.externalArgsPointer = undefined;
 		return;
 	}
 
 	// it's ok, overriding
-	this.newResult.push(currentExternalArg);
-	// resetting currentExternalArg
-	this.newExternalArgsPointer[newResultLastItemIndex] = undefined;
+	this.newResult.push(this.externalArgsPointer);
+	// resetting externalArgsPointer
+	this.externalArgsPointer = undefined;
 };
 
 NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
-	this.newResult = [];
-	this.newExternalArgsPointer = [];
 	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
-	var isArrayFlag = j79.isArray(this.result);
-	var currentResult = j79.wrapWithArrayIfNeeded(this.result);
+	this.newResult = [];
 
 	// iterating over keys
 	for (var i in keys) {
 		var key = keys[i];
 
-		// iterating over current result items
-		for (var j in currentResult) {
-			this.resolveObject(key, currentResult[j], j);
-		}
+		// resolving
+		this.resolveObject(key);
 	}
 
 	// unwrap array if needed
-	if (this.newResult.length === 1 && !isArrayFlag) {
+	if (this.newResult.length === 1) {
 		this.newResult = this.newResult[0];
 	}
 
-	this.externalArgsPointer = this.newExternalArgsPointer;
 	this.result = this.newResult;
-};
-
-NexlExpressionEvaluator.prototype.validate = function () {
-	if (!j79.isPrimitive(this.assembledChunks) && !j79.isArray(this.assembledChunks)) {
-		throw util.format('The subexpression of [%s] expression cannot be evaluated as %s at the [%s] chunk', this.nexlExpressionMD.str, j79.getType(this.assembledChunks), this.chunkNr + 1);
-	}
 };
 
 NexlExpressionEvaluator.prototype.evalObjectAction = function () {
@@ -367,18 +355,8 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 		return;
 	}
 
-	this.validate();
-
 	// resolving value from last this.result
 	this.evalObjectActionInner();
-};
-
-NexlExpressionEvaluator.prototype.evalFunction = function (func, params) {
-	if (!j79.isFunction(func)) {
-		throw util.format('The current item of a %s type and cannot be evaluated as function. Expression is [%s], chunkNr is [%s]', j79.getType(func), this.nexlExpressionMD.str, this.chunkNr + 1);
-	}
-
-	return func.apply(this.session.context, params);
 };
 
 NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
@@ -390,17 +368,12 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 		params.push(funcParam);
 	}
 
-	// is single element ? ( little optimization )
-	if (!j79.isArray(this.result)) {
-		this.result = this.evalFunction(this.result, params);
+	// not a function ? good bye
+	if (!j79.isFunction(this.result)) {
 		return;
 	}
 
-	// ok, it's an array. iterating over
-	for (var index in this.result) {
-		var item = this.result[index];
-		this.result[index] = this.evalFunction(item, params);
-	}
+	this.result = this.result.apply(this.session.context, params);
 };
 
 NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
@@ -947,7 +920,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedModifier = function
 
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
-	this.externalArgsPointer = [this.session.externalArgs];
+	this.externalArgsPointer = this.session.externalArgs;
 	this.retrieveEvaluateAsUndefinedModifier();
 
 	// iterating over actions
