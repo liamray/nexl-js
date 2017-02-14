@@ -81,6 +81,10 @@ function returnsObjectArrayFunction(param) {
 	return 'Bad param !'
 }
 
+function returnsArrayOfObjects() {
+	return [{hello: 1}, {hello: 2}, {hello: 3}, {hello: 4}]
+}
+
 obj3 = {
 	item1: 'test',
 	item2: '${undefinedVar}',

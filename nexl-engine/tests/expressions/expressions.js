@@ -252,6 +252,42 @@ expressions.push({
 
 // funcs
 expressions.push({
+	expression: '${reverseArray(${arr1})[0]}',
+	result: false
+});
+
+// funcs
+expressions.push({
+	expression: '${reverseArray(${arr1}).x.y.z}',
+	result: undefined
+});
+
+// funcs
+expressions.push({
+	expression: '${reverseArray(${arr1})&,}',
+	result: 'false,79,muscle,queen'
+});
+
+// funcs
+expressions.push({
+	expression: '${returnsArrayOfObjects()}',
+	result: [{hello: 1}, {hello: 2}, {hello: 3}, {hello: 4}]
+});
+
+// funcs
+expressions.push({
+	expression: '${returnsArrayOfObjects()[3].hello}',
+	result: 4
+});
+
+// funcs
+expressions.push({
+	expression: '${returnsArrayOfObjects()&,}',
+	result: '[object Object],[object Object],[object Object],[object Object]'
+});
+
+// funcs
+expressions.push({
 	expression: '${obj2.pack.wrapWithBrackets(${@1:num})}',
 	result: '{1}'
 });
@@ -735,6 +771,18 @@ expressions.push({
 // when key is undefined#2
 expressions.push({
 	expression: '${obj1.${undefinedVariable@:null}.pack~V&,}',
+	result: undefined
+});
+
+// resolution from array
+expressions.push({
+	expression: '${arr1.x.y.z}',
+	result: undefined
+});
+
+// resolution from function
+expressions.push({
+	expression: '${obj2.pack.wrapWithBrackets.x.y.z}',
 	result: undefined
 });
 
