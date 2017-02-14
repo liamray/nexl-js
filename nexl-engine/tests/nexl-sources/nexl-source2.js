@@ -99,3 +99,5 @@ strForTrim = ' ' + longStr + '     ';
 
 nexl.defaultExpression = '${test1}';
 nexl.defaultArgs = {test1: 25};
+
+keys = ['YEST'];

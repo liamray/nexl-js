@@ -20,7 +20,7 @@ var MODIFIERS = {
 	'ELIMINATE_ARRAY_ELEMENTS': '-',
 	'JOIN_ARRAY_ELEMENTS': '&',
 
-	'STRING_OPERATIONS': '^', // ^U upper case, ^L power case, ^LEN length, ^T trim
+	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim
 
 	'EVALUATE_AS_UNDEFINED': '!',
 

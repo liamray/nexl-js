@@ -34,6 +34,12 @@ expressions.push({
 
 // undefined
 expressions.push({
+	expression: '${~O}',
+	result: {} // it must be a { 'obj': undefined }. but JSON.stringify() make an empty object of this ( there are few more expressions like this here )
+});
+
+// undefined
+expressions.push({
 	expression: '${${}.a.b.c}',
 	result: undefined
 });
@@ -182,6 +188,18 @@ expressions.push({
 expressions.push({
 	expression: '${obj1.pack~O}',
 	result: {strong: 'balance', deer: 7}
+});
+
+// ~O modifier
+expressions.push({
+	expression: '${obj1.pack.deer~O}',
+	result: {'obj1.pack.deer': 7}
+});
+
+// ~O modifier
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES.${keys}~O}',
+	result: {'HOSTS.APP_SERVER_INTERFACES.[]': 'yest'}
 });
 
 // keys and values
@@ -664,6 +682,12 @@ expressions.push({
 	result: 'THE DISTANCE TO THE WORK IS 155 KM'
 });
 
+// # string operations - ^U1
+expressions.push({
+	expression: '${longStr^L^U1}',
+	result: 'The distance to the work is 155 km'
+});
+
 // # string operations - ^L
 expressions.push({
 	expression: '${longStr^L}',
@@ -808,6 +832,18 @@ expressions.push({
 expressions.push({
 	expression: '${obj1...71...*}',
 	result: 'berry'
+});
+
+// mandatory value modifier
+expressions.push({
+	expression: '${obj1~K~V~O<*}',
+	throwsException: true
+});
+
+// mandatory value modifier
+expressions.push({
+	expression: '${*}',
+	throwsException: true
 });
 
 // object reverse resolution for empty result, for single result, for multi result

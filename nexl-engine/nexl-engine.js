@@ -355,6 +355,14 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 		return;
 	}
 
+	// accumulation actionsAsString
+	if (j79.isArray(this.assembledChunks)) {
+		this.actionsAsString.push('[]');
+	}
+	if (j79.isPrimitive(this.assembledChunks)) {
+		this.actionsAsString.push(this.assembledChunks);
+	}
+
 	// resolving value from last this.result
 	this.evalObjectActionInner();
 };
@@ -476,7 +484,7 @@ NexlExpressionEvaluator.prototype.evalAction = function () {
 	}
 
 	// external args are actual only for object actions. invalidating
-	this.externalArgsPointer = [];
+	this.externalArgsPointer = undefined;
 
 	// is func action ?
 	if (j79.isArray(this.action.funcParams)) {
@@ -602,15 +610,7 @@ NexlExpressionEvaluator.prototype.forceMakeObjectIfNeeded = function (isObject) 
 		return;
 	}
 
-	var key = this.assembledChunks;
-
-	if (key === undefined) {
-		key = 'obj';
-	}
-
-	if (j79.isArray(key)) {
-		key = key.join('.');
-	}
+	var key = this.actionsAsString.length < 1 ? 'obj' : this.actionsAsString.join('.');
 
 	var obj = {};
 	obj[key] = this.result;
@@ -821,6 +821,12 @@ NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modi
 			return;
 		}
 
+		// capitalize first letter
+		case 'U1': {
+			this.result = this.result.charAt(0).toUpperCase() + this.result.slice(1);
+			return;
+		}
+
 		// lower case
 		case 'L': {
 			this.result = this.result.toLowerCase();
@@ -934,6 +940,7 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
 	this.externalArgsPointer = this.session.externalArgs;
 	this.retrieveEvaluateAsUndefinedModifier();
+	this.actionsAsString = [];
 
 	// iterating over actions
 	for (this.chunkNr = 0; this.chunkNr < this.nexlExpressionMD.actions.length; this.chunkNr++) {
