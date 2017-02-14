@@ -113,6 +113,12 @@ expressions.push({
 	result: ['queen', 'muscle', 79, false, 'air', 16, 99, true, 'smooth']
 });
 
+// arr single element
+expressions.push({
+	expression: '${arr5}',
+	result: ['hello']
+});
+
 // arrays
 expressions.push({
 	expression: '${arr1} ${arr2}',

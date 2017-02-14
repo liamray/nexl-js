@@ -61,7 +61,7 @@ function testExpression(exprDef) {
 	if (!compareResult) {
 		var resultType = j79.getType(result);
 		var exprDefType = j79.getType(exprDef.result);
-		failureMessage(exprDef, util.format('Expected\nresult = (%s)   %s\n\tdoesn\'t match to evaluated\nresult = (%s)   %s', exprDefType, JSON.stringify(exprDef.result), resultType, JSON.stringify(result)));
+		failureMessage(exprDef, util.format('Evaluated\nresult = (%s)   %s\n\tdoesn\'t match to expected\nresult = (%s)   %s', resultType, JSON.stringify(result), exprDefType, JSON.stringify(exprDef.result)));
 		return false;
 	}
 
