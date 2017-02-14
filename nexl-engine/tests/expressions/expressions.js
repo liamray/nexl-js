@@ -961,3 +961,144 @@ expressions.push({
 	},
 	result: null
 });
+
+// invalid function args test
+expressions.push({
+	expression: '${someFunc(1)}',
+	throwsException: true
+});
+
+// invalid array index
+expressions.push({
+	expression: '${someArr[ok]}',
+	throwsException: true
+});
+
+// nexl expression is not closed
+expressions.push({
+	expression: '${',
+	throwsException: true
+});
+
+// nexl expression is not closed
+expressions.push({
+	expression: '${a.b.c.',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${~ ${}}',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${~A# ${}}',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${@^ ${}}',
+	throwsException: true
+});
+
+// bad substitution
+expressions.push({
+	expression: '${} hello',
+	throwsException: true
+});
+
+// bad substitution
+expressions.push({
+	expression: '${obj1} hello',
+	throwsException: true
+});
+
+// expand object keys
+expressions.push({
+	expression: '${obj4}',
+	throwsException: true
+});
+
+// external arg contains nexl expression
+expressions.push({
+	expression: '${intItem}',
+	args: {
+		intItem: '${strItem}'
+	},
+	throwsException: true
+});
+
+// bad array index
+expressions.push({
+	expression: '${arr1[${strItem}]}',
+	throwsException: true
+});
+
+// bad array index
+expressions.push({
+	expression: '${arr1[${Math.PI}]}',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${~Q}',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${arr1#Q}',
+	throwsException: true
+});
+
+// bad modificator
+expressions.push({
+	expression: '${strItem^Q}',
+	throwsException: true
+});
+
+// join array elements
+expressions.push({
+	expression: '${arr1&${}}',
+	throwsException: true
+});
+
+// join array elements
+expressions.push({
+	expression: '${arr1&${obj1}}',
+	throwsException: true
+});
+
+// mandatory value modificator
+expressions.push({
+	expression: '${*}',
+	throwsException: true
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${+}',
+	throwsException: true
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${>}',
+	throwsException: true
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${?}',
+	throwsException: true
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${%}',
+	throwsException: true
+});

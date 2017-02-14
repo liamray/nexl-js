@@ -306,7 +306,7 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 
 	// validating. it cannot contain nexl expressions
 	if (j79.isString(this.externalArgsPointer) && nep.hasSubExpression(this.externalArgsPointer)) {
-		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', currentExternalArg);
+		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', this.externalArgsPointer);
 	}
 
 	// functions and arrays are not acceptable for external args
@@ -397,7 +397,7 @@ NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
 
 	var resultAsStr = result + '';
 	if (!resultAsStr.match(/^[0-9]+$/)) {
-		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expressions is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.chunkNr + 1);
+		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expression is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.chunkNr + 1);
 	}
 
 	return result;
@@ -617,6 +617,10 @@ NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
 	this.result = obj;
 };
 
+NexlExpressionEvaluator.prototype.resolveObjectKeysIfNeeded = function (isObject) {
+	return isObject ? Object.keys(this.result) : this.result;
+};
+
 NexlExpressionEvaluator.prototype.applyTransformationsModifier = function (modifier) {
 	// value of transformations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
 	var modifierVal = resolveModifierConstantValue(modifier);
@@ -635,14 +639,9 @@ NexlExpressionEvaluator.prototype.applyTransformationsModifier = function (modif
 		return;
 	}
 
-	// not an object ? nothing to do here
-	if (!isObject) {
-		return;
-	}
-
 	// resolving keys for ~K
 	if (modifierVal === 'K') {
-		this.result = Object.keys(this.result);
+		this.result = this.resolveObjectKeysIfNeeded(isObject);
 		return;
 	}
 

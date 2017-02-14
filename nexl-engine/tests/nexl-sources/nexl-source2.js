@@ -101,3 +101,7 @@ nexl.defaultExpression = '${test1}';
 nexl.defaultArgs = {test1: 25};
 
 keys = ['YEST'];
+
+obj4 = {
+	'${obj1}': 1
+};

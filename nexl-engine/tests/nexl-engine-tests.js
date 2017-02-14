@@ -43,6 +43,8 @@ function testExpression(exprDef) {
 	try {
 		var result = nexlEngine.processItem(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
+		console.log(e);
+
 		if (!exprDef.throwsException) {
 			failureMessage(exprDef, e);
 			return false;
