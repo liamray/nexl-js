@@ -844,6 +844,12 @@ NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modi
 
 };
 
+NexlExpressionEvaluator.prototype.applyMandatoryValueModifier = function (modifier) {
+	if (this.result === undefined) {
+		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value modifier ). Probably you have to provide it as external arg or check why it has evaluated as undefined', this.nexlExpressionMD.str);
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 	switch (modifier.id) {
 		// @ default value modifier
@@ -890,6 +896,12 @@ NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 
 		// eval as undefined modifier
 		case nep.MODIFIERS.EVALUATE_AS_UNDEFINED: {
+			return;
+		}
+
+		// mandatory value
+		case nep.MODIFIERS.MANDATORY_VALUE: {
+			this.applyMandatoryValueModifier(modifier);
 			return;
 		}
 	}

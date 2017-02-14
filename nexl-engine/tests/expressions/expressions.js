@@ -792,6 +792,24 @@ expressions.push({
 	result: undefined
 });
 
+// mandatory value modifier
+expressions.push({
+	expression: '${obj2.pack.wrapWithBrackets.x.y.z*}',
+	throwsException: true
+});
+
+// mandatory value modifier
+expressions.push({
+	expression: '${obj1...71...x*}',
+	throwsException: true
+});
+
+// mandatory value modifier
+expressions.push({
+	expression: '${obj1...71...*}',
+	result: 'berry'
+});
+
 // object reverse resolution for empty result, for single result, for multi result
 // array indexes for empty result, for single result, for multi result, when index out of bounds
 // text external args, include null values
