@@ -605,7 +605,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier
 	this.result = this.resolveModifierValue(modifier);
 };
 
-NexlExpressionEvaluator.prototype.forceMakeObjectIfNeeded = function (isObject) {
+NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
 	if (isObject) {
 		return;
 	}
@@ -617,15 +617,21 @@ NexlExpressionEvaluator.prototype.forceMakeObjectIfNeeded = function (isObject) 
 	this.result = obj;
 };
 
-NexlExpressionEvaluator.prototype.applyObjectOperationsModifier = function (modifier) {
-	// value of object operations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
+NexlExpressionEvaluator.prototype.applyTransformationsModifier = function (modifier) {
+	// value of transformations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
 	var modifierVal = resolveModifierConstantValue(modifier);
+
+	// applying ~A for non-objects
+	if (modifierVal === 'A') {
+		this.result = j79.wrapWithArrayIfNeeded(this.result);
+		return;
+	}
 
 	var isObject = j79.isObject(this.result);
 
 	// applying ~O for non-objects
 	if (modifierVal === 'O') {
-		this.forceMakeObjectIfNeeded(isObject);
+		this.wrapWithObjectIfNeeded(isObject);
 		return;
 	}
 
@@ -865,8 +871,8 @@ NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 		}
 
 		// ~K, ~V, ~O object operations modifier
-		case nep.MODIFIERS.OBJECT_OPERATIONS: {
-			this.applyObjectOperationsModifier(modifier);
+		case nep.MODIFIERS.TRANSFORMATIONS: {
+			this.applyTransformationsModifier(modifier);
 			return;
 		}
 

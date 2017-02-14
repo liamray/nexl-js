@@ -13,7 +13,8 @@ const j79 = require('j79-utils');
 var MODIFIERS = {
 	'DEF_VALUE': '@',
 
-	'OBJECT_OPERATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object
+	'TRANSFORMATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array
+
 	'OBJECT_REVERSE_RESOLUTION': '<',
 
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #C count elements
@@ -385,7 +386,7 @@ ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
 	// parsing a min range
 	var min = this.parseArrayIndex();
 	if (min === null) {
-		throw util.format('Invalid nexl expression. Expecting for primitive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
+		throw util.format('Invalid nexl expression. Expecting for positive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
 	}
 
 	// doesn't it have two dots ?

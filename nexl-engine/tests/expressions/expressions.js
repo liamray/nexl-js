@@ -40,6 +40,12 @@ expressions.push({
 
 // undefined
 expressions.push({
+	expression: '${~A}',
+	result: [undefined]
+});
+
+// undefined
+expressions.push({
 	expression: '${${}.a.b.c}',
 	result: undefined
 });
@@ -202,6 +208,24 @@ expressions.push({
 	result: {'HOSTS.APP_SERVER_INTERFACES.[]': 'yest'}
 });
 
+// ~A modifier
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A}',
+	result: ['cuddly2']
+});
+
+// ~A modifier
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A~O}',
+	result: {'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': ['cuddly2']}
+});
+
+// ~A modifier
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~O~A}',
+	result: [{'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': 'cuddly2'}]
+});
+
 // keys and values
 expressions.push({
 	expression: 'KEYS=[${obj1~K&,}] VALUES=[${obj1~V&,}]',
@@ -230,6 +254,18 @@ expressions.push({
 expressions.push({
 	expression: '${obj1<${obj1Keys}}',
 	result: ['71', 'beneficial', 'pack']
+});
+
+// reverse resolution - empty value
+expressions.push({
+	expression: '${obj1<asd}',
+	result: undefined
+});
+
+// reverse resolution - empty values
+expressions.push({
+	expression: '${obj1<${arr1}}',
+	result: undefined
 });
 
 // reverse resolution - should resolve the highest key
@@ -320,6 +356,42 @@ expressions.push({
 expressions.push({
 	expression: '${nexlEngineInternalCall()}',
 	result: 'queen,muscle,79,false'
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[]}',
+	result: undefined
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[${intItem}]}',
+	result: undefined
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[1..0]}',
+	result: undefined
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[0..1][0..1][0..1]}',
+	result: ['queen', 'muscle']
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[-1..999]}',
+	throwsException: true
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr1[0..999]}',
+	result: ['queen', 'muscle', 79, false]
 });
 
 // unitedKey
@@ -846,8 +918,46 @@ expressions.push({
 	throwsException: true
 });
 
-// object reverse resolution for empty result, for single result, for multi result
-// array indexes for empty result, for single result, for multi result, when index out of bounds
-// text external args, include null values
-// test all throw exception cases
-// pass over nexl-engine and decide what to test
+// external args test
+expressions.push({
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.FIRST[0..1]}',
+	args: {
+		HOSTS: {
+			APP_SERVER_INTERFACES: {
+				PROD: {
+					FIRST: 'omg'
+				}
+			}
+		}
+	},
+	result: 'o'
+});
+
+// external args test
+expressions.push({
+	expression: '${objArray1[0]}',
+	args: {
+		objArray1: 'test'
+	},
+	result: ''
+});
+
+// external args test
+expressions.push({
+	expression: '${intItem}',
+	args: {
+		intItem: {
+			a: 10
+		}
+	},
+	result: 71
+});
+
+// external args test
+expressions.push({
+	expression: '${intItem}',
+	args: {
+		intItem: null
+	},
+	result: null
+});
