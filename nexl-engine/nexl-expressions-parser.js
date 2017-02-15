@@ -13,6 +13,8 @@ const j79 = require('j79-utils');
 var MODIFIERS = {
 	'DEF_VALUE': '@',
 
+	'CAST': ':',
+
 	'TRANSFORMATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array
 
 	'OBJECT_REVERSE_RESOLUTION': '<',
@@ -42,8 +44,6 @@ var JS_PRIMITIVE_TYPES = {
 	UNDEFINED: '[object Undefined]'
 };
 
-var JS_PRIMITIVE_TYPES_VALUES = j79.getObjectValues(JS_PRIMITIVE_TYPES);
-
 var NEXL_TYPES = {
 	'num': JS_PRIMITIVE_TYPES.NUM,
 	'bool': JS_PRIMITIVE_TYPES.BOOL,
@@ -51,7 +51,6 @@ var NEXL_TYPES = {
 	'null': JS_PRIMITIVE_TYPES.NULL,
 	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
 };
-
 
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
@@ -69,7 +68,6 @@ const TWO_DOTS = '..';
 const MODIFIERS_VALUES = j79.getObjectValues(MODIFIERS);
 const MODIFIERS_PARSER_REGEX = makeModifiersParseRegex();
 const NEXL_EXPRESSION_PARSER_REGEX = makeExpressionParserRegex();
-const TYPES_REGEX = makeTypesRegex();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,14 +99,6 @@ function makeExpressionParserRegex() {
 function makeModifiersParseRegex() {
 	var result = MODIFIERS_VALUES.concat([NEXL_EXPRESSION_CLOSE]);
 	return j79.makeOrRegexOfArray(result);
-}
-
-function makeTypesRegex() {
-	var types = Object.keys(NEXL_TYPES);
-	for (var index = 0; index < types.length; index++) {
-		types[index] = ':' + types[index] + '$';
-	}
-	return types.join('|');
 }
 
 function isStartsFromZeroPos(str, chars) {
@@ -170,52 +160,6 @@ function skipCommaIfPresents(str, pos) {
 // ParseModifiers
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// type is a postfix which tells what a data type is it. for example 10:str has string type
-ParseModifiers.prototype.discoverModifierType = function (modifier) {
-	// checking chunks. is it empty ?
-	if (modifier.chunks.length < 1) {
-		return undefined;
-	}
-
-	// resolving last chunk
-	var lastItemNr = modifier.chunks.length - 1;
-	var lastChunk = modifier.chunks[lastItemNr];
-
-	// is lastChunk null ? null means this chunk will be replaced with nexl expression, so there no type
-	if (lastChunk === null) {
-		return undefined;
-	}
-
-	// okay, lastChunk is not null. discovering data type
-	var pos = lastChunk.search(TYPES_REGEX);
-	if (pos < 0) {
-		return undefined;
-	}
-
-	var escaping = escapePrecedingSlashes(lastChunk, pos);
-	lastChunk = escaping.escapedStr;
-	pos = escaping.correctedPos;
-
-	var modifierType;
-
-	if (!escaping.escaped) {
-		// resolving type
-		modifierType = lastChunk.substr(pos + 1);
-		lastChunk = lastChunk.substring(0, pos);
-	}
-
-	// if lastChunk is empty it can be because of : (1) it is become empty after modifier type was removed (2) it is the only one chunk and it's empty
-	// we need to remove empty chunk only in (1) case if we have more than 1 chunks
-	if (lastChunk.length < 1 && modifier.chunks.length > 1) {
-		// removing last chunk because last chunk = type ( if I don't remove empty last chunk, the whole modifier will be always evaluated as string )
-		modifier.chunks.pop();
-	} else {
-		modifier.chunks[lastItemNr] = lastChunk;
-	}
-
-	return modifierType;
-};
-
 ParseModifiers.prototype.parseModifier = function () {
 	var chars = this.str.substr(this.lastSearchPos);
 
@@ -237,12 +181,10 @@ ParseModifiers.prototype.parseModifier = function () {
 
 	// parsing modifier
 	var modifierMD = new ParseStr(chars, MODIFIERS_PARSER_REGEX).parse();
-	var modifierType = this.discoverModifierType(modifierMD);
 
 	var modifier = {
 		id: modifierId,
-		md: modifierMD,
-		type: modifierType
+		md: modifierMD
 	};
 	this.result.modifiers.push(modifier);
 
@@ -789,7 +731,6 @@ function ParseStr(str, stopAt) {
 module.exports.MODIFIERS = MODIFIERS;
 
 module.exports.JS_PRIMITIVE_TYPES = JS_PRIMITIVE_TYPES;
-module.exports.JS_PRIMITIVE_TYPES_VALUES = JS_PRIMITIVE_TYPES_VALUES;
 module.exports.NEXL_TYPES = NEXL_TYPES;
 
 module.exports.hasSubExpression = hasSubExpression;

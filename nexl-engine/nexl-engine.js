@@ -548,51 +548,49 @@ NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requ
 };
 
 // example : value = 101; nexlType = 'bool';
-NexlExpressionEvaluator.prototype.cast = function (value, nexlType) {
+NexlExpressionEvaluator.prototype.cast = function (value, type) {
 	// if type is not specified
-	if (nexlType === undefined) {
+	if (type === undefined) {
 		return value;
 	}
 
 	// resolving JavaScript type
-	var requiredTypeJs = nep.NEXL_TYPES[nexlType];
+	var jsType = nep.NEXL_TYPES[type];
 
 	// validating ( should not happen )
-	if (requiredTypeJs === undefined) {
-		throw util.format('Unknown [%s] type', nexlType);
+	if (jsType === undefined) {
+		throw util.format('Unknown [%s] type in [%s] expression. Use one of the following types : [%s]', type, this.nexlExpressionMD.str, Object.keys(nep.NEXL_TYPES));
 	}
 
 	var currentType = j79.getType(value);
 
 	// if both types are same, return value as is
-	if (currentType === requiredTypeJs) {
+	if (currentType === jsType) {
 		return value;
 	}
 
 	// cast to null
-	if (requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NULL) {
+	if (jsType === nep.JS_PRIMITIVE_TYPES.NULL) {
 		return null;
 	}
 
 	// cast to undefined
-	if (requiredTypeJs === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
+	if (jsType === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
 		return undefined;
 	}
 
-	return this.castInner(value, currentType, requiredTypeJs);
+	return this.castInner(value, currentType, jsType);
 };
 
 NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
 	// evaluating modifier value
 	var modifierMd = modifier.md;
-	var type = modifier.type;
 
 	var data = {};
 	data.chunks = modifierMd.chunks;
 	data.chunkSubstitutions = modifierMd.chunkSubstitutions;
 
-	var modifierValue = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
-	return this.cast(modifierValue, type);
+	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 };
 
 NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier) {
@@ -603,6 +601,11 @@ NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier
 	}
 
 	this.result = this.resolveModifierValue(modifier);
+};
+
+NexlExpressionEvaluator.prototype.applyCastModifier = function (modifier) {
+	var modifierVal = resolveModifierConstantValue(modifier);
+	this.result = this.cast(this.result, modifierVal);
 };
 
 NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
@@ -866,6 +869,12 @@ NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 		// @ default value modifier
 		case nep.MODIFIERS.DEF_VALUE: {
 			this.applyDefaultValueModifier(modifier);
+			return;
+		}
+
+		// @ default value modifier
+		case nep.MODIFIERS.CAST: {
+			this.applyCastModifier(modifier);
 			return;
 		}
 

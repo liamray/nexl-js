@@ -39,8 +39,7 @@ var NEXL_EXPRESSION_DEFINITION = {
 	modifiers: [
 		{
 			id: '@',
-			md: 'PARSED_STR',
-			type: 'num'
+			md: 'PARSED_STR'
 		}
 	]
 };

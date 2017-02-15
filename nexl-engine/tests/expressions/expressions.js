@@ -64,7 +64,7 @@ expressions.push({
 
 // simple variable resolution
 expressions.push({
-	expression: '1[${undefinedVariable@}] 2[${undefinedVariable2@}] 3[${undefinedVariable@111}] 4[${aaa:${bbb@}@222}]',
+	expression: '1[${undefinedVariable@}] 2[${undefinedVariable2@}] 3[${undefinedVariable@111}] 4[${aaa\\:${bbb@}@222}]',
 	result: '1[] 2[] 3[111] 4[222]'
 });
 
@@ -115,7 +115,7 @@ expressions.push({
 
 // array concatenation, escaping special chars
 expressions.push({
-	expression: '${arr1&,} ${arr1&,${intItem}} ${arr1&\\&} ${arr1&\\@\\~\\<\\#\\-\\&\\^\\!\\*\\?\\%\\>\\+:}',
+	expression: '${arr1&,} ${arr1&,${intItem}} ${arr1&\\&} ${arr1&\\@\\~\\<\\#\\-\\&\\^\\!\\*\\?\\%\\>\\+\\:}',
 	result: 'queen,muscle,79,false queen,71muscle,7179,71false queen&muscle&79&false queen@~<#-&^!*?%>+:muscle@~<#-&^!*?%>+:79@~<#-&^!*?%>+:false'
 });
 
@@ -240,13 +240,13 @@ expressions.push({
 
 // reverse resolution - type check
 expressions.push({
-	expression: '${obj1<true:bool}',
+	expression: '${obj1<${@true:bool}}',
 	result: 'price'
 });
 
 // reverse resolution - type check
 expressions.push({
-	expression: '${obj1<46:num}',
+	expression: '${obj1<${@46:num}}',
 	result: 'disturbed'
 });
 
@@ -726,7 +726,7 @@ expressions.push({
 
 // # eliminate multiple
 expressions.push({
-	expression: '${arr1-false:bool-79-79:num-queen}',
+	expression: '${arr1-${@false:bool}-79-${@79:num}-queen}',
 	result: ['muscle']
 });
 
@@ -1100,5 +1100,11 @@ expressions.push({
 // reserved modifiers
 expressions.push({
 	expression: '${%}',
+	throwsException: true
+});
+
+// reserved modifiers
+expressions.push({
+	expression: '${:omg}',
 	throwsException: true
 });
