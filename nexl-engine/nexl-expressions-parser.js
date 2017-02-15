@@ -21,6 +21,7 @@ var MODIFIERS = {
 
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #C count elements
 	'ELIMINATE_ARRAY_ELEMENTS': '-',
+	'APPEND_TO_ARRAY': '+',
 	'JOIN_ARRAY_ELEMENTS': '&',
 
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim
@@ -32,8 +33,7 @@ var MODIFIERS = {
 	// the following modifiers are reserved for future usage
 	'RESERVED1': '?',
 	'RESERVED2': '%',
-	'RESERVED3': '>',
-	'RESERVED4': '+'
+	'RESERVED3': '>'
 };
 
 var JS_PRIMITIVE_TYPES = {

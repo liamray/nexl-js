@@ -1081,12 +1081,6 @@ expressions.push({
 
 // reserved modifiers
 expressions.push({
-	expression: '${+}',
-	throwsException: true
-});
-
-// reserved modifiers
-expressions.push({
 	expression: '${>}',
 	throwsException: true
 });
@@ -1107,4 +1101,16 @@ expressions.push({
 expressions.push({
 	expression: '${:omg}',
 	throwsException: true
+});
+
+// append to array
+expressions.push({
+	expression: '${arr1+test&,}',
+	result: 'queen,muscle,79,false,test'
+});
+
+// append to array
+expressions.push({
+	expression: '${arr1+${obj1~K}-price&,}',
+	result: 'queen,muscle,79,false,71,beneficial,religion,(),disturbed,pack'
 });

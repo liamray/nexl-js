@@ -797,6 +797,23 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function
 	}
 };
 
+NexlExpressionEvaluator.prototype.applyAppendToArrayModifier = function (modifier) {
+	// not an array ? good bye ( can append only to array )
+	if (!j79.isArray(this.result)) {
+		return;
+	}
+
+	// resolving modifier value
+	var modifierValue = this.resolveModifierValue(modifier);
+
+	// if modifierValue is array, merging 2 arrays. otherwise just pushing a value to existing
+	if (j79.isArray(modifierValue)) {
+		this.result = this.result.concat(modifierValue);
+	} else {
+		this.result.push(modifierValue);
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (modifier) {
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
@@ -899,6 +916,12 @@ NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
 		// - eliminate array elements modifier
 		case nep.MODIFIERS.ELIMINATE_ARRAY_ELEMENTS: {
 			this.applyEliminateArrayElementsModifier(modifier);
+			return;
+		}
+
+		// + append to array modifier
+		case nep.MODIFIERS.APPEND_TO_ARRAY: {
+			this.applyAppendToArrayModifier(modifier);
 			return;
 		}
 
