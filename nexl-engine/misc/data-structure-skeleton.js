@@ -14,32 +14,55 @@ var NEXL_EXPRESSION_DEFINITION = {
 	length: 15,
 
 	actions: [
-		{ // object action
-			chunks: [],
-			chunkSubstitutions: {
-				0: 'NEXL_EXPRESSION_DEFINITION'
+		{
+			actionId: '.', // for property resolution
+			actionValue: {
+				chunks: [],
+				chunkSubstitutions: {
+					0: 'NEXL_EXPRESSION_DEFINITION'
+				}
+
 			}
 		},
-		{ // function call action
-			funcParams: [
+
+		{
+			actionId: '(', // for function call
+			actionValue: [
 				'NEXL_EXPRESSION_DEFINITION',
 				'NEXL_EXPRESSION_DEFINITION'
 			]
 		},
-		{ // array index access action
-			arrayIndexes: [
+
+		{
+			actionId: '[', // for array indexes
+			actionValue: [
 				{
 					min: 'PRIMITIVE_INT',
 					max: 'NEXL_EXPRESSION_DEFINITION'
 				}
 			]
-		}
-	],
+		},
 
-	modifiers: [
 		{
-			id: '@',
-			md: 'PARSED_STR'
+			actionId: '*', // mandatory value
+			actionValue: ''
+		},
+
+		{
+			actionId: '#', // array operations
+			actionValue: 'S'
+		},
+
+		{
+			actionId: '@', // default value
+			actionValue: {
+				chunks: [],
+				chunkSubstitutions: {
+					0: 'NEXL_EXPRESSION_DEFINITION'
+				}
+
+			}
 		}
+
 	]
 };
