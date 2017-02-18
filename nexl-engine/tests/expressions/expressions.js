@@ -714,7 +714,7 @@ expressions.push({
 
 // # array operations modifier
 expressions.push({
-	expression: '${arr4#U#S#C}',
+	expression: '${arr4#U#S#LEN}',
 	result: 10
 });
 
