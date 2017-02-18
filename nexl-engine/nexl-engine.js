@@ -348,12 +348,7 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 		this.resolveObject(key);
 	}
 
-	// unwrap array if needed
-	if (this.newResult.length === 1) {
-		this.newResult = this.newResult[0];
-	}
-
-	this.result = this.newResult;
+	this.result = j79.unwrapFromArrayIfPossible(this.newResult);
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
@@ -428,17 +423,12 @@ NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
 };
 
 NexlExpressionEvaluator.prototype.assignResult4ArrayIndexes = function (newResult) {
-	if (newResult.length === 1) {
-		this.result = newResult[0];
-		return;
-	}
-
 	if (newResult.length < 1) {
 		this.result = undefined;
 		return;
 	}
 
-	this.result = newResult;
+	this.result = j79.unwrapFromArrayIfPossible(newResult);
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
@@ -629,12 +619,14 @@ NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
 	// resolving keys for ~K
 	if (actionValue === 'K') {
 		this.result = this.resolveObjectKeysIfNeeded(isObject);
+		this.result = j79.unwrapFromArrayIfPossible(this.result);
 		return;
 	}
 
 	// resolving values for ~V
 	if (actionValue === 'V') {
 		this.result = j79.obj2ArrayIfNeeded(this.result);
+		this.result = j79.unwrapFromArrayIfPossible(this.result);
 		return;
 	}
 };
@@ -690,12 +682,7 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function 
 		return;
 	}
 
-	if (newResult.length === 1) {
-		this.result = newResult[0];
-		return;
-	}
-
-	this.result = newResult;
+	this.result = j79.unwrapFromArrayIfPossible(newResult);
 };
 
 NexlExpressionEvaluator.prototype.makeUniq = function () {
