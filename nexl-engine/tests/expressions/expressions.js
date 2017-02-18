@@ -1139,5 +1139,18 @@ expressions.push({
 	result: 'trick'
 });
 
+// mixed actions test
+expressions.push({
+	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}}',
+	result: ['APP_SERVER_INTERFACES,INTERNET_INTERFACES',
+		'item1',
+		'queen',
+		'muscle',
+		79,
+		false,
+		49
+	]
+});
+
 
 // test big mix of every action
