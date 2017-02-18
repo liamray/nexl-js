@@ -836,7 +836,7 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 
 NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
 	if (this.result === undefined) {
-		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has evaluated as undefined', this.nexlExpressionMD.str);
+		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has calculated as undefined', this.nexlExpressionMD.str);
 	}
 };
 
