@@ -17,6 +17,12 @@ const nep = require('./nexl-expressions-parser');
 // Utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nep.ACTIONS.DEF_VALUE, nep.ACTIONS.APPEND_TO_ARRAY, nep.ACTIONS.JOIN_ARRAY_ELEMENTS, nep.ACTIONS.MANDATORY_VALUE];
+
+function isNeedDeepResolution(action) {
+	return NO_NEED_DEEP_RESOLUTION_ACTIONS.indexOf(action.actionId) < 0;
+}
+
 function deepMergeInner(obj1, obj2) {
 	if (obj2 === undefined) {
 		return obj1;
@@ -241,6 +247,11 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 };
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
+	// it's not relevant for few actions
+	if (!isNeedDeepResolution(this.action)) {
+		return;
+	}
+
 	if (this.result === this.session.context) {
 		return;
 	}
@@ -946,6 +957,17 @@ NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = funct
 	}
 };
 
+NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
+	if (this.action === undefined) {
+		return;
+	}
+
+	// reprocessing final result, it can contain sub expressions
+	if (isNeedDeepResolution(this.action)) {
+		this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+	}
+};
+
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
 	this.externalArgsPointer = this.session.externalArgs;
@@ -971,8 +993,7 @@ NexlExpressionEvaluator.prototype.eval = function () {
 		this.result = undefined;
 	}
 
-	// reprocessing final result, it can contain sub expressions
-	this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+	this.makeDeepResolutionIfNeeded();
 
 	return this.result;
 };

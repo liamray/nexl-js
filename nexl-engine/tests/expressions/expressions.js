@@ -641,7 +641,7 @@ expressions.push({
 
 // Math.round() test
 expressions.push({
-	expression: '${Math.round(${@1.1:num})}',
+	expression: '${Math.round(${@1\\.1:num})}',
 	result: 1
 });
 
@@ -653,7 +653,7 @@ expressions.push({
 
 // parseFloat() test
 expressions.push({
-	expression: '${parseFloat(${@123.456:num})}',
+	expression: '${parseFloat(${@123\\.456:num})}',
 	result: 123.456
 });
 
@@ -1113,6 +1113,30 @@ expressions.push({
 expressions.push({
 	expression: '${arr1+${obj1~K}-price&,}',
 	result: 'queen,muscle,79,false,71,beneficial,religion,(),disturbed,pack'
+});
+
+// append to array
+expressions.push({
+	expression: '${arr1+\\${&\\${}',
+	result: 'queen${muscle${79${false${${'
+});
+
+// append to array
+expressions.push({
+	expression: '${arr1+${intItem}}',
+	result: ['queen', 'muscle', 79, false, 71]
+});
+
+// append to array
+expressions.push({
+	expression: '${arr1+\\${intItem\\}}',
+	result: ['queen', 'muscle', 79, false, '${intItem}']
+});
+
+// escaping test
+expressions.push({
+	expression: '${obj1.\\()}',
+	result: 'trick'
 });
 
 
