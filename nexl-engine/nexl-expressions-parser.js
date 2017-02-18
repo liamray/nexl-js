@@ -34,7 +34,7 @@ const ACTIONS = {
 	'CAST': ':',
 	'TRANSFORMATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array
 	'OBJECT_REVERSE_RESOLUTION': '<',
-	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #C count elements
+	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #LEN array length
 	'ELIMINATE_ARRAY_ELEMENTS': '-',
 	'APPEND_TO_ARRAY': '+',
 	'JOIN_ARRAY_ELEMENTS': '&',
@@ -50,7 +50,7 @@ const ACTIONS = {
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
 	'~': ['K', 'V', 'O', 'A'],
-	'#': ['S', 's', 'U', 'C'],
+	'#': ['S', 's', 'U', 'LEN'],
 	'^': ['U', 'U1', 'L', 'T', 'LEN'],
 	'!': [''],
 	'*': ['']
@@ -619,6 +619,7 @@ function ParseStr(str, stopAt) {
 
 module.exports.JS_PRIMITIVE_TYPES = JS_PRIMITIVE_TYPES;
 module.exports.NEXL_TYPES = NEXL_TYPES;
+module.exports.ACTIONS = ACTIONS;
 
 module.exports.hasSubExpression = hasSubExpression;
 

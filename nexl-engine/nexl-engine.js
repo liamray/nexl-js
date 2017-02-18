@@ -29,16 +29,6 @@ function deepMergeInner(obj1, obj2) {
 	return deepMerge(obj1, obj2);
 }
 
-function resolveModifierConstantValue(modifier) {
-	var parsedStrMD = modifier.md;
-
-	if (parsedStrMD.chunks.length !== 1 || parsedStrMD.chunks[0] === null) {
-		throw util.format('Invalid nexl expression. The [%s] modifier can have only constant value and cannot contain sub expressions', modifier.id);
-	}
-
-	return parsedStrMD.chunks[0];
-}
-
 function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 }
@@ -49,7 +39,7 @@ function makeSession(nexlSource, externalArgs) {
 	// creating context
 	session.context = nsu.createContext(nexlSource);
 
-	// assigning extermal args
+	// assigning external args
 	session.externalArgs = externalArgs;
 	if (session.externalArgs === undefined) {
 		session.externalArgs = session.context.nexl.defaultArgs;
@@ -66,7 +56,7 @@ function makeSession(nexlSource, externalArgs) {
 	return session;
 }
 
-function supplyStandartLibs(context) {
+function supplyStandardLibs(context) {
 	context.Number = Number;
 	context.Math = Math;
 	context.Date = Date;
@@ -133,7 +123,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
 		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
 
-		// EVALUATE_AS_UNDEFINED modifier
+		// EVALUATE_AS_UNDEFINED action
 		if (chunkValue === undefined && isEvaluateAsUndefined) {
 			return undefined;
 		}
@@ -207,6 +197,19 @@ function EvalAndSubstChunks(session, data) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // NexlExpressionEvaluator
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function () {
+	// iterating over actions
+	for (var index in this.nexlExpressionMD.actions) {
+		var action = this.nexlExpressionMD.actions[index];
+		if (action.id === nep.ACTIONS.EVALUATE_AS_UNDEFINED) {
+			this.isEvaluateAsUndefined = true;
+			return;
+		}
+	}
+
+	this.isEvaluateAsUndefined = false;
+};
 
 NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	// not relevant for standard libraries
@@ -322,7 +325,7 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	this.externalArgsPointer = undefined;
 };
 
-NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
+NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
 	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
 	this.newResult = [];
 
@@ -342,10 +345,10 @@ NexlExpressionEvaluator.prototype.evalObjectActionInner = function () {
 	this.result = this.newResult;
 };
 
-NexlExpressionEvaluator.prototype.evalObjectAction = function () {
+NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 	var data = {};
-	data.chunks = this.action.chunks;
-	data.chunkSubstitutions = this.action.chunkSubstitutions;
+	data.chunks = this.action.actionValue.chunks;
+	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
 
 	// assembledChunks is string
 	this.assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
@@ -364,14 +367,14 @@ NexlExpressionEvaluator.prototype.evalObjectAction = function () {
 	}
 
 	// resolving value from last this.result
-	this.evalObjectActionInner();
+	this.applyPropertyResolutionActionInner();
 };
 
 NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	// assembling function params ( each param is nexl a expression. evaluating... )
 	var params = [];
-	for (var index in this.action.funcParams) {
-		var funcParamMD = this.action.funcParams[index];
+	for (var index in this.action.actionValue) {
+		var funcParamMD = this.action.actionValue[index];
 		var funcParam = new NexlExpressionEvaluator(this.session, funcParamMD).eval();
 		params.push(funcParam);
 	}
@@ -392,12 +395,12 @@ NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
 
 	var result = new NexlExpressionEvaluator(this.session, item).eval();
 	if (!j79.isNumber(result)) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(result), this.nexlExpressionMD.str, this.chunkNr + 1);
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(result), this.nexlExpressionMD.str, this.actionNr + 1);
 	}
 
 	var resultAsStr = result + '';
 	if (!resultAsStr.match(/^[0-9]+$/)) {
-		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expression is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.chunkNr + 1);
+		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expression is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.actionNr + 1);
 	}
 
 	return result;
@@ -431,8 +434,8 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
 	var newResult = [];
 
 	// iterating over arrayIndexes
-	for (var index in this.action.arrayIndexes) {
-		var item = this.action.arrayIndexes[index];
+	for (var index in this.action.actionValue) {
+		var item = this.action.actionValue[index];
 		var range = this.resolveArrayRange(item);
 
 		for (var i = range.min; i <= range.max; i++) {
@@ -451,8 +454,8 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 	var newResult = [];
 
 	// iterating over arrayIndexes
-	for (var index in this.action.arrayIndexes) {
-		var item = this.action.arrayIndexes[index];
+	for (var index in this.action.actionValue) {
+		var item = this.action.actionValue[index];
 		var range = this.resolveArrayRange(item);
 
 		var subStr = this.result.substring(range.min, range.max);
@@ -464,41 +467,16 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 };
 
 
-NexlExpressionEvaluator.prototype.evalArrayIndexesAction = function () {
+NexlExpressionEvaluator.prototype.applyArrayIndexesAction = function () {
 	if (j79.isString(this.result)) {
 		this.evalArrayIndexesAction4String();
 		return;
 	}
 
-	if (j79.isValSet(this.result)) {
+	if (j79.isArray(this.result)) {
 		this.evalArrayIndexesAction4Array();
 		return;
 	}
-};
-
-NexlExpressionEvaluator.prototype.evalAction = function () {
-	// is object action ? ( object actions have a chunks and chunkSubstitutions properties )
-	if (j79.isArray(this.action.chunks) && j79.isObject(this.action.chunkSubstitutions)) {
-		this.evalObjectAction();
-		return;
-	}
-
-	// external args are actual only for object actions. invalidating
-	this.externalArgsPointer = undefined;
-
-	// is func action ?
-	if (j79.isArray(this.action.funcParams)) {
-		this.evalFunctionAction();
-		return;
-	}
-
-	// is array index action ?
-	if (j79.isArray(this.action.arrayIndexes)) {
-		this.evalArrayIndexesAction();
-		return;
-	}
-
-	throw 'nexl expression wasn\'t parsed properly, got unknown action. Please open me a bug'
 };
 
 // continuing cast
@@ -582,30 +560,26 @@ NexlExpressionEvaluator.prototype.cast = function (value, type) {
 	return this.castInner(value, currentType, jsType);
 };
 
-NexlExpressionEvaluator.prototype.resolveModifierValue = function (modifier) {
-	// evaluating modifier value
-	var modifierMd = modifier.md;
-
+NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
 	var data = {};
-	data.chunks = modifierMd.chunks;
-	data.chunkSubstitutions = modifierMd.chunkSubstitutions;
+	data.chunks = this.action.actionValue.chunks;
+	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
 
 	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
 };
 
-NexlExpressionEvaluator.prototype.applyDefaultValueModifier = function (modifier) {
-	// is value set for this.result ?
+NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
+	// is value not set for this.result ?
 	if (this.result !== undefined) {
-		// don't need to apply default value modifier
+		// don't need to a apply default value action
 		return;
 	}
 
-	this.result = this.resolveModifierValue(modifier);
+	this.result = this.resolveActionEvaluatedValue();
 };
 
-NexlExpressionEvaluator.prototype.applyCastModifier = function (modifier) {
-	var modifierVal = resolveModifierConstantValue(modifier);
-	this.result = this.cast(this.result, modifierVal);
+NexlExpressionEvaluator.prototype.applyCastAction = function () {
+	this.result = this.cast(this.result, this.action.actionValue);
 };
 
 NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
@@ -624,12 +598,11 @@ NexlExpressionEvaluator.prototype.resolveObjectKeysIfNeeded = function (isObject
 	return isObject ? Object.keys(this.result) : this.result;
 };
 
-NexlExpressionEvaluator.prototype.applyTransformationsModifier = function (modifier) {
-	// value of transformations modifiers must be a constant ( cannot be evaluated as nexl expression ). so resolving it from first chunk of parsedStr
-	var modifierVal = resolveModifierConstantValue(modifier);
+NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
+	var actionValue = this.action.actionValue;
 
 	// applying ~A for non-objects
-	if (modifierVal === 'A') {
+	if (actionValue === 'A') {
 		this.result = j79.wrapWithArrayIfNeeded(this.result);
 		return;
 	}
@@ -637,24 +610,22 @@ NexlExpressionEvaluator.prototype.applyTransformationsModifier = function (modif
 	var isObject = j79.isObject(this.result);
 
 	// applying ~O for non-objects
-	if (modifierVal === 'O') {
+	if (actionValue === 'O') {
 		this.wrapWithObjectIfNeeded(isObject);
 		return;
 	}
 
 	// resolving keys for ~K
-	if (modifierVal === 'K') {
+	if (actionValue === 'K') {
 		this.result = this.resolveObjectKeysIfNeeded(isObject);
 		return;
 	}
 
 	// resolving values for ~V
-	if (modifierVal === 'V') {
+	if (actionValue === 'V') {
 		this.result = j79.obj2ArrayIfNeeded(this.result);
 		return;
 	}
-
-	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierVal, modifier.id);
 };
 NexlExpressionEvaluator.prototype.isContainsValue = function (val, reversedKey) {
 	// for array or object iterating over each value and querying
@@ -680,7 +651,14 @@ NexlExpressionEvaluator.prototype.isContainsValue = function (val, reversedKey) 
 	return false;
 };
 
-NexlExpressionEvaluator.prototype.resolveReverseKey = function (reverseKey) {
+NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function () {
+	// reverse resolution action is applying only for objects
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	var reverseKey = this.resolveActionEvaluatedValue();
+
 	var newResult = [];
 
 	for (var key in this.result) {
@@ -704,19 +682,6 @@ NexlExpressionEvaluator.prototype.resolveReverseKey = function (reverseKey) {
 	this.result = newResult;
 };
 
-NexlExpressionEvaluator.prototype.applyObjectReverseResolutionModifier = function (modifier) {
-	// reverse resolution modifier is applying only for objects
-	if (!j79.isObject(this.result)) {
-		return;
-	}
-
-	// resolving modifier value
-	var modifierValue = this.resolveModifierValue(modifier);
-
-	// resolving reverse key and assigning
-	this.resolveReverseKey(modifierValue);
-};
-
 NexlExpressionEvaluator.prototype.makeUniq = function () {
 	var newResult = [];
 	for (var index in this.result) {
@@ -729,16 +694,14 @@ NexlExpressionEvaluator.prototype.makeUniq = function () {
 	this.result = newResult;
 };
 
-// #S, #s, #U, #C array operations modifier
-NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function (modifier) {
+// #S, #s, #U, #C array operations action
+NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
 		return;
 	}
 
-	var modifierValue = resolveModifierConstantValue(modifier);
-
-	switch (modifierValue) {
+	switch (this.action.actionValue) {
 		// sort ascent
 		case 'S': {
 			this.result = this.result.sort();
@@ -758,32 +721,30 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsModifier = function (modif
 			return;
 		}
 
-		// count
-		case 'C': {
+		// length
+		case 'LEN': {
 			this.result = this.result.length;
 			return;
 		}
 
 	}
-
-	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierValue, modifier.id);
 };
 
-NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function (modifier) {
+NexlExpressionEvaluator.prototype.applyEliminateArrayElementsAction = function () {
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
 		return;
 	}
 
-	// resolving modifier value
-	var modifierValue = this.resolveModifierValue(modifier);
+	// resolving action value
+	var actionValue = this.resolveActionEvaluatedValue();
 
 	// wrapping with array
-	modifierValue = j79.wrapWithArrayIfNeeded(modifierValue);
+	actionValue = j79.wrapWithArrayIfNeeded(actionValue);
 
-	// iterating over modifierValue and eliminating array elements
-	for (var index in modifierValue) {
-		var item = modifierValue[index];
+	// iterating over actionValue and eliminating array elements
+	for (var index in actionValue) {
+		var item = actionValue[index];
 		var removeCandidate = this.result.indexOf(item);
 		if (removeCandidate < 0) {
 			continue;
@@ -797,49 +758,47 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElementsModifier = function
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyAppendToArrayModifier = function (modifier) {
+NexlExpressionEvaluator.prototype.applyAppendToArrayAction = function () {
 	// not an array ? good bye ( can append only to array )
 	if (!j79.isArray(this.result)) {
 		return;
 	}
 
-	// resolving modifier value
-	var modifierValue = this.resolveModifierValue(modifier);
+	// resolving action value
+	var actionValue = this.resolveActionEvaluatedValue();
 
-	// if modifierValue is array, merging 2 arrays. otherwise just pushing a value to existing
-	if (j79.isArray(modifierValue)) {
-		this.result = this.result.concat(modifierValue);
+	// if actionValue is array, merging 2 arrays. otherwise just pushing a value to existing
+	if (j79.isArray(actionValue)) {
+		this.result = this.result.concat(actionValue);
 	} else {
-		this.result.push(modifierValue);
+		this.result.push(actionValue);
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyJoinArrayElementsModifier = function (modifier) {
+NexlExpressionEvaluator.prototype.applyJoinArrayElementsAction = function () {
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
 		return;
 	}
 
-	// resolving modifier value
-	var modifierValue = this.resolveModifierValue(modifier);
+	// resolving action value
+	var actionValue = this.resolveActionEvaluatedValue();
 
-	// validating modifier value
-	if (!j79.isPrimitive(modifierValue)) {
-		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use primitive data types to join array elements', j79.getType(modifierValue), this.nexlExpressionMD.str);
+	// validating action value
+	if (!j79.isPrimitive(actionValue)) {
+		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use primitive data types to join array elements', j79.getType(actionValue), this.nexlExpressionMD.str);
 	}
 
-	this.result = this.result.join(modifierValue);
+	this.result = this.result.join(actionValue);
 };
 
-NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modifier) {
+NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 	// not a string ? good bye
 	if (!j79.isString(this.result)) {
 		return;
 	}
 
-	var modifierValue = resolveModifierConstantValue(modifier);
-
-	switch (modifierValue) {
+	switch (this.action.actionValue) {
 		// upper case
 		case 'U': {
 			this.result = this.result.toUpperCase();
@@ -870,122 +829,133 @@ NexlExpressionEvaluator.prototype.applyStringOperationsModifier = function (modi
 			return;
 		}
 	}
-
-	throw util.format('Invalid nexl expression. Got unknown modificator [%s] for [%s] modifier', modifierValue, modifier.id);
-
 };
 
-NexlExpressionEvaluator.prototype.applyMandatoryValueModifier = function (modifier) {
+NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
 	if (this.result === undefined) {
-		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value modifier ). Probably you have to provide it as external arg or check why it has evaluated as undefined', this.nexlExpressionMD.str);
+		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has evaluated as undefined', this.nexlExpressionMD.str);
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyModifier = function (modifier) {
-	switch (modifier.id) {
-		// @ default value modifier
-		case nep.MODIFIERS.DEF_VALUE: {
-			this.applyDefaultValueModifier(modifier);
+NexlExpressionEvaluator.prototype.applyAction = function () {
+	switch (this.action.actionId) {
+		// . property resolution action
+		case nep.ACTIONS.PROPERTY_RESOLUTION: {
+			this.applyPropertyResolutionAction();
 			return;
 		}
 
-		// @ default value modifier
-		case nep.MODIFIERS.CAST: {
-			this.applyCastModifier(modifier);
+		// [] array indexes action
+		case nep.ACTIONS.ARRAY_INDEX: {
+			this.applyArrayIndexesAction();
 			return;
 		}
 
-		// ~K, ~V, ~O object operations modifier
-		case nep.MODIFIERS.TRANSFORMATIONS: {
-			this.applyTransformationsModifier(modifier);
+		// () function action
+		case nep.ACTIONS.FUNCTION: {
+			this.evalFunctionAction();
 			return;
 		}
 
-		// < object reverse resolution modifier
-		case nep.MODIFIERS.OBJECT_REVERSE_RESOLUTION: {
-			this.applyObjectReverseResolutionModifier(modifier);
+		// @ default value action
+		case nep.ACTIONS.DEF_VALUE: {
+			this.applyDefaultValueAction();
 			return;
 		}
 
-		// #S, #s, #U, #C array operations modifier
-		case nep.MODIFIERS.ARRAY_OPERATIONS: {
-			this.applyArrayOperationsModifier(modifier);
+		// : cast action
+		case nep.ACTIONS.CAST: {
+			this.applyCastAction();
 			return;
 		}
 
-		// - eliminate array elements modifier
-		case nep.MODIFIERS.ELIMINATE_ARRAY_ELEMENTS: {
-			this.applyEliminateArrayElementsModifier(modifier);
+		// ~K, ~V, ~O transformations action
+		case nep.ACTIONS.TRANSFORMATIONS: {
+			this.applyTransformationsAction();
 			return;
 		}
 
-		// + append to array modifier
-		case nep.MODIFIERS.APPEND_TO_ARRAY: {
-			this.applyAppendToArrayModifier(modifier);
+		// < object reverse resolution action
+		case nep.ACTIONS.OBJECT_REVERSE_RESOLUTION: {
+			this.applyObjectReverseResolutionAction();
 			return;
 		}
 
-		// & join array elements modifier
-		case nep.MODIFIERS.JOIN_ARRAY_ELEMENTS: {
-			this.applyJoinArrayElementsModifier(modifier);
+		// #S, #s, #U, #C array operations action
+		case nep.ACTIONS.ARRAY_OPERATIONS: {
+			this.applyArrayOperationsAction();
 			return;
 		}
 
-		// ^U, ^L, ^LEN, ^T string operations modifier
-		case nep.MODIFIERS.STRING_OPERATIONS: {
-			this.applyStringOperationsModifier(modifier);
+		// - eliminate array elements action
+		case nep.ACTIONS.ELIMINATE_ARRAY_ELEMENTS: {
+			this.applyEliminateArrayElementsAction();
 			return;
 		}
 
-		// eval as undefined modifier
-		case nep.MODIFIERS.EVALUATE_AS_UNDEFINED: {
+		// + append to array action
+		case nep.ACTIONS.APPEND_TO_ARRAY: {
+			this.applyAppendToArrayAction();
 			return;
 		}
 
-		// mandatory value
-		case nep.MODIFIERS.MANDATORY_VALUE: {
-			this.applyMandatoryValueModifier(modifier);
+		// & join array elements action
+		case nep.ACTIONS.JOIN_ARRAY_ELEMENTS: {
+			this.applyJoinArrayElementsAction();
+			return;
+		}
+
+		// ^U, ^L, ^LEN, ^T string operations action
+		case nep.ACTIONS.STRING_OPERATIONS: {
+			this.applyStringOperationsAction();
+			return;
+		}
+
+		// eval as undefined action
+		case nep.ACTIONS.EVALUATE_AS_UNDEFINED: {
+			// this action is referenced at another place in code ( not here )
+			return;
+		}
+
+		// mandatory value action
+		case nep.ACTIONS.MANDATORY_VALUE: {
+			this.applyMandatoryValueAction();
 			return;
 		}
 	}
 
-	throw util.format('The [%s] modifier in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', modifier.id, this.nexlExpressionMD.str);
+	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.id, this.nexlExpressionMD.str);
 };
 
-NexlExpressionEvaluator.prototype.applyModifiers = function () {
-	// iterating over modifiers and applying them
-	for (var index in this.nexlExpressionMD.modifiers) {
-		var modifier = this.nexlExpressionMD.modifiers[index];
-		this.applyModifier(modifier);
-	}
-};
-
-NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedModifier = function () {
-	// iterating over modifiers
-	for (var index in this.nexlExpressionMD.modifiers) {
-		var modifier = this.nexlExpressionMD.modifiers[index];
-		if (modifier.id === nep.MODIFIERS.EVALUATE_AS_UNDEFINED) {
-			this.isEvaluateAsUndefined = true;
-			return;
-		}
+NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = function () {
+	if (this.action.actionId === nep.ACTIONS.PROPERTY_RESOLUTION) {
+		return;
 	}
 
-	this.isEvaluateAsUndefined = false;
+	// external args actual only for property resolution actions
+	this.externalArgsPointer = undefined;
+
+	// first time this.result is equals to context, but it's not good for all other actions ( it's only good good for property resolution action )
+	if (this.actionNr === 0) {
+		this.result = undefined;
+	}
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.result = this.session.context;
 	this.externalArgsPointer = this.session.externalArgs;
-	this.retrieveEvaluateAsUndefinedModifier();
+	this.retrieveEvaluateAsUndefinedAction();
 	this.actionsAsString = [];
 
 	// iterating over actions
-	for (this.chunkNr = 0; this.chunkNr < this.nexlExpressionMD.actions.length; this.chunkNr++) {
+	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
 		// current action
-		this.action = this.nexlExpressionMD.actions[this.chunkNr];
+		this.action = this.nexlExpressionMD.actions[this.actionNr];
+
+		this.specialCareForPropertyResolutionAction();
 
 		// evaluating current action
-		this.evalAction();
+		this.applyAction();
 
 		// result may contain additional nexl expression with unlimited depth. resolving
 		this.resolveSubExpressions();
@@ -998,8 +968,6 @@ NexlExpressionEvaluator.prototype.eval = function () {
 
 	// reprocessing final result, it can contain sub expressions
 	this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
-
-	this.applyModifiers();
 
 	return this.result;
 };
@@ -1021,7 +989,7 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 		var arrItem = arr[index];
 		var item = this.processItem(arrItem);
 
-		// EVALUATE_AS_UNDEFINED modifier
+		// EVALUATE_AS_UNDEFINED action
 		if (item === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}
@@ -1043,7 +1011,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 	for (var key in obj) {
 		var evaluatedKey = this.processItem(key);
 
-		// EVALUATE_AS_UNDEFINED modifier
+		// EVALUATE_AS_UNDEFINED action
 		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}
@@ -1056,7 +1024,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		var value = obj[key];
 		value = this.processItem(value);
 
-		// EVALUATE_AS_UNDEFINED modifier
+		// EVALUATE_AS_UNDEFINED action
 		if (value === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}
@@ -1134,7 +1102,7 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	};
 
 	// supplying standard libraries
-	supplyStandartLibs(session.context);
+	supplyStandardLibs(session.context);
 
 	// should item be evaluated as undefined if it contains undefined variables ?
 	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(externalArgs);
