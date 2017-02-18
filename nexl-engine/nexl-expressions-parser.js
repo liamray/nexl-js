@@ -379,7 +379,7 @@ ParseNexlExpression.prototype.validateAndSetActionValue = function (parsed) {
 	// resolving must have value
 	var expectedValue = ACTION_POSSIBLE_VALUES[this.currentAction];
 
-	// is this.currentAction not in ACTIONS_VALUES object? ( actions like default value @, object reverse resolution <. they should have raw chunks as value )
+	// should expectedValue be validated ? ( for example : ~Q where Q is inappropriate value )
 	if (expectedValue === undefined) {
 		this.addChunkedAction(parsed);
 		return;

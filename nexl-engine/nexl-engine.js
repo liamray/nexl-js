@@ -202,7 +202,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	// iterating over actions
 	for (var index in this.nexlExpressionMD.actions) {
 		var action = this.nexlExpressionMD.actions[index];
-		if (action.id === nep.ACTIONS.EVALUATE_AS_UNDEFINED) {
+		if (action.actionId === nep.ACTIONS.EVALUATE_AS_UNDEFINED) {
 			this.isEvaluateAsUndefined = true;
 			return;
 		}
@@ -657,10 +657,15 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function 
 		return;
 	}
 
+	// performing object deep resolution
+	this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+
+	// assembling action value
 	var reverseKey = this.resolveActionEvaluatedValue();
 
 	var newResult = [];
 
+	// iterating over keys in this.result and checking
 	for (var key in this.result) {
 		var item = this.result[key];
 
