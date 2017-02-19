@@ -361,7 +361,7 @@ expressions.push({
 // array indexes
 expressions.push({
 	expression: '${arr1[]}',
-	result: undefined
+	throwsException: true
 });
 
 // array indexes
@@ -384,8 +384,8 @@ expressions.push({
 
 // array indexes
 expressions.push({
-	expression: '${arr1[-1..999]}',
-	throwsException: true
+	expression: '${arr1[999..-1]}',
+	throwsException: undefined
 });
 
 // array indexes
@@ -1141,16 +1141,112 @@ expressions.push({
 
 // mixed actions test
 expressions.push({
-	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}}',
-	result: ['APP_SERVER_INTERFACES,INTERNET_INTERFACES',
-		'item1',
-		'queen',
-		'muscle',
-		79,
-		false,
-		49
-	]
+	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}~O***.HOSTS[0][0..21]}',
+	result: 'APP_SERVER_INTERFACES'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^]}',
+	result: 'queen'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^^]}',
+	throwsException: true
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[hello]}',
+	throwsException: true
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[$]}',
+	result: 'smooth'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^..$]}',
+	result: ["queen", "muscle", 79, false, "air", 16, 99, true, "smooth"]
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^..1]&,}',
+	result: 'queen,muscle'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[5..$]&,}',
+	result: '16,99,true,smooth'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^..-1]&,}',
+	result: 'queen,muscle,79,false,air,16,99,true'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[$..$]&,}',
+	result: 'smooth'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[^..^]&,}',
+	result: 'queen'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[-1..$]&,}',
+	result: 'true,smooth'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[4..-1]&,}',
+	result: 'air,16,99,true'
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[0..${undefinedVar}]&,}',
+	throwsException: true
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[  ${@$}..${@\\^} ]&,}',
+	result: undefined
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[ 0..${obj1} ]&,}',
+	throwsException: true
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[ 0..--1 ]&,}',
+	throwsException: true
+});
+
+// array indexes test
+expressions.push({
+	expression: '${arr1+${arr2}[ 0..1,    2..3    , -1..-1 , $ ]&,}',
+	result: 'queen,muscle,79,false,true,smooth'
 });
 
 
+// test advanced array indexes
 // test big mix of every action

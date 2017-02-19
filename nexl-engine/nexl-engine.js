@@ -393,28 +393,36 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	this.result = this.result.apply(this.session.context, params);
 };
 
-NexlExpressionEvaluator.prototype.evalItemIfNeeded = function (item) {
-	// not a nexl variable ? return as is ( it must be a primitive number )
-	if (!j79.isObject(item)) {
-		return item;
+NexlExpressionEvaluator.prototype.resolveRealArrayIndex = function (item) {
+	var arrayIndex;
+	if (j79.isObject(item)) {
+		arrayIndex = new NexlExpressionEvaluator(this.session, item).eval();
+	} else {
+		arrayIndex = item;
 	}
 
-	var result = new NexlExpressionEvaluator(this.session, item).eval();
-	if (!j79.isNumber(result)) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be a primitive number. Expressions is [%s], chunkNr is [%s]', item.str, j79.getType(result), this.nexlExpressionMD.str, this.actionNr + 1);
+	// first item
+	if (arrayIndex === nep.ARRAY_FIRST_ITEM) {
+		return 0;
 	}
 
-	var resultAsStr = result + '';
-	if (!resultAsStr.match(/^[0-9]+$/)) {
-		throw util.format('The [%s] nexl expression must be evaluated as primitive integer instead of [%s]. Expression is [%s], chunkNr is [%s]', item.str, result, this.nexlExpressionMD.str, this.actionNr + 1);
+	// last item
+	if (arrayIndex === nep.ARRAY_LAST_ITEM) {
+		return this.result.length - 1;
 	}
 
-	return result;
+	// validating ( must be an integer )
+	if (!j79.isNumber(arrayIndex) || (arrayIndex + '').indexOf('.') >= 0) {
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be an integer number. Expressions is [%s], actionNr is [%s]', item.str, j79.getType(arrayIndex), this.nexlExpressionMD.str, this.actionNr + 1);
+	}
+
+	// for negative numbers recalculating them relating to the end
+	return arrayIndex < 0 ? this.result.length - 1 + arrayIndex : arrayIndex;
 };
 
 NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
-	var min = this.evalItemIfNeeded(item['min']);
-	var max = this.evalItemIfNeeded(item['max']);
+	var min = this.resolveRealArrayIndex(item['min']);
+	var max = this.resolveRealArrayIndex(item['max']);
 
 	return {
 		min: min,

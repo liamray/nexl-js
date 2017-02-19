@@ -28,7 +28,7 @@ const NEXL_TYPES = {
 
 const ACTIONS = {
 	'PROPERTY_RESOLUTION': '.',
-	'ARRAY_INDEX': '[',
+	'ARRAY_INDEX': '[', // elements access example : [^], [$], [3], [-3], [2..6, 3..9], [^..$], [^..3], [3..$], [^..-3], [-3..$], [^..1, 4..${x}, -3..$]
 	'FUNCTION': '(',
 	'DEF_VALUE': '@',
 	'CAST': ':',
@@ -63,7 +63,12 @@ const FUNCTION_CLOSE = ')';
 const NEXL_EXPRESSION_OPEN = '${';
 const NEXL_EXPRESSION_CLOSE = '}';
 
+const ARRAY_FIRST_ITEM = '^';
+const ARRAY_LAST_ITEM = '$';
+
 const TWO_DOTS = '..';
+const COMMA = ',';
+
 
 const ACTION_VALUES = j79.getObjectValues(ACTIONS);
 const ACTIONS_REGEX = makeActionsRegex();
@@ -143,7 +148,7 @@ function skipSpaces(str, pos) {
 }
 
 function skipCommaIfPresents(str, pos) {
-	if (str.charAt(pos) === ',') {
+	if (str.charAt(pos) === COMMA) {
 		return pos + 1;
 	} else {
 		return pos;
@@ -207,28 +212,40 @@ function ParseFunctionCall(str, pos) {
 // ParseArrayIndexes
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ParseArrayIndexes.prototype.parseIntAndValidate = function (str) {
+	var result = parseInt(str);
+	// NaN check
+	if (result !== result) {
+		throw util.format('Failed to parse [%s] array index at [%s] position in [%s]', str, this.lastSearchPos, this.str);
+	}
+
+	return result;
+};
+
 ParseArrayIndexes.prototype.parseArrayIndex = function () {
-	// is primitive number ?
-	for (var i = this.lastSearchPos; i < this.str.length; i++) {
-		var charCode = this.str.charCodeAt(i);
-		if (charCode < 48 || charCode > 57) {
-			break;
-		}
-	}
-
-	var primitive = this.str.substring(this.lastSearchPos, i);
-	if (primitive.length > 0) {
-		this.lastSearchPos += primitive.length;
-		return parseInt(primitive);
-	}
-
 	var charsAtPos = this.str.substr(this.lastSearchPos);
+
+	// is primitive number ?
+	var primitive = charsAtPos.match(/^[-]?[0-9]+/);
+	if (primitive !== null && primitive.length === 1) {
+		primitive = primitive[0];
+		var number = parseInt(primitive);
+		this.lastSearchPos += primitive.length;
+		return number;
+	}
 
 	// is nexl expression ?
 	if (isStartsFromZeroPos(charsAtPos, NEXL_EXPRESSION_OPEN)) {
 		var nexlExpressionMD = new ParseNexlExpression(this.str, this.lastSearchPos).parse();
 		this.lastSearchPos += nexlExpressionMD.length;
 		return nexlExpressionMD;
+	}
+
+	// is ARRAY_FIRST_ITEM/ARRAY_LAST_ITEM
+	var char = charsAtPos.charAt(0);
+	if (char === ARRAY_FIRST_ITEM || char === ARRAY_LAST_ITEM) {
+		this.lastSearchPos++;
+		return char;
 	}
 
 	// nothing found
@@ -246,41 +263,48 @@ ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
 	// skipping redundant spaces
 	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
 
-	// current characters are
-	var charsAtPos = this.str.substr(this.lastSearchPos);
+	// parsing a min range
+	var min = this.parseArrayIndex();
+	if (min === null) {
+		throw util.format('Bad array index. Expecting for an integer number, %s, %s or nexl expression at [%s] position in [%s]', ARRAY_FIRST_ITEM, ARRAY_LAST_ITEM, this.lastSearchPos, this.str);
+	}
 
-	if (isStartsFromZeroPos(charsAtPos, ARRAY_INDEX_CLOSE)) {
+	var max = min;
+
+	// continuing parsing, does it contain two dots ?
+	if (this.str.substr(this.lastSearchPos).indexOf(TWO_DOTS) === 0) {
+		// skipping two dots
+		this.lastSearchPos += TWO_DOTS.length;
+
+		// retrieving the max element
+		max = this.parseArrayIndex();
+		if (max === null) {
+			throw util.format('Bad array index. Expecting for an integer number, %s, %s or nexl expression at [%s] position in [%s]', ARRAY_FIRST_ITEM, ARRAY_LAST_ITEM, this.lastSearchPos, this.str);
+		}
+	}
+
+	// adding
+	this.push(min, max);
+
+	// now options are : 1) nexl pair 2) close bracket
+
+	// skipping spaces
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+
+	// current characters are
+	var charsAtPos = this.str.charAt(this.lastSearchPos);
+
+	if (charsAtPos === ',') {
+		this.lastSearchPos++;
+		return;
+	}
+
+	if (charsAtPos === ARRAY_INDEX_CLOSE) {
 		this.isFinished = true;
 		return;
 	}
 
-	// parsing a min range
-	var min = this.parseArrayIndex();
-	if (min === null) {
-		throw util.format('Invalid nexl expression. Expecting for positive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
-	}
-
-	// doesn't it have two dots ?
-	if (this.str.substr(this.lastSearchPos).indexOf(TWO_DOTS) !== 0) {
-		this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
-		this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
-		this.push(min, min);
-		return;
-	}
-
-	// skipping two dots
-	this.lastSearchPos += TWO_DOTS.length;
-
-	// parsing the max range
-	var max = this.parseArrayIndex();
-	if (max === null) {
-		throw util.format('Invalid nexl expression. Expecting for primitive number or nexl expression at [%s] position in [%s]', this.lastSearchPos, this.str);
-	}
-
-	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
-	this.lastSearchPos = skipCommaIfPresents(this.str, this.lastSearchPos);
-
-	this.push(min, max);
+	throw util.format('Invalid nexl expression. Expecting %s or %s at [%s] position in [%s] expression, but found a %s character', COMMA, ARRAY_INDEX_CLOSE, this.lastSearchPos, this.str, charsAtPos);
 };
 
 ParseArrayIndexes.prototype.parse = function () {
@@ -620,6 +644,9 @@ function ParseStr(str, stopAt) {
 module.exports.JS_PRIMITIVE_TYPES = JS_PRIMITIVE_TYPES;
 module.exports.NEXL_TYPES = NEXL_TYPES;
 module.exports.ACTIONS = ACTIONS;
+
+module.exports.ARRAY_FIRST_ITEM = ARRAY_FIRST_ITEM;
+module.exports.ARRAY_LAST_ITEM = ARRAY_LAST_ITEM;
 
 module.exports.hasSubExpression = hasSubExpression;
 

@@ -37,8 +37,8 @@ var NEXL_EXPRESSION_DEFINITION = {
 			actionId: '[', // for array indexes
 			actionValue: [
 				{
-					min: 'PRIMITIVE_INT',
-					max: 'NEXL_EXPRESSION_DEFINITION'
+					min: MIN,
+					max: MAX // where MIN|MAX can be : primitive (negative) number, ^, $, nexl expression
 				}
 			]
 		},
