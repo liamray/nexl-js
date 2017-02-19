@@ -738,7 +738,7 @@ expressions.push({
 
 // # substring
 expressions.push({
-	expression: '${longStr[0..30,${index}..999]& }',
+	expression: '${longStr[0..29,${index}..999]& }',
 	result: 'The distance to the work is 15 km'
 });
 
@@ -930,7 +930,7 @@ expressions.push({
 			}
 		}
 	},
-	result: 'o'
+	result: 'om'
 });
 
 // external args test
@@ -939,7 +939,7 @@ expressions.push({
 	args: {
 		objArray1: 'test'
 	},
-	result: ''
+	result: 't'
 });
 
 // external args test
@@ -1141,7 +1141,7 @@ expressions.push({
 
 // mixed actions test
 expressions.push({
-	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}~O***.HOSTS[0][0..21]}',
+	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}~O***.HOSTS[0][0..20]}',
 	result: 'APP_SERVER_INTERFACES'
 });
 
@@ -1247,6 +1247,23 @@ expressions.push({
 	result: 'queen,muscle,79,false,true,smooth'
 });
 
+// string cut test
+expressions.push({
+	expression: '${@j1test2[$]}',
+	result: '2'
+});
 
-// test advanced array indexes
+// string cut test
+expressions.push({
+	expression: '${@j1test2[^..1]}',
+	result: 'j1'
+});
+
+// string cut test
+expressions.push({
+	expression: '${@j1test2[^..^]}',
+	result: 'j'
+});
+
+
 // test big mix of every action

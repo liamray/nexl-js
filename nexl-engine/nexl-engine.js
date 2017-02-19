@@ -467,7 +467,7 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 		var item = this.action.actionValue[index];
 		var range = this.resolveArrayRange(item);
 
-		var subStr = this.result.substring(range.min, range.max);
+		var subStr = this.result.substring(range.min, range.max + 1);
 		newResult.push(subStr);
 	}
 
@@ -843,9 +843,27 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
-	if (this.result === undefined) {
-		throw util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has calculated as undefined', this.nexlExpressionMD.str);
+	if (this.result !== undefined) {
+		return;
 	}
+
+	var defaultErrorMessage = util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has calculated as undefined', this.nexlExpressionMD.str);
+
+	// does this action have a custom error message ?
+	if (this.action.actionValue.chunks[0] === '') {
+		// default error message
+		throw defaultErrorMessage;
+	}
+
+	// resolving custom error message
+	var customErrorMessage;
+	try {
+		customErrorMessage = this.resolveActionEvaluatedValue();
+	} catch (e) {
+		throw util.format('%s\nFailed to evaluate custom error message. Reason : %s', defaultErrorMessage, e);
+	}
+
+	throw customErrorMessage;
 };
 
 NexlExpressionEvaluator.prototype.applyAction = function () {

@@ -44,11 +44,6 @@ var NEXL_EXPRESSION_DEFINITION = {
 		},
 
 		{
-			actionId: '*', // mandatory value
-			actionValue: ''
-		},
-
-		{
 			actionId: '#', // array operations
 			actionValue: 'S'
 		},

@@ -52,8 +52,7 @@ const ACTION_POSSIBLE_VALUES = {
 	'~': ['K', 'V', 'O', 'A'],
 	'#': ['S', 's', 'U', 'LEN'],
 	'^': ['U', 'U1', 'L', 'T', 'LEN'],
-	'!': [''],
-	'*': ['']
+	'!': ['']
 };
 
 const ARRAY_INDEX_CLOSE = ']';
