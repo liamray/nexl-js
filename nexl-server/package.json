@@ -1,6 +1,6 @@
 {
   "name": "nexl-server",
-  "version": "1.1.24",
+  "version": "2.0.0",
   "description": "JavaScript based read only configuration data storage where every single data element is a javascript variable",
   "main": "nexl-server.js",
   "scripts": {
@@ -45,7 +45,8 @@
     "os-homedir": "^1.0.2",
     "path": "^0.12.7",
     "serve-favicon": "^2.3.0",
-    "nexl-engine": "^1.4.3"
+    "nexl-engine": "2.0.1",
+    "j79-utils": "1.1.5"
   },
   "bin": {
     "nexl-server": "bin/nexl-server"

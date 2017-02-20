@@ -1,6 +1,6 @@
 {
   "name": "nexl-engine",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "nexl expressions processor. Consider the following products which are based on nexl-engine : nexl-client, nexl-server",
   "main": "nexl-engine.js",
   "scripts": {
@@ -25,7 +25,9 @@
   "license": "Apache 2.0",
   "author": "Yevgeny Sergeyev",
   "files": [
-    "nexl-engine.js"
+    "nexl-engine.js",
+    "nexl-expressions-parser.js",
+    "nexl-source-utils.js"
   ],
   "repository": {
     "type": "git",
