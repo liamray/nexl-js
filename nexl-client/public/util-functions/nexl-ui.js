@@ -165,7 +165,7 @@ var module = (function (module) {
     function openChooseExpressionDialog($tab, data) {
         var li = '';
         for (var i = 0; i < data.length; i++) {
-            var item = String.format('<li>{0}</li>', data[i]);
+			var item = String.format('<li>{0}</li>', data[i].name);
             li += item;
         }
 

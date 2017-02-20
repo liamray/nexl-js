@@ -173,29 +173,72 @@ function createContext(nexlSource) {
 
 function resolveVarDeclarations(varDeclaration) {
 	var result = [];
-	for (var i = 0; i < varDeclaration.declarations.length; i++) {
-		var item = varDeclaration.declarations[i];
-		result.push(item.id.name);
-	}
 
 	return result;
+}
+
+function parseAndPushVariableItem(varDeclaration, result) {
+	for (var i = 0; i < varDeclaration.declarations.length; i++) {
+		var item = varDeclaration.declarations[i];
+		var variableInfo = {};
+
+		variableInfo.name = item.id.name;
+		if (item.init !== null) {
+			variableInfo.type = item.init.type;
+		}
+
+		result.push(variableInfo);
+	}
+}
+
+function parseAndPushExpressionItem(item, result) {
+	var variableInfo = {
+		type: item.expression.right.type,
+		name: item.expression.left.name
+	};
+
+	result.push(variableInfo);
+}
+
+function parseAndPushFunctionItem(item, result) {
+	var variableInfo = {
+		type: item.type,
+		name: item.id.name
+	};
+
+	result.push(variableInfo);
+}
+
+function parseAndPushSourceCodeItem(item, result) {
+	switch (item.type) {
+		case 'VariableDeclaration': {
+			parseAndPushVariableItem(item, result);
+			return;
+		}
+
+		case 'ExpressionStatement' : {
+			parseAndPushExpressionItem(item, result);
+			return;
+		}
+
+		case 'FunctionDeclaration' : {
+			parseAndPushFunctionItem(item, result);
+			return;
+		}
+	}
 }
 
 function resolveJsVariables(nexlSource) {
 	var sourceCode = assembleSourceCode(nexlSource);
 	var parsedCode = esprima.parse(sourceCode).body;
 	var result = [];
+
 	for (var i = 0; i < parsedCode.length; i++) {
 		var item = parsedCode[i];
-		if (item.type !== 'VariableDeclaration') {
-			continue;
-		}
-
-		var declarations = resolveVarDeclarations(item);
-		result = result.concat(declarations);
+		parseAndPushSourceCodeItem(item, result);
 	}
 
-	return result.sort();
+	return result;
 }
 
 
