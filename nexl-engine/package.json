@@ -1,6 +1,6 @@
 {
   "name": "nexl-engine",
-  "version": "1.4.31",
+  "version": "2.0.0",
   "description": "nexl expressions processor. Consider the following products which are based on nexl-engine : nexl-client, nexl-server",
   "main": "nexl-engine.js",
   "scripts": {

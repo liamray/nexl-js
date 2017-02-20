@@ -1247,6 +1247,12 @@ expressions.push({
 	result: 'queen,muscle,79,false,true,smooth'
 });
 
+// array indexes test
+expressions.push({
+	expression: '${arr1[${@\\-1:num}]}',
+	result: 79
+});
+
 // string cut test
 expressions.push({
 	expression: '${@j1test2[$]}',
