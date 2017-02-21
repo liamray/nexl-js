@@ -953,7 +953,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 		}
 	}
 
-	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.id, this.nexlExpressionMD.str);
+	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.actionId, this.nexlExpressionMD.str);
 };
 
 NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = function () {
