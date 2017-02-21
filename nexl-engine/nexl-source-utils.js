@@ -192,6 +192,10 @@ function parseAndPushVariableItem(varDeclaration, result) {
 }
 
 function parseAndPushExpressionItem(item, result) {
+	if (item.expression.left === undefined || item.expression.left.name === undefined) {
+		return;
+	}
+
 	var variableInfo = {
 		type: item.expression.right.type,
 		name: item.expression.left.name
