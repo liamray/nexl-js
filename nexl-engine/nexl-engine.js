@@ -705,6 +705,38 @@ NexlExpressionEvaluator.prototype.makeUniq = function () {
 	this.result = newResult;
 };
 
+NexlExpressionEvaluator.prototype.findDuplicatesAndRemove = function (item) {
+	var cnt = 0;
+	var index = 0;
+	while (true) {
+		index = this.result.indexOf(item, index);
+		if (index < 0) {
+			break;
+		}
+		this.result.splice(index, 1);
+		cnt++;
+	}
+
+	return cnt > 1;
+};
+
+NexlExpressionEvaluator.prototype.makeDuplicates = function () {
+	var newResult = [];
+	while (this.result.length > 0) {
+		var item = this.result[0];
+		if (this.findDuplicatesAndRemove(item)) {
+			newResult.push(item);
+		}
+	}
+
+	if (newResult.length < 1) {
+		this.result = undefined;
+		return;
+	}
+
+	this.result = j79.unwrapFromArrayIfPossible(newResult);
+};
+
 // #S, #s, #U, #C array operations action
 NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	// not an array ? bye bye
@@ -729,6 +761,12 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 		// uniq
 		case 'U': {
 			this.makeUniq();
+			return;
+		}
+
+		// duplicates
+		case 'D': {
+			this.makeDuplicates();
 			return;
 		}
 
@@ -797,7 +835,7 @@ NexlExpressionEvaluator.prototype.applyJoinArrayElementsAction = function () {
 
 	// validating action value
 	if (!j79.isPrimitive(actionValue)) {
-		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use primitive data types to join array elements', j79.getType(actionValue), this.nexlExpressionMD.str);
+		throw util.format('Array elements cannot be joined with %s type in [%s] expression. Use a primitive data types to join array elements', j79.getType(actionValue), this.nexlExpressionMD.str);
 	}
 
 	this.result = this.result.join(actionValue);

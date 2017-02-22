@@ -13,6 +13,7 @@ var arr2 = ['air', 16, 99, true, 'smooth'];
 var arr3 = ['${arr1}', '${arr2}'];
 var arr4 = ['${arr3}', true, false, 'true', 79, 'queen'];
 var arr5 = ['hello'];
+var arr6 = [];
 
 obj1PropName = '()';
 

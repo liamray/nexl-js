@@ -34,7 +34,7 @@ const ACTIONS = {
 	'CAST': ':',
 	'TRANSFORMATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array
 	'OBJECT_REVERSE_RESOLUTION': '<',
-	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #LEN array length
+	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length
 	'ELIMINATE_ARRAY_ELEMENTS': '-',
 	'APPEND_TO_ARRAY': '+',
 	'JOIN_ARRAY_ELEMENTS': '&',
@@ -50,7 +50,7 @@ const ACTIONS = {
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
 	'~': ['K', 'V', 'O', 'A'],
-	'#': ['S', 's', 'U', 'LEN'],
+	'#': ['S', 's', 'U', 'D', 'LEN'],
 	'^': ['U', 'U1', 'L', 'T', 'LEN'],
 	'!': ['']
 };
@@ -103,7 +103,7 @@ function isStartsFromZeroPos(str, chars) {
 	return str.indexOf(chars) === 0;
 }
 
-// returned the following in object :
+// returning the following in object :
 // escaped - is str escaped ? true|false
 // str - corrected str if slashes were found
 // correctedPos - the new position of character which was at [pos] position

@@ -184,43 +184,43 @@ expressions.push({
 });
 
 
-// ~O modifier
+// ~O action
 expressions.push({
 	expression: '${intItem~O}',
 	result: {intItem: 71}
 });
 
-// ~O modifier
+// ~O action
 expressions.push({
 	expression: '${obj1.pack~O}',
 	result: {strong: 'balance', deer: 7}
 });
 
-// ~O modifier
+// ~O action
 expressions.push({
 	expression: '${obj1.pack.deer~O}',
 	result: {'obj1.pack.deer': 7}
 });
 
-// ~O modifier
+// ~O action
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES.${keys}~O}',
 	result: {'HOSTS.APP_SERVER_INTERFACES.[]': 'yest'}
 });
 
-// ~A modifier
+// ~A action
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A}',
 	result: ['cuddly2']
 });
 
-// ~A modifier
+// ~A action
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A~O}',
 	result: {'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': ['cuddly2']}
 });
 
-// ~A modifier
+// ~A action
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~O~A}',
 	result: [{'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': 'cuddly2'}]
@@ -283,19 +283,19 @@ expressions.push({
 	}
 });
 
-// evaluate as undefined modifier -> string
+// evaluate as undefined action -> string
 expressions.push({
 	expression: '${evaluateAsUndefined2!}',
 	result: undefined
 });
 
-// evaluate as undefined modifier -> array
+// evaluate as undefined action -> array
 expressions.push({
 	expression: '${evaluateAsUndefined1!&,} ${evaluateAsUndefined1&,}',
 	result: 'disconnect,24,,false disconnect,24,,,false'
 });
 
-// evaluate as undefined modifier -> object
+// evaluate as undefined action -> object
 expressions.push({
 	expression: '${obj3!}',
 	result: {
@@ -681,38 +681,63 @@ expressions.push({
 	result: 'Okay;)'
 });
 
-// reserved modifiers
+// reserved actions
 expressions.push({
 	expression: '${*?%>+}',
 	throwsException: true
 });
 
-// # array operations modifier
+// # array operations action
 expressions.push({
 	expression: '${arr1#S}',
 	result: [79, false, "muscle", "queen"]
 });
 
-// # array operations modifier
+// # array operations action
 expressions.push({
 	expression: '${arr1#s}',
 	result: ["queen", "muscle", false, 79]
 });
 
-// # array operations modifier
+// # array operations action
 expressions.push({
 	expression: '${arr4#U#S}',
 	result: [16, 79, 99, "air", false, "muscle", "queen", "smooth", true, "true"]
 });
 
-// # array operations modifier
+// # array operations action
+expressions.push({
+	expression: '${arr4#D}',
+	result: ['queen', 79, false, true]
+});
+
+// # array operations action
+expressions.push({
+	expression: '${arr6#D}',
+	result: undefined
+});
+
+// # array operations action
+expressions.push({
+	expression: '${@test~A-test}',
+	result: undefined
+});
+
+// # array operations action
 expressions.push({
 	expression: '${arr4#U#S#CNT}',
 	result: 10,
 	throwsException: true
 });
 
-// # array operations modifier
+// # array operations action
+expressions.push({
+	expression: '${obj1<${@mint~A+righteous}}',
+	result: ['beneficial', 'religion']
+});
+
+
+// # array operations action
 expressions.push({
 	expression: '${arr4#U#S#LEN}',
 	result: 10
@@ -888,31 +913,31 @@ expressions.push({
 	result: undefined
 });
 
-// mandatory value modifier
+// mandatory value action
 expressions.push({
 	expression: '${obj2.pack.wrapWithBrackets.x.y.z*}',
 	throwsException: true
 });
 
-// mandatory value modifier
+// mandatory value action
 expressions.push({
 	expression: '${obj1...71...x*}',
 	throwsException: true
 });
 
-// mandatory value modifier
+// mandatory value action
 expressions.push({
 	expression: '${obj1...71...*}',
 	result: 'berry'
 });
 
-// mandatory value modifier
+// mandatory value action
 expressions.push({
 	expression: '${obj1~K~V~O<*}',
 	throwsException: true
 });
 
-// mandatory value modifier
+// mandatory value action
 expressions.push({
 	expression: '${*}',
 	throwsException: true
@@ -986,19 +1011,19 @@ expressions.push({
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${~ ${}}',
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${~A# ${}}',
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${@^ ${}}',
 	throwsException: true
@@ -1043,19 +1068,19 @@ expressions.push({
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${~Q}',
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${arr1#Q}',
 	throwsException: true
 });
 
-// bad modificator
+// bad action
 expressions.push({
 	expression: '${strItem^Q}',
 	throwsException: true
@@ -1073,31 +1098,31 @@ expressions.push({
 	throwsException: true
 });
 
-// mandatory value modificator
+// mandatory value action
 expressions.push({
 	expression: '${*}',
 	throwsException: true
 });
 
-// reserved modifiers
+// reserved actions
 expressions.push({
 	expression: '${>}',
 	throwsException: true
 });
 
-// reserved modifiers
+// reserved actions
 expressions.push({
 	expression: '${?}',
 	throwsException: true
 });
 
-// reserved modifiers
+// reserved actions
 expressions.push({
 	expression: '${%}',
 	throwsException: true
 });
 
-// reserved modifiers
+// reserved actions
 expressions.push({
 	expression: '${:omg}',
 	throwsException: true
