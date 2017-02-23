@@ -19,6 +19,11 @@ const nep = require('./nexl-expressions-parser');
 
 const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nep.ACTIONS.DEF_VALUE, nep.ACTIONS.APPEND_TO_ARRAY, nep.ACTIONS.JOIN_ARRAY_ELEMENTS, nep.ACTIONS.MANDATORY_VALUE];
 
+const SPECIAL_CHARS_MAP = {
+	'\\n': '\n',
+	'\\t': '\t'
+};
+
 function isNeedDeepResolution(action) {
 	return NO_NEED_DEEP_RESOLUTION_ACTIONS.indexOf(action.actionId) < 0;
 }
@@ -70,6 +75,41 @@ function supplyStandardLibs(context) {
 	context.isNaN = isNaN;
 	context.parseFloat = parseFloat;
 	context.parseInt = parseInt;
+}
+
+function replaceSpecialChar(item, char) {
+	var lastPos = 0;
+	var newStr = item;
+	while ((lastPos = newStr.indexOf(char, lastPos)) >= 0) {
+		var escaped = j79.escapePrecedingSlashes(newStr, lastPos);
+		lastPos = escaped.correctedPos;
+		newStr = escaped.escapedStr;
+
+		if (escaped.escaped) {
+			lastPos++;
+			continue;
+		}
+
+		newStr = newStr.substr(0, lastPos) + SPECIAL_CHARS_MAP[char] + newStr.substr(lastPos + 2);
+	}
+
+	return newStr;
+}
+
+
+function replaceSpecialChars(item) {
+	if (!j79.isString(item)) {
+		return item;
+	}
+
+	var result = item;
+
+	var specialChars = Object.keys(SPECIAL_CHARS_MAP);
+	for (var index in specialChars) {
+		result = replaceSpecialChar(result, specialChars[index]);
+	}
+
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1184,8 +1224,11 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	// should item be evaluated as undefined if it contains undefined variables ?
 	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(externalArgs);
 
+	// replacing \n and \t
+	var item2Process = replaceSpecialChars(item);
+
 	// is item not specified, using a default nexl expression
-	var item2Process = item === undefined ? session.context.nexl.defaultExpression : item;
+	item2Process = item2Process === undefined ? session.context.nexl.defaultExpression : item2Process;
 
 	// running nexl engine
 	return new NexlEngine(session, isEvaluateAsUndefined).processItem(item2Process);

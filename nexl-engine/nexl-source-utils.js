@@ -171,12 +171,6 @@ function createContext(nexlSource) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function resolveVarDeclarations(varDeclaration) {
-	var result = [];
-
-	return result;
-}
-
 function parseAndPushVariableItem(varDeclaration, result) {
 	for (var i = 0; i < varDeclaration.declarations.length; i++) {
 		var item = varDeclaration.declarations[i];

@@ -84,7 +84,7 @@ function hasSubExpression(str) {
 		if (pos < 0) {
 			return false;
 		}
-		var escaping = escapePrecedingSlashes(str, pos);
+		var escaping = j79.escapePrecedingSlashes(str, pos);
 		if (!escaping.escaped) {
 			return true;
 		}
@@ -101,39 +101,6 @@ function makeActionsRegex() {
 
 function isStartsFromZeroPos(str, chars) {
 	return str.indexOf(chars) === 0;
-}
-
-// returning the following in object :
-// escaped - is str escaped ? true|false
-// str - corrected str if slashes were found
-// correctedPos - the new position of character which was at [pos] position
-function escapePrecedingSlashes(str, pos) {
-	var result = {};
-	var slashesCnt = 0;
-
-	for (var i = pos - 1; i >= 0; i--) {
-		if (str.charAt(i) !== '\\') {
-			break;
-		}
-
-		slashesCnt++;
-	}
-
-	// odd count of slashes tells that character at [pos] position is escaped
-	result.escaped = ( slashesCnt % 2 === 1 );
-
-	var halfSlashes = Math.floor((slashesCnt + 1 ) / 2);
-
-	if (slashesCnt > 0) {
-		// cutting 1/2 slashes
-		result.escapedStr = str.substr(0, pos - halfSlashes) + str.substr(pos);
-	} else {
-		result.escapedStr = str;
-	}
-
-	result.correctedPos = pos - halfSlashes;
-
-	return result;
 }
 
 function skipSpaces(str, pos) {
@@ -537,7 +504,7 @@ ParseStr.prototype.findAndEscapeIfNeededInner = function () {
 	this.searchPosTmp += pos;
 
 	// escaping string if needed
-	var escapedStr = escapePrecedingSlashes(this.str, this.searchPosTmp);
+	var escapedStr = j79.escapePrecedingSlashes(this.str, this.searchPosTmp);
 
 	// storing delta between searchPos and escapedStr.escapedStr
 	this.result.length += (this.searchPosTmp - escapedStr.correctedPos);
