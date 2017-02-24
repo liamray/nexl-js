@@ -198,6 +198,7 @@ function evalNexl(req, res) {
 	var nexlArgs = req.body.nexlArgs;
 
 	nexlArgs = JSON.parse(nexlArgs);
+	nexlArgs = nexlEngine.convertStrItems2Obj(nexlArgs);
 
 	var nexlSource = makeNexlSource(nexlSourceFileName, nexlSourceFileContent);
 

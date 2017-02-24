@@ -122,7 +122,7 @@
 		};
 
 		var expression = input.expression;
-		var args = input.args;
+		var args = nexlEngine.convertStrItems2Obj(input.args);
 
 		// evaluating
 		try {

@@ -80,6 +80,7 @@ function supplyStandardLibs(context) {
 function replaceSpecialChar(item, char) {
 	var lastPos = 0;
 	var newStr = item;
+
 	while ((lastPos = newStr.indexOf(char, lastPos)) >= 0) {
 		var escaped = j79.escapePrecedingSlashes(newStr, lastPos);
 		lastPos = escaped.correctedPos;
@@ -97,6 +98,7 @@ function replaceSpecialChar(item, char) {
 }
 
 
+// string representation of \n, \t characters is replaced with their real value
 function replaceSpecialChars(item) {
 	if (!j79.isString(item)) {
 		return item;
@@ -107,6 +109,43 @@ function replaceSpecialChars(item) {
 	var specialChars = Object.keys(SPECIAL_CHARS_MAP);
 	for (var index in specialChars) {
 		result = replaceSpecialChar(result, specialChars[index]);
+	}
+
+	return result;
+}
+
+function convertStrItem2Obj(item, val, obj) {
+	var currentRef = obj;
+	var currentItem = item;
+
+	var lastDotPos = 0;
+	while ((lastDotPos = currentItem.indexOf('.', lastDotPos)) >= 0) {
+		var escaped = j79.escapePrecedingSlashes(currentItem, lastDotPos);
+		lastDotPos = escaped.correctedPos;
+		currentItem = escaped.escapedStr;
+		if (escaped.escaped) {
+			lastDotPos++;
+			continue;
+		}
+
+		var key = currentItem.substr(0, lastDotPos);
+		currentItem = currentItem.substr(lastDotPos + 1);
+		if (currentRef[key] === undefined) {
+			currentRef[key] = {};
+		}
+		currentRef = currentRef[key];
+	}
+
+	currentRef[currentItem] = val;
+}
+
+// example obj =  { 'a.b.c.d': 10 }
+// output : { a: {b: {c:{ d: 10}}}}
+function convertStrItems2Obj(obj) {
+	var result = {};
+	for (var key in obj) {
+		var val = obj[key];
+		convertStrItem2Obj(key, val, result);
 	}
 
 	return result;
@@ -1236,3 +1275,6 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 
 // exporting resolveJsVariables
 module.exports.resolveJsVariables = nsu.resolveJsVariables;
+
+// separates string items by dots ( if not escaped ) and puts them into nested objects
+module.exports.convertStrItems2Obj = convertStrItems2Obj;
