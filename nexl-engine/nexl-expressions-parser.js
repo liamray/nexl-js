@@ -49,7 +49,7 @@ const ACTIONS = {
 
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
-	'~': ['K', 'V', 'O', 'A'],
+	'~': ['K', 'V', 'O', 'A', 'P', 'X'],
 	'#': ['S', 's', 'U', 'D', 'LEN'],
 	'^': ['U', 'U1', 'L', 'T', 'LEN'],
 	'!': ['']

@@ -12,6 +12,8 @@ const deepMerge = require('deepmerge');
 const j79 = require('j79-utils');
 const nsu = require('./nexl-source-utils');
 const nep = require('./nexl-expressions-parser');
+const js2xmlparser = require("js2xmlparser");
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utility functions
@@ -670,8 +672,8 @@ NexlExpressionEvaluator.prototype.applyCastAction = function () {
 	this.result = this.cast(this.result, this.action.actionValue);
 };
 
-NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
-	if (isObject) {
+NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
+	if (j79.isObject(this.result)) {
 		return;
 	}
 
@@ -682,41 +684,78 @@ NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function (isObject) {
 	this.result = obj;
 };
 
-NexlExpressionEvaluator.prototype.resolveObjectKeysIfNeeded = function (isObject) {
-	return isObject ? Object.keys(this.result) : this.result;
+NexlExpressionEvaluator.prototype.resolveObjectKeys = function () {
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	this.result = Object.keys(this.result);
+	this.result = j79.unwrapFromArrayIfPossible(this.result);
+};
+
+NexlExpressionEvaluator.prototype.resolveObjectValues = function () {
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	this.result = j79.obj2ArrayIfNeeded(this.result);
+	this.result = j79.unwrapFromArrayIfPossible(this.result);
+};
+
+NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	var result = '';
+};
+
+NexlExpressionEvaluator.prototype.produceXMLFileIfNeeded = function () {
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	var root = this.actionsAsString.length < 1 ? 'root' : this.actionsAsString.join('.');
+	this.result = js2xmlparser.parse(root, this.result);
 };
 
 NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
 	var actionValue = this.action.actionValue;
 
-	// applying ~A for non-objects
-	if (actionValue === 'A') {
-		this.result = j79.wrapWithArrayIfNeeded(this.result);
-		return;
-	}
+	switch (actionValue) {
+		case 'A' : {
+			this.result = j79.wrapWithArrayIfNeeded(this.result);
+			return;
+		}
 
-	var isObject = j79.isObject(this.result);
+		case 'O' : {
+			this.wrapWithObjectIfNeeded();
+			return;
+		}
 
-	// applying ~O for non-objects
-	if (actionValue === 'O') {
-		this.wrapWithObjectIfNeeded(isObject);
-		return;
-	}
+		case 'K' : {
+			this.resolveObjectKeys();
+			return;
+		}
 
-	// resolving keys for ~K
-	if (actionValue === 'K') {
-		this.result = this.resolveObjectKeysIfNeeded(isObject);
-		this.result = j79.unwrapFromArrayIfPossible(this.result);
-		return;
-	}
+		case 'V' : {
+			this.resolveObjectValues();
+			return;
+		}
 
-	// resolving values for ~V
-	if (actionValue === 'V') {
-		this.result = j79.obj2ArrayIfNeeded(this.result);
-		this.result = j79.unwrapFromArrayIfPossible(this.result);
-		return;
+		case 'P' : {
+			this.produceKeyValuesPairs();
+			return;
+		}
+
+
+		case 'X' : {
+			this.produceXMLFileIfNeeded();
+			return;
+		}
 	}
 };
+
 NexlExpressionEvaluator.prototype.isContainsValue = function (val, reversedKey) {
 	// for array or object iterating over each value and querying
 	if (j79.isArray(val) || j79.isObject(val)) {
