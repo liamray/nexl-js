@@ -13,7 +13,7 @@ const j79 = require('j79-utils');
 const nsu = require('./nexl-source-utils');
 const nep = require('./nexl-expressions-parser');
 const js2xmlparser = require("js2xmlparser");
-
+const YAML = require('yamljs');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utility functions
@@ -732,13 +732,21 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 	this.result = result.join('\n');
 };
 
-NexlExpressionEvaluator.prototype.produceXMLFileIfNeeded = function () {
+NexlExpressionEvaluator.prototype.produceXML = function () {
 	if (!j79.isObject(this.result)) {
 		return;
 	}
 
 	var root = this.actionsAsString.length < 1 ? 'root' : this.actionsAsString.join('.');
 	this.result = js2xmlparser.parse(root, this.result);
+};
+
+NexlExpressionEvaluator.prototype.produceYAML = function () {
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+	this.result = YAML.stringify(this.result);
 };
 
 NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
@@ -770,9 +778,13 @@ NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
 			return;
 		}
 
-
 		case 'X' : {
-			this.produceXMLFileIfNeeded();
+			this.produceXML();
+			return;
+		}
+
+		case 'Y' : {
+			this.produceYAML();
 			return;
 		}
 	}
