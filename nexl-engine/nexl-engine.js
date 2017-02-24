@@ -153,6 +153,25 @@ function convertStrItems2Obj(obj) {
 	return result;
 }
 
+function produceKeyValuesPairs(rootKey, obj, result) {
+	for (var key in obj) {
+		var item = obj[key];
+
+		var subKey = rootKey === undefined ? key : rootKey + '.' + key;
+
+		if (j79.isObject(item)) {
+			produceKeyValuesPairs(subKey, item, result);
+			continue;
+		}
+
+		if (j79.isFunction(item)) {
+			continue;
+		}
+
+		result.push(subKey + '=' + item);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -707,7 +726,10 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 		return;
 	}
 
-	var result = '';
+	var result = [];
+	produceKeyValuesPairs(undefined, this.result, result);
+
+	this.result = result.join('\n');
 };
 
 NexlExpressionEvaluator.prototype.produceXMLFileIfNeeded = function () {
