@@ -46,27 +46,34 @@ function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 }
 
-function makeSession(nexlSource, externalArgs) {
-	var session = {};
+function hasExternalArgs(externalArgs) {
+	if (!j79.isObject(externalArgs)) {
+		return false;
+	}
 
+	// external args must not contain sub nexl expressions. validating
+	if (nep.hasSubExpression(externalArgs)) {
+		throw 'Bad external arguments. External arguments you provided cannot contain a nexl expression(s)';
+	}
+
+	return true;
+}
+
+function makeContext(nexlSource, externalArgs) {
 	// creating context
-	session.context = nsu.createContext(nexlSource);
+	var context = nsu.createContext(nexlSource);
 
-	// assigning external args
-	session.externalArgs = externalArgs;
-	if (session.externalArgs === undefined) {
-		session.externalArgs = session.context.nexl.defaultArgs;
+	// merging defaultArgs to context
+	if (j79.isObject(context.nexl.defaultArgs)) {
+		context = deepMergeInner(context, context.nexl.defaultArgs);
 	}
 
-	// args must be an object !
-	if (!j79.isObject(session.externalArgs)) {
-		session.externalArgs = {};
+	// merging external args to context
+	if (hasExternalArgs(externalArgs)) {
+		context = deepMergeInner(context, externalArgs);
 	}
 
-	// giving an access to arguments for functions in nexl-sources
-	session.context.nexl.args = externalArgs;
-
-	return session;
+	return context;
 }
 
 function supplyStandardLibs(context) {
@@ -217,9 +224,6 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 	// tells if additional array should remain
 	var isArrayFlag = false;
 
-	// storing EVALUATE_AS_UNDEFINED because NexlExpressionEvaluator can change it in session
-	var isEvaluateAsUndefined = this.session.EVALUATE_AS_UNDEFINED;
-
 	// iterating over chunkSubstitutions
 	for (var pos in this.data.chunkSubstitutions) {
 		// current chunk ( which is parsed nexl expression itself )
@@ -227,10 +231,10 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 
 		// evaluating this chunk
 		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
-		var chunkValue = new NexlExpressionEvaluator(this.session, chunk2Substitute).eval();
+		var chunkValue = new NexlExpressionEvaluator(this.context, chunk2Substitute).eval();
 
 		// EVALUATE_AS_UNDEFINED action
-		if (chunkValue === undefined && isEvaluateAsUndefined) {
+		if (chunkValue === undefined && this.isEvaluateAsUndefined) {
 			return undefined;
 		}
 
@@ -257,8 +261,8 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 		finalResult = finalResult[0];
 	}
 
-	if (finalResult === this.session.context) {
-		return null;
+	if (finalResult === this.context) {
+		finalResult = undefined;
 	}
 
 	return finalResult;
@@ -289,14 +293,15 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 	// when we have the only 1 item to substitute
 	if (this.data.chunks.length === 1 && chunkSubstitutionsCnt === 1) {
 		this.throwParserErrorIfNeeded(this.data.chunks[0] !== null, util.format('Parser error ! There is only 1 chunk to substitute, but his cell is not null for [%s] expression', this.data.str));
-		return new NexlExpressionEvaluator(this.session, j79.getObjectValues(this.data.chunkSubstitutions)[0]).eval();
+		return new NexlExpressionEvaluator(this.context, j79.getObjectValues(this.data.chunkSubstitutions)[0]).eval();
 	}
 
 	return this.evalAndSubstChunksInner();
 };
 
-function EvalAndSubstChunks(session, data) {
-	this.session = session;
+function EvalAndSubstChunks(context, isEvaluateAsUndefined, data) {
+	this.context = context;
+	this.isEvaluateAsUndefined = isEvaluateAsUndefined;
 	this.data = data;
 }
 
@@ -324,7 +329,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	}
 
 	var newResult = {};
-	var nexlEngine = new NexlEngine(this.session, this.isEvaluateAsUndefined);
+	var nexlEngine = new NexlEngine(this.context, this.isEvaluateAsUndefined);
 
 	for (var key in this.result) {
 		if (!nep.hasSubExpression(key)) {
@@ -352,12 +357,12 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 		return;
 	}
 
-	if (this.result === this.session.context) {
+	if (this.result === this.context) {
 		return;
 	}
 
 	if (j79.isString(this.result) && nep.hasSubExpression(this.result)) {
-		this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 
 	// evaluating object keys if they have nexl expressions
@@ -367,16 +372,7 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 
 	// array
 	if (j79.isArray(this.result)) {
-		this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
-	}
-};
-
-
-NexlExpressionEvaluator.prototype.forwardUpAndPush = function (key) {
-	if (j79.isObject(this.result)) {
-		this.newResult.push(this.result[key]);
-	} else {
-		this.newResult.push(undefined);
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
 
@@ -390,50 +386,14 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	// not a primitive ? make result undefined
 	if (!j79.isPrimitive(key)) {
 		this.newResult.push(undefined);
-		this.externalArgsPointer = undefined;
 		return;
 	}
 
-	// is current item in external arguments undefined ?
-	if (this.externalArgsPointer === undefined) {
-		this.forwardUpAndPush(key);
-		return;
-	}
-
-	// forwarding up the external arg
-	if (j79.isObject(this.externalArgsPointer)) {
-		this.externalArgsPointer = this.externalArgsPointer[key];
+	if (j79.isObject(this.result)) {
+		this.newResult.push(this.result[key]);
 	} else {
-		this.externalArgsPointer = undefined;
+		this.newResult.push(undefined);
 	}
-
-	if (this.externalArgsPointer === undefined) {
-		this.forwardUpAndPush(key);
-		return;
-	}
-
-	// is externalArgsPointer still object ?
-	if (j79.isObject(this.externalArgsPointer)) {
-		this.forwardUpAndPush(key);
-		return;
-	}
-
-	// validating. it cannot contain nexl expressions
-	if (j79.isString(this.externalArgsPointer) && nep.hasSubExpression(this.externalArgsPointer)) {
-		throw util.format('External argument [%s] cannot contain nexl expression. It can be only a primitive', this.externalArgsPointer);
-	}
-
-	// functions and arrays are not acceptable for external args
-	if (j79.isFunction(this.externalArgsPointer) || j79.isArray(this.externalArgsPointer)) {
-		this.forwardUpAndPush(key);
-		this.externalArgsPointer = undefined;
-		return;
-	}
-
-	// it's ok, overriding
-	this.newResult.push(this.externalArgsPointer);
-	// resetting externalArgsPointer
-	this.externalArgsPointer = undefined;
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
@@ -457,7 +417,7 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
 
 	// assembledChunks is string
-	this.assembledChunks = new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+	this.assembledChunks = new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
 
 	// skipping object resolution for undefined key
 	if (this.assembledChunks === undefined) {
@@ -481,7 +441,7 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	var params = [];
 	for (var index in this.action.actionValue) {
 		var funcParamMD = this.action.actionValue[index];
-		var funcParam = new NexlExpressionEvaluator(this.session, funcParamMD).eval();
+		var funcParam = new NexlExpressionEvaluator(this.context, funcParamMD).eval();
 		params.push(funcParam);
 	}
 
@@ -490,13 +450,13 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 		return;
 	}
 
-	this.result = this.result.apply(this.session.context, params);
+	this.result = this.result.apply(this.context, params);
 };
 
 NexlExpressionEvaluator.prototype.resolveRealArrayIndex = function (item) {
 	var arrayIndex;
 	if (j79.isObject(item)) {
-		arrayIndex = new NexlExpressionEvaluator(this.session, item).eval();
+		arrayIndex = new NexlExpressionEvaluator(this.context, item).eval();
 	} else {
 		arrayIndex = item;
 	}
@@ -674,7 +634,7 @@ NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
 	data.chunks = this.action.actionValue.chunks;
 	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
 
-	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
 };
 
 NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
@@ -821,7 +781,7 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function 
 	}
 
 	// performing object deep resolution
-	this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	// assembling action value
 	var reverseKey = this.resolveActionEvaluatedValue();
@@ -1151,9 +1111,6 @@ NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = funct
 		return;
 	}
 
-	// external args actual only for property resolution actions
-	this.externalArgsPointer = undefined;
-
 	// first time this.result is equals to context, but it's not good for all other actions ( it's only good good for property resolution action )
 	if (this.actionNr === 0) {
 		this.result = undefined;
@@ -1167,13 +1124,12 @@ NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
 
 	// reprocessing final result, it can contain sub expressions
 	if (isNeedDeepResolution(this.action)) {
-		this.result = new NexlEngine(this.session, this.isEvaluateAsUndefined).processItem(this.result);
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
-	this.result = this.session.context;
-	this.externalArgsPointer = this.session.externalArgs;
+	this.result = this.context;
 	this.retrieveEvaluateAsUndefinedAction();
 	this.actionsAsString = [];
 
@@ -1192,7 +1148,7 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	}
 
 	// empty expression like ${}
-	if (this.result === this.session.context) {
+	if (this.result === this.context) {
 		this.result = undefined;
 	}
 
@@ -1201,8 +1157,8 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	return this.result;
 };
 
-function NexlExpressionEvaluator(session, nexlExpressionMD) {
-	this.session = session;
+function NexlExpressionEvaluator(context, nexlExpressionMD) {
+	this.context = context;
 	this.nexlExpressionMD = nexlExpressionMD;
 }
 
@@ -1272,10 +1228,9 @@ NexlEngine.prototype.processStringItem = function (str) {
 	data.chunks = parsedStrMD.chunks;
 	data.chunkSubstitutions = parsedStrMD.chunkSubstitutions;
 	data.str = str;
-	this.session.EVALUATE_AS_UNDEFINED = this.isEvaluateAsUndefined;
 
 	// evaluating
-	return new EvalAndSubstChunks(this.session, data).evalAndSubstChunks();
+	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
 };
 
 NexlEngine.prototype.processItem = function (item) {
@@ -1303,8 +1258,8 @@ NexlEngine.prototype.processItem = function (item) {
 	return item;
 };
 
-function NexlEngine(session, isEvaluateAsUndefined) {
-	this.session = session;
+function NexlEngine(context, isEvaluateAsUndefined) {
+	this.context = context;
 	this.isEvaluateAsUndefined = isEvaluateAsUndefined;
 }
 
@@ -1314,36 +1269,40 @@ function NexlEngine(session, isEvaluateAsUndefined) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports.processItem = function (nexlSource, item, externalArgs) {
-	var session = makeSession(nexlSource, externalArgs);
+	var context = makeContext(nexlSource, externalArgs);
 
 	// supplying nexl engine for functions in nexl-sources
-	session.context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
-		// merging existing external args
-		session.externalArgs = deepMergeInner(session.externalArgs, externalArgs4Function);
-		var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(session.externalArgs);
+	context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
+		// backing up current context before change
+		var contextBackup = context;
+
+		// merging externalArgs4Function to a context
+		context = deepMergeInner(context, externalArgs4Function);
+
+		var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(context);
 
 		// running nexl engine
-		var result = new NexlEngine(session, isEvaluateAsUndefined).processItem(nexlExpression);
+		var result = new NexlEngine(context, isEvaluateAsUndefined).processItem(nexlExpression);
 
-		// restoring external args
-		session.externalArgs = externalArgs;
+		// restoring context
+		context = contextBackup;
 		return result;
 	};
 
 	// supplying standard libraries
-	supplyStandardLibs(session.context);
+	supplyStandardLibs(context);
 
 	// should item be evaluated as undefined if it contains undefined variables ?
-	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(externalArgs);
+	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(context);
 
 	// replacing \n and \t
 	var item2Process = replaceSpecialChars(item);
 
 	// is item not specified, using a default nexl expression
-	item2Process = item2Process === undefined ? session.context.nexl.defaultExpression : item2Process;
+	item2Process = item2Process === undefined ? context.nexl.defaultExpression : item2Process;
 
 	// running nexl engine
-	return new NexlEngine(session, isEvaluateAsUndefined).processItem(item2Process);
+	return new NexlEngine(context, isEvaluateAsUndefined).processItem(item2Process);
 };
 
 // exporting resolveJsVariables

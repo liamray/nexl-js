@@ -975,7 +975,9 @@ expressions.push({
 			a: 10
 		}
 	},
-	result: 71
+	result: {
+		a: 10
+	}
 });
 
 // external args test
@@ -1294,6 +1296,17 @@ expressions.push({
 expressions.push({
 	expression: '${@j1test2[^..^]}',
 	result: 'j'
+});
+
+// evaluate as undefined for root expression
+expressions.push({
+	expression: 'hello ${world}',
+	args: {
+		nexl: {
+			EVALUATE_AS_UNDEFINED: true
+		}
+	},
+	result: undefined
 });
 
 

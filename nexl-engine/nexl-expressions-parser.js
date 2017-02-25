@@ -77,7 +77,7 @@ const ACTIONS_REGEX = makeActionsRegex();
 // Parser utility functions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function hasSubExpression(str) {
+function hasSubExpressionStr(str) {
 	var pos = 0;
 	while (pos < str.length) {
 		pos = str.indexOf(NEXL_EXPRESSION_OPEN, pos);
@@ -93,6 +93,28 @@ function hasSubExpression(str) {
 
 	return false;
 }
+
+function hasSubExpression(item) {
+	// for null, undefined and NaN just return as is
+	if (!j79.isValSet(item)) {
+		return item;
+	}
+
+	// for string items
+	if (j79.isString(item)) {
+		return hasSubExpressionStr(item);
+	}
+
+	if (j79.isObject(item) || j79.isArray(item)) {
+		for (var index in item) {
+			var element = item[index];
+			if (hasSubExpression(element)) {
+				return true;
+			}
+		}
+	}
+}
+
 
 function makeActionsRegex() {
 	var result = ACTION_VALUES.concat([NEXL_EXPRESSION_CLOSE]);
