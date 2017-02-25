@@ -1309,5 +1309,30 @@ expressions.push({
 	result: undefined
 });
 
+// bad external args
+expressions.push({
+	expression: 'hello ${world}',
+	args: {
+		nexl: {
+			EVALUATE_AS_UNDEFINED: true
+		},
+		hello: '${omg}'
+	},
+	throwsException: true
+});
+
+
+// bad external args
+expressions.push({
+	expression: 'hello ${world}',
+	args: {
+		nexl: {
+			EVALUATE_AS_UNDEFINED: true
+		},
+		hello: ['${omg}']
+	},
+	throwsException: true
+});
+
 
 // test big mix of every action
