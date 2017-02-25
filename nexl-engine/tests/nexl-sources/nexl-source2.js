@@ -106,3 +106,7 @@ keys = ['YEST'];
 obj4 = {
 	'${obj1}': 1
 };
+
+intItem2 = 'test';
+nexl.defaultArgs.intItem2 = 46;
+nexl.defaultArgs.intItem3 = 57;

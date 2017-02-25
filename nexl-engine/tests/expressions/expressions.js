@@ -1334,5 +1334,44 @@ expressions.push({
 	throwsException: true
 });
 
+// default args
+expressions.push({
+	expression: '${intItem2}',
+	result: 46
+});
+
+// default args
+expressions.push({
+	expression: '${intItem3}',
+	result: 57
+});
+
+// default args
+expressions.push({
+	expression: '${intItem2}',
+	args: {
+		intItem2: 111
+	},
+	result: 111
+});
+
+// default args
+expressions.push({
+	expression: '${intItem3}',
+	args: {
+		intItem2: 333
+	},
+	result: 57
+});
+
+// default args
+expressions.push({
+	expression: '${intItem3}',
+	args: {
+		intItem3: 333
+	},
+	result: 333
+});
+
 
 // test big mix of every action
