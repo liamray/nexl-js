@@ -46,19 +46,6 @@ function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 }
 
-function hasExternalArgs(externalArgs) {
-	if (!j79.isObject(externalArgs)) {
-		return false;
-	}
-
-	// external args must not contain sub nexl expressions. validating
-	if (nep.hasSubExpression(externalArgs)) {
-		throw 'Bad external arguments. External arguments you provided cannot contain a nexl expression(s)';
-	}
-
-	return true;
-}
-
 function makeContext(nexlSource, externalArgs) {
 	// creating context
 	var context = nsu.createContext(nexlSource);
@@ -69,7 +56,7 @@ function makeContext(nexlSource, externalArgs) {
 	}
 
 	// merging external args to context
-	if (hasExternalArgs(externalArgs)) {
+	if (j79.isObject(externalArgs)) {
 		context = deepMergeInner(context, externalArgs);
 	}
 
@@ -332,11 +319,6 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	var nexlEngine = new NexlEngine(this.context, this.isEvaluateAsUndefined);
 
 	for (var key in this.result) {
-		if (!nep.hasSubExpression(key)) {
-			newResult[key] = this.result[key];
-			continue;
-		}
-
 		// nexilized key
 		var newKey = nexlEngine.processItem(key);
 
@@ -361,7 +343,7 @@ NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 		return;
 	}
 
-	if (j79.isString(this.result) && nep.hasSubExpression(this.result)) {
+	if (j79.isString(this.result)) {
 		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 

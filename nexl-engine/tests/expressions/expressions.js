@@ -1049,15 +1049,6 @@ expressions.push({
 	throwsException: true
 });
 
-// external arg contains nexl expression
-expressions.push({
-	expression: '${intItem}',
-	args: {
-		intItem: '${strItem}'
-	},
-	throwsException: true
-});
-
 // bad array index
 expressions.push({
 	expression: '${arr1[${strItem}]}',
@@ -1307,31 +1298,6 @@ expressions.push({
 		}
 	},
 	result: undefined
-});
-
-// bad external args
-expressions.push({
-	expression: 'hello ${world}',
-	args: {
-		nexl: {
-			EVALUATE_AS_UNDEFINED: true
-		},
-		hello: '${omg}'
-	},
-	throwsException: true
-});
-
-
-// bad external args
-expressions.push({
-	expression: 'hello ${world}',
-	args: {
-		nexl: {
-			EVALUATE_AS_UNDEFINED: true
-		},
-		hello: ['${omg}']
-	},
-	throwsException: true
 });
 
 // default args
