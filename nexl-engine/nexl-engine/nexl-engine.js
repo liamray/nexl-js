@@ -8,163 +8,12 @@
  **************************************************************************************/
 
 const util = require('util');
-const deepMerge = require('deepmerge');
 const j79 = require('j79-utils');
 const nsu = require('./nexl-source-utils');
 const nep = require('./nexl-expressions-parser');
+const neu = require('./nexl-engine-utils');
 const js2xmlparser = require("js2xmlparser");
 const YAML = require('yamljs');
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Utility functions
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nep.ACTIONS.DEF_VALUE, nep.ACTIONS.APPEND_TO_ARRAY, nep.ACTIONS.JOIN_ARRAY_ELEMENTS, nep.ACTIONS.MANDATORY_VALUE];
-
-const SPECIAL_CHARS_MAP = {
-	'\\n': '\n',
-	'\\t': '\t'
-};
-
-function isNeedDeepResolution(action) {
-	return NO_NEED_DEEP_RESOLUTION_ACTIONS.indexOf(action.actionId) < 0;
-}
-
-function deepMergeInner(obj1, obj2) {
-	if (obj2 === undefined) {
-		return obj1;
-	}
-
-	if (!j79.isObject(obj2)) {
-		return obj1;
-	}
-
-	return deepMerge(obj1, obj2);
-}
-
-function hasEvaluateAsUndefinedFlag(obj) {
-	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
-}
-
-function makeContext(nexlSource, externalArgs) {
-	// creating context
-	var context = nsu.createContext(nexlSource);
-
-	// merging defaultArgs to context
-	if (j79.isObject(context.nexl.defaultArgs)) {
-		context = deepMergeInner(context, context.nexl.defaultArgs);
-	}
-
-	// merging external args to context
-	if (j79.isObject(externalArgs)) {
-		context = deepMergeInner(context, externalArgs);
-	}
-
-	return context;
-}
-
-function supplyStandardLibs(context) {
-	context.Number = Number;
-	context.Math = Math;
-	context.Date = Date;
-	context.isFinite = isFinite;
-	context.isNaN = isNaN;
-	context.parseFloat = parseFloat;
-	context.parseInt = parseInt;
-}
-
-function replaceSpecialChar(item, char) {
-	var lastPos = 0;
-	var newStr = item;
-
-	while ((lastPos = newStr.indexOf(char, lastPos)) >= 0) {
-		var escaped = j79.escapePrecedingSlashes(newStr, lastPos);
-		lastPos = escaped.correctedPos;
-		newStr = escaped.escapedStr;
-
-		if (escaped.escaped) {
-			lastPos++;
-			continue;
-		}
-
-		newStr = newStr.substr(0, lastPos) + SPECIAL_CHARS_MAP[char] + newStr.substr(lastPos + 2);
-	}
-
-	return newStr;
-}
-
-
-// string representation of \n, \t characters is replaced with their real value
-function replaceSpecialChars(item) {
-	if (!j79.isString(item)) {
-		return item;
-	}
-
-	var result = item;
-
-	var specialChars = Object.keys(SPECIAL_CHARS_MAP);
-	for (var index in specialChars) {
-		result = replaceSpecialChar(result, specialChars[index]);
-	}
-
-	return result;
-}
-
-function convertStrItem2Obj(item, val, obj) {
-	var currentRef = obj;
-	var currentItem = item;
-
-	var lastDotPos = 0;
-	while ((lastDotPos = currentItem.indexOf('.', lastDotPos)) >= 0) {
-		var escaped = j79.escapePrecedingSlashes(currentItem, lastDotPos);
-		lastDotPos = escaped.correctedPos;
-		currentItem = escaped.escapedStr;
-		if (escaped.escaped) {
-			lastDotPos++;
-			continue;
-		}
-
-		var key = currentItem.substr(0, lastDotPos);
-		currentItem = currentItem.substr(lastDotPos + 1);
-		if (currentRef[key] === undefined) {
-			currentRef[key] = {};
-		}
-		currentRef = currentRef[key];
-	}
-
-	currentRef[currentItem] = val;
-}
-
-// example obj =  { 'a.b.c.d': 10 }
-// output : { a: {b: {c:{ d: 10}}}}
-function convertStrItems2Obj(obj) {
-	var result = {};
-	for (var key in obj) {
-		var val = obj[key];
-		convertStrItem2Obj(key, val, result);
-	}
-
-	return result;
-}
-
-function produceKeyValuesPairs(rootKey, obj, result) {
-	for (var key in obj) {
-		var item = obj[key];
-
-		var subKey = rootKey === undefined ? key : rootKey + '.' + key;
-
-		if (j79.isObject(item)) {
-			produceKeyValuesPairs(subKey, item, result);
-			continue;
-		}
-
-		if (j79.isFunction(item)) {
-			continue;
-		}
-
-		result.push(subKey + '=' + item);
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
@@ -335,7 +184,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	// it's not relevant for few actions
-	if (!isNeedDeepResolution(this.action)) {
+	if (!neu.isNeedDeepResolution(this.action)) {
 		return;
 	}
 
@@ -530,87 +379,6 @@ NexlExpressionEvaluator.prototype.applyArrayIndexesAction = function () {
 	}
 };
 
-// continuing cast
-NexlExpressionEvaluator.prototype.castInner = function (value, currentType, requiredTypeJs) {
-	// NUM -> BOOL
-	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
-		return value !== 0;
-	}
-
-	// NUM -> STR
-	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
-		return value + '';
-	}
-
-	// BOOL -> NUM
-	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
-		return value ? 1 : 0;
-	}
-
-	// BOOL -> STR
-	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
-		return value + '';
-	}
-
-	// STR -> NUM
-	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
-		var result = parseFloat(value);
-		if (isNaN(result)) {
-			result = undefined;
-		}
-		return result;
-	}
-
-	// STR -> BOOL
-	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
-		if (value === 'false') {
-			return false;
-		}
-		if (value === 'true') {
-			return true;
-		}
-
-		return undefined;
-	}
-
-	return value;
-};
-
-// example : value = 101; nexlType = 'bool';
-NexlExpressionEvaluator.prototype.cast = function (value, type) {
-	// if type is not specified
-	if (type === undefined) {
-		return value;
-	}
-
-	// resolving JavaScript type
-	var jsType = nep.NEXL_TYPES[type];
-
-	// validating ( should not happen )
-	if (jsType === undefined) {
-		throw util.format('Unknown [%s] type in [%s] expression. Use one of the following types : [%s]', type, this.nexlExpressionMD.str, Object.keys(nep.NEXL_TYPES));
-	}
-
-	var currentType = j79.getType(value);
-
-	// if both types are same, return value as is
-	if (currentType === jsType) {
-		return value;
-	}
-
-	// cast to null
-	if (jsType === nep.JS_PRIMITIVE_TYPES.NULL) {
-		return null;
-	}
-
-	// cast to undefined
-	if (jsType === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
-		return undefined;
-	}
-
-	return this.castInner(value, currentType, jsType);
-};
-
 NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
 	var data = {};
 	data.chunks = this.action.actionValue.chunks;
@@ -630,7 +398,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyCastAction = function () {
-	this.result = this.cast(this.result, this.action.actionValue);
+	this.result = neu.cast(this.result, this.action.actionValue);
 };
 
 NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
@@ -669,7 +437,7 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 	}
 
 	var result = [];
-	produceKeyValuesPairs(undefined, this.result, result);
+	neu.produceKeyValuesPairs(undefined, this.result, result);
 
 	this.result = result.join('\n');
 };
@@ -1105,7 +873,7 @@ NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
 	}
 
 	// reprocessing final result, it can contain sub expressions
-	if (isNeedDeepResolution(this.action)) {
+	if (neu.isNeedDeepResolution(this.action)) {
 		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
@@ -1251,7 +1019,7 @@ function NexlEngine(context, isEvaluateAsUndefined) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports.processItem = function (nexlSource, item, externalArgs) {
-	var context = makeContext(nexlSource, externalArgs);
+	var context = neu.makeContext(nexlSource, externalArgs);
 
 	// supplying nexl engine for functions in nexl-sources
 	context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
@@ -1259,9 +1027,9 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 		var contextBackup = context;
 
 		// merging externalArgs4Function to a context
-		context = deepMergeInner(context, externalArgs4Function);
+		context = neu.deepMergeInner(context, externalArgs4Function);
 
-		var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(context);
+		var isEvaluateAsUndefined = neu.hasEvaluateAsUndefinedFlag(context);
 
 		// running nexl engine
 		var result = new NexlEngine(context, isEvaluateAsUndefined).processItem(nexlExpression);
@@ -1271,14 +1039,11 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 		return result;
 	};
 
-	// supplying standard libraries
-	supplyStandardLibs(context);
-
 	// should item be evaluated as undefined if it contains undefined variables ?
-	var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(context);
+	var isEvaluateAsUndefined = neu.hasEvaluateAsUndefinedFlag(context);
 
 	// replacing \n and \t
-	var item2Process = replaceSpecialChars(item);
+	var item2Process = neu.replaceSpecialChars(item);
 
 	// is item not specified, using a default nexl expression
 	item2Process = item2Process === undefined ? context.nexl.defaultExpression : item2Process;
@@ -1291,4 +1056,4 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 module.exports.resolveJsVariables = nsu.resolveJsVariables;
 
 // separates string items by dots ( if not escaped ) and puts them into nested objects
-module.exports.convertStrItems2Obj = convertStrItems2Obj;
+module.exports.convertStrItems2Obj = neu.convertStrItems2Obj;

@@ -1,5 +1,5 @@
 // libraries
-const nexlEngine = require('../nexl-engine');
+const nexlEngine = require('../nexl-engine/nexl-engine');
 const util = require('util');
 const j79 = require('j79-utils');
 const assert = require('assert');
