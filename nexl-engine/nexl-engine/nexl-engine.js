@@ -184,7 +184,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	// it's not relevant for few actions
-	if (!nexlEngineUtils.isNeedDeepResolution(this.action)) {
+	if (!this.needDeepResolution) {
 		return;
 	}
 
@@ -388,6 +388,9 @@ NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	// is value not set for this.result ?
 	if (this.result !== undefined) {
 		// don't need to a apply default value action
@@ -432,9 +435,15 @@ NexlExpressionEvaluator.prototype.resolveObjectValues = function () {
 };
 
 NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	// performing object deep resolution
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	var result = [];
 	nexlEngineUtils.produceKeyValuesPairs(undefined, this.result, result);
@@ -443,18 +452,30 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 };
 
 NexlExpressionEvaluator.prototype.produceXML = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	// performing object deep resolution
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	var root = this.actionsAsString.length < 1 ? 'root' : this.actionsAsString.join('.');
 	this.result = js2xmlparser.parse(root, this.result);
 };
 
 NexlExpressionEvaluator.prototype.produceYAML = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	// performing object deep resolution
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	this.result = YAML.stringify(this.result);
 };
@@ -670,6 +691,9 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElementsAction = function (
 };
 
 NexlExpressionEvaluator.prototype.applyAppendToArrayAction = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	// not an array ? good bye ( can append only to array )
 	if (!j79.isArray(this.result)) {
 		return;
@@ -687,6 +711,9 @@ NexlExpressionEvaluator.prototype.applyAppendToArrayAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyJoinArrayElementsAction = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
 		return;
@@ -743,6 +770,9 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
 	if (this.result !== undefined) {
 		return;
 	}
@@ -857,23 +887,15 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = function () {
-	if (this.action.actionId === nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
-		return;
-	}
-
 	// first time this.result is equals to context, but it's not good for all other actions ( it's only good good for property resolution action )
-	if (this.actionNr === 0) {
+	if (this.actionNr === 0 && this.action.actionId !== nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
 		this.result = undefined;
 	}
 };
 
 NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
-	if (this.action === undefined) {
-		return;
-	}
-
 	// reprocessing final result, it can contain sub expressions
-	if (nexlEngineUtils.isNeedDeepResolution(this.action)) {
+	if (this.action !== undefined && this.needDeepResolution) {
 		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
@@ -885,6 +907,9 @@ NexlExpressionEvaluator.prototype.eval = function () {
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
+		// deep resolution flag
+		this.needDeepResolution = true;
+
 		// current action
 		this.action = this.nexlExpressionMD.actions[this.actionNr];
 

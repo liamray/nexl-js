@@ -107,6 +107,18 @@ obj4 = {
 	'${obj1}': 1
 };
 
+obj5 = {
+	beneficial: 'mint',
+	pack: {
+		strong: 'balance',
+		deer: 7
+	},
+	obj3: '${obj3}',
+	'${strItem}': '${intItem}',
+	'test': '${undefinedVariable}'
+};
+
+
 intItem2 = 'test';
 nexl.defaultArgs.intItem2 = 46;
 nexl.defaultArgs.intItem3 = 57;

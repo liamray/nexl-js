@@ -12,16 +12,10 @@ const nexlSourceUtils = require('./nexl-source-utils');
 const j79 = require('j79-utils');
 const deepMerge = require('deepmerge');
 
-const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nexlExpressionsParser.ACTIONS.DEF_VALUE, nexlExpressionsParser.ACTIONS.APPEND_TO_ARRAY, nexlExpressionsParser.ACTIONS.JOIN_ARRAY_ELEMENTS, nexlExpressionsParser.ACTIONS.MANDATORY_VALUE];
-
 const SPECIAL_CHARS_MAP = {
 	'\\n': '\n',
 	'\\t': '\t'
 };
-
-function isNeedDeepResolution(action) {
-	return NO_NEED_DEEP_RESOLUTION_ACTIONS.indexOf(action.actionId) < 0;
-}
 
 function deepMergeInner(obj1, obj2) {
 	if (obj2 === undefined) {
@@ -275,7 +269,6 @@ function produceKeyValuesPairs(rootKey, obj, result) {
 // exports
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports.isNeedDeepResolution = isNeedDeepResolution;
 module.exports.hasEvaluateAsUndefinedFlag = hasEvaluateAsUndefinedFlag;
 module.exports.produceKeyValuesPairs = produceKeyValuesPairs;
 module.exports.convertStrItems2Obj = convertStrItems2Obj;
