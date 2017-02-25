@@ -91,6 +91,14 @@
 			return;
 		}
 
+		// setting up content-type
+		if (j79.isArray(result) || j79.isObject(result)) {
+			res.header("Content-Type", 'application/json');
+		} else {
+			res.header("Content-Type", 'text/plain');
+		}
+
+		// string sends as is. all other must be stringified
 		if (j79.isString(result)) {
 			res.write(result);
 		} else {
