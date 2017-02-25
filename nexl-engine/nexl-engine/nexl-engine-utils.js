@@ -7,12 +7,12 @@
  Set of utility functions for nexl-engine
  **************************************************************************************/
 
-const nep = require('./nexl-expressions-parser');
-const nsu = require('./nexl-source-utils');
+const nexlExpressionsParser = require('./nexl-expressions-parser');
+const nexlSourceUtils = require('./nexl-source-utils');
 const j79 = require('j79-utils');
 const deepMerge = require('deepmerge');
 
-const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nep.ACTIONS.DEF_VALUE, nep.ACTIONS.APPEND_TO_ARRAY, nep.ACTIONS.JOIN_ARRAY_ELEMENTS, nep.ACTIONS.MANDATORY_VALUE];
+const NO_NEED_DEEP_RESOLUTION_ACTIONS = [nexlExpressionsParser.ACTIONS.DEF_VALUE, nexlExpressionsParser.ACTIONS.APPEND_TO_ARRAY, nexlExpressionsParser.ACTIONS.JOIN_ARRAY_ELEMENTS, nexlExpressionsParser.ACTIONS.MANDATORY_VALUE];
 
 const SPECIAL_CHARS_MAP = {
 	'\\n': '\n',
@@ -41,7 +41,7 @@ function hasEvaluateAsUndefinedFlag(obj) {
 
 function makeContext(nexlSource, externalArgs) {
 	// creating context
-	var context = nsu.createContext(nexlSource);
+	var context = nexlSourceUtils.createContext(nexlSource);
 
 	// merging defaultArgs to context
 	if (j79.isObject(context.nexl.defaultArgs)) {
@@ -107,27 +107,27 @@ function replaceSpecialChars(item) {
 
 function castInner(value, currentType, requiredTypeJs) {
 	// NUM -> BOOL
-	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL) {
 		return value !== 0;
 	}
 
 	// NUM -> STR
-	if (currentType === nep.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR) {
 		return value + '';
 	}
 
 	// BOOL -> NUM
-	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM) {
 		return value ? 1 : 0;
 	}
 
 	// BOOL -> STR
-	if (currentType === nep.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.STR) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR) {
 		return value + '';
 	}
 
 	// STR -> NUM
-	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.NUM) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM) {
 		var result = parseFloat(value);
 		if (isNaN(result)) {
 			result = undefined;
@@ -136,7 +136,7 @@ function castInner(value, currentType, requiredTypeJs) {
 	}
 
 	// STR -> BOOL
-	if (currentType === nep.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nep.JS_PRIMITIVE_TYPES.BOOL) {
+	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL) {
 		if (value === 'false') {
 			return false;
 		}
@@ -158,11 +158,11 @@ function cast(value, type) {
 	}
 
 	// resolving JavaScript type
-	var jsType = nep.NEXL_TYPES[type];
+	var jsType = nexlExpressionsParser.NEXL_TYPES[type];
 
 	// validating ( should not happen )
 	if (jsType === undefined) {
-		throw util.format('Unknown [%s] type in [%s] expression. Use one of the following types : [%s]', type, this.nexlExpressionMD.str, Object.keys(nep.NEXL_TYPES).join(','));
+		throw util.format('Unknown [%s] type in [%s] expression. Use one of the following types : [%s]', type, this.nexlExpressionMD.str, Object.keys(nexlExpressionsParser.NEXL_TYPES).join(','));
 	}
 
 	var currentType = j79.getType(value);
@@ -173,12 +173,12 @@ function cast(value, type) {
 	}
 
 	// cast to null
-	if (jsType === nep.JS_PRIMITIVE_TYPES.NULL) {
+	if (jsType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NULL) {
 		return null;
 	}
 
 	// cast to undefined
-	if (jsType === nep.JS_PRIMITIVE_TYPES.UNDEFINED) {
+	if (jsType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.UNDEFINED) {
 		return undefined;
 	}
 
@@ -212,10 +212,31 @@ function convertStrItem2Obj(item, val, obj) {
 }
 
 function extractTypeAndCast(value) {
-	for (var nexlType in nep.NEXL_TYPES) {
+	var pos = -1;
+	var nexlType;
+	for (nexlType in nexlExpressionsParser.NEXL_TYPES) {
+		var regex = new RegExp('(' + nexlExpressionsParser.ACTIONS.CAST + nexlType + ')$');
+		pos = value.search(regex);
+		if (pos >= 0) {
+			break;
+		}
 	}
 
-	return value;
+	// not found ? good bye
+	if (pos < 0) {
+		return value;
+	}
+
+	// is escaped ?
+	var escaped = j79.escapePrecedingSlashes(value, pos);
+	var newValue = escaped.escapedStr;
+	if (escaped.escaped) {
+		return newValue;
+	}
+
+	newValue = newValue.substr(0, escaped.correctedPos);
+
+	return cast(newValue, nexlType);
 }
 
 // example obj =  { 'a.b.c.d': 10 }

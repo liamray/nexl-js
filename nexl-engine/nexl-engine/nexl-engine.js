@@ -9,9 +9,9 @@
 
 const util = require('util');
 const j79 = require('j79-utils');
-const nsu = require('./nexl-source-utils');
-const nep = require('./nexl-expressions-parser');
-const neu = require('./nexl-engine-utils');
+const nexlSourceUtils = require('./nexl-source-utils');
+const nexlExpressionsParser = require('./nexl-expressions-parser');
+const nexlEngineUtils = require('./nexl-engine-utils');
 const js2xmlparser = require("js2xmlparser");
 const YAML = require('yamljs');
 
@@ -149,7 +149,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	// iterating over actions
 	for (var index in this.nexlExpressionMD.actions) {
 		var action = this.nexlExpressionMD.actions[index];
-		if (action.actionId === nep.ACTIONS.EVALUATE_AS_UNDEFINED) {
+		if (action.actionId === nexlExpressionsParser.ACTIONS.EVALUATE_AS_UNDEFINED) {
 			this.isEvaluateAsUndefined = true;
 			return;
 		}
@@ -184,7 +184,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
 	// it's not relevant for few actions
-	if (!neu.isNeedDeepResolution(this.action)) {
+	if (!nexlEngineUtils.isNeedDeepResolution(this.action)) {
 		return;
 	}
 
@@ -293,12 +293,12 @@ NexlExpressionEvaluator.prototype.resolveRealArrayIndex = function (item) {
 	}
 
 	// first item
-	if (arrayIndex === nep.ARRAY_FIRST_ITEM) {
+	if (arrayIndex === nexlExpressionsParser.ARRAY_FIRST_ITEM) {
 		return 0;
 	}
 
 	// last item
-	if (arrayIndex === nep.ARRAY_LAST_ITEM) {
+	if (arrayIndex === nexlExpressionsParser.ARRAY_LAST_ITEM) {
 		return this.result.length - 1;
 	}
 
@@ -398,7 +398,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyCastAction = function () {
-	this.result = neu.cast(this.result, this.action.actionValue);
+	this.result = nexlEngineUtils.cast(this.result, this.action.actionValue);
 };
 
 NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
@@ -437,7 +437,7 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 	}
 
 	var result = [];
-	neu.produceKeyValuesPairs(undefined, this.result, result);
+	nexlEngineUtils.produceKeyValuesPairs(undefined, this.result, result);
 
 	this.result = result.join('\n');
 };
@@ -769,85 +769,85 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
 NexlExpressionEvaluator.prototype.applyAction = function () {
 	switch (this.action.actionId) {
 		// . property resolution action
-		case nep.ACTIONS.PROPERTY_RESOLUTION: {
+		case nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION: {
 			this.applyPropertyResolutionAction();
 			return;
 		}
 
 		// [] array indexes action
-		case nep.ACTIONS.ARRAY_INDEX: {
+		case nexlExpressionsParser.ACTIONS.ARRAY_INDEX: {
 			this.applyArrayIndexesAction();
 			return;
 		}
 
 		// () function action
-		case nep.ACTIONS.FUNCTION: {
+		case nexlExpressionsParser.ACTIONS.FUNCTION: {
 			this.evalFunctionAction();
 			return;
 		}
 
 		// @ default value action
-		case nep.ACTIONS.DEF_VALUE: {
+		case nexlExpressionsParser.ACTIONS.DEF_VALUE: {
 			this.applyDefaultValueAction();
 			return;
 		}
 
 		// : cast action
-		case nep.ACTIONS.CAST: {
+		case nexlExpressionsParser.ACTIONS.CAST: {
 			this.applyCastAction();
 			return;
 		}
 
 		// ~K, ~V, ~O transformations action
-		case nep.ACTIONS.TRANSFORMATIONS: {
+		case nexlExpressionsParser.ACTIONS.TRANSFORMATIONS: {
 			this.applyTransformationsAction();
 			return;
 		}
 
 		// < object reverse resolution action
-		case nep.ACTIONS.OBJECT_REVERSE_RESOLUTION: {
+		case nexlExpressionsParser.ACTIONS.OBJECT_REVERSE_RESOLUTION: {
 			this.applyObjectReverseResolutionAction();
 			return;
 		}
 
 		// #S, #s, #U, #C array operations action
-		case nep.ACTIONS.ARRAY_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS: {
 			this.applyArrayOperationsAction();
 			return;
 		}
 
 		// - eliminate array elements action
-		case nep.ACTIONS.ELIMINATE_ARRAY_ELEMENTS: {
+		case nexlExpressionsParser.ACTIONS.ELIMINATE_ARRAY_ELEMENTS: {
 			this.applyEliminateArrayElementsAction();
 			return;
 		}
 
 		// + append to array action
-		case nep.ACTIONS.APPEND_TO_ARRAY: {
+		case nexlExpressionsParser.ACTIONS.APPEND_TO_ARRAY: {
 			this.applyAppendToArrayAction();
 			return;
 		}
 
 		// & join array elements action
-		case nep.ACTIONS.JOIN_ARRAY_ELEMENTS: {
+		case nexlExpressionsParser.ACTIONS.JOIN_ARRAY_ELEMENTS: {
 			this.applyJoinArrayElementsAction();
 			return;
 		}
 
 		// ^U, ^L, ^LEN, ^T string operations action
-		case nep.ACTIONS.STRING_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.STRING_OPERATIONS: {
 			this.applyStringOperationsAction();
 			return;
 		}
 
 		// eval as undefined action
-		case nep.ACTIONS.EVALUATE_AS_UNDEFINED: {
+		case nexlExpressionsParser.ACTIONS.EVALUATE_AS_UNDEFINED: {
 			// this action is referenced at another place in code ( not here )
 			return;
 		}
 
 		// mandatory value action
-		case nep.ACTIONS.MANDATORY_VALUE: {
+		case nexlExpressionsParser.ACTIONS.MANDATORY_VALUE: {
 			this.applyMandatoryValueAction();
 			return;
 		}
@@ -857,7 +857,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = function () {
-	if (this.action.actionId === nep.ACTIONS.PROPERTY_RESOLUTION) {
+	if (this.action.actionId === nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
 		return;
 	}
 
@@ -873,7 +873,7 @@ NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
 	}
 
 	// reprocessing final result, it can contain sub expressions
-	if (neu.isNeedDeepResolution(this.action)) {
+	if (nexlEngineUtils.isNeedDeepResolution(this.action)) {
 		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
@@ -972,7 +972,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 
 NexlEngine.prototype.processStringItem = function (str) {
 	// parsing string
-	var parsedStrMD = nep.parseStr(str);
+	var parsedStrMD = nexlExpressionsParser.parseStr(str);
 
 	var data = {};
 	data.chunks = parsedStrMD.chunks;
@@ -1019,7 +1019,7 @@ function NexlEngine(context, isEvaluateAsUndefined) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports.processItem = function (nexlSource, item, externalArgs) {
-	var context = neu.makeContext(nexlSource, externalArgs);
+	var context = nexlEngineUtils.makeContext(nexlSource, externalArgs);
 
 	// supplying nexl engine for functions in nexl-sources
 	context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
@@ -1027,9 +1027,9 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 		var contextBackup = context;
 
 		// merging externalArgs4Function to a context
-		context = neu.deepMergeInner(context, externalArgs4Function);
+		context = nexlEngineUtils.deepMergeInner(context, externalArgs4Function);
 
-		var isEvaluateAsUndefined = neu.hasEvaluateAsUndefinedFlag(context);
+		var isEvaluateAsUndefined = nexlEngineUtils.hasEvaluateAsUndefinedFlag(context);
 
 		// running nexl engine
 		var result = new NexlEngine(context, isEvaluateAsUndefined).processItem(nexlExpression);
@@ -1040,10 +1040,10 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 	};
 
 	// should item be evaluated as undefined if it contains undefined variables ?
-	var isEvaluateAsUndefined = neu.hasEvaluateAsUndefinedFlag(context);
+	var isEvaluateAsUndefined = nexlEngineUtils.hasEvaluateAsUndefinedFlag(context);
 
 	// replacing \n and \t
-	var item2Process = neu.replaceSpecialChars(item);
+	var item2Process = nexlEngineUtils.replaceSpecialChars(item);
 
 	// is item not specified, using a default nexl expression
 	item2Process = item2Process === undefined ? context.nexl.defaultExpression : item2Process;
@@ -1053,7 +1053,7 @@ module.exports.processItem = function (nexlSource, item, externalArgs) {
 };
 
 // exporting resolveJsVariables
-module.exports.resolveJsVariables = nsu.resolveJsVariables;
+module.exports.resolveJsVariables = nexlSourceUtils.resolveJsVariables;
 
 // separates string items by dots ( if not escaped ) and puts them into nested objects
-module.exports.convertStrItems2Obj = neu.convertStrItems2Obj;
+module.exports.convertStrItems2Obj = nexlEngineUtils.convertStrItems2Obj;
