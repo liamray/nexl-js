@@ -1,3 +1,6 @@
+### nexl-js 2 will be available soon with plenty of new cool features !
+
+
 ### nexl-js
 
 - nexl is a javascript based read only configuration data storage where every single data element is a javascript variable
