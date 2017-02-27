@@ -32,7 +32,7 @@ const ACTIONS = {
 	'FUNCTION': '(',
 	'DEF_VALUE': '@',
 	'CAST': ':',
-	'TRANSFORMATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array, ~X produce XML, ~P produce key value pairs, ~Y produce YAML
+	"CONVERTERS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~A convert to array, ~X produce XML, ~P produce key value pairs, ~Y produce YAML
 	'OBJECT_REVERSE_RESOLUTION': '<',
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length
 	'ELIMINATE_ARRAY_ELEMENTS': '-',

@@ -41,7 +41,7 @@ expressions.push({
 // undefined
 expressions.push({
 	expression: '${~A}',
-	result: [undefined]
+	result: undefined
 });
 
 // undefined

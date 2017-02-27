@@ -416,6 +416,14 @@ NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
 	this.result = obj;
 };
 
+NexlExpressionEvaluator.prototype.convert2Array = function () {
+	if (j79.isArray(this.result)) {
+		return;
+	}
+
+	this.result = this.result === undefined ? [] : [this.result];
+};
+
 NexlExpressionEvaluator.prototype.resolveObjectKeys = function () {
 	if (!j79.isObject(this.result)) {
 		return;
@@ -480,12 +488,12 @@ NexlExpressionEvaluator.prototype.produceYAML = function () {
 	this.result = YAML.stringify(this.result);
 };
 
-NexlExpressionEvaluator.prototype.applyTransformationsAction = function () {
+NexlExpressionEvaluator.prototype.applyConvertersAction = function () {
 	var actionValue = this.action.actionValue;
 
 	switch (actionValue) {
 		case 'A' : {
-			this.result = j79.wrapWithArrayIfNeeded(this.result);
+			this.convert2Array();
 			return;
 		}
 
@@ -620,7 +628,7 @@ NexlExpressionEvaluator.prototype.makeDuplicates = function () {
 	this.result = j79.unwrapFromArrayIfPossible(newResult);
 };
 
-// #S, #s, #U, #C array operations action
+// #S, #s, #U, #D, #LEN array operations action
 NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
@@ -828,9 +836,9 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// ~K, ~V, ~O transformations action
-		case nexlExpressionsParser.ACTIONS.TRANSFORMATIONS: {
-			this.applyTransformationsAction();
+		// ~K, ~V, ~O, ~A, ~X, ~P, ~Y converters action
+		case nexlExpressionsParser.ACTIONS.CONVERTERS: {
+			this.applyConvertersAction();
 			return;
 		}
 
@@ -840,7 +848,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// #S, #s, #U, #C array operations action
+		// #S, #s, #U, #D, #LEN array operations action
 		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS: {
 			this.applyArrayOperationsAction();
 			return;
