@@ -12,6 +12,7 @@ const path = require('path');
 const util = require('util');
 const fs = require('fs');
 const vm = require('vm');
+const j79 = require('j79-utils');
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,48 +37,6 @@ function resolveIncludeDirectiveDom(item) {
 	}
 }
 
-function assembleSourceCodeAsFile(asFile) {
-	var result;
-	var fileName = asFile.fileName;
-
-	if (!fs.existsSync(fileName)) {
-		throw util.format("The source  [%s], doesn't exist", fileName);
-	}
-
-	if (!fs.lstatSync(fileName).isFile()) {
-		throw util.format("The  [%s] source is not a file", fileName);
-	}
-
-	try {
-		result = fs.readFileSync(fileName, "UTF-8");
-	} catch (e) {
-		throw util.format("Failed to read [%s] source content , error : [%s]", fileName, e);
-	}
-
-
-	// resolving include directives
-	var includeDirectives = resolveIncludeDirectives(result);
-
-	// iterating over and processing
-	for (var index in includeDirectives) {
-		var includeDirective = includeDirectives[index];
-
-		// does directive have an absolute path ?
-		if (path.isAbsolute(includeDirective)) {
-			result += assembleSourceCodeAsFile({"fileName": includeDirective});
-			continue;
-		}
-
-		// resolve file path
-		var filePath = path.dirname(fileName);
-
-		var fullPath = path.join(filePath, includeDirective);
-		result += assembleSourceCodeAsFile({"fileName": fullPath});
-	}
-
-	return result;
-}
-
 // parses javascript provided as text and resolves nexl include directives ( like "@import ../../src.js"; )
 function resolveIncludeDirectives(text) {
 	var result = [];
@@ -99,11 +58,19 @@ function resolveIncludeDirectives(text) {
 	return result;
 }
 
-function assembleSourceCodeAsText(asText) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
+	// the text
 	var result = asText.text;
 
+	// validating
+	if (!j79.isString(result)) {
+		throw '[nexlSource.asText.text] is not provided or not of string type';
+	}
+
 	// resolving include directives
-	var includeDirectives = resolveIncludeDirectives(asText.text);
+	var includeDirectives = resolveIncludeDirectives(result);
 
 	// iterating over and processing
 	for (var index in includeDirectives) {
@@ -111,53 +78,117 @@ function assembleSourceCodeAsText(asText) {
 
 		// does directive have an absolute path ?
 		if (path.isAbsolute(includeDirective)) {
-			result += assembleSourceCodeAsFile({"fileName": includeDirective});
+			result += this.assembleSourceCodeAsFile({"fileName": includeDirective});
 			continue;
 		}
 
 		// directive has a relative path. is path4imports provided ?
 		if (!asText.path4imports) {
-			throw "Your source code contains an include directive(s), but you didn't provide a path";
+			throw util.format('Source code contains reference to [%s] file for import, but you didn\'t provide a [nexlSource.asFile.path4imports]', includeDirective);
 		}
 
 		if (!fs.existsSync(asText.path4imports)) {
-			throw util.format("Path you have provided [%s] doesn't exist", asText.path4imports);
+			throw util.format('Path [%s] you provided in [nexlSource.asFile.path4imports] doesn\'t exist', asText.path4imports);
 		}
 
 		var fullPath = path.join(asText.path4imports, includeDirective);
-		result += assembleSourceCodeAsFile({"fileName": fullPath});
+		result += this.assembleSourceCodeAsFile({"fileName": fullPath});
 	}
 
 	return result;
-}
+};
 
-function assembleSourceCode(nexlSource) {
+NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
+	var result;
+	var fileName = asFile.fileName;
+
+	// is already included ?
+	if (this.filesRegistry.indexOf(fileName) >= 0) {
+		return '';
+	}
+
+	// adding to registry
+	this.filesRegistry.push(fileName);
+
+	// is file exists ?
+	if (!fs.existsSync(fileName)) {
+		throw util.format("The source [%s] file, doesn't exist", fileName);
+	}
+
+	// is it file and not a directory or something else ?
+	if (!fs.lstatSync(fileName).isFile()) {
+		throw util.format("The  [%s] source is not a file", fileName);
+	}
+
+	// reading file content
+	try {
+		result = fs.readFileSync(fileName, "UTF-8");
+	} catch (e) {
+		throw util.format("Failed to read [%s] source content , error : [%s]", fileName, e);
+	}
+
+
+	// resolving include directives
+	var includeDirectives = resolveIncludeDirectives(result);
+
+	// iterating over and processing
+	for (var index in includeDirectives) {
+		var includeDirective = includeDirectives[index];
+
+		// does directive have an absolute path ?
+		if (path.isAbsolute(includeDirective)) {
+			result += this.assembleSourceCodeAsFile({"fileName": includeDirective});
+			continue;
+		}
+
+		// resolve file path
+		var filePath = path.dirname(fileName);
+
+		var fullPath = path.join(filePath, includeDirective);
+		result += this.assembleSourceCodeAsFile({"fileName": fullPath});
+	}
+
+	return result;
+};
+
+NexlSourceCodeAssembler.prototype.assemble = function () {
+	this.filesRegistry = [];
+
 	// validating nexlSource
-	if (typeof nexlSource === 'undefined') {
+	if (this.nexlSource === 'undefined') {
 		throw "nexl source is not provided";
 	}
 
 	// is both provided ?
-	if (nexlSource.asText && nexlSource.asFile) {
+	if (this.nexlSource.asText && this.nexlSource.asFile) {
 		throw "You have to provide asText or asFile, but not both at a same time";
 	}
 
-	if (nexlSource.asText) {
-		return assembleSourceCodeAsText(nexlSource.asText);
+	// is nexl source code provided as text ?
+	if (j79.isObject(this.nexlSource.asText)) {
+		return this.assembleSourceCodeAsText(this.nexlSource.asText);
 	}
 
-	if (nexlSource.asFile) {
-		return assembleSourceCodeAsFile(nexlSource.asFile);
+	// is nexl source code provided as file ?
+	if (j79.isObject(this.nexlSource.asFile)) {
+		return this.assembleSourceCodeAsFile(this.nexlSource.asFile);
 	}
 
-	throw "nexlSource is empty ( doesn't contain asText or asFile )";
+	throw "nexlSource is empty ( doesn't contain asText or asFile properties )";
+};
+
+function NexlSourceCodeAssembler(nexlSource) {
+	this.nexlSource = nexlSource;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 function createContext(nexlSource) {
 	var context = {};
 	context.nexl = {};
 
-	var sourceCode = assembleSourceCode(nexlSource);
+	var sourceCode = new NexlSourceCodeAssembler(nexlSource).assemble();
 
 	try {
 		vm.runInNewContext(sourceCode, context);
@@ -227,7 +258,7 @@ function parseAndPushSourceCodeItem(item, result) {
 }
 
 function resolveJsVariables(nexlSource) {
-	var sourceCode = assembleSourceCode(nexlSource);
+	var sourceCode = new NexlSourceCodeAssembler(nexlSource).assemble();
 	var parsedCode = esprima.parse(sourceCode).body;
 	var result = [];
 
