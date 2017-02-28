@@ -158,55 +158,6 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	this.isEvaluateAsUndefined = false;
 };
 
-NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
-	// not relevant for standard libraries
-	if (this.result === Math || this.result === Number || this.result === Date) {
-		return;
-	}
-
-	var newResult = {};
-	var nexlEngine = new NexlEngine(this.context, this.isEvaluateAsUndefined);
-
-	for (var key in this.result) {
-		// nexilized key
-		var newKey = nexlEngine.processItem(key);
-
-		// key must be a primitive. checking...
-		if (!j79.isPrimitive(newKey)) {
-			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(newKey));
-		}
-
-		newResult[newKey] = this.result[key];
-	}
-
-	this.result = newResult;
-};
-
-NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
-	// it's not relevant for few actions
-	if (!this.needDeepResolution) {
-		return;
-	}
-
-	if (this.result === this.context) {
-		return;
-	}
-
-	if (j79.isString(this.result)) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-	}
-
-	// evaluating object keys if they have nexl expressions
-	if (j79.isObject(this.result)) {
-		this.expandObjectKeys();
-	}
-
-	// array
-	if (j79.isArray(this.result)) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-	}
-};
-
 NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	// skipping undefined key
 	if (key === undefined) {
@@ -331,6 +282,11 @@ NexlExpressionEvaluator.prototype.assignResult4ArrayIndexes = function (newResul
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
+	// skipping if there is no indexes
+	if (this.action.actionValue.length < 1) {
+		return;
+	}
+
 	var newResult = [];
 
 	// iterating over arrayIndexes
@@ -351,6 +307,11 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
+	// skipping if there is no indexes for substring
+	if (this.action.actionValue.length < 1) {
+		return;
+	}
+
 	var newResult = [];
 
 	// iterating over arrayIndexes
@@ -898,6 +859,56 @@ NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = funct
 	// first time this.result is equals to context, but it's not good for all other actions ( it's only good good for property resolution action )
 	if (this.actionNr === 0 && this.action.actionId !== nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
 		this.result = undefined;
+	}
+};
+
+
+NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
+	// not relevant for standard libraries
+	if (this.result === Math || this.result === Number || this.result === Date) {
+		return;
+	}
+
+	var newResult = {};
+	var nexlEngine = new NexlEngine(this.context, this.isEvaluateAsUndefined);
+
+	for (var key in this.result) {
+		// nexilized key
+		var newKey = nexlEngine.processItem(key);
+
+		// key must be a primitive. checking...
+		if (!j79.isPrimitive(newKey)) {
+			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(newKey));
+		}
+
+		newResult[newKey] = this.result[key];
+	}
+
+	this.result = newResult;
+};
+
+NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
+	// it's not relevant for few actions
+	if (!this.needDeepResolution) {
+		return;
+	}
+
+	if (this.result === this.context) {
+		return;
+	}
+
+	if (j79.isString(this.result)) {
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
+	}
+
+	// evaluating object keys if they have nexl expressions
+	if (j79.isObject(this.result)) {
+		this.expandObjectKeys();
+	}
+
+	// array
+	if (j79.isArray(this.result)) {
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 	}
 };
 

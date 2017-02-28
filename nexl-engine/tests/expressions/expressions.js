@@ -361,7 +361,7 @@ expressions.push({
 // array indexes
 expressions.push({
 	expression: '${arr1[]}',
-	throwsException: true
+	result: ['queen', 'muscle', 79, false]
 });
 
 // array indexes

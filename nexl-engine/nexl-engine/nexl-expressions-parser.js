@@ -208,14 +208,10 @@ ParseArrayIndexes.prototype.push = function (min, max) {
 	this.result.arrayIndexes.push(item);
 };
 
-ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
-	// skipping redundant spaces
-	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
-
-	// parsing a min range
+ParseArrayIndexes.prototype.resolveIndexes = function () {
 	var min = this.parseArrayIndex();
 	if (min === null) {
-		throw util.format('Bad array index. Expecting for an integer number, %s, %s or nexl expression at [%s] position in [%s]', ARRAY_FIRST_ITEM, ARRAY_LAST_ITEM, this.lastSearchPos, this.str);
+		return;
 	}
 
 	var max = min;
@@ -234,8 +230,14 @@ ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
 
 	// adding
 	this.push(min, max);
+};
 
-	// now options are : 1) nexl pair 2) close bracket
+ParseArrayIndexes.prototype.parseArrayIndexesInner = function () {
+	// skipping redundant spaces
+	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
+
+	// parsing indexes
+	this.resolveIndexes();
 
 	// skipping spaces
 	this.lastSearchPos = skipSpaces(this.str, this.lastSearchPos);
