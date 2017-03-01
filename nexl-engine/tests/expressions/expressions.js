@@ -40,7 +40,7 @@ expressions.push({
 
 // undefined
 expressions.push({
-	expression: '${~A}',
+	expression: '${#A}',
 	result: []
 });
 
@@ -208,21 +208,21 @@ expressions.push({
 	result: {'HOSTS.APP_SERVER_INTERFACES.[]': 'yest'}
 });
 
-// ~A action
+// #A action
 expressions.push({
-	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A}',
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]#A}',
 	result: ['cuddly2']
 });
 
-// ~A action
+// #A action
 expressions.push({
-	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~A~O}',
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]#A~O}',
 	result: {'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': ['cuddly2']}
 });
 
-// ~A action
+// #A action
 expressions.push({
-	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~O~A}',
+	expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.SECOND[0]~O#A}',
 	result: [{'HOSTS.APP_SERVER_INTERFACES.PROD.SECOND': 'cuddly2'}]
 });
 
@@ -719,7 +719,7 @@ expressions.push({
 
 // # array operations action
 expressions.push({
-	expression: '${@test~A-test}',
+	expression: '${@test#A-test}',
 	result: undefined
 });
 
@@ -732,7 +732,7 @@ expressions.push({
 
 // # array operations action
 expressions.push({
-	expression: '${obj1<${@mint~A+righteous}}',
+	expression: '${obj1<${@mint#A+righteous}}',
 	result: ['beneficial', 'religion']
 });
 
@@ -1021,7 +1021,7 @@ expressions.push({
 
 // bad action
 expressions.push({
-	expression: '${~A# ${}}',
+	expression: '${#A# ${}}',
 	throwsException: true
 });
 
@@ -1159,7 +1159,7 @@ expressions.push({
 
 // mixed actions test
 expressions.push({
-	expression: '${HOSTS~K&,~A+item1+${arr1}+${@49:num}~O***.HOSTS[0][0..20]}',
+	expression: '${HOSTS~K&,#A+item1+${arr1}+${@49:num}~O***.HOSTS[0][0..20]}',
 	result: 'APP_SERVER_INTERFACES'
 });
 
