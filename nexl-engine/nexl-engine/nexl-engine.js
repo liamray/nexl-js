@@ -373,7 +373,9 @@ NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
 	var key = this.actionsAsString.length < 1 ? 'obj' : this.actionsAsString.join('.');
 
 	var obj = {};
-	obj[key] = this.result;
+	if (this.result !== undefined) {
+		obj[key] = this.result;
+	}
 	this.result = obj;
 };
 
