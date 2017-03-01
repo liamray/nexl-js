@@ -743,22 +743,34 @@ expressions.push({
 	result: 10
 });
 
-// # eliminate array elements
+// - eliminate array elements
 expressions.push({
 	expression: '${arr1-false}', // not eliminating, because false is string
 	result: ['queen', 'muscle', 79, false]
 });
 
-// # eliminate multiple
+// - eliminate multiple
 expressions.push({
 	expression: '${arr1-${@false:bool}-79-${@79:num}-queen}',
 	result: ['muscle']
 });
 
-// # eliminate array elements ( eliminate itself )
+// - eliminate array elements ( eliminate itself )
 expressions.push({
 	expression: '${arr1-${arr1}}',
 	result: undefined
+});
+
+// - eliminate object properties
+expressions.push({
+	expression: '${obj1-\\()-71-mint-price}',
+	result: {beneficial: 'mint', religion: 'righteous', disturbed: 46, pack: {strong: 'balance', deer: 7}}
+});
+
+// - eliminate object properties
+expressions.push({
+	expression: '${obj1.pack-strong-deer}',
+	result: {}
 });
 
 // # substring

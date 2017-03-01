@@ -206,7 +206,7 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 		return;
 	}
 
-	// accumulation actionsAsString
+	// accumulation actionsAsString ( actionsAsString is used for ~O action as object key )
 	if (j79.isArray(this.assembledChunks)) {
 		this.actionsAsString.push('[]');
 	}
@@ -624,12 +624,7 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyEliminateAction = function () {
-	// not an array ? bye bye
-	if (!j79.isArray(this.result)) {
-		return;
-	}
-
+NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
 
@@ -652,7 +647,39 @@ NexlExpressionEvaluator.prototype.applyEliminateAction = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyAppendToArrayAction = function () {
+NexlExpressionEvaluator.prototype.applyEliminateObjectProperties = function () {
+	// resolving action value
+	var actionValue = this.resolveActionEvaluatedValue();
+
+	// wrapping with array
+	actionValue = j79.wrapWithArrayIfNeeded(actionValue);
+
+	// iterating over actionValue array
+	for (var index in actionValue) {
+		var item = actionValue[index];
+		if (!j79.isValSet(item)) {
+			continue;
+		}
+
+		if (j79.isPrimitive(item)) {
+			delete this.result[item];
+		}
+	}
+};
+
+NexlExpressionEvaluator.prototype.applyEliminateAction = function () {
+	if (j79.isArray(this.result)) {
+		this.applyEliminateArrayElements();
+		return;
+	}
+
+	if (j79.isObject(this.result)) {
+		this.applyEliminateObjectProperties();
+		return;
+	}
+};
+
+NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
 	// no need deep resolution for this action
 	this.needDeepResolution = false;
 
@@ -816,7 +843,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 
 		// + append to array action
 		case nexlExpressionsParser.ACTIONS.APPEND_MERGE: {
-			this.applyAppendToArrayAction();
+			this.applyAppendMergeAction();
 			return;
 		}
 
