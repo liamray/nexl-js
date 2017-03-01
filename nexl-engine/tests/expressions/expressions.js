@@ -1163,6 +1163,22 @@ expressions.push({
 	result: ['queen', 'muscle', 79, false, '${intItem}']
 });
 
+// merge objects
+expressions.push({
+	expression: '${obj1+${obj6}}',
+	result: {
+		'71': 'berry',
+		beneficial: 'mint',
+		religion: 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: 'good',
+		item1: 79,
+		item2: 71
+	}
+});
+
 // escaping test
 expressions.push({
 	expression: '${obj1.\\()}',

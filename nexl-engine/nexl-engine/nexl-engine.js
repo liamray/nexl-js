@@ -679,15 +679,7 @@ NexlExpressionEvaluator.prototype.applyEliminateAction = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
-	// not an array ? good bye ( can append only to array )
-	if (!j79.isArray(this.result)) {
-		return;
-	}
-
+NexlExpressionEvaluator.prototype.appendArrayElements = function () {
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
 
@@ -696,6 +688,35 @@ NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
 		this.result = this.result.concat(actionValue);
 	} else {
 		this.result.push(actionValue);
+	}
+};
+
+NexlExpressionEvaluator.prototype.mergeObjects = function () {
+	// resolving action value
+	var actionValue = this.resolveActionEvaluatedValue();
+
+	if (!j79.isObject(actionValue)) {
+		return;
+	}
+
+	// performing object deep resolution
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
+
+	this.result = nexlEngineUtils.deepMergeInner(this.result, actionValue);
+};
+
+NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
+	// no need deep resolution for this action
+	this.needDeepResolution = false;
+
+	if (j79.isArray(this.result)) {
+		this.appendArrayElements();
+		return;
+	}
+
+	if (j79.isObject(this.result)) {
+		this.mergeObjects();
+		return;
 	}
 };
 

@@ -118,6 +118,12 @@ obj5 = {
 	'test': '${undefinedVariable}'
 };
 
+obj6 = {
+	pack: 'good',
+	item1: 79,
+	item2: '${intItem}'
+};
+
 
 intItem2 = 'test';
 nexl.defaultArgs.intItem2 = 46;
