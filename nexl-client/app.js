@@ -1,12 +1,16 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const j79 = require('j79-utils');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var nexlRestRouter = require('./routes/nexl-rest-route');
+const routes = require('./routes/index');
+const nexlRestRouter = require('./routes/nexl-rest-route');
+
+// validating nodejs version
+j79.abortIfNodeVersionLowerThan(4);
 
 var app = express();
 

@@ -494,6 +494,9 @@
 	}
 
 	function start() {
+		// validating nodejs version
+		j79.abortIfNodeVersionLowerThan(4);
+
 		applyBinders();
 		handleArgs();
 		createHttpServer();
