@@ -239,19 +239,19 @@ expressions.push({
 
 // reverse resolution
 expressions.push({
-	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable@}@undefined}',
+	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable@}#Z@undefined}',
 	result: 'price 71 undefined'
 });
 
 // reverse resolution - type check
 expressions.push({
-	expression: '${obj1<${@true:bool}}',
+	expression: '${obj1<${@true:bool}[0]}',
 	result: 'price'
 });
 
 // reverse resolution - type check
 expressions.push({
-	expression: '${obj1<${@46:num}}',
+	expression: '${obj1<${@46:num}[0]}',
 	result: 'disturbed'
 });
 
@@ -263,25 +263,37 @@ expressions.push({
 
 // reverse resolution - empty value
 expressions.push({
-	expression: '${obj1<asd}',
+	expression: '${obj1<asd#Z}',
 	result: undefined
+});
+
+// reverse resolution - empty value
+expressions.push({
+	expression: '${obj1<asd}',
+	result: []
 });
 
 // reverse resolution - empty values
 expressions.push({
 	expression: '${obj1<${arr1}}',
+	result: []
+});
+
+// reverse resolution - empty values
+expressions.push({
+	expression: '${obj1<${arr1}#Z}',
 	result: undefined
 });
 
 // reverse resolution - should resolve the highest key
 expressions.push({
 	expression: '${HOSTS.APP_SERVER_INTERFACES<cuddly2}',
-	result: 'PROD'
+	result: ['PROD']
 });
 
 // reverse resolution - debug_opts
 expressions.push({
-	expression: '${DEBUG_OPTS}',
+	expression: '${DEBUG_OPTS[0]}',
 	result: '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8790',
 	args: {
 		IS_DEBUG_ON: 'on'
@@ -365,6 +377,18 @@ expressions.push({
 
 // array indexes
 expressions.push({
+	expression: '${arr1[2..1, 3..2]}',
+	result: undefined
+});
+
+// array indexes
+expressions.push({
+	expression: '${arr7[1, 2, 999, 3]}',
+	result: [undefined, null, undefined]
+});
+
+// array indexes
+expressions.push({
 	expression: '${arr1[]}',
 	result: ['queen', 'muscle', 79, false]
 });
@@ -416,10 +440,15 @@ expressions.push({
 	}
 });
 
-
 // object reverse resolution
 expressions.push({
 	expression: '${obj1<undefinedVariable}',
+	result: []
+});
+
+// object reverse resolution
+expressions.push({
+	expression: '${obj1<undefinedVariable#Z}',
 	result: undefined
 });
 
@@ -719,13 +748,19 @@ expressions.push({
 // # array operations action
 expressions.push({
 	expression: '${arr6#D}',
+	result: []
+});
+
+// # array operations action
+expressions.push({
+	expression: '${arr6#D#Z}',
 	result: undefined
 });
 
 // # array operations action
 expressions.push({
 	expression: '${@test#A-test}',
-	result: undefined
+	result: []
 });
 
 // # array operations action
@@ -763,7 +798,7 @@ expressions.push({
 // - eliminate array elements ( eliminate itself )
 expressions.push({
 	expression: '${arr1-${arr1}}',
-	result: undefined
+	result: []
 });
 
 // - eliminate object properties
@@ -950,7 +985,7 @@ expressions.push({
 
 // mandatory value action
 expressions.push({
-	expression: '${obj1~K~V~O<*}',
+	expression: '${obj1~K~V~O<#Z*}',
 	throwsException: true
 });
 

@@ -272,15 +272,6 @@ NexlExpressionEvaluator.prototype.resolveArrayRange = function (item) {
 	};
 };
 
-NexlExpressionEvaluator.prototype.assignResult4ArrayIndexes = function (newResult) {
-	if (newResult.length < 1) {
-		this.result = undefined;
-		return;
-	}
-
-	this.result = j79.unwrapFromArrayIfPossible(newResult);
-};
-
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
 	// skipping if there is no indexes
 	if (this.action.actionValue.length < 1) {
@@ -294,16 +285,23 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4Array = function () {
 		var item = this.action.actionValue[index];
 		var range = this.resolveArrayRange(item);
 
-		for (var i = range.min; i <= range.max; i++) {
+		for (var i = range.min; i <= Math.min(range.max, this.result.length - 1); i++) {
 			var item = this.result[i];
-			if (item === undefined) {
-				continue;
-			}
 			newResult.push(item);
 		}
 	}
 
-	this.assignResult4ArrayIndexes(newResult);
+	if (newResult.length === 1) {
+		this.result = newResult[0];
+		return;
+	}
+
+	if (newResult.length < 1) {
+		this.result = undefined;
+		return;
+	}
+
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
@@ -324,7 +322,7 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 	}
 
 
-	this.assignResult4ArrayIndexes(newResult);
+	this.result = j79.unwrapFromArrayIfPossible(newResult);
 };
 
 
@@ -443,7 +441,13 @@ NexlExpressionEvaluator.prototype.produceYAML = function () {
 	this.result = YAML.stringify(this.result);
 };
 
-NexlExpressionEvaluator.prototype.applyObjectAction = function () {
+NexlExpressionEvaluator.prototype.makeUndefined4EmptyObject = function () {
+	if (Object.keys(this.result).length < 1) {
+		this.result = undefined
+	}
+};
+
+NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 	var actionValue = this.action.actionValue;
 
 	switch (actionValue) {
@@ -474,6 +478,11 @@ NexlExpressionEvaluator.prototype.applyObjectAction = function () {
 
 		case 'Y' : {
 			this.produceYAML();
+			return;
+		}
+
+		case 'Z' : {
+			this.makeUndefined4EmptyObject();
 			return;
 		}
 	}
@@ -526,12 +535,7 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function 
 		}
 	}
 
-	if (newResult.length < 1) {
-		this.result = undefined;
-		return;
-	}
-
-	this.result = j79.unwrapFromArrayIfPossible(newResult);
+	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.makeUniq = function () {
@@ -570,12 +574,7 @@ NexlExpressionEvaluator.prototype.makeDuplicates = function () {
 		}
 	}
 
-	if (newResult.length < 1) {
-		this.result = undefined;
-		return;
-	}
-
-	this.result = j79.unwrapFromArrayIfPossible(newResult);
+	this.result = newResult;
 };
 
 // #S, #s, #U, #D, #LEN array operations action
@@ -623,6 +622,12 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 			return;
 		}
 
+		// make empty array undefined
+		case 'Z': {
+			this.result = this.result.length < 1 ? undefined : this.result;
+			return;
+		}
+
 	}
 };
 
@@ -642,10 +647,6 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 		}
 
 		this.result.splice(removeCandidate, 1);
-	}
-
-	if (this.result.length < 1) {
-		this.result = undefined;
 	}
 };
 
@@ -778,6 +779,12 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 			this.result = this.result.trim();
 			return;
 		}
+
+		// make empty string undefined
+		case 'Z': {
+			this.result = this.result.length < 1 ? undefined : this.result;
+			return;
+		}
 	}
 };
 
@@ -840,9 +847,9 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// ~K, ~V, ~O, ~X, ~P, ~Y converters action
+		// ~K, ~V, ~O, ~X, ~P, ~Y, ~Z converters action
 		case nexlExpressionsParser.ACTIONS.OBJECT_OPERATIONS: {
-			this.applyObjectAction();
+			this.applyObjectOperationsAction();
 			return;
 		}
 
@@ -852,7 +859,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// #S, #s, #U, #D, #LEN, #A array operations action
+		// #S, #s, #U, #D, #LEN, #A, #Z array operations action
 		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS: {
 			this.applyArrayOperationsAction();
 			return;
@@ -876,7 +883,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// ^U, ^L, ^LEN, ^T string operations action
+		// ^U, ^L, ^LEN, ^T, ^Z string operations action
 		case nexlExpressionsParser.ACTIONS.STRING_OPERATIONS: {
 			this.applyStringOperationsAction();
 			return;

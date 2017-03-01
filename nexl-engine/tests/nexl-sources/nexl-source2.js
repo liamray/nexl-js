@@ -14,6 +14,7 @@ var arr3 = ['${arr1}', '${arr2}'];
 var arr4 = ['${arr3}', true, false, 'true', 79, 'queen'];
 var arr5 = ['hello'];
 var arr6 = [];
+var arr7 = ['hello', undefined, null, undefined, 21, true, 'test'];
 
 obj1PropName = '()';
 
@@ -42,7 +43,7 @@ UNITED_KEY_DEF = {
 	'price': ['price', 'disturbed', 'beneficial']
 };
 
-unitedKey = '${UNITED_KEY_DEF<${KEY}@${KEY}}';
+unitedKey = '${UNITED_KEY_DEF<${KEY}[0]@${KEY}}';
 
 var evaluateAsUndefined1 = ['disconnect', 24, '${undefinedVariable}', null, false];
 evaluateAsUndefined2 = '${intItem} ${strItem} ${boolItem} ${undefinedVar}';

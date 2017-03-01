@@ -32,13 +32,13 @@ const ACTIONS = {
 	'FUNCTION': '(',
 	'DEF_VALUE': '@',
 	'CAST': ':',
-	"OBJECT_OPERATIONS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML
-	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array,
+	"OBJECT_OPERATIONS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML, ~Z make undefined for empty object
+	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array, #Z make undefined for empty array
 	'OBJECT_REVERSE_RESOLUTION': '<',
 	'JOIN_ARRAY_ELEMENTS': '&',
 	"ELIMINATE": '-',
 	"APPEND_MERGE": '+',
-	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim
+	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
 	'EVALUATE_AS_UNDEFINED': '!',
 	'MANDATORY_VALUE': '*',
 	// the following actions are reserved for future usage
@@ -49,9 +49,9 @@ const ACTIONS = {
 
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
-	'~': ['K', 'V', 'O', 'P', 'X', 'Y'],
-	'#': ['S', 's', 'U', 'D', 'LEN', 'A'],
-	'^': ['U', 'U1', 'L', 'T', 'LEN'],
+	'~': ['K', 'V', 'O', 'P', 'X', 'Y', 'Z'],
+	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'Z'],
+	'^': ['U', 'U1', 'L', 'T', 'LEN', 'Z'],
 	'!': ['']
 };
 
