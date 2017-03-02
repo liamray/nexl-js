@@ -240,7 +240,7 @@ expressions.push({
 // reverse resolution
 expressions.push({
 	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable@}#Z@undefined}',
-	result: 'price 71 undefined'
+	result: ['price 71 undefined']
 });
 
 // reverse resolution - type check

@@ -57,7 +57,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 	// cloning chunks array and wrapping with additional array
 	this.result = [this.data.chunks.slice(0)];
 
-	// tells if additional array should remain
+	// is one of the chunks is array
 	var isArrayFlag = false;
 
 	// iterating over chunkSubstitutions
@@ -72,6 +72,10 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 		// EVALUATE_AS_UNDEFINED action
 		if (chunkValue === undefined && this.isEvaluateAsUndefined) {
 			return undefined;
+		}
+
+		if (!isArrayFlag && j79.isArray(chunkValue)) {
+			isArrayFlag = true;
 		}
 
 		// wrapping with array
@@ -577,7 +581,7 @@ NexlExpressionEvaluator.prototype.makeDuplicates = function () {
 	this.result = newResult;
 };
 
-// #S, #s, #U, #D, #LEN array operations action
+// #S, #s, #U, #D, #LEN, #F array operations action
 NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	// is convert to array ?
 	if (this.action.actionValue === 'A' && !j79.isArray(this.result)) {
@@ -625,6 +629,12 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 		// make empty array undefined
 		case 'Z': {
 			this.result = this.result.length < 1 ? undefined : this.result;
+			return;
+		}
+
+		// if array contains only one element, resolve it. otherwise make it undefined
+		case 'F': {
+			this.result = this.result.length === 1 ? this.result[0] : undefined;
 			return;
 		}
 

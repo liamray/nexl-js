@@ -33,7 +33,7 @@ const ACTIONS = {
 	'DEF_VALUE': '@',
 	'CAST': ':',
 	"OBJECT_OPERATIONS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML, ~Z make undefined for empty object
-	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array, #Z make undefined for empty array
+	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array, #Z make undefined for empty array, #F resolve first element if array has only 1 element, otherwise make it undefined
 	'OBJECT_REVERSE_RESOLUTION': '<',
 	'JOIN_ARRAY_ELEMENTS': '&',
 	"ELIMINATE": '-',
@@ -50,7 +50,7 @@ const ACTIONS = {
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
 	'~': ['K', 'V', 'O', 'P', 'X', 'Y', 'Z'],
-	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'Z'],
+	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'Z', 'F'],
 	'^': ['U', 'U1', 'L', 'T', 'LEN', 'Z'],
 	'!': ['']
 };
