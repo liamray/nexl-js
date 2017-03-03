@@ -39,7 +39,7 @@ const ACTIONS = {
 	"ELIMINATE": '-',
 	"APPEND_MERGE": '+',
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
-	'EVALUATE_AS_UNDEFINED': '!',
+	"UNDEFINED_VALUE_OPERATIONS": '!',
 	'MANDATORY_VALUE': '*',
 	// the following actions are reserved for future usage
 	'RESERVED1': '?',
@@ -49,10 +49,10 @@ const ACTIONS = {
 
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
-	'~': ['K', 'V', 'O', 'P', 'X', 'Y', 'Z'],
-	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'Z', 'F'],
-	'^': ['U', 'U1', 'L', 'T', 'LEN', 'Z'],
-	'!': ['']
+	'~': ['K', 'V', 'O', 'P', 'X', 'Y'],
+	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'F'],
+	'^': ['U', 'U1', 'L', 'T', 'LEN'],
+	'!': ['U', 'E']
 };
 
 const ARRAY_INDEX_CLOSE = ']';

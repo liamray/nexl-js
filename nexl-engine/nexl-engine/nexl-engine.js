@@ -69,7 +69,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
 		var chunkValue = new NexlExpressionEvaluator(this.context, chunk2Substitute).eval();
 
-		// EVALUATE_AS_UNDEFINED action
+		// !U UNDEFINED_VALUE_OPERATIONS action
 		if (chunkValue === undefined && this.isEvaluateAsUndefined) {
 			return undefined;
 		}
@@ -153,7 +153,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	// iterating over actions
 	for (var index in this.nexlExpressionMD.actions) {
 		var action = this.nexlExpressionMD.actions[index];
-		if (action.actionId === nexlExpressionsParser.ACTIONS.EVALUATE_AS_UNDEFINED) {
+		if (action.actionId === nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS && action.actionValue === 'U') {
 			this.isEvaluateAsUndefined = true;
 			return;
 		}
@@ -445,12 +445,6 @@ NexlExpressionEvaluator.prototype.produceYAML = function () {
 	this.result = YAML.stringify(this.result);
 };
 
-NexlExpressionEvaluator.prototype.makeUndefined4EmptyObject = function () {
-	if (Object.keys(this.result).length < 1) {
-		this.result = undefined
-	}
-};
-
 NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 	var actionValue = this.action.actionValue;
 
@@ -482,11 +476,6 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 
 		case 'Y' : {
 			this.produceYAML();
-			return;
-		}
-
-		case 'Z' : {
-			this.makeUndefined4EmptyObject();
 			return;
 		}
 	}
@@ -626,18 +615,11 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 			return;
 		}
 
-		// make empty array undefined
-		case 'Z': {
-			this.result = this.result.length < 1 ? undefined : this.result;
-			return;
-		}
-
 		// if array contains only one element, resolve it. otherwise make it undefined
 		case 'F': {
 			this.result = this.result.length === 1 ? this.result[0] : undefined;
 			return;
 		}
-
 	}
 };
 
@@ -798,6 +780,37 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 	}
 };
 
+NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
+	// empty values
+	if (this.action.actionValue !== 'E') {
+		return;
+	}
+
+	// converting empty array to undefined
+	if (j79.isArray(this.result)) {
+		this.result = this.result.length < 1 ? undefined : this.result;
+		return;
+	}
+
+	// converting empty array to undefined
+	if (j79.isArray(this.result)) {
+		this.result = this.result.length < 1 ? undefined : this.result;
+		return;
+	}
+
+	// converting empty object to undefined
+	if (j79.isObject(this.result)) {
+		this.result = Object.keys(this.result).length < 1 ? undefined : this.result;
+		return;
+	}
+
+	// converting empty string to undefined
+	if (j79.isString(this.result)) {
+		this.result = this.result.length < 1 ? undefined : this.result;
+		return;
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
 	// no need deep resolution for this action
 	this.needDeepResolution = false;
@@ -869,7 +882,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// #S, #s, #U, #D, #LEN, #A, #Z array operations action
+		// #S, #s, #U, #D, #LEN, #A array operations action
 		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS: {
 			this.applyArrayOperationsAction();
 			return;
@@ -900,8 +913,8 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 		}
 
 		// eval as undefined action
-		case nexlExpressionsParser.ACTIONS.EVALUATE_AS_UNDEFINED: {
-			// this action is referenced at another place in code ( not here )
+		case nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS: {
+			this.undefinedValueOperations();
 			return;
 		}
 
@@ -1028,7 +1041,7 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 		var arrItem = arr[index];
 		var item = this.processItem(arrItem);
 
-		// EVALUATE_AS_UNDEFINED action
+		// !U UNDEFINED_VALUE_OPERATIONS
 		if (item === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}
@@ -1050,7 +1063,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 	for (var key in obj) {
 		var evaluatedKey = this.processItem(key);
 
-		// EVALUATE_AS_UNDEFINED action
+		// !U UNDEFINED_VALUE_OPERATIONS
 		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}
@@ -1063,7 +1076,7 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		var value = obj[key];
 		value = this.processItem(value);
 
-		// EVALUATE_AS_UNDEFINED action
+		// !U UNDEFINED_VALUE_OPERATIONS
 		if (value === undefined && this.isEvaluateAsUndefined) {
 			continue;
 		}

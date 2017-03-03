@@ -239,7 +239,7 @@ expressions.push({
 
 // reverse resolution
 expressions.push({
-	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable@}#Z@undefined}',
+	expression: '${obj1<${boolItem}} ${obj1<${strItem}} ${obj1<${undefinedVariable@}!E@undefined}',
 	result: ['price 71 undefined']
 });
 
@@ -263,7 +263,7 @@ expressions.push({
 
 // reverse resolution - empty value
 expressions.push({
-	expression: '${obj1<asd#Z}',
+	expression: '${obj1<asd!E}',
 	result: undefined
 });
 
@@ -281,7 +281,7 @@ expressions.push({
 
 // reverse resolution - empty values
 expressions.push({
-	expression: '${obj1<${arr1}#Z}',
+	expression: '${obj1<${arr1}!E}',
 	result: undefined
 });
 
@@ -302,19 +302,19 @@ expressions.push({
 
 // evaluate as undefined action -> string
 expressions.push({
-	expression: '${evaluateAsUndefined2!}',
+	expression: '${evaluateAsUndefined2!U}',
 	result: undefined
 });
 
 // evaluate as undefined action -> array
 expressions.push({
-	expression: '${evaluateAsUndefined1!&,} ${evaluateAsUndefined1&,}',
+	expression: '${evaluateAsUndefined1!U&,} ${evaluateAsUndefined1&,}',
 	result: 'disconnect,24,,false disconnect,24,,,false'
 });
 
 // evaluate as undefined action -> object
 expressions.push({
-	expression: '${obj3!}',
+	expression: '${obj3!U}',
 	result: {
 		item1: 'test',
 		item3: 34
@@ -448,7 +448,7 @@ expressions.push({
 
 // object reverse resolution
 expressions.push({
-	expression: '${obj1<undefinedVariable#Z}',
+	expression: '${obj1<undefinedVariable!E}',
 	result: undefined
 });
 
@@ -723,6 +723,24 @@ expressions.push({
 
 // # array operations action
 expressions.push({
+	expression: '${arr1#F}',
+	result: undefined
+});
+
+// # array operations action
+expressions.push({
+	expression: '${arr5#F}',
+	result: 'hello'
+});
+
+// # array operations action
+expressions.push({
+	expression: '${arr6#F}',
+	result: undefined
+});
+
+// # array operations action
+expressions.push({
 	expression: '${arr1#S}',
 	result: [79, false, "muscle", "queen"]
 });
@@ -753,7 +771,7 @@ expressions.push({
 
 // # array operations action
 expressions.push({
-	expression: '${arr6#D#Z}',
+	expression: '${arr6#D!E}',
 	result: undefined
 });
 
@@ -985,7 +1003,7 @@ expressions.push({
 
 // mandatory value action
 expressions.push({
-	expression: '${obj1~K~V~O<#Z*}',
+	expression: '${obj1~K~V~O<!E*}',
 	throwsException: true
 });
 
