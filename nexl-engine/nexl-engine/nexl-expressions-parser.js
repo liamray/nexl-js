@@ -10,22 +10,6 @@
 const util = require('util');
 const j79 = require('j79-utils');
 
-const JS_PRIMITIVE_TYPES = {
-	NUM: '[object Number]',
-	BOOL: '[object Boolean]',
-	STR: '[object String]',
-	NULL: '[object Null]',
-	UNDEFINED: '[object Undefined]'
-};
-
-const NEXL_TYPES = {
-	'num': JS_PRIMITIVE_TYPES.NUM,
-	'bool': JS_PRIMITIVE_TYPES.BOOL,
-	'str': JS_PRIMITIVE_TYPES.STR,
-	'null': JS_PRIMITIVE_TYPES.NULL,
-	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
-};
-
 const ACTIONS = {
 	'PROPERTY_RESOLUTION': '.',
 	'ARRAY_INDEX': '[', // elements access example : [^], [$], [3], [-3], [2..6, 3..9], [^..$], [^..3], [3..$], [^..-3], [-3..$], [^..1, 4..${x}, -3..$]
@@ -47,12 +31,60 @@ const ACTIONS = {
 	'RESERVED3': '>'
 };
 
+const JS_PRIMITIVE_TYPES = {
+	NUM: '[object Number]',
+	BOOL: '[object Boolean]',
+	STR: '[object String]',
+	NULL: '[object Null]',
+	UNDEFINED: '[object Undefined]'
+};
+
+const NEXL_TYPES = {
+	'num': JS_PRIMITIVE_TYPES.NUM,
+	'bool': JS_PRIMITIVE_TYPES.BOOL,
+	'str': JS_PRIMITIVE_TYPES.STR,
+	'null': JS_PRIMITIVE_TYPES.NULL,
+	'undefined': JS_PRIMITIVE_TYPES.UNDEFINED
+};
+
+const OBJECT_OPERATIONS_OPTIONS = {
+	'RESOLVE_KEYS': 'K',
+	'RESOLVE_VALUES': 'V',
+	'CONVERT_TO_OBJECT': 'O',
+	'PRODUCE_XML': 'X',
+	'PRODUCE_YAML': 'Y',
+	'PRODUCE_KEY_VALUE_PAIRS': 'P'
+};
+
+const ARRAY_OPERATIONS_OPTIONS = {
+	'SORT_ASC': 'S',
+	'SORT_DESC': 's',
+	'UNIQUE': 'U',
+	'DUPLICATES': 'D',
+	'LENGTH': 'LEN',
+	'CONVERT_TO_ARRAY': 'A',
+	'GET_FIRST_OR_NOTHING': 'F'
+};
+
+const STRING_OPERATIONS_OPTIONS = {
+	'UPPERCASE': 'U',
+	'CAPITALIZE_FIRST_LETTER': 'U1',
+	'LOWERCASE': 'L',
+	'TRIM': 'T',
+	'LENGTH': 'LEN'
+};
+
+const UNDEFINED_VALUE_OPERATIONS_OPTIONS = {
+	'EVALUATE_AS_UNDEFINED': 'U',
+	'MAKE_EMPTY_ITEMS_UNDEFINED': 'E'
+};
+
 const ACTION_POSSIBLE_VALUES = {
 	':': Object.keys(NEXL_TYPES),
-	'~': ['K', 'V', 'O', 'P', 'X', 'Y'],
-	'#': ['S', 's', 'U', 'D', 'LEN', 'A', 'F'],
-	'^': ['U', 'U1', 'L', 'T', 'LEN'],
-	'!': ['U', 'E']
+	'~': j79.getObjectValues(OBJECT_OPERATIONS_OPTIONS),
+	'#': j79.getObjectValues(ARRAY_OPERATIONS_OPTIONS),
+	'^': j79.getObjectValues(STRING_OPERATIONS_OPTIONS),
+	'!': j79.getObjectValues(UNDEFINED_VALUE_OPERATIONS_OPTIONS)
 };
 
 const ARRAY_INDEX_CLOSE = ']';
@@ -594,6 +626,10 @@ function ParseStr(str, stopAt) {
 
 module.exports.JS_PRIMITIVE_TYPES = JS_PRIMITIVE_TYPES;
 module.exports.NEXL_TYPES = NEXL_TYPES;
+module.exports.OBJECT_OPERATIONS_OPTIONS = OBJECT_OPERATIONS_OPTIONS;
+module.exports.ARRAY_OPERATIONS_OPTIONS = ARRAY_OPERATIONS_OPTIONS;
+module.exports.STRING_OPERATIONS_OPTIONS = STRING_OPERATIONS_OPTIONS;
+module.exports.UNDEFINED_VALUE_OPERATIONS_OPTIONS = UNDEFINED_VALUE_OPERATIONS_OPTIONS;
 module.exports.ACTIONS = ACTIONS;
 
 module.exports.ARRAY_FIRST_ITEM = ARRAY_FIRST_ITEM;

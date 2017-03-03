@@ -11,6 +11,7 @@ const nexlExpressionsParser = require('./nexl-expressions-parser');
 const nexlSourceUtils = require('./nexl-source-utils');
 const j79 = require('j79-utils');
 const deepMerge = require('deepmerge');
+const util = require('util');
 
 const SPECIAL_CHARS_MAP = {
 	'\\n': '\n',

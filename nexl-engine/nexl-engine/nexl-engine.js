@@ -153,7 +153,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	// iterating over actions
 	for (var index in this.nexlExpressionMD.actions) {
 		var action = this.nexlExpressionMD.actions[index];
-		if (action.actionId === nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS && action.actionValue === 'U') {
+		if (action.actionId === nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS && action.actionValue === nexlExpressionsParser.UNDEFINED_VALUE_OPERATIONS_OPTIONS.EVALUATE_AS_UNDEFINED) {
 			this.isEvaluateAsUndefined = true;
 			return;
 		}
@@ -367,7 +367,7 @@ NexlExpressionEvaluator.prototype.applyCastAction = function () {
 	this.result = nexlEngineUtils.cast(this.result, this.action.actionValue);
 };
 
-NexlExpressionEvaluator.prototype.wrapWithObjectIfNeeded = function () {
+NexlExpressionEvaluator.prototype.convert2Object = function () {
 	if (j79.isObject(this.result)) {
 		return;
 	}
@@ -449,32 +449,32 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 	var actionValue = this.action.actionValue;
 
 	switch (actionValue) {
-		case 'O' : {
-			this.wrapWithObjectIfNeeded();
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.CONVERT_TO_OBJECT : {
+			this.convert2Object();
 			return;
 		}
 
-		case 'K' : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_KEYS : {
 			this.resolveObjectKeys();
 			return;
 		}
 
-		case 'V' : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_VALUES : {
 			this.resolveObjectValues();
 			return;
 		}
 
-		case 'P' : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_KEY_VALUE_PAIRS : {
 			this.produceKeyValuesPairs();
 			return;
 		}
 
-		case 'X' : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_XML : {
 			this.produceXML();
 			return;
 		}
 
-		case 'Y' : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_YAML : {
 			this.produceYAML();
 			return;
 		}
@@ -531,6 +531,14 @@ NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function 
 	this.result = newResult;
 };
 
+NexlExpressionEvaluator.prototype.convert2Array = function () {
+	if (j79.isArray(this.result)) {
+		return;
+	}
+
+	this.result = this.result === undefined ? [] : [this.result];
+};
+
 NexlExpressionEvaluator.prototype.makeUniq = function () {
 	var newResult = [];
 	for (var index in this.result) {
@@ -573,8 +581,8 @@ NexlExpressionEvaluator.prototype.makeDuplicates = function () {
 // #S, #s, #U, #D, #LEN, #F array operations action
 NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	// is convert to array ?
-	if (this.action.actionValue === 'A' && !j79.isArray(this.result)) {
-		this.result = this.result === undefined ? [] : [this.result];
+	if (this.action.actionValue === nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.CONVERT_TO_ARRAY) {
+		this.convert2Array();
 		return;
 	}
 
@@ -585,38 +593,38 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 
 	switch (this.action.actionValue) {
 		// sort ascent
-		case 'S': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_ASC: {
 			this.result = this.result.sort();
 			return;
 		}
 
 		// sort descent
-		case 's': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_DESC: {
 			this.result = this.result.sort();
 			this.result = this.result.reverse();
 			return;
 		}
 
 		// uniq
-		case 'U': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.UNIQUE: {
 			this.makeUniq();
 			return;
 		}
 
 		// duplicates
-		case 'D': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.DUPLICATES: {
 			this.makeDuplicates();
 			return;
 		}
 
 		// length
-		case 'LEN': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.LENGTH: {
 			this.result = this.result.length;
 			return;
 		}
 
 		// if array contains only one element, resolve it. otherwise make it undefined
-		case 'F': {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.GET_FIRST_OR_NOTHING: {
 			this.result = this.result.length === 1 ? this.result[0] : undefined;
 			return;
 		}
@@ -743,38 +751,32 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 
 	switch (this.action.actionValue) {
 		// upper case
-		case 'U': {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.UPPERCASE: {
 			this.result = this.result.toUpperCase();
 			return;
 		}
 
 		// capitalize first letter
-		case 'U1': {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.CAPITALIZE_FIRST_LETTER: {
 			this.result = this.result.charAt(0).toUpperCase() + this.result.slice(1);
 			return;
 		}
 
 		// lower case
-		case 'L': {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LOWERCASE: {
 			this.result = this.result.toLowerCase();
 			return;
 		}
 
 		// length
-		case 'LEN': {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LENGTH: {
 			this.result = this.result.length;
 			return;
 		}
 
 		// trim
-		case 'T': {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.TRIM: {
 			this.result = this.result.trim();
-			return;
-		}
-
-		// make empty string undefined
-		case 'Z': {
-			this.result = this.result.length < 1 ? undefined : this.result;
 			return;
 		}
 	}
@@ -782,7 +784,7 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 
 NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
 	// empty values
-	if (this.action.actionValue !== 'E') {
+	if (this.action.actionValue !== nexlExpressionsParser.UNDEFINED_VALUE_OPERATIONS_OPTIONS.MAKE_EMPTY_ITEMS_UNDEFINED) {
 		return;
 	}
 
