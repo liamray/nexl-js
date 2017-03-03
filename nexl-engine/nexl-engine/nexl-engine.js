@@ -631,6 +631,13 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 	}
 };
 
+NexlExpressionEvaluator.prototype.eliminateAllFromArray = function (value) {
+	var index;
+	while ((index = this.result.indexOf(value)) >= 0) {
+		this.result.splice(index, 1);
+	}
+};
+
 NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
@@ -641,12 +648,7 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 	// iterating over actionValue and eliminating array elements
 	for (var index in actionValue) {
 		var item = actionValue[index];
-		var removeCandidate = this.result.indexOf(item);
-		if (removeCandidate < 0) {
-			continue;
-		}
-
-		this.result.splice(removeCandidate, 1);
+		this.eliminateAllFromArray(item);
 	}
 };
 

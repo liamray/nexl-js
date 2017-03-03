@@ -129,3 +129,8 @@ obj6 = {
 intItem2 = 'test';
 nexl.defaultArgs.intItem2 = 46;
 nexl.defaultArgs.intItem3 = 57;
+
+
+fruits = ['Mango', 'Lemon', 'Banana', 'Apple', null, undefined, null, undefined];
+sourFruits = ['Lemon', 'Apple'];
+

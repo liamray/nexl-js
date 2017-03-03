@@ -807,6 +807,12 @@ expressions.push({
 	result: ['queen', 'muscle', 79, false]
 });
 
+// - eliminate array elements
+expressions.push({
+	expression: '${fruits-${}-${@:null}}', // not eliminating, because false is string
+	result: ['Mango', 'Lemon', 'Banana', 'Apple']
+});
+
 // - eliminate multiple
 expressions.push({
 	expression: '${arr1-${@false:bool}-79-${@79:num}-queen}',
