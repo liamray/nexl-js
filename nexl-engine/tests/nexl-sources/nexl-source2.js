@@ -20,7 +20,7 @@ obj1PropName = '()';
 
 obj1 = {
 	beneficial: 'mint',
-	'religion': 'righteous',
+	'test': 'righteous',
 	'()': 'trick',
 	disturbed: 46,
 	price: true,

@@ -143,7 +143,7 @@ expressions.push({
 	expression: '${obj1}',
 	result: {
 		beneficial: 'mint',
-		'religion': 'righteous',
+		'test': 'righteous',
 		'()': 'trick',
 		disturbed: 46,
 		price: true,
@@ -166,7 +166,7 @@ expressions.push({
 	expression: '${objArray1}',
 	result: [{
 		beneficial: 'mint',
-		'religion': 'righteous',
+		'test': 'righteous',
 		'()': 'trick',
 		disturbed: 46,
 		price: true,
@@ -234,7 +234,7 @@ expressions.push({
 // keys and values
 expressions.push({
 	expression: 'KEYS=[${obj1~K&,}] VALUES=[${obj1~V&,}]',
-	result: 'KEYS=[71,beneficial,religion,(),disturbed,price,pack] VALUES=[berry,mint,righteous,trick,46,true,balance,7]'
+	result: 'KEYS=[71,beneficial,test,(),disturbed,price,pack] VALUES=[berry,mint,righteous,trick,46,true,balance,7]'
 });
 
 // reverse resolution
@@ -791,7 +791,7 @@ expressions.push({
 // # array operations action
 expressions.push({
 	expression: '${obj1<${@mint#A+righteous}}',
-	result: ['beneficial', 'religion']
+	result: ['beneficial', 'test']
 });
 
 
@@ -822,7 +822,7 @@ expressions.push({
 // - eliminate object properties
 expressions.push({
 	expression: '${obj1-\\()-71-mint-price}',
-	result: {beneficial: 'mint', religion: 'righteous', disturbed: 46, pack: {strong: 'balance', deer: 7}}
+	result: {beneficial: 'mint', test: 'righteous', disturbed: 46, pack: {strong: 'balance', deer: 7}}
 });
 
 // - eliminate object properties
@@ -1200,7 +1200,7 @@ expressions.push({
 // append to array
 expressions.push({
 	expression: '${arr1+${obj1~K}-price&,}',
-	result: 'queen,muscle,79,false,71,beneficial,religion,(),disturbed,pack'
+	result: 'queen,muscle,79,false,71,beneficial,test,(),disturbed,pack'
 });
 
 // append to array
@@ -1227,7 +1227,7 @@ expressions.push({
 	result: {
 		'71': 'berry',
 		beneficial: 'mint',
-		religion: 'righteous',
+		test: 'righteous',
 		'()': 'trick',
 		disturbed: 46,
 		price: true,
