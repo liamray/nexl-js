@@ -134,7 +134,7 @@
 
 		// evaluating
 		try {
-			var result = nexlEngine.processItem(nexlSource, expression, args);
+			var result = nexlEngine.nexlize(nexlSource, expression, args);
 			sendResult(result, input, res);
 		} catch (e) {
 			sendException(e, input, res);

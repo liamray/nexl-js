@@ -440,13 +440,13 @@ expressions.push({
 	}
 });
 
-// object reverse resolution
+// object key reverse resolution
 expressions.push({
 	expression: '${obj1<undefinedVariable}',
 	result: []
 });
 
-// object reverse resolution
+// object key reverse resolution
 expressions.push({
 	expression: '${obj1<undefinedVariable!E}',
 	result: undefined

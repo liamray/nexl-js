@@ -41,7 +41,7 @@ function failureMessage(exprDef, err) {
 // tests the expression
 function testExpression(exprDef) {
 	try {
-		var result = nexlEngine.processItem(nexlSource, exprDef.expression, exprDef.args);
+		var result = nexlEngine.nexlize(nexlSource, exprDef.expression, exprDef.args);
 	} catch (e) {
 		console.log(e);
 

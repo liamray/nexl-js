@@ -203,7 +203,7 @@ function evalNexl(req, res) {
 	var nexlSource = makeNexlSource(nexlSourceFileName, nexlSourceFileContent);
 
 	try {
-		var result = nexlEngine.processItem(nexlSource, nexlExpression, nexlArgs);
+		var result = nexlEngine.nexlize(nexlSource, nexlExpression, nexlArgs);
 	} catch (e) {
 		res.status(500).send('Failed to evaluate nexl expression. Reason : ' + e);
 	}

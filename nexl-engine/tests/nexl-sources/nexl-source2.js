@@ -59,7 +59,7 @@ obj2.pack.wrapWithBrackets = function (str) {
 };
 
 function nexlEngineInternalCall() {
-	return nexl.processItem('${arr1&,}');
+	return nexl.nexlize('${arr1&,}');
 }
 
 function multiParamsTest(a, b, c) {

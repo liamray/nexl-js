@@ -18,7 +18,7 @@ const ACTIONS = {
 	'CAST': ':',
 	"OBJECT_OPERATIONS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML, ~Z make undefined for empty object
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array, #Z make undefined for empty array, #F resolve first element if array has only 1 element, otherwise make it undefined
-	'OBJECT_REVERSE_RESOLUTION': '<',
+	"OBJECT_KEY_REVERSE_RESOLUTION": '<',
 	'JOIN_ARRAY_ELEMENTS': '&',
 	"ELIMINATE": '-',
 	"APPEND_MERGE": '+',

@@ -505,7 +505,7 @@ NexlExpressionEvaluator.prototype.isContainsValue = function (val, reversedKey) 
 	return false;
 };
 
-NexlExpressionEvaluator.prototype.applyObjectReverseResolutionAction = function () {
+NexlExpressionEvaluator.prototype.applyObjectKeyReverseResolutionAction = function () {
 	// reverse resolution action is applying only for objects
 	if (!j79.isObject(this.result)) {
 		return;
@@ -880,9 +880,9 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// < object reverse resolution action
-		case nexlExpressionsParser.ACTIONS.OBJECT_REVERSE_RESOLUTION: {
-			this.applyObjectReverseResolutionAction();
+		// < object key reverse resolution action
+		case nexlExpressionsParser.ACTIONS.OBJECT_KEY_REVERSE_RESOLUTION: {
+			this.applyObjectKeyReverseResolutionAction();
 			return;
 		}
 
@@ -1139,11 +1139,11 @@ function NexlEngine(context, isEvaluateAsUndefined) {
 // exports
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports.processItem = function (nexlSource, item, externalArgs) {
+module.exports.nexlize = function (nexlSource, item, externalArgs) {
 	var context = nexlEngineUtils.makeContext(nexlSource, externalArgs);
 
 	// supplying nexl engine for functions in nexl-sources
-	context.nexl.processItem = function (nexlExpression, externalArgs4Function) {
+	context.nexl.nexlize = function (nexlExpression, externalArgs4Function) {
 		// backing up current context before change
 		var contextBackup = context;
 
