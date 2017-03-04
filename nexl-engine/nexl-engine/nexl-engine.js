@@ -1140,34 +1140,17 @@ function NexlEngine(context, isEvaluateAsUndefined) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module.exports.nexlize = function (nexlSource, item, externalArgs) {
-	var context = nexlEngineUtils.makeContext(nexlSource, externalArgs);
+	// creating context
+	var context = nexlEngineUtils.makeContext(nexlSource, externalArgs, NexlEngine);
 
-	// supplying nexl engine for functions in nexl-sources
-	context.nexl.nexlize = function (nexlExpression, externalArgs4Function) {
-		// backing up current context before change
-		var contextBackup = context;
-
-		// merging externalArgs4Function to a context
-		context = nexlEngineUtils.deepMergeInner(context, externalArgs4Function);
-
-		var isEvaluateAsUndefined = nexlEngineUtils.hasEvaluateAsUndefinedFlag(context);
-
-		// running nexl engine
-		var result = new NexlEngine(context, isEvaluateAsUndefined).processItem(nexlExpression);
-
-		// restoring context
-		context = contextBackup;
-		return result;
-	};
+	// replacing \n and \t with their real ASCII code
+	var item2Process = nexlEngineUtils.replaceSpecialChars(item);
 
 	// should item be evaluated as undefined if it contains undefined variables ?
 	var isEvaluateAsUndefined = nexlEngineUtils.hasEvaluateAsUndefinedFlag(context);
 
-	// replacing \n and \t
-	var item2Process = nexlEngineUtils.replaceSpecialChars(item);
-
 	// is item not specified, using a default nexl expression
-	item2Process = item2Process === undefined ? context.nexl.defaultExpression : item2Process;
+	item2Process = ( item2Process === undefined ) ? context.nexl.defaultExpression : item2Process;
 
 	// running nexl engine
 	return new NexlEngine(context, isEvaluateAsUndefined).processItem(item2Process);

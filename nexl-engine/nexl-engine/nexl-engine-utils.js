@@ -34,7 +34,27 @@ function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 }
 
-function makeContext(nexlSource, externalArgs) {
+function provideFunctionsWithNexlAPI(context, nexlEngine) {
+	// supplying nexl engine for functions in nexl-sources
+	context.nexl.nexlize = function (nexlExpression, externalArgs4Function) {
+		// backing up current context before change
+		var contextBackup = context;
+
+		// merging externalArgs4Function to a context
+		context = deepMergeInner(context, externalArgs4Function);
+
+		var isEvaluateAsUndefined = hasEvaluateAsUndefinedFlag(context);
+
+		// running nexl engine
+		var result = new nexlEngine(context, isEvaluateAsUndefined).processItem(nexlExpression);
+
+		// restoring context
+		context = contextBackup;
+		return result;
+	};
+}
+
+function makeContext(nexlSource, externalArgs, nexlEngine) {
 	// creating context
 	var context = nexlSourceUtils.createContext(nexlSource);
 
@@ -49,6 +69,9 @@ function makeContext(nexlSource, externalArgs) {
 	}
 
 	supplyStandardLibs(context);
+
+	// giving an access to functions from nexl sources to nexl API
+	provideFunctionsWithNexlAPI(context, nexlEngine);
 
 	return context;
 }
