@@ -500,6 +500,7 @@
 		applyBinders();
 		handleArgs();
 		createHttpServer();
+		return server;
 	}
 
 	module.exports = start;
