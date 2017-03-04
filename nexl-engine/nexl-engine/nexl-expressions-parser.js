@@ -24,7 +24,7 @@ const ACTIONS = {
 	"APPEND_MERGE": '+',
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
 	"UNDEFINED_VALUE_OPERATIONS": '!',
-	'MANDATORY_VALUE': '*',
+	"MANDATORY_VALUE_VALIDATOR": '*',
 	// the following actions are reserved for future usage
 	'RESERVED1': '?',
 	'RESERVED2': '%',

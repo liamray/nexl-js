@@ -25,7 +25,7 @@ EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 	}
 
 	if (!j79.isPrimitive(item)) {
-		throw util.format('The subexpression [%s] of [%s] expression cannot be evaluated as %s ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
+		throw util.format('The subexpression [%s] of [%s] expression cannot be evaluated as %s data type ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
 	}
 };
 
@@ -815,7 +815,7 @@ NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
+NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function () {
 	// no need deep resolution for this action
 	this.needDeepResolution = false;
 
@@ -823,7 +823,7 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueAction = function () {
 		return;
 	}
 
-	var defaultErrorMessage = util.format('The [%s] expression cannot be evaluated as undefined ( it has a mandatory value action ). Probably you have to provide it as external arg or check why it has calculated as undefined', this.nexlExpressionMD.str);
+	var defaultErrorMessage = util.format('The [%s] expression cannot be evaluated to undefined ( it has a mandatory value validator ). Probably you have to provide it as external arg or check why it calculated to undefined', this.nexlExpressionMD.str);
 
 	// does this action have a custom error message ?
 	if (this.action.actionValue.chunks[0] === '') {
@@ -923,8 +923,8 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 		}
 
 		// mandatory value action
-		case nexlExpressionsParser.ACTIONS.MANDATORY_VALUE: {
-			this.applyMandatoryValueAction();
+		case nexlExpressionsParser.ACTIONS.MANDATORY_VALUE_VALIDATOR: {
+			this.applyMandatoryValueValidatorAction();
 			return;
 		}
 	}
