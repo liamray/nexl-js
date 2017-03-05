@@ -1,15 +1,12 @@
-var queryString = require('querystring');
+module.exports = [];
 
-const testCases = [];
-module.exports = testCases;
-
-// positive result, json
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${HOSTS.APP_SERVER_INTERFACES.PROD}',
-		method: 'GET'
+// 1)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD}'
+		}
 	},
 
 	result: {
@@ -19,13 +16,14 @@ testCases.push({
 	}
 });
 
-// positive result, array
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${HOSTS.APP_SERVER_INTERFACES.PROD~K}',
-		method: 'GET'
+
+// 2)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD~K}'
+		}
 	},
 
 	result: {
@@ -35,13 +33,13 @@ testCases.push({
 	}
 });
 
-// positive result, string
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${HOSTS.APP_SERVER_INTERFACES.PROD.FIRST[0]}',
-		method: 'GET'
+// 3)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.FIRST[0]}'
+		}
 	},
 
 	result: {
@@ -51,13 +49,13 @@ testCases.push({
 	}
 });
 
-// positive result, numeric
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${@11:num}',
-		method: 'GET'
+// 4)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${@11:num}'
+		}
 	},
 
 	result: {
@@ -67,13 +65,13 @@ testCases.push({
 	}
 });
 
-// undefined value
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${}',
-		method: 'GET'
+// 5)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${}'
+		}
 	},
 
 	result: {
@@ -83,13 +81,13 @@ testCases.push({
 	}
 });
 
-// mandatory value
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js?expression=${*}',
-		method: 'GET'
+// 6)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${*}'
+		}
 	},
 
 	result: {
@@ -99,50 +97,64 @@ testCases.push({
 	}
 });
 
-// POST, positive result, array
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js',
-		form: {'expression': ''},
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': Buffer.byteLength(queryString.stringify({
-				expression: '${HOSTS.APP_SERVER_INTERFACES.PROD~K}'
-			}))
-		},
-		method: 'POST'
+// 7)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: ''
+		}
 	},
 
 	result: {
-		expectedHeader: 'application/json',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '["FIRST","SECOND"]'
+		expectedResult: ''
 	}
 });
 
-// POST, positive result, array
-testCases.push({
-	options: {
-		host: 'localhost',
-		port: 8080,
-		path: '/nexl-source1.js',
-		data: queryString.stringify({
-			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD~K}'
-		}),
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': Buffer.byteLength(queryString.stringify({
-				expression: '${HOSTS.APP_SERVER_INTERFACES.PROD~K}'
-			}))
-		},
-		method: 'POST'
+// 8)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {}
 	},
 
 	result: {
-		expectedHeader: 'application/json',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '["FIRST","SECOND"]'
+		expectedResult: '25'
+	}
+});
+
+// 9)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			test1: '0312 Hello'
+		}
+	},
+
+	result: {
+		expectedHeader: 'text/plain; charset=utf-8',
+		expectedStatusCode: 200,
+		expectedResult: '0312 Hello'
+	}
+});
+
+// 10)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${arr1&\n} ${arr1&\t}'
+		}
+	},
+
+	result: {
+		expectedHeader: 'text/plain; charset=utf-8',
+		expectedStatusCode: 200,
+		expectedResult: 'queen\nmuscle\n79\nfalse queen\tmuscle\t79\tfalse'
 	}
 });

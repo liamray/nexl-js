@@ -1,66 +1,118 @@
-// test POST requests !
-// test POST requests !
-// test POST requests !
-// test POST requests !
-// test POST requests !
+// test \n and \t args
 
 const nexlServer = require('../nexl-server');
 const testCases = require('./test-cases.js');
 const http = require('http');
 const util = require('util');
+const queryString = require('querystring');
 
-((function () {
+var testCasesCnt = 0;
 
-	function analyzeResult(testCase, res, data) {
-		if (res.statusCode !== testCase.result.expectedStatusCode) {
-			throw util.format('Expected status code [%s] doesn\'t match to received status code [%s]', testCase.result.expectedStatusCode, res.statusCode);
-		}
+function analyzeResult(testCase, res, data) {
+	testCasesCnt--;
 
-		var contentType = res.headers["content-type"];
-		if (contentType !== testCase.result.expectedHeader) {
-			throw util.format('Expected header [%s] doesn\'t match to received [%s]', testCase.result.expectedHeader, contentType);
-		}
+	var testCaseAsString = util.format('source=%s, args=%s', testCase.request.source, JSON.stringify(testCase.request.args));
 
-		if (data !== testCase.result.expectedResult) {
-			throw util.format('Expected result\n[%s] doesn\'t match to received\n[%s]', testCase.result.expectedResult, data);
-		}
-
-		console.log('Test passed OK');
+	if (res.statusCode !== testCase.result.expectedStatusCode) {
+		throw util.format('Expected status code [%s] doesn\'t match to received status code [%s]\n%s', testCase.result.expectedStatusCode, res.statusCode, testCaseAsString);
 	}
 
-	function test(testCase) {
-		var req = http.request(testCase.options, function (res) {
-			res.setEncoding('utf8');
-			res.on('data', function (chunk) {
-				analyzeResult(testCase, res, chunk);
-			});
+	var contentType = res.headers["content-type"];
+	if (contentType !== testCase.result.expectedHeader) {
+		throw util.format('Expected header [%s] doesn\'t match to received [%s]\n%s', testCase.result.expectedHeader, contentType, testCaseAsString);
+	}
+
+	if (data !== testCase.result.expectedResult) {
+		throw util.format('Expected result\n[%s] doesn\'t match to received\n[%s]\n%s', testCase.result.expectedResult, data, testCaseAsString);
+	}
+
+	console.log('Test %s is passed OK', testCasesCnt);
+}
+
+function testCaseInner(options, testCase) {
+	testCasesCnt++;
+
+	var req = http.request(options, function (res) {
+		res.setEncoding('utf8');
+		var data = '';
+		res.on('data', function (chunk) {
+			data += chunk;
 		});
+		res.on('end', function () {
+			analyzeResult(testCase, res, data);
+		})
+	});
 
-		req.on('error', function (e) {
-			analyzeResult(testCase, res, null);
-		});
+	req.on('error', function (e) {
+		console.log(e);
+		analyzeResult(testCase, res, null);
+	});
 
-		if (testCase.options.data !== undefined) {
-			req.write(testCase.options.data);
+	if (options.data !== undefined) {
+		req.write(options.data);
+	}
+	req.end();
+}
+
+function makeGetRequestOpts(testCase) {
+	var args = queryString.stringify(testCase.request.args);
+	var path = util.format('%s?%s', testCase.request.source, args);
+
+	return {
+		host: 'localhost',
+		port: 8080,
+		path: path,
+		method: 'GET'
+	};
+}
+
+function makePostRequestOpts(testCase) {
+	var data = queryString.stringify(testCase.request.args);
+
+	return {
+		host: 'localhost',
+		port: 8080,
+		path: testCase.request.source,
+		data: data,
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': Buffer.byteLength(data)
+		},
+		method: 'POST'
+	};
+}
+
+function test(testCase) {
+	var getRequestOpts = makeGetRequestOpts(testCase);
+	testCaseInner(getRequestOpts, testCase);
+
+	var postRequestOpts = makePostRequestOpts(testCase);
+	testCaseInner(postRequestOpts, testCase);
+}
+
+function waitAndExit(server) {
+	var id = setInterval(function () {
+		if (testCasesCnt < 1) {
+			server.close();
+			clearInterval(id);
 		}
-		req.end();
+	}, 100);
+}
+
+function start() {
+	// pointing nexl-server to existing nexl-source from nexl-engine
+	process.argv.push('--nexl-source=../../nexl-engine/tests/nexl-sources');
+
+	// starting nexl-server
+	var server = nexlServer();
+
+	// iterating over test cases and running tests
+	for (var index in testCases) {
+		var testCase = testCases[index];
+		test(testCase);
 	}
 
+	waitAndExit(server);
+}
 
-	function start() {
-		// pointing nexl-server to existing nexl-source from nexl-engine
-		process.argv.push('--nexl-source=../../nexl-engine/tests/nexl-sources');
-
-		// starting nexl-server
-		nexlServer();
-
-		// iterating over test cases and running tests
-		for (var index in testCases) {
-			var testCase = testCases[index];
-			test(testCase);
-		}
-	}
-
-	start();
-
-})());
+start();

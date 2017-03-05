@@ -191,11 +191,6 @@
 		delete httpSource["expression"];
 		delete httpSource["callback"];
 
-		// validating expression
-		if (!input.expression) {
-			throw util.format("nexl expression is not provided. nexl source : [%s], method : [%s]", input.url, req.method);
-		}
-
 		return input;
 	}
 

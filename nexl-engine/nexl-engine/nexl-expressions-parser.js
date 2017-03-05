@@ -28,7 +28,9 @@ const ACTIONS = {
 	// the following actions are reserved for future usage
 	'RESERVED1': '?',
 	'RESERVED2': '%',
-	'RESERVED3': '>'
+	'RESERVED3': '>',
+	'RESERVED4': '=',
+	'RESERVED5': '|'
 };
 
 const JS_PRIMITIVE_TYPES = {
