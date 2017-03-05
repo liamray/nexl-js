@@ -137,7 +137,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 
 		// does directive have an absolute path ?
 		if (path.isAbsolute(includeDirective)) {
-			result += this.assembleSourceCodeAsFile({"fileName": includeDirective});
+			result = this.assembleSourceCodeAsFile({"fileName": includeDirective}) + result;
 			continue;
 		}
 
@@ -145,7 +145,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 		var filePath = path.dirname(fileName);
 
 		var fullPath = path.join(filePath, includeDirective);
-		result += this.assembleSourceCodeAsFile({"fileName": fullPath});
+		result = this.assembleSourceCodeAsFile({"fileName": fullPath}) + result;
 	}
 
 	return result;
