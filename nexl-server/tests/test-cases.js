@@ -1,6 +1,5 @@
 module.exports = [];
 
-// 1)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -17,7 +16,6 @@ module.exports.push({
 });
 
 
-// 2)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -33,7 +31,6 @@ module.exports.push({
 	}
 });
 
-// 3)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -49,7 +46,6 @@ module.exports.push({
 	}
 });
 
-// 4)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -65,7 +61,6 @@ module.exports.push({
 	}
 });
 
-// 5)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -81,7 +76,6 @@ module.exports.push({
 	}
 });
 
-// 6)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -97,7 +91,21 @@ module.exports.push({
 	}
 });
 
-// 7)
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${*Please provide something}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 500,
+		expectedResult: 'Please provide something'
+	}
+});
+
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -113,7 +121,6 @@ module.exports.push({
 	}
 });
 
-// 8)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -127,7 +134,6 @@ module.exports.push({
 	}
 });
 
-// 9)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',
@@ -143,7 +149,6 @@ module.exports.push({
 	}
 });
 
-// 10)
 module.exports.push({
 	request: {
 		source: '/nexl-source1.js',

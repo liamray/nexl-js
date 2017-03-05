@@ -1193,6 +1193,18 @@ expressions.push({
 
 // reserved actions
 expressions.push({
+	expression: '${=}',
+	throwsException: true
+});
+
+// reserved actions
+expressions.push({
+	expression: '${|}',
+	throwsException: true
+});
+
+// bad casting
+expressions.push({
 	expression: '${:omg}',
 	throwsException: true
 });
