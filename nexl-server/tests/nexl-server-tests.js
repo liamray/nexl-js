@@ -6,6 +6,9 @@ const http = require('http');
 const util = require('util');
 const queryString = require('querystring');
 
+const DEFAULT_HOST = 'localhost';
+const DEFAULT_PORT = 8080;
+
 var testCasesCnt = 0;
 
 function analyzeResult(testCase, res, data) {
@@ -59,8 +62,8 @@ function makeGetRequestOpts(testCase) {
 	var path = util.format('%s?%s', testCase.request.source, args);
 
 	return {
-		host: 'localhost',
-		port: 8080,
+		host: DEFAULT_HOST,
+		port: DEFAULT_PORT,
 		path: path,
 		method: 'GET'
 	};
@@ -70,8 +73,8 @@ function makePostRequestOpts(testCase) {
 	var data = queryString.stringify(testCase.request.args);
 
 	return {
-		host: 'localhost',
-		port: 8080,
+		host: DEFAULT_HOST,
+		port: DEFAULT_PORT,
 		path: testCase.request.source,
 		data: data,
 		headers: {
@@ -102,6 +105,9 @@ function waitAndExit(server) {
 function start() {
 	// pointing nexl-server to existing nexl-source from nexl-engine
 	process.argv.push('--nexl-source=../../nexl-engine/tests/nexl-sources');
+	process.argv.push('--port=' + DEFAULT_PORT);
+	process.argv.push('--binding=' + DEFAULT_HOST);
+	process.argv.push('--debug');
 
 	// starting nexl-server
 	var server = nexlServer();

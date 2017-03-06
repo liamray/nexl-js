@@ -3,7 +3,7 @@ const nexlEngine = require('../nexl-engine/nexl-engine');
 const util = require('util');
 const j79 = require('j79-utils');
 const assert = require('assert');
-const expressions = require('./expressions/expressions');
+const expressions = require('./test-cases');
 
 // nexl source file
 var nexlSource = {asFile: {fileName: 'nexl-sources/nexl-source1.js'}};

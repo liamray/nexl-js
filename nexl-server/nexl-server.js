@@ -36,6 +36,7 @@
 	const NEXL_REST_URL = '/nexl-rest';
 	const REST_LIST_SOURCES = NEXL_REST_URL + '/list-nexl-sources';
 	const REST_LIST_JS_VARIABLES = NEXL_REST_URL + '/list-js-variables';
+	const DEFAULT_NEXL_SOURCES_DIR = 'nexl-sources';
 
 	const HR = Array(55).join('-');
 
@@ -304,7 +305,7 @@
 		// handling nexl-sources directory
 		NEXL_SOURCES_ROOT = cmdLineOpts['nexl-source'];
 		if (!NEXL_SOURCES_ROOT) {
-			NEXL_SOURCES_ROOT = path.join(osHomeDir(), 'nexl-sources');
+			NEXL_SOURCES_ROOT = path.join(osHomeDir(), DEFAULT_NEXL_SOURCES_DIR);
 			var msg = util.format("\nWarning ! nexl sources root directory is not provided, using default directory for nexl sources : [%s]\n", NEXL_SOURCES_ROOT);
 			console.log(chalk.yellow.bold(msg));
 		}
