@@ -133,7 +133,9 @@ var module = (function (module) {
 		}
 
 		var params = module.keyValueEditor.getItems('#external-arguments-editor');
-		params.expression = expression;
+		if (expression.length > 0) {
+			params.expression = expression;
+		}
 
 		module.utils.jsonPCall(url, params, function (data) {
 			if (data.error) {
@@ -154,11 +156,6 @@ var module = (function (module) {
 
 		// validating expression
 		var expression = module.tabs.expression($tab);
-		if (!expression || expression.length < 1) {
-			module.tabs.shakeExpression($tab);
-			module.nexlui.popupMessage('Please specify an expression', 'Error');
-			return;
-		}
 
 		// reset output area and hid it
 		$('#output textarea').val('');
