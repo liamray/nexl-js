@@ -259,7 +259,7 @@ NexlExpressionEvaluator.prototype.resolveRealArrayIndex = function (item) {
 
 	// validating ( must be an integer )
 	if (!j79.isNumber(arrayIndex) || (arrayIndex + '').indexOf('.') >= 0) {
-		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be an integer number. Expressions is [%s], actionNr is [%s]', item.str, j79.getType(arrayIndex), this.nexlExpressionMD.str, this.actionNr + 1);
+		throw util.format('The [%s] nexl expression used in array index cannot be evaluated as %s. It must be an integer number or "^" or "$" characters. Expressions is [%s], actionNr is [%s]', item.str, j79.getType(arrayIndex), this.nexlExpressionMD.str, this.actionNr + 1);
 	}
 
 	// for negative numbers recalculating them relating to the end
