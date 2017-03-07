@@ -104,3 +104,18 @@
     width: 102px;
     display: inline-block;
 }
+
+#tabs .remote-tab-container .url {
+    margin: 8px 0 0 3px;
+}
+
+#tabs .remote-tab-container .url input {
+    width: 501px;
+    padding: 5px;
+    background: #dddddd;
+}
+
+#tabs .remote-tab-container .url label {
+    width: 102px;
+    display: inline-block;
+}

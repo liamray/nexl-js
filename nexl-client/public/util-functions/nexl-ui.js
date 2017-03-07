@@ -170,7 +170,7 @@ var module = (function (module) {
 		}
 	}
 
-	function openChooseExpressionDialog($tab, data) {
+	function openChooseExpressionDialog($tab, data, onsSelectCallback) {
 		var li = '';
 		for (var i = 0; i < data.length; i++) {
 			var item = String.format('<li>{0}</li>', data[i].name);
@@ -185,6 +185,9 @@ var module = (function (module) {
 			var expression = '${' + $selectedItem.html() + '}';
 			module.tabs.expression($tab, expression);
 			$('.choose-expression-dialog').dialog("close");
+			if (onsSelectCallback) {
+				onsSelectCallback();
+			}
 		});
 
 		$('.choose-expression-dialog .expressions-list li').on('click', function () {
@@ -204,6 +207,9 @@ var module = (function (module) {
 				"Select": function () {
 					var expression = '${' + $selectedItem.html() + '}';
 					module.tabs.expression($tab, expression);
+					if (onsSelectCallback) {
+						onsSelectCallback();
+					}
 					$(this).dialog("close");
 				},
 				Cancel: function () {
@@ -238,7 +244,9 @@ var module = (function (module) {
 				return;
 			}
 
-			openChooseExpressionDialog($tab, data.data);
+			openChooseExpressionDialog($tab, data.data, function () {
+				module.tabs.updateRESTURL($tab);
+			});
 		}, function (xhr, status, error) {
 			module.nexlui.popupMessage('Remote nexl server is not available', 'Error');
 		});
@@ -343,7 +351,7 @@ var module = (function (module) {
 		$('.about-button').click(function () {
 			var info = '';
 
-			info += 'Copyright (c) 2016 Yevgeny Sergeyev<br/><br/>';
+			info += 'Copyright (c) 2016-2007 Yevgeny Sergeyev<br/><br/>';
 			info += 'email <a href="mailto:nexl.javascript@gmail.com">nexl.javascript@gmail.com</a><br/>';
 
 			info = String.format(info, serverInfo.version);
