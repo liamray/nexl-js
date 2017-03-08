@@ -352,7 +352,7 @@ ParseNexlExpression.prototype.resolveActionStaticValue = function (parsed) {
 		return parsed.chunks[0];
 	}
 
-	throw util.format('The [%s] action cannot contain sub expressions at [%s] position in [%s] expression. It must be a plain string', this.currentAction, this.lastSearchPos, this.str);
+	throw util.format('The [%s] action cannot contain internal expressions at [%s] position in [%s] expression. It must be a plain string', this.currentAction, this.lastSearchPos, this.str);
 };
 
 ParseNexlExpression.prototype.addChunkedAction = function (parsed) {

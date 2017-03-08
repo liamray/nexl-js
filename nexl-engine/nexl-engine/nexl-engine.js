@@ -25,7 +25,7 @@ EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 	}
 
 	if (!j79.isPrimitive(item)) {
-		throw util.format('The subexpression [%s] of [%s] expression cannot be evaluated as %s data type ( must be a primitive or array of primitives )', chunk2Substitute.str, this.data.str, j79.getType(item));
+		throw util.format('The internal expression [%s] cannot be evaluated as %s data type in [%s] expression( must be a primitive or array of primitives )', chunk2Substitute.str, j79.getType(item), this.data.str);
 	}
 };
 
