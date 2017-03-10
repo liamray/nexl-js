@@ -168,7 +168,7 @@ var module = (function (module) {
 	}
 
 	function openChooseExpressionDialog($tab, data, onsSelectCallback) {
-		$(".add-action-dialog").dialog({
+		$("#addActionDialog").dialog({
 				width: 320,
 				height: 380,
 				modal: true,

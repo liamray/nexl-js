@@ -163,34 +163,33 @@ a {
 }
 
 /* ACTIONS BUILDER */
-.add-action-dialog {
-    display: none;
-    padding-left: 33px;
+.actionsContainer {
+    padding-left: 22px;
 }
 
-.add-action-dialog label {
+.actionsContainer label {
     width: 120px;
     display: inline-block;
 }
 
-.add-action-dialog select {
+.actionsContainer select {
     width: 120px;
     height: 23px;
     margin: 5px;
 }
 
-.add-action-dialog .customValue input {
+.actionsContainer .customValue input {
     width: 116px;
     height: 16px;
     margin: 5px;
     display: inline-block;
 }
 
-.add-action-dialog .exampleBox {
+.actionsContainer .exampleBox {
     width: 240px;
     margin-top: 15px;
 }
 
-.add-action-dialog .typeCast, .add-action-dialog .objectOperations, .add-action-dialog .arrayOperations, .add-action-dialog .stringOperations, .add-action-dialog .undefinedValueOperations, .add-action-dialog .customValue, .add-action-dialog .exampleBox {
+.actionsContainer .typeCast, .actionsContainer .objectOperations, .actionsContainer .arrayOperations, .actionsContainer .stringOperations, .actionsContainer .undefinedValueOperations, .actionsContainer .customValue, .actionsContainer .exampleBox {
     display: none;
 }

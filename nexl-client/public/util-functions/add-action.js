@@ -33,7 +33,7 @@
 	}
 
 	function start() {
-		$('.add-action-dialog .' + ACTION_IDS_SELECT).on('change', function () {
+		$('.actionsContainer .' + ACTION_IDS_SELECT).on('change', function () {
 			var ref = $("option:selected", this).attr('ref');
 			$(lastVisibleBox).hide();
 
@@ -48,7 +48,7 @@
 			$(lastVisibleBox).find('input,select').val('');
 		});
 
-		$('.add-action-dialog select').on('change', function () {
+		$('.actionsContainer select').on('change', function () {
 			var title = $("option:selected", this).attr('title');
 			$(this).attr('title', title);
 
