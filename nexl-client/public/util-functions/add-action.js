@@ -1,4 +1,6 @@
-(function () {
+var module = (function (module) {
+	module.addAction = {};
+
 	var CUSTOM_VALUE_BOX = 'customValue';
 	var ACTION_IDS_SELECT = 'actionIds';
 	var EXAMPLE_BOX = 'exampleBox';
@@ -63,4 +65,21 @@
 	$(document).ready(function () {
 		start();
 	});
-})();
+
+	module.addAction.getActionId = function () {
+		return $('.actionsContainer select').val();
+	};
+
+	module.addAction.getActionValue = function () {
+		var ref = $('.actionsContainer select option:selected').attr('ref');
+
+		if (ref === undefined) {
+			return $('.actionsContainer .' + CUSTOM_VALUE_BOX + ' input').val();
+		} else {
+			return $('.actionsContainer ' + ref + ' select').val();
+		}
+	};
+
+	return module;
+
+})(module || {});

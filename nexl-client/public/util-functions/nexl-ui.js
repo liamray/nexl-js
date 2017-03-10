@@ -175,11 +175,8 @@ var module = (function (module) {
 				resizable: true,
 				buttons: {
 					"Select": function () {
-						var expression = '${' + $selectedItem.html() + '}';
-						module.tabs.expression($tab, expression);
-						if (onsSelectCallback) {
-							onsSelectCallback();
-						}
+						alert(module.addAction.getActionId());
+						alert(module.addAction.getActionValue());
 						$(this).dialog("close");
 					},
 					Cancel: function () {
