@@ -168,6 +168,29 @@ var module = (function (module) {
 	}
 
 	function openChooseExpressionDialog($tab, data, onsSelectCallback) {
+		$(".add-action-dialog").dialog({
+				width: 320,
+				height: 380,
+				modal: true,
+				resizable: true,
+				buttons: {
+					"Select": function () {
+						var expression = '${' + $selectedItem.html() + '}';
+						module.tabs.expression($tab, expression);
+						if (onsSelectCallback) {
+							onsSelectCallback();
+						}
+						$(this).dialog("close");
+					},
+					Cancel: function () {
+						$(this).dialog("close");
+					}
+				}
+			}
+		);
+
+		return;
+
 		var li = '';
 		for (var i = 0; i < data.length; i++) {
 			var item = String.format('<li>{0}</li>', data[i].name);

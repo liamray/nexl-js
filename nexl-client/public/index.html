@@ -19,6 +19,7 @@
     <script type="text/javascript" src="util-functions/extended-js-api.js"></script>
     <script type="text/javascript" src="util-functions/utils.js"></script>
     <script type="text/javascript" src="util-functions/nexl-ui.js"></script>
+    <script type="text/javascript" src="util-functions/add-action.js"></script>
 
     <script type="text/javascript" src="components/tabs/tabs.js"></script>
     <script type="text/javascript" src="components/file-dialog/file-dialog.js"></script>
@@ -153,6 +154,162 @@
 <div class="choose-expression-dialog" style="display: none;" title="Choose expression">
     <ul class="expressions-list">
     </ul>
+</div>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<!-- actions builder dialog -->
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div class="add-action-dialog" title="Add action">
+    <div>
+        <label>Action ID</label>
+        <select class="actionIds">
+            <option disabled selected value></option>
+            <option title="Object property resolution"
+                    example="the ${obj.%s} expression resolves %s property from obj1 object">.
+            </option>
+            <option title="Access array index or substring"
+                    example="the ${item[ %s ]} expression accesses array indexes ( in case of array ) or extracts characters by indexes ( in case of string )<br/>Indexes must be one of the following : ^ ( first item ), $ ( last item ) or integer ( including negative numbers ). Multiple ranges are also available">
+                []
+            </option>
+            <option title="Function call"
+                    example="the ${func( %s )} expression call a func function with %s arguments. Arguments must be nexl expression(s) separated with comma">
+                ()
+            </option>
+            <option title=" Default value"
+                    example="the ${item@%s} expression is evaluating to %s default value if the item is undefined">@
+            </option>
+            <option ref=".typeCast" title="Typecast">:</option>
+            <option ref=".objectOperations" title="Object operations">~</option>
+            <option title="Object key reverse resolution"
+                    example="the ${obj1<%s} expression performs key resolution in obj1 object by %s value">&lt;</option>
+            <option ref=".arrayOperations" title="Array operations">#</option>
+            <option title="Join array elements" example="the ${arr&%s} expression joins all array elements with %s">&
+            </option>
+            <option ref=".stringOperations" title="String operations">^</option>
+            <option title="Eliminate items from array or object"
+                    example="the ${item-%s} expression eliminates a %s item from objOrArray">-
+            </option>
+            <option title="Add items to array or merge objects"
+                    example="in the ${item+%s} expression adds a %s to the end of array or merges a %s object to item object">
+                +
+            </option>
+            <option title="Mandatory value validator"
+                    example="the ${test*%s} expression will throw error with %s error message if the test item is undefined">
+                *
+            </option>
+            <option ref=".undefinedValueOperations" title="Undefined value operations">!</option>
+        </select>
+    </div>
+
+
+    <div class="customValue">
+        <label title="Action ID can be a constant value or nexl expression">Action Value</label>
+        <input type="text" title="Start typing action value. Action ID can be a constant value or nexl expression"/>
+    </div>
+
+    <div class="typeCast">
+        <label>Action Value</label>
+        <select>
+            <option disabled selected value></option>
+            <option title="Casts a primitive to numeric"
+                    example="the ${item%s} expression expression casts item's value to numeric">num
+            </option>
+            <option title="Casts a primitive to string"
+                    example="the ${item%s} expression expression casts item's value to string">str
+            </option>
+            <option title="Casts a primitive to boolean"
+                    example="the ${item%s} expression expression casts item's value to boolean">bool
+            </option>
+            <option title="Converts to null" example="the ${item%s} expression converts item's value to null">null
+            </option>
+            <option title="Converts to undefined" example="the ${item%s} expression converts item's value to undefined">
+                undefined
+            </option>
+        </select>
+    </div>
+
+    <div class="objectOperations">
+        <label>Action Value</label>
+        <select>
+            <option disabled selected value></option>
+            <option title="Resolves object keys" example="the ${obj~K} expression resolves a key set of obj object">K
+            </option>
+            <option title="Resolves object values" example="the ${obj~V} expression resolves all values of obj object">
+                V
+            </option>
+            <option title="Converts to object" example="the ${item~O} converts an item to object">O</option>
+            <option title="Produces XML from object" example="the ${obj~X} expression produces a XML from obj object">X
+            </option>
+            <option title="Produces YAML from object" example="the ${obj~Y} expression produces a YAML from obj object">
+                Y
+            </option>
+            <option title="Produces key-value paris from object"
+                    example="the ${obj~P} expression produces a key-value pairs ( property file) from obj object">P
+            </option>
+        </select>
+    </div>
+
+    <div class="arrayOperations">
+        <label>Action Value</label>
+        <select>
+            <option disabled selected value></option>
+            <option title="Sorts array ascending" example="the ${arr#S} expression sorts arr array in ascending order">
+                S
+            </option>
+            <option title="Sorts array descending"
+                    example="the ${arr#s} expression sorts arr array in descending order">
+                s
+            </option>
+            <option title="Unique value only"
+                    example="the ${arr#U} expression makes arr array elements unique ( omitting duplicates )">U
+            </option>
+            <option title="Duplicate values only"
+                    example="the ${arr#D} expression leaves only duplicate items in arr array">D
+            </option>
+            <option title="Calculates array length" example="the ${arr#LEN} expression calculates length of arr array">
+                LEN
+            </option>
+            <option title="Converts to array" example="the ${item#A} expression converts an item to array">A</option>
+            <option title="Gets first array item or undefined"
+                    example="the ${arr#F} resolves the first array element if array has only one element. Otherwise this expression is evaluated to undefined">
+                F
+            </option>
+        </select>
+    </div>
+
+    <div class="stringOperations">
+        <label>Action Value</label>
+        <select>
+            <option disabled selected value></option>
+            <option title="Makse uppercase" example="the ${str^U} expression makes a str string uppercase">U</option>
+            <option title="Capitalizes first letter"
+                    example="the ${str^U1} expression capitalizes a first letter of str string">U1
+            </option>
+            <option title="Makes lowercase" example="the ${str^L} expression makes a str string lower">L</option>
+            <option title="Calculates string length"
+                    example="the ${str^LEN} expression calculates length of str string">
+                LEN
+            </option>
+            <option title="Trims a string" example="the ${str^T} expression trims a str string">T</option>
+        </select>
+    </div>
+
+    <div class="undefinedValueOperations">
+        <label>Action Value</label>
+        <select>
+            <option disabled selected value></option>
+            <option title="Convert empty string, array or object to undefined"
+                    example="the ${item!E} expression converts item to undefined if this item is empty string, empty array or empty object">
+                E
+            </option>
+            <option title="Evaluates expression as undefined"
+                    example="the ${expr!U} expression is evaluated to undefined if it points to sub expression and one of them is evaluated to undefined">
+                U
+            </option>
+        </select>
+    </div>
+
+    <div class="exampleBox"></div>
 </div>
 
 </body>
