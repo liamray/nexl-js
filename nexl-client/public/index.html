@@ -152,8 +152,20 @@
 <!-- choose expression dialog -->
 <!-- ------------------------------------------------------------------------------------------------ -->
 <div class="choose-expression-dialog" style="display: none;" title="Choose expression">
-    <ul class="expressions-list">
-    </ul>
+    <div class="expressions-list-container">
+        <label>Available variables</label>
+        <div>
+            <ul>
+            </ul>
+        </div>
+    </div>
+
+    <div class="expression-fitting">
+        <label>nexl expression</label>
+        <div class="nexl-expression">${}</div>
+        <input type="button" value="Add action"/>
+        <input type="button" value="Reset actions"/>
+    </div>
 </div>
 
 <!-- ------------------------------------------------------------------------------------------------ -->

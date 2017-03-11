@@ -144,13 +144,25 @@ a {
 .choose-expression-dialog {
 }
 
-.choose-expression-dialog .expressions-list {
+.choose-expression-dialog .expressions-list-container label {
+    font-size: 1.3em;
+}
+
+.choose-expression-dialog .expressions-list-container {
+    float: left;
+}
+
+.choose-expression-dialog .expressions-list-container ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    border: 1px solid black;
+    width: 270px;
+    height: 315px;
+    overflow-y: auto;
 }
 
-.choose-expression-dialog .expressions-list li {
+.choose-expression-dialog .expressions-list-container ul li {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -158,13 +170,32 @@ a {
     -o-user-select: none;
 }
 
-.choose-expression-dialog .expressions-list li:hover {
+.choose-expression-dialog .expressions-list-container ul li:hover {
     background: #CCC;
+}
+
+.choose-expression-dialog .expressions-list-container {
+    float: left;
+}
+
+.choose-expression-dialog .expression-fitting {
+    float: left;
+    margin-left: 15px;
+}
+
+.choose-expression-dialog .expression-fitting label {
+    font-size: 1.3em;
+}
+
+.choose-expression-dialog .expression-fitting .nexl-expression {
+    margin: 5px;
+    font-size: 1.25em;
+    width: 150px;
 }
 
 /* ACTIONS BUILDER */
 .actionsContainer {
-    padding-left: 22px;
+    padding-left: 15px;
 }
 
 .actionsContainer label {
