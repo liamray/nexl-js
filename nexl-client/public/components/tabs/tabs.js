@@ -490,6 +490,16 @@ var module = (function (module) {
 		});
 	}
 
+	function updateRESTURLs() {
+		var $tabs = getTabsContainer();
+		$tabs.find('ul li').each(function (index, tab) {
+			var $tab = $(tab);
+			if (remote($tab)) {
+				updateRESTURL($tab);
+			}
+		});
+	}
+
 	function updateRESTURL($tab) {
 		var url = module.tabs.getRemoteUrl($tab);
 		var restUrl = getOnesTabContainer($tab).find('.url input');
@@ -500,7 +510,6 @@ var module = (function (module) {
 		}
 
 		var expression = module.tabs.expression($tab);
-		var params = module.keyValueEditor.getItems('#external-arguments-editor');
 
 		url += '?';
 		if (expression.length > 0) {
@@ -509,7 +518,15 @@ var module = (function (module) {
 			url += '&';
 		}
 
+		var params = module.keyValueEditor.getItems('#external-arguments-editor');
+		for (var key in params) {
+			if (key === '') {
+				delete params[key];
+			}
+		}
+
 		url += $.param(params);
+		url = url.replace(/&$|\?$/, '');
 
 		restUrl.val(url);
 	}
@@ -667,6 +684,7 @@ var module = (function (module) {
 	module.tabs.getRemoteNexlSource = getRemoteNexlSource;
 	module.tabs.assignEvent = assignEvent;
 	module.tabs.updateRESTURL = updateRESTURL;
+	module.tabs.updateRESTURLs = updateRESTURLs;
 
 	return module;
 

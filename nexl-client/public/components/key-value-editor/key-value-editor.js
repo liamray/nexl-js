@@ -25,6 +25,8 @@ var module = (function (module) {
 	const CANT_ADD = 'cantAdd';
 	const CACHE_IN_STORAGE = 'cacheInStorage';
 
+	var callbackFn;
+
 	function isKey(div, id) {
 		return div.next().is('div');
 	}
@@ -158,11 +160,13 @@ var module = (function (module) {
 		// on unedit event
 		$(id + '  input').on('blur keydown', function (event) {
 			onUnEdit(id, $(this), event);
+			callback();
 		});
 
 		// on delete event
 		$(id + '  span').on('click', function () {
 			onRemove(id, $(this));
+			callback();
 		});
 	}
 
@@ -186,6 +190,12 @@ var module = (function (module) {
 		module.keyValueEditor.addItems(id, keyValuePairs);
 	}
 
+	function callback() {
+		if (callbackFn !== undefined) {
+			callbackFn();
+		}
+	}
+
 	/**
 	 * options are :
 	 *  - cacheInStorage: true|false ( automatically save/load to local storage )
@@ -194,9 +204,11 @@ var module = (function (module) {
 	 *  - cantAdd : true|false
 	 *  - cantDelete : true|false
 	 */
-	module.keyValueEditor.init = function (id, options) {
+	module.keyValueEditor.init = function (id, options, aCallbackFn) {
 		// saving options in $(id)
 		$(id).data(OPTIONS, options || {});
+
+		callbackFn = aCallbackFn;
 
 		createInput4Edit(id);
 		assignListeners(id);
@@ -216,15 +228,18 @@ var module = (function (module) {
 		// on edit event
 		item.find('div').on('click', function () {
 			onEditEvent($(this), id);
+			callback();
 		});
 
 		// on delete event
 		item.find('span').on('click', function () {
 			onRemove(id, $(this));
+			callback();
 		});
 
 		// append input to main container
 		$(id).append(item);
+		callback();
 	};
 
 	module.keyValueEditor.addItems = function (id, itemsAsJson) {

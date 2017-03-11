@@ -404,17 +404,6 @@ var module = (function (module) {
 		$('#addExternalArg').click(function () {
 			module.keyValueEditor.addItem('#external-arguments-editor');
 		});
-
-		// global settings
-		$('#globalSettings').click(function () {
-			$("#global-settings-container").dialog({
-				width: 640,
-				height: 400,
-				modal: true,
-				resizable: false,
-				title: "Global settings"
-			});
-		});
 	}
 
 	function discoverKeyCombination(event) {
@@ -481,14 +470,9 @@ var module = (function (module) {
 	function initKeyValueEditors() {
 		module.keyValueEditor.init('#external-arguments-editor', {
 			cacheInStorage: true
+		}, function () {
+			module.tabs.updateRESTURLs();
 		});
-
-		module.keyValueEditor.init('#global-settings', {
-			cacheInStorage: true,
-			cantDelete: true
-		});
-
-		module.keyValueEditor.addItem('#global-settings', 'DELIMITER', '\\n');
 	}
 
 	function initFileDialog() {
