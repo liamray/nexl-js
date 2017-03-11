@@ -133,9 +133,7 @@ var module = (function (module) {
 		}
 
 		var params = module.keyValueEditor.getItems('#external-arguments-editor');
-		if (expression.length > 0) {
-			params.expression = expression;
-		}
+		params.expression = expression;
 
 		module.utils.jsonPCall(url, params, function (data) {
 			if (data.error) {
@@ -159,6 +157,8 @@ var module = (function (module) {
 
 		// reset output area and hid it
 		$('#output textarea').val('');
+
+		expression = expression.length > 0 ? expression : undefined;
 
 		if (module.tabs.remote($tab)) {
 			evalRemoteTab($tab, expression);
