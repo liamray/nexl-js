@@ -372,7 +372,7 @@ var module = (function (module) {
 		module.jqueryAutocomplete.start($remoteTabContent.find('.remote-url'));
 
 		// handling blur event
-		$remoteTabContent.find('input').blur(function () {
+		$remoteTabContent.find('.remote-url').next().find('input').blur(function () {
 			module.jqueryAutocomplete.handleChangesAndStore($(this), STORAGE_REMOTE_SERVERS);
 		});
 

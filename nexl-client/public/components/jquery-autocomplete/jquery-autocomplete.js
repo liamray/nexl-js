@@ -135,7 +135,7 @@ var module = (function (module) {
 	module.jqueryAutocomplete.start = function ($control) {
 		$control.combobox({
 			select: function (event, ui) {
-				$(this).parent().find('input').val(this.value);
+				$(this).next().find('input').val(this.value);
 				$(this).trigger('change');
 			}
 		});
