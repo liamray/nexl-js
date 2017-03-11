@@ -23,6 +23,8 @@ var module = (function (module) {
 
 	var serverInfo = {};
 
+	var $selectedItem;
+	var actions;
 
 	function saveFileWrapper($tab, fileName) {
 		var url = "/rest/save-file";
@@ -167,19 +169,54 @@ var module = (function (module) {
 		}
 	}
 
+	function openAddActionDialog() {
+		$("#addActionDialog").dialog({
+				width: 310,
+				height: 380,
+				modal: true,
+				resizable: true,
+				buttons: {
+					"Select": function () {
+						actions += module.addAction.getActionId() + module.addAction.getActionValue();
+						actions = actions.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+						var currentExpression = '${' + getSelectedIteValue() + actions + '}';
+						$('.choose-expression-dialog .expression-fitting .nexl-expression').html(currentExpression);
+						$(this).dialog("close");
+					},
+					Cancel: function () {
+						$(this).dialog("close");
+					}
+				}
+			}
+		);
+	}
+
+	function getSelectedIteValue() {
+		return $selectedItem === undefined ? '' : $selectedItem.text();
+	}
+
 	function openChooseExpressionDialog($tab, data, onsSelectCallback) {
+		actions = '';
+		$selectedItem = undefined;
+
 		var li = '';
 		for (var i = 0; i < data.length; i++) {
 			var item = String.format('<li>{0}</li>', data[i].name);
 			li += item;
 		}
 
+		$('.choose-expression-dialog .expression-fitting .add-action-button').click(function () {
+			openAddActionDialog();
+		});
+		$('.choose-expression-dialog .expression-fitting .reset-events-button').click(function () {
+			actions = '';
+			$('.choose-expression-dialog .expression-fitting .nexl-expression').html('${' + getSelectedIteValue() + actions + '}');
+		});
+
 		$('.choose-expression-dialog .expressions-list-container ul').html(li);
 
-		var $selectedItem;
-
 		$('.choose-expression-dialog .expressions-list-container li').dblclick(function () {
-			var expression = '${' + $selectedItem.html() + '}';
+			var expression = $('.choose-expression-dialog .expression-fitting .nexl-expression').text();
 			module.tabs.expression($tab, expression);
 			$('.choose-expression-dialog').dialog("close");
 			if (onsSelectCallback) {
@@ -193,7 +230,7 @@ var module = (function (module) {
 			}
 			$selectedItem = $(this);
 			$selectedItem.css({border: '1px solid black'});
-			$('.choose-expression-dialog .expression-fitting .nexl-expression').html('${' + $selectedItem.html() + '}');
+			$('.choose-expression-dialog .expression-fitting .nexl-expression').html('${' + getSelectedIteValue() + actions + '}');
 		});
 
 		$('.choose-expression-dialog .expression-fitting .nexl-expression').html('${}');
@@ -205,7 +242,7 @@ var module = (function (module) {
 			resizable: true,
 			buttons: {
 				"Select": function () {
-					var expression = '${' + $selectedItem.html() + '}';
+					var expression = $('.choose-expression-dialog .expression-fitting .nexl-expression').text();
 					module.tabs.expression($tab, expression);
 					if (onsSelectCallback) {
 						onsSelectCallback();
