@@ -429,9 +429,6 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 
 	this.makeDeepResolution();
 
-	// performing object deep resolution
-	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-
 	var result = [];
 	nexlEngineUtils.produceKeyValuesPairs(undefined, this.result, result);
 
@@ -448,9 +445,6 @@ NexlExpressionEvaluator.prototype.produceXML = function () {
 
 	this.makeDeepResolution();
 
-	// performing object deep resolution
-	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-
 	var root = this.actionsAsString.length < 1 ? 'root' : this.actionsAsString.join('.');
 	this.result = js2xmlparser.parse(root, this.result);
 	this.needDeepResolution4NextActions = false;
@@ -464,9 +458,6 @@ NexlExpressionEvaluator.prototype.produceYAML = function () {
 	}
 
 	this.makeDeepResolution();
-
-	// performing object deep resolution
-	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	this.result = YAML.stringify(this.result);
 	this.needDeepResolution4NextActions = false;
@@ -750,9 +741,6 @@ NexlExpressionEvaluator.prototype.mergeObjects = function () {
 	if (!j79.isObject(actionValue)) {
 		return;
 	}
-
-	// performing object deep resolution
-	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 
 	this.result = nexlEngineUtils.deepMergeInner(this.result, actionValue);
 };
