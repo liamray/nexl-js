@@ -1256,6 +1256,58 @@ module.exports.push({
 	}
 });
 
+// this
+module.exports.push({
+	expression: '${this.intItem}',
+	result: undefined
+});
+
+// this
+module.exports.push({
+	expression: '${obj7}',
+	result: {
+		home: '/home/nexl',
+		backupDir: '/home/nexl/backup',
+		runsDir: '/home/nexl/runs',
+		start: '/home/nexl/runs/run.sh',
+		x: ['/home/nexl/runs', 71, '/home/nexl/runs/run.sh', '/home/nexl'],
+		y: {home: 'Earth', a: 'Earth'}
+	}
+});
+
+// merge object with override + this
+module.exports.push({
+	expression: '${obj7+${obj8}}',
+	result: {
+		home: '/sweetHome',
+		backupDir: '/sweetHome/backup',
+		runsDir: '/sweetHome/runs',
+		start: '/sweetHome/runs/run.sh',
+		x: ['/sweetHome/runs', 71, '/sweetHome/runs/run.sh', '/home/nexl'],
+		y: {home: 'Earth', a: 'Earth'}
+	}
+});
+
+/*
+ // merge object with override + this
+ module.exports.push({
+ expression: '${obj7+${obj8}}',
+ args: {
+ obj7 : {
+ home: 'c:\\temp'
+ }
+ },
+ result: {
+ home: '/sweetHome',
+ backupDir: '/sweetHome/backup',
+ runsDir: '/sweetHome/runs',
+ start: '/sweetHome/runs/run.sh',
+ x: ['/sweetHome/runs', 71, '/sweetHome/runs/run.sh', '/home/nexl'],
+ y: {home: 'Earth', a: 'Earth'}
+ }
+ });
+ */
+
 // escaping test
 module.exports.push({
 	expression: '${obj1.\\()}',

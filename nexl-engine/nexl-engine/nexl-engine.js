@@ -1078,6 +1078,9 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 NexlEngine.prototype.processObjectItem = function (obj) {
 	var result = {};
 
+	// rescuing this in context ( to restore it back in future )
+	var currentThis = this.context.this;
+
 	// iterating over over keys:values and evaluating
 	for (var key in obj) {
 		var evaluatedKey = this.processItem(key);
@@ -1092,6 +1095,8 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(evaluatedKey));
 		}
 
+		this.context.this = obj;
+
 		var value = obj[key];
 		value = this.processItem(value);
 
@@ -1102,6 +1107,9 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 
 		result[evaluatedKey] = value;
 	}
+
+	// restoring back this into context
+	this.context.this = currentThis;
 
 	return result;
 };
