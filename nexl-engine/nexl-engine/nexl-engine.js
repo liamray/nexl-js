@@ -175,11 +175,7 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 		return;
 	}
 
-	if (j79.isObject(this.result)) {
-		this.newResult.push(this.result[key]);
-	} else {
-		this.newResult.push(undefined);
-	}
+	this.newResult.push(this.result[key]);
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
@@ -198,6 +194,16 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
+	// if not an object, skip action
+	if (!j79.isObject(this.result)) {
+		return;
+	}
+
+
+	if (j79.isObject(this.result)) {
+		this.expandObjectKeys();
+	}
+
 	var data = {};
 	data.chunks = this.action.actionValue.chunks;
 	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
@@ -314,6 +320,8 @@ NexlExpressionEvaluator.prototype.evalArrayIndexesAction4String = function () {
 		return;
 	}
 
+	this.makeDeepResolution();
+
 	var newResult = [];
 
 	// iterating over arrayIndexes
@@ -351,9 +359,6 @@ NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	// is value not set for this.result ?
 	if (this.result !== undefined) {
 		// don't need to a apply default value action
@@ -386,6 +391,8 @@ NexlExpressionEvaluator.prototype.resolveObjectKeys = function () {
 		return;
 	}
 
+	this.makeDeepResolution();
+
 	this.result = Object.keys(this.result);
 	this.result = j79.unwrapFromArrayIfPossible(this.result);
 };
@@ -395,17 +402,18 @@ NexlExpressionEvaluator.prototype.resolveObjectValues = function () {
 		return;
 	}
 
+	this.expandObjectKeys();
+
 	this.result = j79.obj2ArrayIfNeeded(this.result);
 	this.result = j79.unwrapFromArrayIfPossible(this.result);
 };
 
 NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	this.makeDeepResolution();
 
 	// performing object deep resolution
 	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
@@ -417,12 +425,11 @@ NexlExpressionEvaluator.prototype.produceKeyValuesPairs = function () {
 };
 
 NexlExpressionEvaluator.prototype.produceXML = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	this.makeDeepResolution();
 
 	// performing object deep resolution
 	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
@@ -432,12 +439,11 @@ NexlExpressionEvaluator.prototype.produceXML = function () {
 };
 
 NexlExpressionEvaluator.prototype.produceYAML = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	if (!j79.isObject(this.result)) {
 		return;
 	}
+
+	this.makeDeepResolution();
 
 	// performing object deep resolution
 	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
@@ -449,31 +455,37 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 	var actionValue = this.action.actionValue;
 
 	switch (actionValue) {
+		// ~O
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.CONVERT_TO_OBJECT : {
 			this.convert2Object();
 			return;
 		}
 
+		// ~K
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_KEYS : {
 			this.resolveObjectKeys();
 			return;
 		}
 
+		// ~V
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_VALUES : {
 			this.resolveObjectValues();
 			return;
 		}
 
+		// ~P
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_KEY_VALUE_PAIRS : {
 			this.produceKeyValuesPairs();
 			return;
 		}
 
+		// ~X
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_XML : {
 			this.produceXML();
 			return;
 		}
 
+		// ~Y
 		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_YAML : {
 			this.produceYAML();
 			return;
@@ -511,8 +523,7 @@ NexlExpressionEvaluator.prototype.applyObjectKeyReverseResolutionAction = functi
 		return;
 	}
 
-	// performing object deep resolution
-	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
+	this.makeDeepResolution();
 
 	// assembling action value
 	var reverseKey = this.resolveActionEvaluatedValue();
@@ -591,39 +602,41 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 		return;
 	}
 
+	this.makeDeepResolution();
+
 	switch (this.action.actionValue) {
-		// sort ascent
+		// #S
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_ASC: {
 			this.result = this.result.sort();
 			return;
 		}
 
-		// sort descent
+		// #s
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_DESC: {
 			this.result = this.result.sort();
 			this.result = this.result.reverse();
 			return;
 		}
 
-		// uniq
+		// #U
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.UNIQUE: {
 			this.makeUniq();
 			return;
 		}
 
-		// duplicates
+		// #D
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.DUPLICATES: {
 			this.makeDuplicates();
 			return;
 		}
 
-		// length
+		// #LEN
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.LENGTH: {
 			this.result = this.result.length;
 			return;
 		}
 
-		// if array contains only one element, resolve it. otherwise make it undefined
+		// #F
 		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.GET_FIRST_OR_NOTHING: {
 			this.result = this.result.length === 1 ? this.result[0] : undefined;
 			return;
@@ -639,6 +652,8 @@ NexlExpressionEvaluator.prototype.eliminateAllFromArray = function (value) {
 };
 
 NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
+	this.makeDeepResolution();
+
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
 
@@ -653,6 +668,8 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyEliminateObjectProperties = function () {
+	this.expandObjectKeys();
+
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
 
@@ -711,9 +728,6 @@ NexlExpressionEvaluator.prototype.mergeObjects = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	if (j79.isArray(this.result)) {
 		this.appendArrayElements();
 		return;
@@ -726,13 +740,12 @@ NexlExpressionEvaluator.prototype.applyAppendMergeAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyJoinArrayElementsAction = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	// not an array ? bye bye
 	if (!j79.isArray(this.result)) {
 		return;
 	}
+
+	this.makeDeepResolution();
 
 	// resolving action value
 	var actionValue = this.resolveActionEvaluatedValue();
@@ -751,32 +764,39 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 		return;
 	}
 
+	this.makeDeepResolution();
+
+	// not a string ? good bye
+	if (!j79.isString(this.result)) {
+		return;
+	}
+
 	switch (this.action.actionValue) {
-		// upper case
+		// ^U
 		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.UPPERCASE: {
 			this.result = this.result.toUpperCase();
 			return;
 		}
 
-		// capitalize first letter
+		// ^U1
 		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.CAPITALIZE_FIRST_LETTER: {
 			this.result = this.result.charAt(0).toUpperCase() + this.result.slice(1);
 			return;
 		}
 
-		// lower case
+		// ^L
 		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LOWERCASE: {
 			this.result = this.result.toLowerCase();
 			return;
 		}
 
-		// length
+		// ^LEN
 		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LENGTH: {
 			this.result = this.result.length;
 			return;
 		}
 
-		// trim
+		// ^T
 		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.TRIM: {
 			this.result = this.result.trim();
 			return;
@@ -787,12 +807,6 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
 	// empty values
 	if (this.action.actionValue !== nexlExpressionsParser.UNDEFINED_VALUE_OPERATIONS_OPTIONS.MAKE_EMPTY_ITEMS_UNDEFINED) {
-		return;
-	}
-
-	// converting empty array to undefined
-	if (j79.isArray(this.result)) {
-		this.result = this.result.length < 1 ? undefined : this.result;
 		return;
 	}
 
@@ -816,9 +830,6 @@ NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function () {
-	// no need deep resolution for this action
-	this.needDeepResolution = false;
-
 	if (this.result !== undefined) {
 		return;
 	}
@@ -842,7 +853,17 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function 
 	throw customErrorMessage;
 };
 
+NexlExpressionEvaluator.prototype.makeDeepResolution4String = function () {
+	if (!j79.isString(this.result)) {
+		return;
+	}
+
+	this.makeDeepResolution();
+};
+
 NexlExpressionEvaluator.prototype.applyAction = function () {
+	this.makeDeepResolution4String();
+
 	switch (this.action.actionId) {
 		// . property resolution action
 		case nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION: {
@@ -932,9 +953,20 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.actionId, this.nexlExpressionMD.str);
 };
 
-NexlExpressionEvaluator.prototype.specialCareForPropertyResolutionAction = function () {
-	// first time this.result is equals to context, but it's not good for all other actions ( it's only good good for property resolution action )
-	if (this.actionNr === 0 && this.action.actionId !== nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
+NexlExpressionEvaluator.prototype.initResult = function () {
+	// if there is no actions, the result is undefined
+	if (this.nexlExpressionMD.actions.length < 1) {
+		this.result = undefined;
+		return;
+	}
+
+	// retrieving first action
+	var firstAction = this.nexlExpressionMD.actions[0];
+
+	// if first action is PROPERTY_RESOLUTION, result is assigning to context, otherwise to undefined
+	if (firstAction.actionId === nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
+		this.result = this.context;
+	} else {
 		this.result = undefined;
 	}
 };
@@ -964,66 +996,25 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	this.result = newResult;
 };
 
-NexlExpressionEvaluator.prototype.resolveSubExpressions = function () {
-	// it's not relevant for few actions
-	if (!this.needDeepResolution) {
-		return;
-	}
-
-	if (this.result === this.context) {
-		return;
-	}
-
-	if (j79.isString(this.result)) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-	}
-
-	// evaluating object keys if they have nexl expressions
-	if (j79.isObject(this.result)) {
-		this.expandObjectKeys();
-	}
-
-	// array
-	if (j79.isArray(this.result)) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-	}
-};
-
-NexlExpressionEvaluator.prototype.makeDeepResolutionIfNeeded = function () {
-	// reprocessing final result, it can contain sub expressions
-	if (this.action !== undefined && this.needDeepResolution) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
-	}
+NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
+	this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
-	this.result = this.context;
+	this.initResult();
 	this.retrieveEvaluateAsUndefinedAction();
 	this.actionsAsString = [];
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
-		// deep resolution flag
-		this.needDeepResolution = true;
-
 		// current action
 		this.action = this.nexlExpressionMD.actions[this.actionNr];
 
-		this.specialCareForPropertyResolutionAction();
-
 		// evaluating current action
 		this.applyAction();
-
-		// result may contain additional nexl expression with unlimited depth. resolving
-		this.resolveSubExpressions();
 	}
 
-	// empty expression like ${}
-	if (this.result === this.context) {
-		this.result = undefined;
-	}
-
-	this.makeDeepResolutionIfNeeded();
+	this.makeDeepResolution();
 
 	return this.result;
 };

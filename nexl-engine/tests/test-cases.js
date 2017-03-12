@@ -335,7 +335,7 @@ module.exports.push({
 // funcs
 module.exports.push({
 	expression: '${reverseArray(${arr1}).x.y.z}',
-	result: undefined
+	result: [false, 79, 'muscle', 'queen']
 });
 
 // funcs
@@ -949,7 +949,7 @@ module.exports.push({
 // long object resolution
 module.exports.push({
 	expression: '${obj1.pack.strong.balance}',
-	result: undefined
+	result: 'balance'
 });
 
 // long object resolution
@@ -961,7 +961,7 @@ module.exports.push({
 // resolution from primitive
 module.exports.push({
 	expression: '${intItem.a.b.c}',
-	result: undefined
+	result: 71
 });
 
 // when key is undefined
@@ -979,7 +979,7 @@ module.exports.push({
 // resolution from array
 module.exports.push({
 	expression: '${arr1.x.y.z}',
-	result: undefined
+	result: ["queen", "muscle", 79, false]
 });
 
 // resolution from function
@@ -990,14 +990,14 @@ module.exports.push({
 
 // mandatory value action
 module.exports.push({
-	expression: '${obj2.pack.wrapWithBrackets.x.y.z*}',
+	expression: '${obj2.pack.x.y.z*}',
 	throwsException: true
 });
 
 // mandatory value action
 module.exports.push({
 	expression: '${obj1...71...x*}',
-	throwsException: true
+	result: 'berry'
 });
 
 // mandatory value action
