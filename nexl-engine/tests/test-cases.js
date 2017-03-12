@@ -138,6 +138,29 @@ module.exports.push({
 	result: ['queen air', 'muscle air', '79 air', 'false air', 'queen 16', 'muscle 16', '79 16', 'false 16', 'queen 99', 'muscle 99', '79 99', 'false 99', 'queen true', 'muscle true', '79 true', 'false true', 'queen smooth', 'muscle smooth', '79 smooth', 'false smooth']
 });
 
+// arrays
+module.exports.push({
+	expression: '${arr8}',
+	result: [71, 10, 'a', true]
+});
+
+// arrays
+module.exports.push({
+	expression: '${arr9}',
+	result: [{
+		'71': 'berry',
+		beneficial: 'mint',
+		test: 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: {strong: 'balance', deer: 7}
+	},
+		10,
+		'a',
+		true]
+});
+
 
 // objects
 module.exports.push({

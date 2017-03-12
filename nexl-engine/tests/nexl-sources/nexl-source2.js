@@ -15,6 +15,8 @@ var arr4 = ['${arr3}', true, false, 'true', 79, 'queen'];
 var arr5 = ['hello'];
 var arr6 = [];
 var arr7 = ['hello', undefined, null, undefined, 21, true, 'test'];
+var arr8 = ['${intItem}', 10, 'a', true];
+var arr9 = ['${obj1}', 10, 'a', true];
 
 obj1PropName = '()';
 
