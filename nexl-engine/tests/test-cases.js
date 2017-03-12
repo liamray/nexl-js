@@ -1,10 +1,12 @@
 module.exports = [];
 
+
 // key is nexl expression
 module.exports.push({
 	expression: '${obj1.71}',
 	result: 'berry'
 });
+
 
 // function call
 module.exports.push({
@@ -1222,7 +1224,7 @@ module.exports.push({
 
 // append to array
 module.exports.push({
-	expression: '${arr1+\\${&\\${}',
+	expression: '${arr1+\\\\\\${&\\${}',
 	result: 'queen${muscle${79${false${${'
 });
 
@@ -1234,7 +1236,7 @@ module.exports.push({
 
 // append to array
 module.exports.push({
-	expression: '${arr1+\\${intItem\\}}',
+	expression: '${arr1+\\\\\\${intItem\\}}',
 	result: ['queen', 'muscle', 79, false, '${intItem}']
 });
 
