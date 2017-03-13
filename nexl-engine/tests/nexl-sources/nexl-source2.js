@@ -138,13 +138,13 @@ sourFruits = ['Lemon', 'Apple'];
 
 obj7 = {
 	home: '/home/nexl',
-	backupDir: '${this.home}/backup',
-	runsDir: '${this.home}/runs',
-	start: '${this.runsDir}/run.sh',
-	x: ['${this.runsDir}', '${intItem}', '${this.start}', '${obj7.home}'],
+	backupDir: '${__this__.home}/backup',
+	runsDir: '${__this__.home}/runs',
+	start: '${__this__.runsDir}/run.sh',
+	x: ['${__this__.runsDir}', '${intItem}', '${__this__.start}', '${obj7.home}'],
 	y: {
 		home: 'Earth',
-		a: '${this.home}'
+		a: '${__this__.home}'
 	}
 };
 
