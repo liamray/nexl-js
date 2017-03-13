@@ -138,6 +138,7 @@
 			var result = nexlEngine.nexlize(nexlSource, expression, args);
 			sendResult(result, input, res);
 		} catch (e) {
+			console.log(e);
 			sendException(e, input, res);
 		}
 

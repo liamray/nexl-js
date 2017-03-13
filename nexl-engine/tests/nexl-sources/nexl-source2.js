@@ -191,6 +191,23 @@ obj11 = {
 	}
 };
 
+obj12 = {
+	home: '${obj1}',
+	inner: {
+		a: '${__parent__.home.\\()}'
+	}
+};
+
+obj13 = {
+	a: '${obj14}',
+	x: 10
+};
+
+obj14 = {
+	b: '${__parent__.x}'
+};
+
+
 expr1 = '${expr2}';
 expr2 = '${expr3}';
 expr3 = ['${obj1}', '\\${obj1}', '${arr1}', '${intItem}', 1, '2', true];

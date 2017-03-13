@@ -17,7 +17,7 @@ function analyzeResult(testCase, res, data) {
 	var testCaseAsString = util.format('source=%s, args=%s', testCase.request.source, JSON.stringify(testCase.request.args));
 
 	if (res.statusCode !== testCase.result.expectedStatusCode) {
-		throw util.format('Expected status code [%s] doesn\'t match to received status code [%s]\n%s', testCase.result.expectedStatusCode, res.statusCode, testCaseAsString);
+		throw util.format('Expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString);
 	}
 
 	var contentType = res.headers["content-type"];
