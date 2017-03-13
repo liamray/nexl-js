@@ -468,37 +468,43 @@ NexlExpressionEvaluator.prototype.applyObjectOperationsAction = function () {
 
 	switch (actionValue) {
 		// ~O
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.CONVERT_TO_OBJECT : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.CONVERT_TO_OBJECT :
+		{
 			this.convert2Object();
 			return;
 		}
 
 		// ~K
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_KEYS : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_KEYS :
+		{
 			this.resolveObjectKeys();
 			return;
 		}
 
 		// ~V
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_VALUES : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.RESOLVE_VALUES :
+		{
 			this.resolveObjectValues();
 			return;
 		}
 
 		// ~P
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_KEY_VALUE_PAIRS : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_KEY_VALUE_PAIRS :
+		{
 			this.produceKeyValuesPairs();
 			return;
 		}
 
 		// ~X
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_XML : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_XML :
+		{
 			this.produceXML();
 			return;
 		}
 
 		// ~Y
-		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_YAML : {
+		case nexlExpressionsParser.OBJECT_OPERATIONS_OPTIONS.PRODUCE_YAML :
+		{
 			this.produceYAML();
 			return;
 		}
@@ -623,38 +629,44 @@ NexlExpressionEvaluator.prototype.applyArrayOperationsAction = function () {
 
 	switch (this.action.actionValue) {
 		// #S
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_ASC: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_ASC:
+		{
 			this.result = this.result.sort();
 			return;
 		}
 
 		// #s
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_DESC: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.SORT_DESC:
+		{
 			this.result = this.result.sort();
 			this.result = this.result.reverse();
 			return;
 		}
 
 		// #U
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.UNIQUE: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.UNIQUE:
+		{
 			this.makeUniq();
 			return;
 		}
 
 		// #D
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.DUPLICATES: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.DUPLICATES:
+		{
 			this.makeDuplicates();
 			return;
 		}
 
 		// #LEN
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.LENGTH: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.LENGTH:
+		{
 			this.result = this.result.length;
 			return;
 		}
 
 		// #F
-		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.GET_FIRST_OR_NOTHING: {
+		case nexlExpressionsParser.ARRAY_OPERATIONS_OPTIONS.GET_FIRST_OR_NOTHING:
+		{
 			this.result = this.result.length === 1 ? this.result[0] : undefined;
 			return;
 		}
@@ -793,31 +805,36 @@ NexlExpressionEvaluator.prototype.applyStringOperationsAction = function () {
 
 	switch (this.action.actionValue) {
 		// ^U
-		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.UPPERCASE: {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.UPPERCASE:
+		{
 			this.result = this.result.toUpperCase();
 			return;
 		}
 
 		// ^U1
-		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.CAPITALIZE_FIRST_LETTER: {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.CAPITALIZE_FIRST_LETTER:
+		{
 			this.result = this.result.charAt(0).toUpperCase() + this.result.slice(1);
 			return;
 		}
 
 		// ^L
-		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LOWERCASE: {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LOWERCASE:
+		{
 			this.result = this.result.toLowerCase();
 			return;
 		}
 
 		// ^LEN
-		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LENGTH: {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.LENGTH:
+		{
 			this.result = this.result.length;
 			return;
 		}
 
 		// ^T
-		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.TRIM: {
+		case nexlExpressionsParser.STRING_OPERATIONS_OPTIONS.TRIM:
+		{
 			this.result = this.result.trim();
 			return;
 		}
@@ -887,85 +904,99 @@ NexlExpressionEvaluator.prototype.makeDeepResolution4String = function () {
 NexlExpressionEvaluator.prototype.applyAction = function () {
 	switch (this.action.actionId) {
 		// . property resolution action
-		case nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION: {
+		case nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION:
+		{
 			this.applyPropertyResolutionAction();
 			return;
 		}
 
 		// [] array indexes action
-		case nexlExpressionsParser.ACTIONS.ARRAY_INDEX: {
+		case nexlExpressionsParser.ACTIONS.ARRAY_INDEX:
+		{
 			this.applyArrayIndexesAction();
 			return;
 		}
 
 		// () function action
-		case nexlExpressionsParser.ACTIONS.FUNCTION: {
+		case nexlExpressionsParser.ACTIONS.FUNCTION:
+		{
 			this.evalFunctionAction();
 			return;
 		}
 
 		// @ default value action
-		case nexlExpressionsParser.ACTIONS.DEF_VALUE: {
+		case nexlExpressionsParser.ACTIONS.DEF_VALUE:
+		{
 			this.applyDefaultValueAction();
 			return;
 		}
 
 		// : cast action
-		case nexlExpressionsParser.ACTIONS.CAST: {
+		case nexlExpressionsParser.ACTIONS.CAST:
+		{
 			this.applyCastAction();
 			return;
 		}
 
 		// ~K, ~V, ~O, ~X, ~P, ~Y, ~Z converters action
-		case nexlExpressionsParser.ACTIONS.OBJECT_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.OBJECT_OPERATIONS:
+		{
 			this.applyObjectOperationsAction();
 			return;
 		}
 
 		// < object key reverse resolution action
-		case nexlExpressionsParser.ACTIONS.OBJECT_KEY_REVERSE_RESOLUTION: {
+		case nexlExpressionsParser.ACTIONS.OBJECT_KEY_REVERSE_RESOLUTION:
+		{
 			this.applyObjectKeyReverseResolutionAction();
 			return;
 		}
 
 		// #S, #s, #U, #D, #LEN, #A array operations action
-		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.ARRAY_OPERATIONS:
+		{
 			this.applyArrayOperationsAction();
 			return;
 		}
 
 		// - eliminate array elements action
-		case nexlExpressionsParser.ACTIONS.ELIMINATE: {
+		case nexlExpressionsParser.ACTIONS.ELIMINATE:
+		{
 			this.applyEliminateAction();
 			return;
 		}
 
 		// + append to array action
-		case nexlExpressionsParser.ACTIONS.APPEND_MERGE: {
+		case nexlExpressionsParser.ACTIONS.APPEND_MERGE:
+		{
 			this.applyAppendMergeAction();
 			return;
 		}
 
 		// & join array elements action
-		case nexlExpressionsParser.ACTIONS.JOIN_ARRAY_ELEMENTS: {
+		case nexlExpressionsParser.ACTIONS.JOIN_ARRAY_ELEMENTS:
+		{
 			this.applyJoinArrayElementsAction();
 			return;
 		}
 
 		// ^U, ^L, ^LEN, ^T, ^Z string operations action
-		case nexlExpressionsParser.ACTIONS.STRING_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.STRING_OPERATIONS:
+		{
 			this.applyStringOperationsAction();
 			return;
 		}
 
 		// eval as undefined action
-		case nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS: {
+		case nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS:
+		{
 			this.undefinedValueOperations();
 			return;
 		}
 
 		// mandatory value action
-		case nexlExpressionsParser.ACTIONS.MANDATORY_VALUE_VALIDATOR: {
+		case nexlExpressionsParser.ACTIONS.MANDATORY_VALUE_VALIDATOR:
+		{
 			this.applyMandatoryValueValidatorAction();
 			return;
 		}
@@ -1013,6 +1044,13 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 		newResult[newKey] = this.result[key];
 	}
+
+	// copying non enumerable __parent__ property from this.result to newResult
+	Object.defineProperty(newResult, '__parent__', {
+		enumerable: false,
+		configurable: true,
+		value: this.result.__parent__
+	});
 
 	this.result = newResult;
 };
@@ -1078,8 +1116,16 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 NexlEngine.prototype.processObjectItem = function (obj) {
 	var result = {};
 
-	// rescuing this in context ( to restore it back in future )
-	var currentThis = this.context.this;
+	// rescuing this and parent ( to restore it back in future )
+	var currentThis = this.context.__this__;
+	var currentParent = this.context.__parent__;
+
+	// adding non enumerable __parent__ property to obj
+	Object.defineProperty(obj, '__parent__', {
+		enumerable: false,
+		configurable: true,
+		value: currentThis
+	});
 
 	// iterating over over keys:values and evaluating
 	for (var key in obj) {
@@ -1095,7 +1141,8 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(evaluatedKey));
 		}
 
-		this.context.this = obj;
+		this.context.__this__ = obj;
+		this.context.__parent__ = currentThis;
 
 		var value = obj[key];
 		value = this.processItem(value);
@@ -1108,8 +1155,9 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		result[evaluatedKey] = value;
 	}
 
-	// restoring back this into context
-	this.context.this = currentThis;
+	// restoring back this and parent
+	this.context.__this__ = currentThis;
+	this.context.__parent__ = currentParent;
 
 	return result;
 };
