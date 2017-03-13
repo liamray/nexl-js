@@ -1091,15 +1091,17 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 	var currentThis = this.context.__this__;
 	var currentParent = this.context.__parent__;
 
-	// adding non enumerable __parent__ property to obj
-	Object.defineProperty(obj, '__parent__', {
+	// adding non enumerable __parent__ property to result
+	Object.defineProperty(result, '__parent__', {
 		enumerable: false,
 		configurable: true,
 		value: currentThis
 	});
 
-	// adding non enumerable __parent__ property to result
-	Object.defineProperty(result, '__parent__', {
+	// adding non enumerable __parent__ property to obj
+	// result object is cloned. result.__parent__ is referencing to a parent, but that parent is still referencing to old obj
+	// therefore we need to attach a __parent__ property to obj as well
+	Object.defineProperty(obj, '__parent__', {
 		enumerable: false,
 		configurable: true,
 		value: currentThis
