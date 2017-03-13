@@ -179,6 +179,32 @@ module.exports.push({
 	}
 });
 
+// objects
+module.exports.push({
+	expression: '${obj1.${prop}@1}',
+	result: {
+		'71': 'berry',
+		beneficial: 'mint',
+		test: 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: {strong: 'balance', deer: 7}
+	}
+});
+
+// objects
+module.exports.push({
+	expression: '${obj1.${prop@}@2}',
+	result: '2'
+});
+
+// objects
+module.exports.push({
+	expression: '${obj1.${prop@:null}@3}',
+	result: '3'
+});
+
 // nested objects
 module.exports.push({
 	expression: '${obj1a.x.deer}',
@@ -1311,25 +1337,41 @@ module.exports.push({
 	}
 });
 
-/*
- // merge object with override + this
- module.exports.push({
- expression: '${obj7+${obj8}}',
- args: {
- obj7 : {
- home: 'c:\\temp'
- }
- },
- result: {
- home: '/sweetHome',
- backupDir: '/sweetHome/backup',
- runsDir: '/sweetHome/runs',
- start: '/sweetHome/runs/run.sh',
- x: ['/sweetHome/runs', 71, '/sweetHome/runs/run.sh', '/home/nexl'],
- y: {home: 'Earth', a: 'Earth'}
- }
- });
- */
+// merge object with override + this
+module.exports.push({
+	expression: '${obj7+${obj8}}',
+	args: {
+		obj7: {
+			home: 'c:\\temp\\'
+		}
+	},
+	result: {
+		home: '/sweetHome',
+		backupDir: '/sweetHome/backup',
+		runsDir: '/sweetHome/runs',
+		start: '/sweetHome/runs/run.sh',
+		x: ['/sweetHome/runs', 71, '/sweetHome/runs/run.sh', 'c:\\temp\\'],
+		y: {home: 'Earth', a: 'Earth'}
+	}
+});
+
+// merge object with override + this
+module.exports.push({
+	expression: '${obj7+${obj8}}',
+	args: {
+		obj8: {
+			home: 'c:\\temp\\'
+		}
+	},
+	result: {
+		home: 'c:\\temp\\',
+		backupDir: 'c:\\temp\\/backup',
+		runsDir: 'c:\\temp\\/runs',
+		start: 'c:\\temp\\/runs/run.sh',
+		x: ['c:\\temp\\/runs', 71, 'c:\\temp\\/runs/run.sh', '/home/nexl'],
+		y: {home: 'Earth', a: 'Earth'}
+	}
+});
 
 // escaping test
 module.exports.push({
@@ -1557,5 +1599,27 @@ module.exports.push({
 	result: "APP_SERVER_INTERFACES:\n    PROD: {FIRST: [hothead1, awakening1, dynamite1, military1], SECOND: [cuddly2, grease2, fate2, atmosphere2]}\n    DEV: [zombie, arrows, zebra]\n    QA: {FIRST: [autonomous1, criminal1], SECOND: [adrenaline2, prophetic2]}\n    DRP-PROD: drp-prod\n    YEST: yest\n    STAGING: jstaging\nINTERNET_INTERFACES:\n    PROD: [iMaximum, iPromised, iPilot]\n    DEV: iHomeland\n    QA: [iTruth, iSilver]\n    YEST: iYest\n    STAGING: iStaging\n    SPECIAL: iDeer\n"
 });
 
+// sub expressions
+module.exports.push({
+	expression: '${expr1}',
+	result: [{
+		'71': 'berry',
+		beneficial: 'mint',
+		test: 'righteous',
+		'()': 'trick',
+		disturbed: 46,
+		price: true,
+		pack: {strong: 'balance', deer: 7}
+	},
+		'${obj1}',
+		'queen',
+		'muscle',
+		79,
+		false,
+		71,
+		1,
+		'2',
+		true]
+});
 
 // test big mix of every action

@@ -995,7 +995,7 @@ NexlExpressionEvaluator.prototype.initResult = function () {
 
 NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	// not relevant for standard libraries
-	if (this.result === Math || this.result === Number || this.result === Date) {
+	if (this.result === Math || this.result === Number || this.result === Date || this.result == this.context) {
 		return;
 	}
 

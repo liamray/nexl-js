@@ -151,3 +151,7 @@ obj7 = {
 obj8 = {
 	home: '/sweetHome'
 };
+
+expr1 = '${expr2}';
+expr2 = '${expr3}';
+expr3 = ['${obj1}', '\\${obj1}', '${arr1}', '${intItem}', 1, '2', true];
