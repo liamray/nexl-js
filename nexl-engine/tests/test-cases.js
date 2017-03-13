@@ -1307,7 +1307,7 @@ module.exports.push({
 
 // this
 module.exports.push({
-	expression: '${this.intItem}',
+	expression: '${__this__.intItem}',
 	result: undefined
 });
 
@@ -1372,6 +1372,35 @@ module.exports.push({
 		y: {home: 'Earth', a: 'Earth'}
 	}
 });
+
+
+// this, parent
+module.exports.push({
+	expression: '${obj9}',
+	result: {
+		"home": "/home/nexl",
+		"this1": "/home/nexl",
+		"parent3": {"a1": "/home/nexl", "a2": "/home/nexl", "x": 10, "inner": {"b1": 10, "b2": 10, "b3": "/home/nexl"}}
+	}
+});
+
+// this, parent
+module.exports.push({
+	expression: '${obj10}',
+	result: {
+		home: '/home/jboss',
+		backupDir: '/home/jboss/BACKUP',
+		inner: {x1: '/home/jboss/BACKUP', x2: 10, x3: 10, x4: '/home/jboss/BACKUP'}
+	}
+});
+
+
+// this, parent
+module.exports.push({
+	expression: '${obj11}',
+	result: {"home": "/home/jboss", "inner": {"a": "/home/jboss"}}
+});
+
 
 // escaping test
 module.exports.push({

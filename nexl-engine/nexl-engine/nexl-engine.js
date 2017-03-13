@@ -1083,7 +1083,9 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 };
 
 NexlEngine.prototype.processObjectItem = function (obj) {
-	var result = {};
+	// cloning obj object to result because we need to know his computable values
+	// for example : { a:'1', b:'${__this__.b}', inner: {c:'${__parent__.b}'} } will not work for inner.c if obj is not cloned
+	var result = nexlEngineUtils.deepMergeInner({}, obj);
 
 	// rescuing this and parent ( to restore it back in future )
 	var currentThis = this.context.__this__;
@@ -1096,12 +1098,24 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		value: currentThis
 	});
 
-	// iterating over over keys:values and evaluating
-	for (var key in obj) {
+	// adding non enumerable __parent__ property to result
+	Object.defineProperty(result, '__parent__', {
+		enumerable: false,
+		configurable: true,
+		value: currentThis
+	});
+
+	// result keys
+	var keys = Object.keys(result);
+
+	// iterating over over keys and evaluating
+	for (var index in keys) {
+		var key = keys[index];
 		var evaluatedKey = this.processItem(key);
 
 		// !U UNDEFINED_VALUE_OPERATIONS
 		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
+			delete result[key];
 			continue;
 		}
 
@@ -1110,11 +1124,12 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(evaluatedKey));
 		}
 
-		this.context.__this__ = obj;
+		this.context.__this__ = result;
 		this.context.__parent__ = currentThis;
 
-		var value = obj[key];
+		var value = result[key];
 		value = this.processItem(value);
+		delete result[key];
 
 		// !U UNDEFINED_VALUE_OPERATIONS
 		if (value === undefined && this.isEvaluateAsUndefined) {

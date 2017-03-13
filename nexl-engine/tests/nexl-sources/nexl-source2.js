@@ -152,6 +152,45 @@ obj8 = {
 	home: '/sweetHome'
 };
 
+obj9 = {
+	home: '/home/nexl',
+	parent1: '${__this__.__parent__}',
+	parent2: '${__parent__.__this__}',
+	this1: '${.__this__.home}',
+	this2: '${.__this__.__this__.home}',
+	parent3: {
+		a1: '${__this__.__parent__.home}',
+		a2: '${__parent__.home}',
+		a3: '${__parent__.__this__.home}',
+		a4: '${__parent__.__parent__.home}',
+		x: 10,
+		inner: {
+			b1: '${__parent__.x}',
+			b2: '${@${__parent__.x}}',
+			b3: '${__parent__.__parent__.home}'
+		}
+	}
+};
+
+obj10 = {
+	home: '/home/jboss',
+	backupDir: '${__this__.home}/BACKUP',
+	inner: {
+		x1: '${__parent__.backupDir}',
+		x2: '${__parent__.inner.__parent__.inner.__parent__.inner.x3}',
+		x3: 10,
+		x4: '${__parent__.inner.__parent__.inner.__parent__.inner.__parent__.backupDir}'
+	}
+};
+
+
+obj11 = {
+	home: '/home/jboss',
+	inner: {
+		a: '${__this__.__parent__.home}'
+	}
+};
+
 expr1 = '${expr2}';
 expr2 = '${expr3}';
 expr3 = ['${obj1}', '\\${obj1}', '${arr1}', '${intItem}', 1, '2', true];
