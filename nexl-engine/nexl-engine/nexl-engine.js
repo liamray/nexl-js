@@ -193,6 +193,14 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 	this.result = j79.unwrapFromArrayIfPossible(this.newResult);
 };
 
+NexlExpressionEvaluator.prototype.assembleChunks4CurrentAction = function () {
+	var data = {};
+	data.chunks = this.action.actionValue.chunks;
+	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
+
+	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
+};
+
 NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 	this.makeDeepResolution4String();
 
@@ -205,12 +213,7 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 		this.expandObjectKeys();
 	}
 
-	var data = {};
-	data.chunks = this.action.actionValue.chunks;
-	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
-
-	// assembledChunks is string
-	this.assembledChunks = new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
+	this.assembledChunks = this.assembleChunks4CurrentAction();
 
 	// skipping object resolution for undefined key
 	if (this.assembledChunks === undefined) {
@@ -353,14 +356,6 @@ NexlExpressionEvaluator.prototype.applyArrayIndexesAction = function () {
 	}
 };
 
-NexlExpressionEvaluator.prototype.resolveActionEvaluatedValue = function () {
-	var data = {};
-	data.chunks = this.action.actionValue.chunks;
-	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
-
-	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
-};
-
 NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
 	// is value not set for this.result ?
 	if (this.result !== undefined) {
@@ -368,7 +363,7 @@ NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
 		return;
 	}
 
-	this.result = this.resolveActionEvaluatedValue();
+	this.result = this.assembleChunks4CurrentAction();
 	this.needDeepResolution4NextActions = false;
 };
 
@@ -540,7 +535,7 @@ NexlExpressionEvaluator.prototype.applyObjectKeyReverseResolutionAction = functi
 	this.makeDeepResolution();
 
 	// assembling action value
-	var reverseKey = this.resolveActionEvaluatedValue();
+	var reverseKey = this.assembleChunks4CurrentAction();
 
 	var newResult = [];
 
@@ -672,7 +667,7 @@ NexlExpressionEvaluator.prototype.applyEliminateArrayElements = function () {
 	this.makeDeepResolution();
 
 	// resolving action value
-	var actionValue = this.resolveActionEvaluatedValue();
+	var actionValue = this.assembleChunks4CurrentAction();
 
 	// wrapping with array
 	actionValue = j79.wrapWithArrayIfNeeded(actionValue);
@@ -690,7 +685,7 @@ NexlExpressionEvaluator.prototype.applyEliminateObjectProperties = function () {
 	}
 
 	// resolving action value
-	var actionValue = this.resolveActionEvaluatedValue();
+	var actionValue = this.assembleChunks4CurrentAction();
 
 	// wrapping with array
 	actionValue = j79.wrapWithArrayIfNeeded(actionValue);
@@ -724,7 +719,7 @@ NexlExpressionEvaluator.prototype.applyEliminateAction = function () {
 
 NexlExpressionEvaluator.prototype.appendArrayElements = function () {
 	// resolving action value
-	var actionValue = this.resolveActionEvaluatedValue();
+	var actionValue = this.assembleChunks4CurrentAction();
 
 	// if actionValue is array, merging 2 arrays. otherwise just pushing a value to existing
 	if (j79.isArray(actionValue)) {
@@ -736,7 +731,7 @@ NexlExpressionEvaluator.prototype.appendArrayElements = function () {
 
 NexlExpressionEvaluator.prototype.mergeObjects = function () {
 	// resolving action value
-	var actionValue = this.resolveActionEvaluatedValue();
+	var actionValue = this.assembleChunks4CurrentAction();
 
 	if (!j79.isObject(actionValue)) {
 		return;
@@ -770,7 +765,7 @@ NexlExpressionEvaluator.prototype.applyJoinArrayElementsAction = function () {
 	this.makeDeepResolution();
 
 	// resolving action value
-	var actionValue = this.resolveActionEvaluatedValue();
+	var actionValue = this.assembleChunks4CurrentAction();
 
 	// validating action value
 	if (!j79.isPrimitive(actionValue)) {
@@ -867,7 +862,7 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function 
 	// resolving custom error message
 	var customErrorMessage;
 	try {
-		customErrorMessage = this.resolveActionEvaluatedValue();
+		customErrorMessage = this.assembleChunks4CurrentAction();
 	} catch (e) {
 		throw util.format('%s\nFailed to evaluate custom error message. Reason : %s', defaultErrorMessage, e);
 	}
