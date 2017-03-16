@@ -55,6 +55,14 @@ function test() {
 	return 'Zhenya+';
 }
 
+function not(param) {
+	if (j79.isBool(param)) {
+		return !param;
+	} else {
+		return param;
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // assigning system functions to nexl context
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -62,4 +70,5 @@ module.exports.assign = function (context) {
 	context.nexl.functions.system.test = test;
 	context.nexl.functions.system.isContains = isContains;
 	context.nexl.functions.system.replaceAll = replaceAll;
+	context.nexl.functions.system.not = not;
 };
