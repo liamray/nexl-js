@@ -186,7 +186,12 @@ function NexlSourceCodeAssembler(nexlSource) {
 
 function createContext(nexlSource) {
 	var context = {};
+
 	context.nexl = {};
+
+	context.nexl.functions = {};
+	context.nexl.functions.system = {};
+	context.nexl.functions.user = {};
 
 	var sourceCode = new NexlSourceCodeAssembler(nexlSource).assemble();
 

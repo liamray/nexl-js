@@ -211,3 +211,28 @@ obj14 = {
 expr1 = '${expr2}';
 expr2 = '${expr3}';
 expr3 = ['${obj1}', '\\${obj1}', '${arr1}', '${intItem}', 1, '2', true];
+
+
+nexl.functions.user.isContains = function () {
+	return 'Zhenya+';
+};
+
+nexl.functions.user.testFunc1 = function () {
+	return 'user.testFunc1';
+};
+
+nexl.functions.user.testFunc2 = function () {
+	return 'user.testFunc2';
+};
+
+function testFunc1() {
+	return 'testFunc1';
+}
+
+function testFunc3() {
+	return 'testFunc3';
+}
+
+function test() {
+	return 'Zhenya++';
+}

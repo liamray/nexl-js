@@ -9,6 +9,7 @@
 
 const nexlExpressionsParser = require('./nexl-expressions-parser');
 const nexlSourceUtils = require('./nexl-source-utils');
+const nexlSystemFuncs = require('./nexl-engine-system-functoins');
 const j79 = require('j79-utils');
 const deepMerge = require('deepmerge');
 const util = require('util');
@@ -34,7 +35,7 @@ function hasEvaluateAsUndefinedFlag(obj) {
 	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
 }
 
-function provideFunctionsWithNexlAPI(context, nexlEngine) {
+function provideWithNexlAPI(context, nexlEngine) {
 	// supplying nexl engine for functions in nexl-sources
 	context.nexl.nexlize = function (nexlExpression, externalArgs4Function) {
 		// backing up current context before change
@@ -71,7 +72,10 @@ function makeContext(nexlSource, externalArgs, nexlEngine) {
 	supplyStandardLibs(context);
 
 	// giving an access to functions from nexl sources to nexl API
-	provideFunctionsWithNexlAPI(context, nexlEngine);
+	provideWithNexlAPI(context, nexlEngine);
+
+	//
+	nexlSystemFuncs.assign(context);
 
 	return context;
 }

@@ -1231,12 +1231,6 @@ module.exports.push({
 
 // reserved actions
 module.exports.push({
-	expression: '${?}',
-	throwsException: true
-});
-
-// reserved actions
-module.exports.push({
 	expression: '${%}',
 	throwsException: true
 });
@@ -1651,4 +1645,56 @@ module.exports.push({
 		true]
 });
 
-// test big mix of every action
+// functions
+module.exports.push({
+	expression: '${?test()~Y}',
+	result: 'Zhenya++'
+});
+
+// functions
+module.exports.push({
+	expression: '${?nexl\\.functions\\.system\\.test()~Y}',
+	result: 'Zhenya+'
+});
+
+// functions
+module.exports.push({
+	expression: '${?testFunc1()}',
+	result: 'testFunc1'
+});
+
+// functions
+module.exports.push({
+	expression: '${?nexl\\.functions\\.user\\.testFunc1()}',
+	result: 'user.testFunc1'
+});
+
+// functions
+module.exports.push({
+	expression: '${?testFunc2()}',
+	result: 'user.testFunc2'
+});
+
+// functions
+module.exports.push({
+	expression: '${?testFunc3()}',
+	result: 'testFunc3'
+});
+
+// functions
+module.exports.push({
+	expression: '${arr8?isContains()}',
+	result: 'Zhenya+'
+});
+
+// functions
+module.exports.push({
+	expression: '${arr8?nexl\\.functions\\.system\\.isContains(${intItem})}',
+	result: true
+});
+
+// functions
+module.exports.push({
+	expression: '${arr8?replaceAll( ${intItem}, ${boolItem} )?replaceAll( ${@a}, ${@101:num} )}',
+	result: [true, 10, 101, true]
+});

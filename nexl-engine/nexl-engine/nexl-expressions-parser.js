@@ -13,20 +13,21 @@ const j79 = require('j79-utils');
 const ACTIONS = {
 	'PROPERTY_RESOLUTION': '.',
 	'ARRAY_INDEX': '[', // elements access example : [^], [$], [3], [-3], [2..6, 3..9], [^..$], [^..3], [3..$], [^..-3], [-3..$], [^..1, 4..${x}, -3..$]
-	'FUNCTION': '(',
+	'FUNCTION_CALL': '(',
 	'DEF_VALUE': '@',
 	'CAST': ':',
-	"OBJECT_OPERATIONS": '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML, ~Z make undefined for empty object
+	'OBJECT_OPERATIONS': '~', // ~K objects keys, ~V object values, ~O convert to object, ~X produce XML, ~P produce key value pairs, ~Y produce YAML, ~Z make undefined for empty object
 	'ARRAY_OPERATIONS': '#', // #S #s sort; #U uniq; #D; #LEN array length, #A convert to array, #Z make undefined for empty array, #F resolve first element if array has only 1 element, otherwise make it undefined
-	"OBJECT_KEY_REVERSE_RESOLUTION": '<',
+	'OBJECT_KEY_REVERSE_RESOLUTION': '<',
 	'JOIN_ARRAY_ELEMENTS': '&',
-	"ELIMINATE": '-',
-	"APPEND_MERGE": '+',
+	'ELIMINATE': '-',
+	'APPEND_MERGE': '+',
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
-	"UNDEFINED_VALUE_OPERATIONS": '!',
-	"MANDATORY_VALUE_VALIDATOR": '*',
+	'UNDEFINED_VALUE_OPERATIONS': '!',
+	'MANDATORY_VALUE_VALIDATOR': '*',
+	'RESOLVE_FUNCTION': '?',
+
 	// the following actions are reserved for future usage
-	'RESERVED1': '?',
 	'RESERVED2': '%',
 	'RESERVED3': '>',
 	'RESERVED4': '=',
@@ -418,7 +419,7 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 	}
 
 	// is function ?
-	if (this.currentAction === ACTIONS.FUNCTION) {
+	if (this.currentAction === ACTIONS.FUNCTION_CALL) {
 		// returns : length, funcParams
 		parsed = new ParseFunctionCall(this.str, this.lastSearchPos).parse();
 		this.createArrOrFuncAction(parsed.funcParams, parsed.length);
