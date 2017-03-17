@@ -162,6 +162,18 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	this.isEvaluateAsUndefined = false;
 };
 
+NexlExpressionEvaluator.prototype.try2ResolveNexlFuncs = function (key) {
+	if (this.context.nexl.functions.user[key] !== undefined) {
+		return this.context.nexl.functions.user[key];
+	}
+
+	if (this.context.nexl.functions.system[key] !== undefined) {
+		return this.context.nexl.functions.system[key];
+	}
+
+	return undefined;
+};
+
 NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	// skipping undefined key
 	if (key === undefined) {
@@ -175,7 +187,12 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 		return;
 	}
 
-	this.newResult.push(this.result[key]);
+	var newResult = this.result[key];
+	if (newResult === undefined && this.result === this.context) {
+		newResult = this.try2ResolveNexlFuncs(key);
+	}
+
+	this.newResult.push(newResult);
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
@@ -235,16 +252,16 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 	// not a function ? good bye
 	if (!j79.isFunction(this.result)) {
+		// reset function params stack
+		this.funcParamsStack = [];
 		return;
 	}
 
-	// assembling function params ( each param is nexl a expression. evaluating... )
-	var params = [];
+	// copying params from stack
+	var params = this.funcParamsStack.slice(0);
 
-	if (this.bufferedResult !== undefined) {
-		params.push(this.bufferedResult);
-		this.bufferedResult = undefined;
-	}
+	// reset function params stack
+	this.funcParamsStack = [];
 
 	for (var index in this.action.actionValue) {
 		var funcParamMD = this.action.actionValue[index];
@@ -877,49 +894,10 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function 
 };
 
 
-NexlExpressionEvaluator.prototype.resolveFunction = function (funcName) {
-	var funcHierarchy = funcName.split('.');
-	var func = this.context;
-	var index = 0;
-
-	while (j79.isObject(func) && index < funcHierarchy.length) {
-		func = func[funcHierarchy[index]];
-		index++;
-	}
-
-	// is got a real function ?
-	if (j79.isFunction(func) && index === funcHierarchy.length) {
-		return func;
-	}
-
-	// trying to resolve a function from context.nexl.functions.user
-	func = this.context.nexl.functions.user[funcName];
-	if (j79.isFunction(func)) {
-		return func;
-	}
-
-	// trying to resolve a function from context.nexl.functions.system
-	func = this.context.nexl.functions.system[funcName];
-	if (j79.isFunction(func)) {
-		return func;
-	}
-
-	return undefined;
-};
-
-NexlExpressionEvaluator.prototype.applyResolveFunctionAction = function () {
-	var funcName = this.assembleChunks4CurrentAction();
-	if (!j79.isString(funcName)) {
-		return;
-	}
-
+NexlExpressionEvaluator.prototype.applyPushFunctionParamAction = function () {
 	this.makeDeepResolution();
-
-	// storing a current result in temporary var ( it will be send as a first argument to function )
-	this.bufferedResult = this.result;
-
-	// resolving real function by funcName
-	this.result = this.resolveFunction(funcName);
+	this.funcParamsStack.push(this.result);
+	this.initResult(this.actionNr + 1);
 };
 
 NexlExpressionEvaluator.prototype.makeDeepResolution4String = function () {
@@ -1017,9 +995,9 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 			return;
 		}
 
-		// mandatory value action
-		case nexlExpressionsParser.ACTIONS.RESOLVE_FUNCTION: {
-			this.applyResolveFunctionAction();
+		// push current result
+		case nexlExpressionsParser.ACTIONS.PUSH_FUNCTION_PARAM: {
+			this.applyPushFunctionParamAction();
 			return;
 		}
 	}
@@ -1027,18 +1005,18 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.actionId, this.nexlExpressionMD.str);
 };
 
-NexlExpressionEvaluator.prototype.initResult = function () {
+NexlExpressionEvaluator.prototype.initResult = function (actionNr) {
 	// if there is no actions, the result is undefined
-	if (this.nexlExpressionMD.actions.length < 1) {
+	if (this.nexlExpressionMD.actions.length - 1 < actionNr) {
 		this.result = undefined;
 		return;
 	}
 
 	// retrieving first action
-	var firstAction = this.nexlExpressionMD.actions[0];
+	var action = this.nexlExpressionMD.actions[actionNr];
 
 	// if first action is PROPERTY_RESOLUTION, result is assigning to context, otherwise to undefined
-	if (firstAction.actionId === nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
+	if (action.actionId === nexlExpressionsParser.ACTIONS.PROPERTY_RESOLUTION) {
 		this.result = this.context;
 	} else {
 		this.result = undefined;
@@ -1084,10 +1062,11 @@ NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
-	this.initResult();
+	this.initResult(0);
 	this.retrieveEvaluateAsUndefinedAction();
 	this.actionsAsString = [];
 	this.needDeepResolution4NextActions = true;
+	this.funcParamsStack = [];
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {

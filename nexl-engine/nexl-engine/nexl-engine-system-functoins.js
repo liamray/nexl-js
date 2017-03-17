@@ -38,6 +38,14 @@ function isContains(entity, item) {
 	return entity;
 }
 
+function ifContains(entity, item, thenIf, elseIf) {
+	if (j79.isArray(entity) || j79.isString(entity)) {
+		return entity.indexOf(item) >= 0 ? thenIf : elseIf;
+	}
+
+	return entity;
+}
+
 // replaces items in array or string
 function replaceAll(entity, searchItem, replace) {
 	if (j79.isArray(entity)) {
@@ -55,6 +63,15 @@ function test() {
 	return 'Zhenya+';
 }
 
+function add() {
+	var result = '';
+	for (var index = 0; index < arguments.length; index++) {
+		result += arguments[index];
+	}
+
+	return result;
+}
+
 function not(param) {
 	if (j79.isBool(param)) {
 		return !param;
@@ -63,8 +80,12 @@ function not(param) {
 	}
 }
 
-function isEquals(entity1, entity2, thenIf, elseIf) {
+function ifEquals(entity1, entity2, thenIf, elseIf) {
 	return entity1 === entity2 ? thenIf : elseIf;
+}
+
+function isEquals(entity1, entity2) {
+	return entity1 === entity2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -72,8 +93,15 @@ function isEquals(entity1, entity2, thenIf, elseIf) {
 ///////////////////////////////////////////////////////////////////////////////////////////
 module.exports.assign = function (context) {
 	context.nexl.functions.system.test = test;
-	context.nexl.functions.system.isContains = isContains;
+
 	context.nexl.functions.system.replaceAll = replaceAll;
-	context.nexl.functions.system.not = not;
+
 	context.nexl.functions.system.isEquals = isEquals;
+	context.nexl.functions.system.isContains = isContains;
+	context.nexl.functions.system.not = not;
+
+	context.nexl.functions.system.ifEquals = ifEquals;
+	context.nexl.functions.system.ifContains = ifContains;
+
+	context.nexl.functions.system.add = add;
 };

@@ -1653,7 +1653,7 @@ module.exports.push({
 
 // functions
 module.exports.push({
-	expression: '${?nexl\\.functions\\.system\\.test()~Y}',
+	expression: '${?nexl.functions.system.test()~Y}',
 	result: 'Zhenya+'
 });
 
@@ -1665,7 +1665,7 @@ module.exports.push({
 
 // functions
 module.exports.push({
-	expression: '${?nexl\\.functions\\.user\\.testFunc1()}',
+	expression: '${?nexl.functions.user.testFunc1()}',
 	result: 'user.testFunc1'
 });
 
@@ -1689,7 +1689,7 @@ module.exports.push({
 
 // functions
 module.exports.push({
-	expression: '${arr8?nexl\\.functions\\.system\\.isContains(${intItem})}',
+	expression: '${arr8?nexl.functions.system.isContains(${intItem})}',
 	result: true
 });
 
@@ -1697,4 +1697,46 @@ module.exports.push({
 module.exports.push({
 	expression: '${arr8?replaceAll( ${intItem}, ${boolItem} )?replaceAll( ${@a}, ${@101:num} )}',
 	result: [true, 10, 101, true]
+});
+
+// functions
+module.exports.push({
+	expression: '${intItem?boolItem?isEquals()}',
+	result: false
+});
+
+// functions
+module.exports.push({
+	expression: '${arr8?intItem?@lol?@omg?ifContains()}',
+	result: 'lol'
+});
+
+// functions
+module.exports.push({
+	expression: '${arr8?@?@lol?@omg?ifContains()}',
+	result: 'omg'
+});
+
+// functions
+module.exports.push({
+	expression: '${ifContains( ${arr8}, ${intItem}, ${@ok}, ${@notOk} )}',
+	result: 'ok'
+});
+
+// functions
+module.exports.push({
+	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack} )}',
+	result: {"strong": "balance", "deer": 7}
+});
+
+// functions
+module.exports.push({
+	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack?} )}',
+	result: undefined
+});
+
+// functions
+module.exports.push({
+	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack~V?nexl.functions.system.isContains( ${@7:num} )} )}',
+	result: true
 });

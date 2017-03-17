@@ -25,7 +25,7 @@ const ACTIONS = {
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
 	'UNDEFINED_VALUE_OPERATIONS': '!',
 	'MANDATORY_VALUE_VALIDATOR': '*',
-	'RESOLVE_FUNCTION': '?',
+	'PUSH_FUNCTION_PARAM': '?',
 
 	// the following actions are reserved for future usage
 	'RESERVED2': '%',
@@ -87,7 +87,8 @@ const ACTION_POSSIBLE_VALUES = {
 	'~': j79.getObjectValues(OBJECT_OPERATIONS_OPTIONS),
 	'#': j79.getObjectValues(ARRAY_OPERATIONS_OPTIONS),
 	'^': j79.getObjectValues(STRING_OPERATIONS_OPTIONS),
-	'!': j79.getObjectValues(UNDEFINED_VALUE_OPERATIONS_OPTIONS)
+	'!': j79.getObjectValues(UNDEFINED_VALUE_OPERATIONS_OPTIONS),
+	'?': ['']
 };
 
 const ARRAY_INDEX_CLOSE = ']';
@@ -432,6 +433,12 @@ ParseNexlExpression.prototype.parseNexlExpressionInner = function () {
 		parsed = new ParseArrayIndexes(this.str, this.lastSearchPos).parse();
 		this.createArrOrFuncAction(parsed.arrayIndexes, parsed.length);
 		return;
+	}
+
+	// it's special action which doesn't have ACTION_VALUE and this action resets this.result chain
+	if (this.currentAction === ACTIONS.PUSH_FUNCTION_PARAM) {
+		this.createAndAddAction();
+		this.currentAction = ACTIONS.PROPERTY_RESOLUTION;
 	}
 
 	// all other actions are strings
