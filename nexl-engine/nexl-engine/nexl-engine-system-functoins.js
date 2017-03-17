@@ -63,6 +63,12 @@ function not(param) {
 	}
 }
 
+function ifif(condition, thenIf, elseIf) {
+	if (j79.isBool(condition)) {
+		return condition ? thenIf : elseIf;
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // assigning system functions to nexl context
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -71,4 +77,5 @@ module.exports.assign = function (context) {
 	context.nexl.functions.system.isContains = isContains;
 	context.nexl.functions.system.replaceAll = replaceAll;
 	context.nexl.functions.system.not = not;
+	context.nexl.functions.system.if = ifif;
 };
