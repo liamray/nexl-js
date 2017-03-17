@@ -63,10 +63,8 @@ function not(param) {
 	}
 }
 
-function ifif(condition, thenIf, elseIf) {
-	if (j79.isBool(condition)) {
-		return condition ? thenIf : elseIf;
-	}
+function isEquals(entity1, entity2, thenIf, elseIf) {
+	return entity1 === entity2 ? thenIf : elseIf;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -77,5 +75,5 @@ module.exports.assign = function (context) {
 	context.nexl.functions.system.isContains = isContains;
 	context.nexl.functions.system.replaceAll = replaceAll;
 	context.nexl.functions.system.not = not;
-	context.nexl.functions.system.if = ifif;
+	context.nexl.functions.system.isEquals = isEquals;
 };
