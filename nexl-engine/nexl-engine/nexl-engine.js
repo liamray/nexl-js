@@ -414,6 +414,8 @@ NexlExpressionEvaluator.prototype.applyArrayIndexesAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyDefaultValueAction = function () {
+	this.makeDeepResolution4String();
+
 	// is value not set for this.result ?
 	if (this.result !== undefined) {
 		// don't need to a apply default value action
@@ -904,6 +906,8 @@ NexlExpressionEvaluator.prototype.undefinedValueOperations = function () {
 };
 
 NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function () {
+	this.makeDeepResolution4String();
+
 	if (this.result !== undefined) {
 		return;
 	}
