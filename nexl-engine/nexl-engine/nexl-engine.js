@@ -1039,6 +1039,11 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 };
 
 NexlExpressionEvaluator.prototype.initResult = function (actionNr) {
+	this.actionsAsString = [];
+	this.needDeepResolution4NextActions = true;
+	this.this = this.objInfo.this;
+	this.lastObjResult = undefined;
+
 	// if there is no actions, the result is undefined
 	if (this.nexlExpressionMD.actions.length - 1 < actionNr) {
 		this.result = undefined;
@@ -1101,12 +1106,7 @@ NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.initResult(0);
 	this.retrieveEvaluateAsUndefinedAction();
-
-	this.actionsAsString = [];
-	this.needDeepResolution4NextActions = true;
 	this.funcParamsStack = [];
-	this.this = this.objInfo.this;
-	this.lastObjResult = undefined;
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
