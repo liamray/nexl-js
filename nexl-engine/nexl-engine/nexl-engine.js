@@ -1087,6 +1087,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.makeObjInfo = function () {
 	return {
+		this: this.lastObjResult,
 		parent: this.lastObjResult === undefined ? this.objInfo.parent : this.lastObjResult[PARENT]
 	};
 };
@@ -1100,6 +1101,7 @@ NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 NexlExpressionEvaluator.prototype.eval = function () {
 	this.initResult(0);
 	this.retrieveEvaluateAsUndefinedAction();
+
 	this.actionsAsString = [];
 	this.needDeepResolution4NextActions = true;
 	this.funcParamsStack = [];

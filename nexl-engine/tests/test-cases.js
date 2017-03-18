@@ -1399,13 +1399,204 @@ module.exports.push({
 	}
 });
 
-
 // this, parent
 module.exports.push({
 	expression: '${obj11}',
 	result: {"home": "/home/jboss", "inner": {"a": "/home/jboss"}}
 });
 
+// this, parent
+module.exports.push({
+	expression: '${dirs}',
+	result: {
+		level: 1,
+		home: '/home/Zhenya',
+		logs: '/home/Zhenya/logs',
+		cgLog: '/home/Zhenya/logs/cg.log',
+		debugLogs: {
+			level: 2,
+			log1: '/home/Zhenya',
+			log2: '/home/Zhenya/logs/cg.log',
+			internal: {
+				level: 3,
+				log1: '/home/Zhenya',
+				log2: '/home/Zhenya/logs/cg.log',
+				log3: '/home/Zhenya',
+				log4: '/home/Zhenya/logs/cg.log',
+				log5: '/home/Zhenya/logs/cg.log'
+			},
+			internal2: {
+				level: 3,
+				log5: '/home/Zhenya',
+				log6: '/home/Zhenya/logs/cg.log'
+			}
+		}
+	}
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.__this__.__this__}',
+	result: {
+		level: 1,
+		home: '/home/Zhenya',
+		logs: '/home/Zhenya/logs',
+		cgLog: '/home/Zhenya/logs/cg.log',
+		debugLogs: {
+			level: 2,
+			log1: '/home/Zhenya',
+			log2: '/home/Zhenya/logs/cg.log',
+			internal: {
+				level: 3,
+				log1: '/home/Zhenya',
+				log2: '/home/Zhenya/logs/cg.log',
+				log3: '/home/Zhenya',
+				log4: '/home/Zhenya/logs/cg.log',
+				log5: '/home/Zhenya/logs/cg.log'
+			},
+			internal2: {
+				level: 3,
+				log5: '/home/Zhenya',
+				log6: '/home/Zhenya/logs/cg.log'
+			}
+		}
+	}
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.__this__.__parent__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.logs}',
+	result: '/home/Zhenya/logs'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.cgLog}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs}',
+	result: {
+		level: 2,
+		log1: '/home/Zhenya',
+		log2: '/home/Zhenya/logs/cg.log',
+		internal: {
+			level: 3,
+			log1: '/home/Zhenya',
+			log2: '/home/Zhenya/logs/cg.log',
+			log3: '/home/Zhenya',
+			log4: '/home/Zhenya/logs/cg.log',
+			log5: '/home/Zhenya/logs/cg.log'
+		},
+		internal2: {
+			level: 3,
+			log5: '/home/Zhenya',
+			log6: '/home/Zhenya/logs/cg.log'
+		}
+	}
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal2}',
+	result: {
+		level: 3,
+		log5: '/home/Zhenya',
+		log6: '/home/Zhenya/logs/cg.log'
+	}
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.log1}',
+	result: '/home/Zhenya'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.log2}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal.log1}',
+	result: '/home/Zhenya'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal.log2}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal.log3}',
+	result: '/home/Zhenya'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal.log4}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal.log5}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal2.log5}',
+	result: '/home/Zhenya'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal2.log6}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${__this__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${__this__.__this__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${__parent__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${__parent__.__parent__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${obj15}',
+	result: {a: 10, b: [10, 11, 'hello']}
+});
 
 // escaping test
 module.exports.push({

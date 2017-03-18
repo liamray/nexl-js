@@ -210,6 +210,11 @@ obj14 = {
 	b: '${__parent__.x}'
 };
 
+obj15 = {
+	a: 10,
+	b: ['${__this__.a}', 11, 'hello']
+};
+
 
 expr1 = '${expr2}';
 expr2 = '${expr3}';
