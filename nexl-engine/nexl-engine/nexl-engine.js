@@ -930,7 +930,7 @@ NexlExpressionEvaluator.prototype.applyMandatoryValueValidatorAction = function 
 NexlExpressionEvaluator.prototype.applyPushFunctionParamAction = function () {
 	this.makeDeepResolution();
 	this.funcParamsStack.push(this.result);
-	this.initResult(this.actionNr + 1);
+	this.init(this.actionNr + 1);
 };
 
 NexlExpressionEvaluator.prototype.makeDeepResolution4String = function () {
@@ -1038,7 +1038,7 @@ NexlExpressionEvaluator.prototype.applyAction = function () {
 	throw util.format('The [%s] action in [%s] expression is reserved for future purposes. If you need to use this character in nexl expression, escape it', this.action.actionId, this.nexlExpressionMD.str);
 };
 
-NexlExpressionEvaluator.prototype.initResult = function (actionNr) {
+NexlExpressionEvaluator.prototype.init = function (actionNr) {
 	this.actionsAsString = [];
 	this.needDeepResolution4NextActions = true;
 	this.this = this.objInfo.this;
@@ -1104,9 +1104,8 @@ NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 };
 
 NexlExpressionEvaluator.prototype.eval = function () {
-	this.initResult(0);
+	this.init(0);
 	this.retrieveEvaluateAsUndefinedAction();
-	this.funcParamsStack = [];
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
@@ -1131,6 +1130,8 @@ function NexlExpressionEvaluator(context, nexlExpressionMD, objInfo) {
 	this.context = context;
 	this.nexlExpressionMD = nexlExpressionMD;
 	this.objInfo = objInfo;
+
+	this.funcParamsStack = [];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
