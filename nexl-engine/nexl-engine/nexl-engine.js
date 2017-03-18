@@ -16,6 +16,13 @@ const js2xmlparser = require("js2xmlparser");
 const YAML = require('yamljs');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// consts
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const THIS = '__this__';
+const PARENT = '__parent__';
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvalAndSubstChunks
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -188,13 +195,13 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	}
 
 	// __parent__
-	if (key == '__parent__') {
-		this.newResult = this.result === this.context ? this.objInfo.parent : this.result.__parent__;
+	if (key == PARENT) {
+		this.newResult = this.result === this.context ? this.objInfo.parent : this.result[PARENT];
 		return;
 	}
 
 	// __this__
-	if (key == '__this__') {
+	if (key == THIS) {
 		this.newResult.push(this.this);
 		return;
 	}
@@ -224,8 +231,8 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 	this.result = j79.unwrapFromArrayIfPossible(this.newResult);
 
 	// setting up parent for this.result if it not a context
-	if (this.result !== this.context && j79.isObject(this.result) && this.result.__parent__ === undefined) {
-		nexlEngineUtils.setReadOnlyProperty(this.result, '__parent__', resultBefore);
+	if (this.result !== this.context && j79.isObject(this.result) && this.result[PARENT] === undefined) {
+		nexlEngineUtils.setReadOnlyProperty(this.result, PARENT, resultBefore);
 	}
 };
 
@@ -233,6 +240,7 @@ NexlExpressionEvaluator.prototype.assembleChunks4CurrentAction = function () {
 	var data = {};
 	data.chunks = this.action.actionValue.chunks;
 	data.chunkSubstitutions = this.action.actionValue.chunkSubstitutions;
+	data.objInfo = this.makeObjInfo();
 
 	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
 };
@@ -284,7 +292,7 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 
 	for (var index in this.action.actionValue) {
 		var funcParamMD = this.action.actionValue[index];
-		var funcParam = new NexlExpressionEvaluator(this.context, funcParamMD).eval();
+		var funcParam = new NexlExpressionEvaluator(this.context, funcParamMD, this.makeObjInfo()).eval();
 		params.push(funcParam);
 	}
 
@@ -295,7 +303,7 @@ NexlExpressionEvaluator.prototype.evalFunctionAction = function () {
 NexlExpressionEvaluator.prototype.resolveRealArrayIndex = function (item) {
 	var arrayIndex;
 	if (j79.isObject(item)) {
-		arrayIndex = new NexlExpressionEvaluator(this.context, item).eval();
+		arrayIndex = new NexlExpressionEvaluator(this.context, item, this.makeObjInfo()).eval();
 	} else {
 		arrayIndex = item;
 	}
@@ -1066,15 +1074,14 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	}
 
 	// copying non enumerable __parent__ property from this.result to newResult
-	nexlEngineUtils.setReadOnlyProperty(newResult, '__parent__', this.result.__parent__);
+	nexlEngineUtils.setReadOnlyProperty(newResult, PARENT, this.result[PARENT]);
 
 	this.result = newResult;
 };
 
 NexlExpressionEvaluator.prototype.makeObjInfo = function () {
 	return {
-		this: this.this,
-		parent: this.lastObjResult === undefined ? this.lastObjResult : this.lastObjResult.__parent__
+		parent: this.lastObjResult === undefined ? this.lastObjResult : this.lastObjResult[PARENT]
 	};
 };
 
@@ -1151,8 +1158,8 @@ NexlEngine.prototype.processObjectItem = function (obj, objInfo) {
 	var result = nexlEngineUtils.deepMergeInner({}, obj);
 
 	// copying a __parent__ property
-	var parent = obj.__parent__ === undefined ? objInfo.parent : obj.__parent__;
-	nexlEngineUtils.setReadOnlyProperty(result, '__parent__', parent);
+	var parent = obj[PARENT] === undefined ? objInfo.parent : obj[PARENT];
+	nexlEngineUtils.setReadOnlyProperty(result, PARENT, parent);
 
 	// result keys
 	var keys = Object.keys(result);
@@ -1166,7 +1173,7 @@ NexlEngine.prototype.processObjectItem = function (obj, objInfo) {
 	// this object info is applied for non object, for example for strings
 	var parent4Others = {
 		this: result,
-		parent: result.__parent__
+		parent: result[PARENT]
 	};
 
 	// iterating over over keys and evaluating
