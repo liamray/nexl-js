@@ -1598,6 +1598,67 @@ module.exports.push({
 	result: {a: 10, b: [10, 11, 'hello']}
 });
 
+// this, parent
+module.exports.push({
+	expression: '${intItem?__this__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${intItem?__parent__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${objItem?__this__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${objItem?__parent__}',
+	result: undefined
+});
+
+// this, parent
+module.exports.push({
+	expression: '${intItem?dirs.debugLogs.internal2.log6}',
+	result: '/home/Zhenya/logs/cg.log'
+});
+
+// this, parent
+module.exports.push({
+	expression: '${obj1.${items}}',
+	result: [undefined,
+		undefined,
+		{
+			'71': 'berry',
+			beneficial: 'mint',
+			test: 'righteous',
+			'()': 'trick',
+			disturbed: 46,
+			price: true,
+			pack: {strong: 'balance', deer: 7}
+		},
+		undefined,
+		{
+			'71': 'berry',
+			beneficial: 'mint',
+			test: 'righteous',
+			'()': 'trick',
+			disturbed: 46,
+			price: true,
+			pack: {strong: 'balance', deer: 7}
+		},
+		undefined,
+		undefined,
+		'berry',
+		'berry']
+
+});
+
 // escaping test
 module.exports.push({
 	expression: '${obj1.\\()}',

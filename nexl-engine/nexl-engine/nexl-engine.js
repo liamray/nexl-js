@@ -196,8 +196,9 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 
 	// __parent__
 	if (key == PARENT) {
-		this.newResult = this.result === this.context ? this.objInfo.parent : this.result[PARENT];
-		this.newResult = this.newResult === this.context ? undefined : this.newResult;
+		var val = this.result === this.context ? this.objInfo.parent : this.result[PARENT];
+		val = val === this.context ? undefined : val;
+		this.newResult.push(val);
 		this.thisOrParentAreApplied = true;
 		return;
 	}
@@ -1115,7 +1116,7 @@ NexlExpressionEvaluator.prototype.eval = function () {
 		// evaluating current action
 		this.applyAction();
 
-		if (j79.isObject(this.result)) {
+		if (j79.isObject(this.result) && this.result !== this.context) {
 			this.this = this.result;
 			this.lastObjResult = this.result;
 		}

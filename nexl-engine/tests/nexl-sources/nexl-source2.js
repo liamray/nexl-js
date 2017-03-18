@@ -274,3 +274,6 @@ dirs = {
 
 	}
 };
+
+
+items = [1, 'a', '__this__', '__parent__', '__this__', '__parent__', '__this__.__this__.a', 71, '${intItem}'];
