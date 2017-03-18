@@ -75,6 +75,12 @@ module.exports.push({
 	result: '71 hello 71'
 });
 
+// default value test
+module.exports.push({
+	expression: '${xxx@1:num}',
+	result: 1
+});
+
 // external arg test
 module.exports.push({
 	expression: '${intItem}',
@@ -1037,6 +1043,12 @@ module.exports.push({
 module.exports.push({
 	expression: '${obj2.pack.wrapWithBrackets.x.y.z}',
 	result: undefined
+});
+
+// mandatory value action
+module.exports.push({
+	expression: '${xxx*Not provided}',
+	throwsException: true
 });
 
 // mandatory value action
