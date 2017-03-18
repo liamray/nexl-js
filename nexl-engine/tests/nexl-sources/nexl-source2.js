@@ -236,3 +236,33 @@ function testFunc3() {
 function test() {
 	return 'Zhenya++';
 }
+
+dirs = {
+	level: 1,
+	home: '/home/Zhenya',
+	logs: '${__this__.home}/logs',
+	cgLog: '${__this__.__this__.__this__.logs}/cg.log',
+
+	debugLogs: {
+		level: 2,
+		log1: '${__parent__.home}',
+		log2: '${__parent__.cgLog}',
+
+		internal: {
+			level: 3,
+			log1: '${__parent__.__parent__.home}',
+			log2: '${__parent__.__parent__.cgLog}',
+			log3: '${__parent__.log1}',
+			log4: '${__parent__.log2}',
+			log5: '${__this__.log4}'
+		},
+
+
+		internal2: {
+			level: 3,
+			log5: '${__parent__.log1}',
+			log6: '${__parent__.internal.log2}'
+		}
+
+	}
+};

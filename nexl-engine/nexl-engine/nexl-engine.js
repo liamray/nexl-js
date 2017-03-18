@@ -67,7 +67,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunksInner = function () {
 
 		// evaluating this chunk
 		// chunkValue must be a primitive or array of primitives. can't be object|function or array of objects|functions|arrays
-		var chunkValue = new NexlExpressionEvaluator(this.context, chunk2Substitute).eval();
+		var chunkValue = new NexlExpressionEvaluator(this.context, chunk2Substitute, this.data.objInfo).eval();
 
 		// !U UNDEFINED_VALUE_OPERATIONS action
 		if (chunkValue === undefined && this.isEvaluateAsUndefined) {
@@ -133,7 +133,7 @@ EvalAndSubstChunks.prototype.evalAndSubstChunks = function () {
 	// when we have the only 1 item to substitute
 	if (this.data.chunks.length === 1 && chunkSubstitutionsCnt === 1) {
 		this.throwParserErrorIfNeeded(this.data.chunks[0] !== null, util.format('Parser error ! There is only 1 chunk to substitute, but his cell is not null for [%s] expression', this.data.str));
-		return new NexlExpressionEvaluator(this.context, j79.getObjectValues(this.data.chunkSubstitutions)[0]).eval();
+		return new NexlExpressionEvaluator(this.context, j79.getObjectValues(this.data.chunkSubstitutions)[0], this.data.objInfo).eval();
 	}
 
 	return this.evalAndSubstChunksInner();
@@ -187,6 +187,18 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 		return;
 	}
 
+	// __parent__
+	if (key == '__parent__') {
+		this.newResult = this.result === this.context ? this.objInfo.parent : this.result.__parent__;
+		return;
+	}
+
+	// __this__
+	if (key == '__this__') {
+		this.newResult.push(this.this);
+		return;
+	}
+
 	var newResult = this.result[key];
 	if (newResult === undefined && this.result === this.context) {
 		newResult = this.try2ResolveNexlFuncs(key);
@@ -196,6 +208,8 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
+	var resultBefore = this.result;
+
 	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
 	this.newResult = [];
 
@@ -208,6 +222,11 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 	}
 
 	this.result = j79.unwrapFromArrayIfPossible(this.newResult);
+
+	// setting up parent for this.result if it not a context
+	if (this.result !== this.context && j79.isObject(this.result) && this.result.__parent__ === undefined) {
+		nexlEngineUtils.setReadOnlyProperty(this.result, '__parent__', resultBefore);
+	}
 };
 
 NexlExpressionEvaluator.prototype.assembleChunks4CurrentAction = function () {
@@ -1031,11 +1050,12 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	}
 
 	var newResult = {};
+	var objInfo = this.makeObjInfo();
 	var nexlEngine = new NexlEngine(this.context, this.isEvaluateAsUndefined);
 
 	for (var key in this.result) {
 		// nexilized key
-		var newKey = nexlEngine.processItem(key);
+		var newKey = nexlEngine.processItem(key, objInfo);
 
 		// key must be a primitive. checking...
 		if (!j79.isPrimitive(newKey)) {
@@ -1046,18 +1066,21 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 	}
 
 	// copying non enumerable __parent__ property from this.result to newResult
-	Object.defineProperty(newResult, '__parent__', {
-		enumerable: false,
-		configurable: true,
-		value: this.result.__parent__
-	});
+	nexlEngineUtils.setReadOnlyProperty(newResult, '__parent__', this.result.__parent__);
 
 	this.result = newResult;
 };
 
+NexlExpressionEvaluator.prototype.makeObjInfo = function () {
+	return {
+		this: this.this,
+		parent: this.lastObjResult === undefined ? this.lastObjResult : this.lastObjResult.__parent__
+	};
+};
+
 NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 	if (this.needDeepResolution4NextActions) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result);
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result, this.makeObjInfo());
 	}
 };
 
@@ -1067,6 +1090,8 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	this.actionsAsString = [];
 	this.needDeepResolution4NextActions = true;
 	this.funcParamsStack = [];
+	this.this = this.objInfo.this;
+	this.lastObjResult = undefined;
 
 	// iterating over actions
 	for (this.actionNr = 0; this.actionNr < this.nexlExpressionMD.actions.length; this.actionNr++) {
@@ -1075,6 +1100,11 @@ NexlExpressionEvaluator.prototype.eval = function () {
 
 		// evaluating current action
 		this.applyAction();
+
+		if (j79.isObject(this.result)) {
+			this.this = this.result;
+			this.lastObjResult = this.result;
+		}
 	}
 
 	this.makeDeepResolution();
@@ -1082,9 +1112,10 @@ NexlExpressionEvaluator.prototype.eval = function () {
 	return this.result;
 };
 
-function NexlExpressionEvaluator(context, nexlExpressionMD) {
+function NexlExpressionEvaluator(context, nexlExpressionMD, objInfo) {
 	this.context = context;
 	this.nexlExpressionMD = nexlExpressionMD;
+	this.objInfo = objInfo;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1092,12 +1123,12 @@ function NexlExpressionEvaluator(context, nexlExpressionMD) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-NexlEngine.prototype.processArrayItem = function (arr) {
+NexlEngine.prototype.processArrayItem = function (arr, objInfo) {
 	var result = [];
 
 	for (var index in arr) {
 		var arrItem = arr[index];
-		var item = this.processItem(arrItem);
+		var item = this.processItem(arrItem, objInfo);
 
 		// !U UNDEFINED_VALUE_OPERATIONS
 		if (item === undefined && this.isEvaluateAsUndefined) {
@@ -1114,38 +1145,34 @@ NexlEngine.prototype.processArrayItem = function (arr) {
 	return result;
 };
 
-NexlEngine.prototype.processObjectItem = function (obj) {
-	// cloning obj object to result because we need to know his computable values
+NexlEngine.prototype.processObjectItem = function (obj, objInfo) {
+	// cloning obj object as result object because we need to know his computable values
 	// for example : { a:'1', b:'${__this__.b}', inner: {c:'${__parent__.b}'} } will not work for inner.c if obj is not cloned
 	var result = nexlEngineUtils.deepMergeInner({}, obj);
 
-	// rescuing this and parent ( to restore it back in future )
-	var currentThis = this.context.__this__;
-	var currentParent = this.context.__parent__;
-
-	// adding non enumerable __parent__ property to result
-	Object.defineProperty(result, '__parent__', {
-		enumerable: false,
-		configurable: true,
-		value: currentThis
-	});
-
-	// adding non enumerable __parent__ property to obj
-	// result object is cloned. result.__parent__ is referencing to a parent, but that parent is still referencing to old obj
-	// therefore we need to attach a __parent__ property to obj as well
-	Object.defineProperty(obj, '__parent__', {
-		enumerable: false,
-		configurable: true,
-		value: currentThis
-	});
+	// copying a __parent__ property
+	var parent = obj.__parent__ === undefined ? objInfo.parent : obj.__parent__;
+	nexlEngineUtils.setReadOnlyProperty(result, '__parent__', parent);
 
 	// result keys
 	var keys = Object.keys(result);
 
+	// this object info is applied for sub objects
+	var parent4Objects = {
+		this: result,
+		parent: result
+	};
+
+	// this object info is applied for non object, for example for strings
+	var parent4Others = {
+		this: result,
+		parent: result.__parent__
+	};
+
 	// iterating over over keys and evaluating
 	for (var index in keys) {
 		var key = keys[index];
-		var evaluatedKey = this.processItem(key);
+		var evaluatedKey = this.processItem(key, parent4Others);
 
 		// !U UNDEFINED_VALUE_OPERATIONS
 		if (evaluatedKey === undefined && this.isEvaluateAsUndefined) {
@@ -1158,11 +1185,8 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 			throw util.format('Cannot assemble JavaScript object. The [%s] key is evaluated to a non-primitive data type %s', key, j79.getType(evaluatedKey));
 		}
 
-		this.context.__this__ = result;
-		this.context.__parent__ = currentThis;
-
 		var value = result[key];
-		value = this.processItem(value);
+		value = this.processItem(value, j79.isObject(value) ? parent4Objects : parent4Others);
 		delete result[key];
 
 		// !U UNDEFINED_VALUE_OPERATIONS
@@ -1173,14 +1197,10 @@ NexlEngine.prototype.processObjectItem = function (obj) {
 		result[evaluatedKey] = value;
 	}
 
-	// restoring back this and parent
-	this.context.__this__ = currentThis;
-	this.context.__parent__ = currentParent;
-
 	return result;
 };
 
-NexlEngine.prototype.processStringItem = function (str) {
+NexlEngine.prototype.processStringItem = function (str, objInfo) {
 	// parsing string
 	var parsedStrMD = nexlExpressionsParser.parseStr(str);
 
@@ -1188,20 +1208,23 @@ NexlEngine.prototype.processStringItem = function (str) {
 	data.chunks = parsedStrMD.chunks;
 	data.chunkSubstitutions = parsedStrMD.chunkSubstitutions;
 	data.str = str;
+	data.objInfo = objInfo;
 
 	// evaluating
 	return new EvalAndSubstChunks(this.context, this.isEvaluateAsUndefined, data).evalAndSubstChunks();
 };
 
-NexlEngine.prototype.processItem = function (item) {
+NexlEngine.prototype.processItem = function (item, aObjInfo) {
+	var objInfo = aObjInfo || {};
+
 	// iterates over each array element and processes every item
 	if (j79.isArray(item)) {
-		return this.processArrayItem(item);
+		return this.processArrayItem(item, objInfo);
 	}
 
 	// iterates over object keys and values and processes them
 	if (j79.isObject(item)) {
-		return this.processObjectItem(item);
+		return this.processObjectItem(item, objInfo);
 	}
 
 	// not supported !
@@ -1211,7 +1234,7 @@ NexlEngine.prototype.processItem = function (item) {
 
 	// actually the only string elements are really being processed
 	if (j79.isString(item)) {
-		return this.processStringItem(item);
+		return this.processStringItem(item, objInfo);
 	}
 
 	// all another primitives are not processable and being returned as is

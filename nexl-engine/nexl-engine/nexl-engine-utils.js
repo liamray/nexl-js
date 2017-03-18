@@ -293,6 +293,14 @@ function produceKeyValuesPairs(rootKey, obj, result) {
 	}
 }
 
+function setReadOnlyProperty(obj, key, value) {
+	Object.defineProperty(obj, key, {
+		enumerable: false,
+		configurable: true,
+		value: value
+	});
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // exports
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,3 +312,4 @@ module.exports.cast = cast;
 module.exports.deepMergeInner = deepMergeInner;
 module.exports.makeContext = makeContext;
 module.exports.replaceSpecialChars = replaceSpecialChars;
+module.exports.setReadOnlyProperty = setReadOnlyProperty;
