@@ -198,13 +198,14 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	if (key == PARENT) {
 		this.newResult = this.result === this.context ? this.objInfo.parent : this.result[PARENT];
 		this.newResult = this.newResult === this.context ? undefined : this.newResult;
+		this.thisOrParentAreApplied = true;
 		return;
 	}
 
 	// __this__
 	if (key == THIS) {
 		this.newResult.push(this.this);
-		this.thisIsApplied = true;
+		this.thisOrParentAreApplied = true;
 		return;
 	}
 
@@ -222,7 +223,7 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 	}
 
 	var resultBefore = this.result;
-	this.thisIsApplied = false;
+	this.thisOrParentAreApplied = false;
 
 	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
 	this.newResult = [];
@@ -239,7 +240,8 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 
 	// this.result and resultBefore must be a context
 	// setting up a parent for this.result if it object and doesn't have parent
-	if (this.result !== this.context && resultBefore !== this.context && j79.isObject(this.result) && this.result[PARENT] === undefined && !this.thisIsApplied) {
+	// don't setup parent if __this__ or __parent__ was retrieved
+	if (this.result !== this.context && resultBefore !== this.context && j79.isObject(this.result) && this.result[PARENT] === undefined && !this.thisOrParentAreApplied) {
 		nexlEngineUtils.setReadOnlyProperty(this.result, PARENT, resultBefore);
 	}
 };

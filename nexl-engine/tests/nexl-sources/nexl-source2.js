@@ -153,18 +153,21 @@ obj8 = {
 };
 
 obj9 = {
+	level: 1,
 	home: '/home/nexl',
 	parent1: '${__this__.__parent__}',
 	parent2: '${__parent__.__this__}',
 	this1: '${.__this__.home}',
 	this2: '${.__this__.__this__.home}',
 	parent3: {
+		level: 2,
 		a1: '${__this__.__parent__.home}',
 		a2: '${__parent__.home}',
 		a3: '${__parent__.__this__.home}',
 		a4: '${__parent__.__parent__.home}',
 		x: 10,
 		inner: {
+			level: 3,
 			b1: '${__parent__.x}',
 			b2: '${@${__parent__.x}}',
 			b3: '${__parent__.__parent__.home}'

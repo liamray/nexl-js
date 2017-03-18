@@ -1372,15 +1372,19 @@ module.exports.push({
 module.exports.push({
 	expression: '${obj9}',
 	result: {
+		level: 1,
 		"home": "/home/nexl",
 		"this1": "/home/nexl",
 		"this2": "/home/nexl",
 		"parent3": {
+			level: 2,
 			"a1": "/home/nexl",
 			"a2": "/home/nexl",
 			"a3": "/home/nexl",
 			"x": 10,
-			"inner": {"b1": 10, "b2": 10, "b3": "/home/nexl"}
+			"inner": {
+				level: 3, "b1": 10, "b2": 10, "b3": "/home/nexl"
+			}
 		}
 	}
 });
