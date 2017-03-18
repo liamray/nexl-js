@@ -1374,7 +1374,14 @@ module.exports.push({
 	result: {
 		"home": "/home/nexl",
 		"this1": "/home/nexl",
-		"parent3": {"a1": "/home/nexl", "a2": "/home/nexl", "x": 10, "inner": {"b1": 10, "b2": 10, "b3": "/home/nexl"}}
+		"this2": "/home/nexl",
+		"parent3": {
+			"a1": "/home/nexl",
+			"a2": "/home/nexl",
+			"a3": "/home/nexl",
+			"x": 10,
+			"inner": {"b1": 10, "b2": 10, "b3": "/home/nexl"}
+		}
 	}
 });
 

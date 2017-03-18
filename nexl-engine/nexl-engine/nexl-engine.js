@@ -197,12 +197,14 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 	// __parent__
 	if (key == PARENT) {
 		this.newResult = this.result === this.context ? this.objInfo.parent : this.result[PARENT];
+		this.newResult = this.newResult === this.context ? undefined : this.newResult;
 		return;
 	}
 
 	// __this__
 	if (key == THIS) {
 		this.newResult.push(this.this);
+		this.thisIsApplied = true;
 		return;
 	}
 
@@ -215,7 +217,12 @@ NexlExpressionEvaluator.prototype.resolveObject = function (key) {
 };
 
 NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function () {
+	if (this.needDeepResolution4NextActions) {
+		this.expandObjectKeys();
+	}
+
 	var resultBefore = this.result;
+	this.thisIsApplied = false;
 
 	var keys = j79.wrapWithArrayIfNeeded(this.assembledChunks);
 	this.newResult = [];
@@ -230,8 +237,9 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionActionInner = function 
 
 	this.result = j79.unwrapFromArrayIfPossible(this.newResult);
 
-	// setting up parent for this.result if it not a context
-	if (this.result !== this.context && j79.isObject(this.result) && this.result[PARENT] === undefined) {
+	// this.result and resultBefore must be a context
+	// setting up a parent for this.result if it object and doesn't have parent
+	if (this.result !== this.context && resultBefore !== this.context && j79.isObject(this.result) && this.result[PARENT] === undefined && !this.thisIsApplied) {
 		nexlEngineUtils.setReadOnlyProperty(this.result, PARENT, resultBefore);
 	}
 };
@@ -251,10 +259,6 @@ NexlExpressionEvaluator.prototype.applyPropertyResolutionAction = function () {
 	// if not an object, skip action
 	if (!j79.isObject(this.result)) {
 		return;
-	}
-
-	if (this.needDeepResolution4NextActions) {
-		this.expandObjectKeys();
 	}
 
 	this.assembledChunks = this.assembleChunks4CurrentAction();
@@ -1081,7 +1085,7 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.makeObjInfo = function () {
 	return {
-		parent: this.lastObjResult === undefined ? this.lastObjResult : this.lastObjResult[PARENT]
+		parent: this.lastObjResult === undefined ? this.objInfo.parent : this.lastObjResult[PARENT]
 	};
 };
 
@@ -1166,7 +1170,6 @@ NexlEngine.prototype.processObjectItem = function (obj, objInfo) {
 
 	// this object info is applied for sub objects
 	var parent4Objects = {
-		this: result,
 		parent: result
 	};
 
