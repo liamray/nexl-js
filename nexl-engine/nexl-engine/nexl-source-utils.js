@@ -62,7 +62,8 @@ function resolveIncludeDirectives(text) {
 
 NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 	// the text
-	var result = asText.text;
+	var result = [];
+	var text = asText.text;
 
 	// validating
 	if (!j79.isString(result)) {
@@ -70,7 +71,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 	}
 
 	// resolving include directives
-	var includeDirectives = resolveIncludeDirectives(result);
+	var includeDirectives = resolveIncludeDirectives(text);
 
 	// iterating over and processing
 	for (var index in includeDirectives) {
@@ -78,7 +79,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 
 		// does directive have an absolute path ?
 		if (path.isAbsolute(includeDirective)) {
-			result += this.assembleSourceCodeAsFile({"fileName": includeDirective});
+			result.push(this.assembleSourceCodeAsFile({"fileName": includeDirective}));
 			continue;
 		}
 
@@ -92,8 +93,11 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 		}
 
 		var fullPath = path.join(asText.path4imports, includeDirective);
-		result += this.assembleSourceCodeAsFile({"fileName": fullPath});
+		result.push(this.assembleSourceCodeAsFile({"fileName": fullPath}));
 	}
+
+	result = result.join('\n');
+	result += text;
 
 	return result;
 };
