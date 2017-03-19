@@ -11,16 +11,22 @@
 		{
 			name: 'nexl-sources',
 			alias: 's',
-			desc: 'Specify nexl sources directory. By default it points to a ${HOME}/nexl-sources directory'
+			desc: 'Specifies nexl sources directory. By default it points to a ${HOME}/nexl-sources directory'
 		},
-		{name: 'debug', alias: 'd', type: Boolean, defaultValue: false, desc: 'Print debug message to console'},
-		{name: 'port', alias: 'p', type: Number, defaultValue: 8080, desc: 'nexl server port. 8080 by default'},
+		{name: 'debug', alias: 'd', type: Boolean, defaultValue: false, desc: 'Prints debug messages to console'},
+		{
+			name: 'port',
+			alias: 'p',
+			type: Number,
+			defaultValue: 8080,
+			desc: 'Specifies nexl server port. 8080 by default'
+		},
 		{
 			name: 'binding',
 			alias: 'b',
 			type: String,
 			defaultValue: 'localhost',
-			desc: 'nexl server binging. localhost by default'
+			desc: 'Binds nexl server to a specified interface. localhost by default'
 		},
 		{name: 'help', alias: 'h', type: Boolean, defaultValue: false, desc: 'display this help'}
 	];
