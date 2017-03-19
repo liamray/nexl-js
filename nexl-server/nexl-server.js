@@ -8,11 +8,21 @@
 
 (function () {
 	var CMD_LINE_OPTS_DEF = [
-		{name: 'nexl-source', alias: "s", desc: "Points to nexl sources directory"},
-		{name: 'debug', alias: "d", type: Boolean, defaultValue: false, desc: "Print debug message to console"},
-		{name: 'port', alias: "p", type: Number, defaultValue: 8080, desc: "nexl server port"},
-		{name: 'binding', alias: "b", type: String, defaultValue: 'localhost', desc: "nexl server binging"},
-		{name: 'help', alias: "h", type: Boolean, defaultValue: false, desc: "display this help"}
+		{
+			name: 'nexl-sources',
+			alias: 's',
+			desc: 'Specify nexl sources directory. By default it points to a ${HOME}/nexl-sources directory'
+		},
+		{name: 'debug', alias: 'd', type: Boolean, defaultValue: false, desc: 'Print debug message to console'},
+		{name: 'port', alias: 'p', type: Number, defaultValue: 8080, desc: 'nexl server port. 8080 by default'},
+		{
+			name: 'binding',
+			alias: 'b',
+			type: String,
+			defaultValue: 'localhost',
+			desc: 'nexl server binging. localhost by default'
+		},
+		{name: 'help', alias: 'h', type: Boolean, defaultValue: false, desc: 'display this help'}
 	];
 
 	// includes
@@ -284,6 +294,9 @@
 			var text = util.format("-%s, --%s %s %s", item.alias, item.name, spaces, item.desc);
 			console.log(text);
 		}
+
+		// example
+		console.log('\nFor example :\nnexl-server --nexl-sources=c:\\data\\nexl-sources');
 	}
 
 	function handleArgs() {
@@ -301,22 +314,23 @@
 			process.exit();
 		}
 
-		console.log('Type the following to view all command line switches :\n\tnpm start -- --help');
+		console.log('Use --help to view all command line switches');
 
 		// handling nexl-sources directory
-		NEXL_SOURCES_ROOT = cmdLineOpts['nexl-source'];
+		NEXL_SOURCES_ROOT = cmdLineOpts['nexl-sources'];
 		if (!NEXL_SOURCES_ROOT) {
 			NEXL_SOURCES_ROOT = path.join(osHomeDir(), DEFAULT_NEXL_SOURCES_DIR);
-			var msg = util.format("\nWarning ! nexl sources root directory is not provided, using default directory for nexl sources : [%s]\n", NEXL_SOURCES_ROOT);
-			console.log(chalk.yellow.bold(msg));
+			var msg = util.format("\nWarning ! nexl sources directory is not provided, using default directory for nexl sources : [%s]\n", NEXL_SOURCES_ROOT);
+			printDebug(chalk.yellow.bold(msg));
 		}
 
-		printDebug(util.format("nexl sources directory is [%s]", NEXL_SOURCES_ROOT));
 		fs.exists(NEXL_SOURCES_ROOT, function (result) {
 			if (!result) {
-				console.log(chalk.red.bold(util.format("nexl sources root directory [%s] doesn't exist ! But you can still create it without server restart", NEXL_SOURCES_ROOT)));
+				console.log(chalk.red.bold(util.format("nexl sources directory [%s] doesn't exist ! But you can still create it without server restart", NEXL_SOURCES_ROOT)));
 			}
 		});
+
+		console.log('\nnexl sources directory is [%s]', NEXL_SOURCES_ROOT);
 	}
 
 	function enumerateFiles(dir, collection) {
@@ -465,10 +479,9 @@
 	}
 
 	function printStartupMessage() {
-		printCurrentVersion();
-
 		figlet.defaults({fontPath: "assets/fonts"});
 
+		console.log('');
 		console.log(HR);
 		figlet("nexl-server", function (err, data) {
 			if (err) {
@@ -479,7 +492,8 @@
 			console.log(HR);
 			var port = server.address().port;
 			var address = server.address().address;
-			console.log(chalk.green(util.format("\nNEXL server is up and listening at [%s:%s]", address, port)));
+			console.log(chalk.green(util.format('\n%s', new Date())));
+			console.log(chalk.green(util.format("NEXL server is up and listening at [%s:%s]", address, port)));
 		});
 	}
 
@@ -494,6 +508,7 @@
 		// validating nodejs version
 		j79.abortIfNodeVersionLowerThan(4);
 
+		printCurrentVersion();
 		applyBinders();
 		handleArgs();
 		createHttpServer();

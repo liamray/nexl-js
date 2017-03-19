@@ -513,7 +513,7 @@ var module = (function (module) {
 
 		url += '?';
 		if (expression.length > 0) {
-			expression = expression.replace(/&/g, '%26');
+			expression = expression.replace(/&/g, '%26').replace(/#/g, '%23').replace(/\\+/g, '%2B');
 			url += 'expression=' + expression;
 			url += '&';
 		}

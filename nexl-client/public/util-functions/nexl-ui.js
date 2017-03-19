@@ -169,6 +169,19 @@ var module = (function (module) {
 		}
 	}
 
+	function assembleActionIdAndValue(actionId, actionValue) {
+		switch (actionId) {
+			case '[]': {
+				return '[' + actionValue + ']';
+			}
+			case '()': {
+				return '(' + actionValue + ')';
+			}
+		}
+
+		return actionId + actionValue;
+	}
+
 	function openAddActionDialog() {
 		$("#addActionDialog").dialog({
 				width: 310,
@@ -177,7 +190,7 @@ var module = (function (module) {
 				resizable: true,
 				buttons: {
 					"Select": function () {
-						actions += module.addAction.getActionId() + module.addAction.getActionValue();
+						actions += assembleActionIdAndValue(module.addAction.getActionId(), module.addAction.getActionValue());
 						actions = actions.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 						var currentExpression = '${' + getSelectedIteValue() + actions + '}';
 						$('.choose-expression-dialog .expression-fitting .nexl-expression').html(currentExpression);
@@ -242,8 +255,12 @@ var module = (function (module) {
 			resizable: true,
 			buttons: {
 				"Select": function () {
-					var expression = $('.choose-expression-dialog .expression-fitting .nexl-expression').text();
-					module.tabs.expression($tab, expression);
+					var currentExpression = $('.choose-expression-dialog .expression-fitting .nexl-expression').text();
+					if (currentExpression === '${}') {
+						module.nexlui.popupMessage('Please choose a variable', 'Error');
+						return;
+					}
+					module.tabs.expression($tab, currentExpression);
 					if (onsSelectCallback) {
 						onsSelectCallback();
 					}
