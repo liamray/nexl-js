@@ -82,7 +82,7 @@ var module = (function (module) {
 
 	function putDataIntoOutputArea(data) {
 		if (!isString(data)) {
-			data = JSON.stringify(data);
+			data = JSON.stringify(data, null, 4);
 		}
 
 		if (isArray(data)) {
