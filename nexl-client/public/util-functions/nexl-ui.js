@@ -85,15 +85,13 @@ var module = (function (module) {
 			data = JSON.stringify(data);
 		}
 
-		$('#output').toggle("highlight");
-
 		if (isArray(data)) {
 			$('#output-area textarea').val(data.join('\n'));
 		} else {
 			$('#output-area textarea').val(data);
 		}
 
-		$('#output').toggle("highlight");
+		$('#output').fadeOut(200).fadeIn(1);
 	}
 
 	function evalFileTab($tab, expression) {
@@ -135,7 +133,9 @@ var module = (function (module) {
 		}
 
 		var params = module.keyValueEditor.getItems('#external-arguments-editor');
-		params.expression = expression;
+		if (expression !== undefined) {
+			params.expression = expression;
+		}
 
 		module.utils.jsonPCall(url, params, function (data) {
 			if (data.error) {

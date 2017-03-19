@@ -66,7 +66,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 	var text = asText.text;
 
 	// validating
-	if (!j79.isString(result)) {
+	if (!j79.isString(text)) {
 		throw '[nexlSource.asText.text] is not provided or not of string type';
 	}
 
