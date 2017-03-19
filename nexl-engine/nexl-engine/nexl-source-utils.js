@@ -103,7 +103,6 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 };
 
 NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
-	var result;
 	var fileName = asFile.fileName;
 
 	// is already included ?
@@ -125,15 +124,16 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 	}
 
 	// reading file content
+	var text;
+	var result = [];
 	try {
-		result = fs.readFileSync(fileName, "UTF-8");
+		text = fs.readFileSync(fileName, "UTF-8");
 	} catch (e) {
 		throw util.format("Failed to read [%s] source content , error : [%s]", fileName, e);
 	}
 
-
 	// resolving include directives
-	var includeDirectives = resolveIncludeDirectives(result);
+	var includeDirectives = resolveIncludeDirectives(text);
 
 	// iterating over and processing
 	for (var index in includeDirectives) {
@@ -141,7 +141,7 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 
 		// does directive have an absolute path ?
 		if (path.isAbsolute(includeDirective)) {
-			result = this.assembleSourceCodeAsFile({"fileName": includeDirective}) + result;
+			result.push(this.assembleSourceCodeAsFile({"fileName": includeDirective}));
 			continue;
 		}
 
@@ -149,8 +149,11 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 		var filePath = path.dirname(fileName);
 
 		var fullPath = path.join(filePath, includeDirective);
-		result = this.assembleSourceCodeAsFile({"fileName": fullPath}) + result;
+		result.push(this.assembleSourceCodeAsFile({"fileName": fullPath}));
 	}
+
+	result = result.join('\n');
+	result += text;
 
 	return result;
 };
