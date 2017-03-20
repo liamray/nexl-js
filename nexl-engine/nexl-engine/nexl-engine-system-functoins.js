@@ -8,6 +8,7 @@
  **************************************************************************************/
 
 const j79 = require('j79-utils');
+var systemFunctions = {};
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // helper functions
@@ -30,24 +31,24 @@ function replaceAll4Array(entity, searchItem, replace) {
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 // is string or array contains value
-function isContains(entity, item) {
+systemFunctions.isContains = function (entity, item) {
 	if (j79.isArray(entity) || j79.isString(entity)) {
 		return entity.indexOf(item) >= 0;
 	}
 
 	return entity;
-}
+};
 
-function ifContains(entity, item, thenIf, elseIf) {
+systemFunctions.ifContains = function (entity, item, thenIf, elseIf) {
 	if (j79.isArray(entity) || j79.isString(entity)) {
 		return entity.indexOf(item) >= 0 ? thenIf : elseIf;
 	}
 
 	return entity;
-}
+};
 
 // replaces items in array or string
-function replaceAll(entity, searchItem, replace) {
+systemFunctions.replaceAll = function (entity, searchItem, replace) {
 	if (j79.isArray(entity)) {
 		return replaceAll4Array(entity, searchItem, replace);
 	}
@@ -57,51 +58,29 @@ function replaceAll(entity, searchItem, replace) {
 	}
 
 	return entity;
-}
+};
 
-function test() {
-	return 'Zhenya+';
-}
-
-function add() {
-	var result = '';
-	for (var index = 0; index < arguments.length; index++) {
-		result += arguments[index];
-	}
-
-	return result;
-}
-
-function not(param) {
+systemFunctions.not = function (param) {
 	if (j79.isBool(param)) {
 		return !param;
 	} else {
 		return param;
 	}
-}
+};
 
-function ifEquals(entity1, entity2, thenIf, elseIf) {
+systemFunctions.ifEquals = function (entity1, entity2, thenIf, elseIf) {
 	return entity1 === entity2 ? thenIf : elseIf;
-}
+};
 
-function isEquals(entity1, entity2) {
+systemFunctions.isEquals = function (entity1, entity2) {
 	return entity1 === entity2;
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // assigning system functions to nexl context
 ///////////////////////////////////////////////////////////////////////////////////////////
 module.exports.assign = function (context) {
-	context.nexl.functions.system.test = test;
-
-	context.nexl.functions.system.replaceAll = replaceAll;
-
-	context.nexl.functions.system.isEquals = isEquals;
-	context.nexl.functions.system.isContains = isContains;
-	context.nexl.functions.system.not = not;
-
-	context.nexl.functions.system.ifEquals = ifEquals;
-	context.nexl.functions.system.ifContains = ifContains;
-
-	context.nexl.functions.system.add = add;
+	for (var item in systemFunctions) {
+		context.nexl.functions.system[item] = systemFunctions[item];
+	}
 };

@@ -241,7 +241,7 @@ function testFunc3() {
 	return 'testFunc3';
 }
 
-function test() {
+function not() {
 	return 'Zhenya++';
 }
 

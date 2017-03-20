@@ -1922,14 +1922,14 @@ module.exports.push({
 
 // functions
 module.exports.push({
-	expression: '${?test()~Y}',
+	expression: '${?not()~Y}',
 	result: 'Zhenya++'
 });
 
 // functions
 module.exports.push({
-	expression: '${?nexl.functions.system.test()~Y}',
-	result: 'Zhenya+'
+	expression: '${@true:bool?nexl.functions.system.not()~Y}',
+	result: false
 });
 
 // functions
