@@ -1920,98 +1920,280 @@ module.exports.push({
 		true]
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${?not()~Y}',
 	result: 'Zhenya++'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${@true:bool?nexl.functions.system.not()~Y}',
 	result: false
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${?testFunc1()}',
 	result: 'testFunc1'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${?nexl.functions.user.testFunc1()}',
 	result: 'user.testFunc1'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${?testFunc2()}',
 	result: 'user.testFunc2'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${?testFunc3()}',
 	result: 'testFunc3'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${arr8?isContains()}',
 	result: 'Zhenya+'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${arr8?nexl.functions.system.isContains(${intItem})}',
 	result: true
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${arr8?replaceAll( ${intItem}, ${boolItem} )?replaceAll( ${@a}, ${@101:num} )}',
 	result: [true, 10, 101, true]
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${intItem?boolItem?isEquals()}',
 	result: false
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${arr8?intItem?@lol?@omg?ifContains()}',
 	result: 'lol'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${arr8?@?@lol?@omg?ifContains()}',
 	result: 'omg'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${ifContains( ${arr8}, ${intItem}, ${@ok}, ${@notOk} )}',
 	result: 'ok'
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack} )}',
 	result: {"strong": "balance", "deer": 7}
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack?} )}',
 	result: undefined
 });
 
-// functions
+// testing system functions
 module.exports.push({
 	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack~V?nexl.functions.system.isContains( ${@7:num} )} )}',
 	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${isUndefined()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?isUndefined()}',
+	result: false
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?isBool()}',
+	result: false
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@1:num:bool?isBool()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@1:num:bool?isStr()}',
+	result: false
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?isStr()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?isPrimitive()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${:null?isNull()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${obj1?isObject()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${arr1?isObject()}',
+	result: false
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${obj1?isArray()}',
+	result: false
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${arr1?isArray()}',
+	result: true
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?ifBool( ${intItem}, ${strItem} )}',
+	result: 'berry'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@true:bool?ifBool( ${intItem}, ${strItem} )}',
+	result: 71
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@true?ifStr( ${arr1}, ${arr2} )}',
+	result: ['queen', 'muscle', 79, false]
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${?ifStr( ${arr1}, ${arr2} )}',
+	result: ['air', 16, 99, true, 'smooth']
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${obj1?ifNum( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${intItem?ifNum( ${@hello}, ${@world} )}',
+	result: 'hello'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${intItem?ifNum( ${obj1}, ${obj2} )}',
+	result: {
+		"71": "berry",
+		"beneficial": "mint",
+		"test": "righteous",
+		"()": "trick",
+		"disturbed": 46,
+		"price": true,
+		"pack": {"strong": "balance", "deer": 7}
+	}
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${intItem?ifNull( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${:null?ifNull( ${@hello}, ${@world} )}',
+	result: 'hello'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${?ifUndefined( ${@hello}, ${@world} )}',
+	result: 'hello'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?ifUndefined( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${?ifPrimitive( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@?ifPrimitive( ${@hello}, ${@world} )}',
+	result: 'hello'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${arr1?ifArray( ${@hello}, ${@world} )}',
+	result: 'hello'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${obj1?ifArray( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${arr1?ifObject( ${@hello}, ${@world} )}',
+	result: 'world'
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${obj1?ifObject( ${@hello}, ${@world} )}',
+	result: 'hello'
 });
