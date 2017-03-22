@@ -1636,6 +1636,30 @@ module.exports.push({
 
 // this, parent
 module.exports.push({
+	expression: '${deepThisTest.c}',
+	result: true
+});
+
+// this, parent
+module.exports.push({
+	expression: '${deepThisTest.d}',
+	result: [1, 2, 3]
+});
+
+// this, parent
+module.exports.push({
+	expression: '${deepThisTest.e.f}',
+	result: true
+});
+
+// this, parent
+module.exports.push({
+	expression: '${deepThisTest.e.g}',
+	result: false
+});
+
+// this, parent
+module.exports.push({
 	expression: '${intItem?dirs.debugLogs.internal2.log6}',
 	result: '/home/Zhenya/logs/cg.log'
 });

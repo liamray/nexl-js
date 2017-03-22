@@ -1097,14 +1097,19 @@ NexlExpressionEvaluator.prototype.expandObjectKeys = function () {
 
 NexlExpressionEvaluator.prototype.makeObjInfo = function () {
 	return {
-		this: this.lastObjResult,
-		parent: this.lastObjResult === undefined ? this.objInfo.parent : this.lastObjResult[PARENT]
+		this: this.objInfo.this,
+		parent: this.objInfo.parent
 	};
 };
 
 NexlExpressionEvaluator.prototype.makeDeepResolution = function () {
 	if (this.needDeepResolution4NextActions) {
-		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result, this.makeObjInfo());
+		var oi = {
+			this: this.lastObjResult,
+			parent: this.lastObjResult === undefined ? this.objInfo.parent : this.lastObjResult[PARENT]
+		};
+
+		this.result = new NexlEngine(this.context, this.isEvaluateAsUndefined).processItem(this.result, oi);
 	}
 };
 

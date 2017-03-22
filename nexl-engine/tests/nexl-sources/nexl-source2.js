@@ -279,3 +279,14 @@ dirs = {
 items = [1, 'a', '__this__', '__parent__', '__this__', '__parent__', '__this__.__this__.a', 71, '${intItem}'];
 
 xxx = '${undefinedVar}';
+
+deepThisTest = {
+	a: [1, 2, 3],
+	b: 2,
+	c: '${__this__.a?nexl.functions.system.isContains( ${__this__.b} )}',
+	d: '${undefinedVar@${__this__.a}}',
+	e: {
+		f: '${__this__.__parent__.b?isEquals( ${__parent__.d[1]} )}',
+		g: '${__this__.__parent__.b?isEquals( ${__parent__.d[2]} )}'
+	}
+};
