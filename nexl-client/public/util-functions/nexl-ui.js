@@ -80,16 +80,18 @@ var module = (function (module) {
 		return Object.prototype.toString.call(obj) === "[object String]";
 	}
 
-	function putDataIntoOutputArea(data) {
-		if (!isString(data)) {
-			data = JSON.stringify(data, null, 4);
+	function parseData(data) {
+		var result = data;
+		if (isString(data)) {
+			result = JSON.parse(data);
 		}
 
-		if (isArray(data)) {
-			$('#output-area textarea').val(data.join('\n'));
-		} else {
-			$('#output-area textarea').val(data);
-		}
+		return JSON.stringify(result, null, 4);
+	}
+
+	function putDataIntoOutputArea(data) {
+
+		$('#output-area textarea').val(parseData(data));
 
 		$('#output').fadeOut(200).fadeIn(1);
 	}
