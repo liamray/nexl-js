@@ -1448,7 +1448,7 @@ module.exports.push({
 
 // this, parent
 module.exports.push({
-	expression: '${dirs.__this__.__this__}',
+	expression: '${dirs._this_._this_}',
 	result: {
 		level: 1,
 		home: '/home/Zhenya',

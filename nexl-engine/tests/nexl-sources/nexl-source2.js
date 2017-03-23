@@ -138,13 +138,13 @@ sourFruits = ['Lemon', 'Apple'];
 
 obj7 = {
 	home: '/home/nexl',
-	backupDir: '${__this__.home}/backup',
-	runsDir: '${__this__.home}/runs',
-	start: '${__this__.runsDir}/run.sh',
-	x: ['${__this__.runsDir}', '${intItem}', '${__this__.start}', '${obj7.home}'],
+	backupDir: '${_this_.home}/backup',
+	runsDir: '${_this_.home}/runs',
+	start: '${_this_.runsDir}/run.sh',
+	x: ['${_this_.runsDir}', '${intItem}', '${_this_.start}', '${obj7.home}'],
 	y: {
 		home: 'Earth',
-		a: '${__this__.home}'
+		a: '${_this_.home}'
 	}
 };
 
@@ -155,34 +155,34 @@ obj8 = {
 obj9 = {
 	level: 1,
 	home: '/home/nexl',
-	parent1: '${__this__.__parent__}',
-	parent2: '${__parent__.__this__}',
-	this1: '${.__this__.home}',
-	this2: '${.__this__.__this__.home}',
+	parent1: '${_this_._parent_}',
+	parent2: '${_parent_._this_}',
+	this1: '${._this_.home}',
+	this2: '${._this_._this_.home}',
 	parent3: {
 		level: 2,
-		a1: '${__this__.__parent__.home}',
-		a2: '${__parent__.home}',
-		a3: '${__parent__.__this__.home}',
-		a4: '${__parent__.__parent__.home}',
+		a1: '${_this_._parent_.home}',
+		a2: '${_parent_.home}',
+		a3: '${_parent_._this_.home}',
+		a4: '${_parent_._parent_.home}',
 		x: 10,
 		inner: {
 			level: 3,
-			b1: '${__parent__.x}',
-			b2: '${@${__parent__.x}}',
-			b3: '${__parent__.__parent__.home}'
+			b1: '${_parent_.x}',
+			b2: '${@${_parent_.x}}',
+			b3: '${_parent_._parent_.home}'
 		}
 	}
 };
 
 obj10 = {
 	home: '/home/jboss',
-	backupDir: '${__this__.home}/BACKUP',
+	backupDir: '${_this_.home}/BACKUP',
 	inner: {
-		x1: '${__parent__.backupDir}',
-		x2: '${__parent__.inner.__parent__.inner.__parent__.inner.x3}',
+		x1: '${_parent_.backupDir}',
+		x2: '${_parent_.inner._parent_.inner._parent_.inner.x3}',
 		x3: 10,
-		x4: '${__parent__.inner.__parent__.inner.__parent__.inner.__parent__.backupDir}'
+		x4: '${_parent_.inner._parent_.inner._parent_.inner._parent_.backupDir}'
 	}
 };
 
@@ -190,14 +190,14 @@ obj10 = {
 obj11 = {
 	home: '/home/jboss',
 	inner: {
-		a: '${__this__.__parent__.home}'
+		a: '${_this_._parent_.home}'
 	}
 };
 
 obj12 = {
 	home: '${obj1}',
 	inner: {
-		a: '${__parent__.home.\\()}'
+		a: '${_parent_.home.\\()}'
 	}
 };
 
@@ -207,12 +207,12 @@ obj13 = {
 };
 
 obj14 = {
-	b: '${__parent__.x}'
+	b: '${_parent_.x}'
 };
 
 obj15 = {
 	a: 10,
-	b: ['${__this__.a}', 11, 'hello']
+	b: ['${_this_.a}', 11, 'hello']
 };
 
 
@@ -248,45 +248,45 @@ function not() {
 dirs = {
 	level: 1,
 	home: '/home/Zhenya',
-	logs: '${__this__.home}/logs',
-	cgLog: '${__this__.__this__.__this__.logs}/cg.log',
+	logs: '${_this_.home}/logs',
+	cgLog: '${_this_._this_._this_.logs}/cg.log',
 
 	debugLogs: {
 		level: 2,
-		log1: '${__parent__.home}',
-		log2: '${__parent__.cgLog}',
+		log1: '${_parent_.home}',
+		log2: '${_parent_.cgLog}',
 
 		internal: {
 			level: 3,
-			log1: '${__parent__.__parent__.home}',
-			log2: '${__parent__.__parent__.cgLog}',
-			log3: '${__parent__.log1}',
-			log4: '${__parent__.log2}',
-			log5: '${__this__.log4}'
+			log1: '${_parent_._parent_.home}',
+			log2: '${_parent_._parent_.cgLog}',
+			log3: '${_parent_.log1}',
+			log4: '${_parent_.log2}',
+			log5: '${_this_.log4}'
 		},
 
 
 		internal2: {
 			level: 3,
-			log5: '${__parent__.log1}',
-			log6: '${__parent__.internal.log2}'
+			log5: '${_parent_.log1}',
+			log6: '${_parent_.internal.log2}'
 		}
 
 	}
 };
 
 
-items = [1, 'a', '__this__', '__parent__', '__this__', '__parent__', '__this__.__this__.a', 71, '${intItem}'];
+items = [1, 'a', '_this_', '_parent_', '_this_', '_parent_', '_this_._this_.a', 71, '${intItem}'];
 
 xxx = '${undefinedVar}';
 
 deepThisTest = {
 	a: [1, 2, 3],
 	b: 2,
-	c: '${__this__.a?nexl.functions.system.isContains( ${__this__.b} )}',
-	d: '${undefinedVar@${__this__.a}}',
+	c: '${_this_.a?nexl.functions.system.isContains( ${_this_.b} )}',
+	d: '${undefinedVar@${_this_.a}}',
 	e: {
-		f: '${__this__.__parent__.b?isEquals( ${__parent__.d[1]} )}',
-		g: '${__this__.__parent__.b?isEquals( ${__parent__.d[2]} )}'
+		f: '${_this_._parent_.b?isEquals( ${_parent_.d[1]} )}',
+		g: '${_this_._parent_.b?isEquals( ${_parent_.d[2]} )}'
 	}
 };
