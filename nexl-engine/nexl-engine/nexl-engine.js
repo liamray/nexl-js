@@ -28,7 +28,7 @@ const PARENT = '__parent__';
 
 EvalAndSubstChunks.prototype.validate = function (chunk2Substitute, item) {
 	if (!j79.isValSet(item)) {
-		throw util.format('Cannot substitute [%s] value into [%s] for [%s] expression', item, chunk2Substitute.str, this.data.str);
+		throw util.format('The [%s] expression is evaluated to [%s] and can\'t be substituted into [%s] string', chunk2Substitute.str, item, this.data.str);
 	}
 
 	if (!j79.isPrimitive(item)) {
