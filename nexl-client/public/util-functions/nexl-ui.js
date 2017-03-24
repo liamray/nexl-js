@@ -83,10 +83,13 @@ var module = (function (module) {
 	function parseData(data) {
 		var result = data;
 		if (isString(data)) {
-			result = JSON.parse(data);
+			try {
+				result = JSON.parse(data);
+				return JSON.stringify(result, null, 4);
+			} catch (e) {
+				return data;
+			}
 		}
-
-		return JSON.stringify(result, null, 4);
 	}
 
 	function putDataIntoOutputArea(data) {

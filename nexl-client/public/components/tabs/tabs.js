@@ -35,6 +35,7 @@ var module = (function (module) {
 	// misc
 	const UNTITLED_TAB = 'untitled';
 	const STORAGE_REMOTE_SERVERS = 'remote-server-history';
+	const SHOW_EXAMPLE = 'SHOW_EXAMPLE';
 
 	function getTabsContainer() {
 		return $(TABS_CONTAINER_ID);
@@ -572,6 +573,16 @@ var module = (function (module) {
 				activateTab($tab);
 			}
 		});
+
+		// examples
+		if (localStorage.getObject(SHOW_EXAMPLE) === null) {
+			localStorage.setObject(SHOW_EXAMPLE, true);
+
+			$tab = newFileTab();
+			fileContent($tab, $('#scratch1').text());
+			expression($tab, '${person}');
+			activateTab($tab);
+		}
 	}
 
 	function storeTabs() {

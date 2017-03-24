@@ -332,5 +332,72 @@
     </div>
 </div>
 
+<div style="display: none;" id="scratch1">
+    /*
+    nexl source example
+    See expressions examples below. Put each expression into "Expression" field to test and click "Evaluate nexl
+    expression" ( F9 )
+    */
+
+    distanceToMoon = 384400;
+
+    fruits = ['Mango', 'Banana', 'Orange', 'Annona', 'Grape'];
+
+    person = {
+    name: 'Alex',
+    age: 25,
+    country: 'Canada'
+    };
+
+    /*
+    Expressions examples
+
+    ${person.name}
+    First resolves person object and then resolves a name property of that object
+
+    ${fruits#S}
+    Sort fruits array
+
+    ${fruits#S&,}
+    Sorts fruits array and then joins all elements with comma
+
+    ${fruits#S&\n}
+    Sorts fruits array and then join all elements with LF
+
+    ${fruits[-1]}
+    Resolves a second array element from the end
+
+    ${fruits[ ${item} ]}
+    Resolves array element provided by ${item} internal expression from fruits array ( you can declare item variable in
+    nexl source or to provide it externally )
+
+    ${person.${props}}
+    First resolves person object and then resolves his property provided by ${props} internal expression.
+    The ${props} expression can be a primitive or array to resolve multiple properties. If you don't provide a value for
+    ${props} expression, ${props} will be skipped and the whole expression will be evaluated to ${person}
+
+    ${person~K}
+    Resolves a key set of person object as array
+
+    ${person~K&,}
+    Resolves a key set of person object as array and then joins all array elements with comma
+
+    ${person~K#s[$]}
+    Resolves a key set of person object as array, sorts them in descending order, resolves last array element
+
+    ${person~X}
+    ${person~Y}
+    ${person~P}
+    Produces a XML, YAML and key-value pairs ( property file ) from person object
+
+    ${person&lt;Alex}
+    Resolve a key of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
+
+    ${fruits[ -1..$ ]~O~X}
+    Resolves two last elements from fruits array, converts them to JavaScript object and produces a XML of that object
+
+    */
+</div>
+
 </body>
 </html>
