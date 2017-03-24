@@ -1695,6 +1695,18 @@ module.exports.push({
 
 });
 
+// this, parent
+module.exports.push({
+	expression: '${dirs.debugLogs.internal._parent_~K}',
+	result: ["level", "log1", "log2", "internal", "internal2"]
+});
+
+// this, parent
+module.exports.push({
+	expression: '${dirs._this_~K}',
+	result: ["level", "home", "logs", "cgLog", "debugLogs"]
+});
+
 // escaping test
 module.exports.push({
 	expression: '${obj1.\\()}',
