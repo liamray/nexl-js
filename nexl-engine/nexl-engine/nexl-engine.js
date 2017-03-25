@@ -160,7 +160,7 @@ NexlExpressionEvaluator.prototype.retrieveEvaluateAsUndefinedAction = function (
 	// iterating over actions
 	for (var index in this.nexlExpressionMD.actions) {
 		var action = this.nexlExpressionMD.actions[index];
-		if (action.actionId === nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS && action.actionValue === nexlExpressionsParser.UNDEFINED_VALUE_OPERATIONS_OPTIONS.EVALUATE_AS_UNDEFINED) {
+		if (action.actionId === nexlExpressionsParser.ACTIONS.UNDEFINED_VALUE_OPERATIONS && action.actionValue === nexlExpressionsParser.UNDEFINED_VALUE_OPERATIONS_OPTIONS.EVALUATE_TO_UNDEFINED) {
 			this.isEvaluateAsUndefined = true;
 			return;
 		}

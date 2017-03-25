@@ -32,7 +32,7 @@ function deepMergeInner(obj1, obj2) {
 }
 
 function hasEvaluateAsUndefinedFlag(obj) {
-	return ( ( obj || {} ).nexl || {} ).EVALUATE_AS_UNDEFINED === true;
+	return ( ( obj || {} ).nexl || {} ).EVALUATE_TO_UNDEFINED === true;
 }
 
 function provideWithNexlAPI(context, nexlEngine) {

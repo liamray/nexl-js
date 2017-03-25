@@ -1850,7 +1850,7 @@ module.exports.push({
 	expression: 'hello ${world}',
 	args: {
 		nexl: {
-			EVALUATE_AS_UNDEFINED: true
+			EVALUATE_TO_UNDEFINED: true
 		}
 	},
 	result: undefined
