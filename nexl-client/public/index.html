@@ -338,7 +338,8 @@
     See expressions examples below. Put each expression into "Expression" field to test and click "Evaluate nexl
     expression" ( F9 )
 
-    More information is here https://github.com/yevgeny-sergeyev/nexl-js
+    More documentation is here http://www.nexl-js.com
+    GitHub project https://github.com/yevgeny-sergeyev/nexl-js
     */
 
     distanceToMoon = 384400;
@@ -364,39 +365,44 @@
     Sorts fruits array and then joins all elements with comma
 
     ${fruits#S&\n}
-    Sorts fruits array and then join all elements with LF
+    Sorts fruits array and then joins all elements with LF
 
     ${fruits[-1]}
     Resolves a second array element from the end
 
-    ${fruits[ ${item} ]}
-    Resolves array element provided by ${item} internal expression from fruits array ( you can declare item variable in
-    nexl source or to provide it externally )
-
-    ${person.${props}}
-    First resolves person object and then resolves his property provided by ${props} internal expression.
-    The ${props} expression can be a primitive or array to resolve multiple properties. If you don't provide a value for
-    ${props} expression, ${props} will be skipped and the whole expression will be evaluated to ${person}
-
     ${person~K}
     Resolves a key set of person object as array
 
-    ${person~K&,}
-    Resolves a key set of person object as array and then joins all array elements with comma
+    ${person~V&,}
+    Resolves all values of person object as array and then joins all array elements with comma
 
     ${person~K#s[$]}
     Resolves a key set of person object as array, sorts them in descending order, resolves last array element
 
+    ${person.country[3..$]^U1}
+    Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a
+    first letter
+
     ${person~X}
     ${person~Y}
     ${person~P}
-    Produces a XML, YAML and key-value pairs ( property file ) from person object
+    Produces an XML, YAML and key-value pairs ( property file ) from person object
 
     ${person&lt;Alex}
-    Resolve a key of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
+    Resolves a key name of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
 
-    ${fruits[ -1..$ ]~O~X}
-    Resolves two last elements from fruits array, converts them to JavaScript object and produces a XML of that object
+    ${person&lt;Alex[0]}
+    Resolves a key name of person object by ‘Alex’ value as array and then resolves first array element
+
+    ${person~K+${person~V}&,}
+    Joins two arrays. The first array is a key set of person object, the second array are values of person object.
+    Finally joins all array elements with comma
+
+    ${distanceToMoon~O}
+    Converts a distanceToMoon primitive number to JavaScript object
+
+    ${distanceToMoon~O+${person}}
+    Converts a distanceToMoon primitive number to JavaScript object and then merges to him a person object
 
     */
 </div>

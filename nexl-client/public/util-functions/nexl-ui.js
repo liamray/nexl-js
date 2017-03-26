@@ -125,7 +125,7 @@ var module = (function (module) {
 		module.utils.restCall('/rest/eval-nexl', params, function (data) {
 			putDataIntoOutputArea(data);
 		}, function (err) {
-			module.nexlui.popupMessage(err.responseText);
+			module.nexlui.popupMessage(err.responseText, 'Error');
 		});
 	}
 
@@ -331,7 +331,7 @@ var module = (function (module) {
 		module.utils.restCall('/rest/resolve-js-variables', params, function (data) {
 			openChooseExpressionDialog($tab, data);
 		}, function (err) {
-			module.nexlui.popupMessage(err.responseText);
+			module.nexlui.popupMessage(err.responseText, 'Error');
 		});
 	}
 
@@ -411,7 +411,7 @@ var module = (function (module) {
 			var info = '';
 
 			info += 'Copyright (c) 2016-2007 Yevgeny Sergeyev<br/><br/>';
-			info += 'email <a href="mailto:nexl.javascript@gmail.com">nexl.javascript@gmail.com</a><br/>';
+			info += 'Web Site : <a href="http://www.nexl-js.com" target="_blank">http://www.nexl-js.com</a><br/>';
 
 			info = String.format(info, serverInfo.version);
 
@@ -585,6 +585,7 @@ var module = (function (module) {
 		$("#popup-message").html(outputMsg).dialog({
 			title: titleMsg,
 			resizable: false,
+			width: '350px',
 			modal: true,
 			buttons: {
 				"OK": function () {
