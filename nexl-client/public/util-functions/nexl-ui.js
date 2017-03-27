@@ -85,11 +85,12 @@ var module = (function (module) {
 		if (isString(data)) {
 			try {
 				result = JSON.parse(data);
-				return JSON.stringify(result, null, 4);
 			} catch (e) {
 				return data;
 			}
 		}
+
+		return JSON.stringify(result, null, 4);
 	}
 
 	function putDataIntoOutputArea(data) {
