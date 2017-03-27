@@ -41,7 +41,7 @@ var module = (function (module) {
 		$.each(params, function (key, val) {
 			var tmp = String.format('{0}={1}', key, val);
 			tmp = encodeURI(tmp);
-			tmp = tmp.replace(/&/g, '%26').replace(/#/g, '%23').replace(/\\+/g, '%2B');
+			tmp = tmp.replace(/&/g, '%26').replace(/#/g, '%23').replace(/\+/g, '%2B');
 			paramsAsString += tmp;
 			paramsAsString += '&';
 		});
