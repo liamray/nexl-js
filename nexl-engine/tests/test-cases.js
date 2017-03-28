@@ -1255,7 +1255,7 @@ module.exports.push({
 
 // reserved actions
 module.exports.push({
-	expression: '${|}',
+	expression: '${?}',
 	throwsException: true
 });
 
@@ -1612,25 +1612,25 @@ module.exports.push({
 
 // this, parent
 module.exports.push({
-	expression: '${intItem?__this__}',
+	expression: '${intItem|__this__}',
 	result: undefined
 });
 
 // this, parent
 module.exports.push({
-	expression: '${intItem?__parent__}',
+	expression: '${intItem|__parent__}',
 	result: undefined
 });
 
 // this, parent
 module.exports.push({
-	expression: '${objItem?__this__}',
+	expression: '${objItem|__this__}',
 	result: undefined
 });
 
 // this, parent
 module.exports.push({
-	expression: '${objItem?__parent__}',
+	expression: '${objItem|__parent__}',
 	result: undefined
 });
 
@@ -1660,7 +1660,7 @@ module.exports.push({
 
 // this, parent
 module.exports.push({
-	expression: '${intItem?dirs.debugLogs.internal2.log6}',
+	expression: '${intItem|dirs.debugLogs.internal2.log6}',
 	result: '/home/Zhenya/logs/cg.log'
 });
 
@@ -1958,73 +1958,73 @@ module.exports.push({
 
 // testing system functions
 module.exports.push({
-	expression: '${?not()~Y}',
+	expression: '${|not()~Y}',
 	result: 'Zhenya++'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@true:bool?nexl.functions.system.not()~Y}',
+	expression: '${@true:bool|nexl.functions.system.not()~Y}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?testFunc1()}',
+	expression: '${|testFunc1()}',
 	result: 'testFunc1'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?nexl.functions.user.testFunc1()}',
+	expression: '${|nexl.functions.user.testFunc1()}',
 	result: 'user.testFunc1'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?testFunc2()}',
+	expression: '${|testFunc2()}',
 	result: 'user.testFunc2'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?testFunc3()}',
+	expression: '${|testFunc3()}',
 	result: 'testFunc3'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr8?isContains()}',
+	expression: '${arr8|isContains()}',
 	result: 'Zhenya+'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr8?nexl.functions.system.isContains(${intItem})}',
+	expression: '${arr8|nexl.functions.system.isContains(${intItem})}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr8?replaceAll( ${intItem}, ${boolItem} )?replaceAll( ${@a}, ${@101:num} )}',
+	expression: '${arr8|replaceAll( ${intItem}, ${boolItem} )|replaceAll( ${@a}, ${@101:num} )}',
 	result: [true, 10, 101, true]
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${intItem?boolItem?isEquals()}',
+	expression: '${intItem|boolItem|isEquals()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr8?intItem?@lol?@omg?ifContains()}',
+	expression: '${arr8|intItem|@lol|@omg|ifContains()}',
 	result: 'lol'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr8?@?@lol?@omg?ifContains()}',
+	expression: '${arr8|@|@lol|@omg|ifContains()}',
 	result: 'omg'
 });
 
@@ -2042,13 +2042,13 @@ module.exports.push({
 
 // testing system functions
 module.exports.push({
-	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack?} )}',
+	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack|} )}',
 	result: undefined
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack~V?nexl.functions.system.isContains( ${@7:num} )} )}',
+	expression: '${ifContains( ${arr8}, ${strItem}, ${@ok}, ${obj1.pack~V|nexl.functions.system.isContains( ${@7:num} )} )}',
 	result: true
 });
 
@@ -2060,109 +2060,109 @@ module.exports.push({
 
 // testing system functions
 module.exports.push({
-	expression: '${@?isUndefined()}',
+	expression: '${@|isUndefined()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?isBool()}',
+	expression: '${@|isBool()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@1:num:bool?isBool()}',
+	expression: '${@1:num:bool|isBool()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@1:num:bool?isStr()}',
+	expression: '${@1:num:bool|isStr()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?isStr()}',
+	expression: '${@|isStr()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?isPrimitive()}',
+	expression: '${@|isPrimitive()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${:null?isNull()}',
+	expression: '${:null|isNull()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${obj1?isObject()}',
+	expression: '${obj1|isObject()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr1?isObject()}',
+	expression: '${arr1|isObject()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${obj1?isArray()}',
+	expression: '${obj1|isArray()}',
 	result: false
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr1?isArray()}',
+	expression: '${arr1|isArray()}',
 	result: true
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?ifBool( ${intItem}, ${strItem} )}',
+	expression: '${@|ifBool( ${intItem}, ${strItem} )}',
 	result: 'berry'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@true:bool?ifBool( ${intItem}, ${strItem} )}',
+	expression: '${@true:bool|ifBool( ${intItem}, ${strItem} )}',
 	result: 71
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@true?ifStr( ${arr1}, ${arr2} )}',
+	expression: '${@true|ifStr( ${arr1}, ${arr2} )}',
 	result: ['queen', 'muscle', 79, false]
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?ifStr( ${arr1}, ${arr2} )}',
+	expression: '${|ifStr( ${arr1}, ${arr2} )}',
 	result: ['air', 16, 99, true, 'smooth']
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${obj1?ifNum( ${@hello}, ${@world} )}',
+	expression: '${obj1|ifNum( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${intItem?ifNum( ${@hello}, ${@world} )}',
+	expression: '${intItem|ifNum( ${@hello}, ${@world} )}',
 	result: 'hello'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${intItem?ifNum( ${obj1}, ${obj2} )}',
+	expression: '${intItem|ifNum( ${obj1}, ${obj2} )}',
 	result: {
 		"71": "berry",
 		"beneficial": "mint",
@@ -2176,60 +2176,60 @@ module.exports.push({
 
 // testing system functions
 module.exports.push({
-	expression: '${intItem?ifNull( ${@hello}, ${@world} )}',
+	expression: '${intItem|ifNull( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${:null?ifNull( ${@hello}, ${@world} )}',
+	expression: '${:null|ifNull( ${@hello}, ${@world} )}',
 	result: 'hello'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?ifUndefined( ${@hello}, ${@world} )}',
+	expression: '${|ifUndefined( ${@hello}, ${@world} )}',
 	result: 'hello'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?ifUndefined( ${@hello}, ${@world} )}',
+	expression: '${@|ifUndefined( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${?ifPrimitive( ${@hello}, ${@world} )}',
+	expression: '${|ifPrimitive( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${@?ifPrimitive( ${@hello}, ${@world} )}',
+	expression: '${@|ifPrimitive( ${@hello}, ${@world} )}',
 	result: 'hello'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr1?ifArray( ${@hello}, ${@world} )}',
+	expression: '${arr1|ifArray( ${@hello}, ${@world} )}',
 	result: 'hello'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${obj1?ifArray( ${@hello}, ${@world} )}',
+	expression: '${obj1|ifArray( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${arr1?ifObject( ${@hello}, ${@world} )}',
+	expression: '${arr1|ifObject( ${@hello}, ${@world} )}',
 	result: 'world'
 });
 
 // testing system functions
 module.exports.push({
-	expression: '${obj1?ifObject( ${@hello}, ${@world} )}',
+	expression: '${obj1|ifObject( ${@hello}, ${@world} )}',
 	result: 'hello'
 });

@@ -283,10 +283,10 @@ xxx = '${undefinedVar}';
 deepThisTest = {
 	a: [1, 2, 3],
 	b: 2,
-	c: '${_this_.a?nexl.functions.system.isContains( ${_this_.b} )}',
+	c: '${_this_.a|nexl.functions.system.isContains( ${_this_.b} )}',
 	d: '${undefinedVar@${_this_.a}}',
 	e: {
-		f: '${_this_._parent_.b?isEquals( ${_parent_.d[1]} )}',
-		g: '${_this_._parent_.b?isEquals( ${_parent_.d[2]} )}'
+		f: '${_this_._parent_.b|isEquals( ${_parent_.d[1]} )}',
+		g: '${_this_._parent_.b|isEquals( ${_parent_.d[2]} )}'
 	}
 };

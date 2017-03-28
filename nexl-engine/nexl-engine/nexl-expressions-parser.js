@@ -25,13 +25,13 @@ const ACTIONS = {
 	'STRING_OPERATIONS': '^', // ^U upper case, ^U1 capitalize first letter, ^L power case, ^LEN length, ^T trim, ^Z make undefined for empty string
 	'UNDEFINED_VALUE_OPERATIONS': '!',
 	'MANDATORY_VALUE_VALIDATOR': '*',
-	'PUSH_FUNCTION_PARAM': '?',
+	'PUSH_FUNCTION_PARAM': '|',
 
 	// the following actions are reserved for future usage
 	'RESERVED2': '%',
 	'RESERVED3': '>',
 	'RESERVED4': '=',
-	'RESERVED5': '|'
+	'RESERVED5': '?'
 };
 
 const JS_PRIMITIVE_TYPES = {
