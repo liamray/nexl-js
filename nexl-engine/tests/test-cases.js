@@ -1107,6 +1107,15 @@ module.exports.push({
 
 // external args test
 module.exports.push({
+	expression: '${obj1-${nexl.args.param1}}',
+	args: {
+		param1: ['price', 'beneficial', 'disturbed', '71', 'pack']
+	},
+	result: {test: 'righteous', '()': 'trick'}
+});
+
+// external args test
+module.exports.push({
 	expression: '${intItem}',
 	args: {
 		intItem: {
