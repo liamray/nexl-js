@@ -59,11 +59,6 @@
 	var server;
 	var cmdLineOpts;
 
-	// C:\Program Files\nodejs\node.exe => C:\Program Files\nodejs
-	function removeLastPathElement(path) {
-		return path.replace(/[\\\/][^\\\/]*$/g, "");
-	}
-
 	function fixSlashes(path) {
 		return path.replace(/[\\\/]/g, FILE_SEPARATOR);
 	}
@@ -218,29 +213,6 @@
 		printDebug(util.format("POST request is accepted. url=[%s], clientHost = [%s]", req.url, req.connection.remoteAddress));
 
 		evalNexlExpression(input, res);
-	}
-
-	// produces json object with deep structure. x.y.z will be treated as 3 nested objects
-	function produceJson(key, val, result) {
-		// KEY can contain dots and going to be splitted by dots
-		var values = key.split('.');
-
-		var obj = result;
-
-		// iterating over spliited elements in key and putting every element into json object
-		for (var i = 0; i < values.length - 1; i++) {
-			var subValue = values[i];
-
-			// is sub element doesn't exist in json object, create it
-			if (!obj[subValue]) {
-				obj[subValue] = {};
-			}
-
-			// diving deeper
-			obj = obj[subValue];
-		}
-
-		obj[values[values.length - 1]] = val;
 	}
 
 	function handleRootPage(req, res) {
