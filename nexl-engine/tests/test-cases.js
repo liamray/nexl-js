@@ -1958,6 +1958,24 @@ module.exports.push({
 
 // testing system functions
 module.exports.push({
+	expression: '${makeObj()}',
+	result: {}
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${@|makeObj()}',
+	result: {'': undefined}
+});
+
+// testing system functions
+module.exports.push({
+	expression: '${arr1|intItem|makeObj()}',
+	result: {'79': 71, queen: 71, muscle: 71, false: 71}
+});
+
+// testing system functions
+module.exports.push({
 	expression: '${|not()~Y}',
 	result: 'Zhenya++'
 });

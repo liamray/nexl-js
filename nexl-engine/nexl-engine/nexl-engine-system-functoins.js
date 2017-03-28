@@ -30,6 +30,22 @@ function replaceAll4Array(entity, searchItem, replace) {
 // functions to assign to context
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+systemFunctions.makeObj = function (key, val) {
+	var result = {};
+
+	if (j79.isPrimitive(key)) {
+		result[key] = val;
+	}
+
+	if (j79.isArray(key)) {
+		for (var index in key) {
+			result[key[index]] = val;
+		}
+	}
+
+	return result;
+};
+
 // replaces items in array or string
 systemFunctions.replaceAll = function (entity, searchItem, replace) {
 	if (j79.isArray(entity)) {
