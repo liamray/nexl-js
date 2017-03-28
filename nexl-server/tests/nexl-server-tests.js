@@ -104,7 +104,7 @@ function waitAndExit(server) {
 
 function start() {
 	// pointing nexl-server to existing nexl-source from nexl-engine
-	process.argv.push('--nexl-source=../../nexl-engine/tests/nexl-sources');
+	process.argv.push('--nexl-sources=../../nexl-engine/tests/nexl-sources');
 	process.argv.push('--port=' + DEFAULT_PORT);
 	process.argv.push('--binding=' + DEFAULT_HOST);
 	process.argv.push('--debug');
