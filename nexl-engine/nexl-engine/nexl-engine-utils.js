@@ -69,6 +69,9 @@ function makeContext(nexlSource, externalArgs, nexlEngine) {
 		context = deepMergeInner(context, externalArgs);
 	}
 
+	// supplying external args
+	context.nexl.args = externalArgs;
+
 	supplyStandardLibs(context);
 
 	// giving an access to functions from nexl sources to nexl API
