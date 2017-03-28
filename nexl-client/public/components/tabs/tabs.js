@@ -382,6 +382,13 @@ var module = (function (module) {
 			openNexlSourceExplorer($(this).parent());
 		});
 
+		getOnesTabContainer($tab).find('input').on('input', function () {
+			updateRESTURL($tab);
+		});
+		getOnesTabContainer($tab).find('select').on('change', function () {
+			updateRESTURL($tab);
+		});
+
 		return $tab;
 	}
 
@@ -544,12 +551,6 @@ var module = (function (module) {
 				url($tab, tabInfo.nexlServer);
 				getRemoteNexlSource($tab).val(tabInfo.nexlSource);
 				expression($tab, tabInfo.expression);
-				getOnesTabContainer($tab).find('input').on('input', function () {
-					updateRESTURL($tab);
-				});
-				getOnesTabContainer($tab).find('select').on('change', function () {
-					updateRESTURL($tab);
-				});
 				updateRESTURL($tab);
 				activateTab($tab);
 				return;
