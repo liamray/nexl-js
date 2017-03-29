@@ -1,7 +1,7 @@
 {
   "name": "nexl-engine",
   "version": "2.0.4",
-  "description": "nexl expressions processor. Consider the following products which are based on nexl-engine : nexl-client, nexl-server",
+  "description": "nexl scripting language processor",
   "main": "nexl-engine/nexl-engine.js",
   "scripts": {
     "test": "cd tests && node nexl-engine-tests.js"
@@ -12,18 +12,28 @@
     "nexl-client",
     "nexl-server",
     "nexl-engine",
-    "storage",
+    "server",
+    "rest",
+    "web",
+    "service",
+    "http",
+    "centralized",
     "config",
+    "configuration",
+    "storage",
+    "data",
     "external",
     "javascript",
     "js",
     "expression",
+    "scripting",
     "language",
     "ide",
     "editor"
   ],
   "license": "Apache 2.0",
   "author": "Yevgeny Sergeyev",
+  "homepage": "http://www.nexl-js.com",
   "files": [
     "nexl-engine.js",
     "nexl-expressions-parser.js",

@@ -1,7 +1,7 @@
 {
   "name": "nexl-server",
   "version": "2.0.0",
-  "description": "JavaScript based read only configuration data storage where every single data element is a javascript variable",
+  "description": "REST server which hosts JavaScripts files and exposes their primitives, arrays and objects via REST API by using nexl scripting language",
   "main": "nexl-server.js",
   "scripts": {
     "start": "node ./bin/nexl-server"
@@ -12,18 +12,28 @@
     "nexl-client",
     "nexl-server",
     "nexl-engine",
-    "storage",
+    "server",
+    "rest",
+    "web",
+    "service",
+    "http",
+    "centralized",
     "config",
+    "configuration",
+    "storage",
+    "data",
     "external",
     "javascript",
     "js",
     "expression",
+    "scripting",
     "language",
     "ide",
     "editor"
   ],
   "license": "Apache 2.0",
   "author": "Yevgeny Sergeyev",
+  "homepage": "http://www.nexl-js.com",
   "files": [
     "nexl-server.js",
     "favicon.ico",
