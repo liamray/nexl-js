@@ -36,6 +36,8 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
+var env = process.env.NODE_ENV || 'production';
+app.set('env', env);
 
 // development error handler
 // will print stacktrace
