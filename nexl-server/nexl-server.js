@@ -453,7 +453,7 @@
 
 	function printCurrentVersion() {
 		try {
-			console.log(util.format('nexl-server version is [%s]\n', require('./package.json').version));
+			console.log(util.format('nexl-server version is [%s]\n', version));
 		} catch (e) {
 			console.log("It's not fatal but failed to print a nexl-server version. Please open me a bug. Exception : " + e);
 		}
