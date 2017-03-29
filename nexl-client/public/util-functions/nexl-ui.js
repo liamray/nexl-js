@@ -190,7 +190,7 @@ var module = (function (module) {
 
 	function openAddActionDialog() {
 		$("#addActionDialog").dialog({
-				width: 310,
+			width: 330,
 				height: 380,
 				modal: true,
 				resizable: true,

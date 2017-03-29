@@ -215,3 +215,11 @@ a {
 .actionsContainer .typeCast, .actionsContainer .objectOperations, .actionsContainer .arrayOperations, .actionsContainer .stringOperations, .actionsContainer .undefinedValueOperations, .actionsContainer .customValue, .actionsContainer .exampleBox {
     display: none;
 }
+
+.actionsContainer .box1 {
+    padding-left: 129px;
+}
+
+.actionsContainer .box2 {
+    padding-left: 129px;
+}

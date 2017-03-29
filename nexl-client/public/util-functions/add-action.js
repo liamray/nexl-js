@@ -30,7 +30,7 @@ var module = (function (module) {
 
 		example = 'Example : ' + example.replace(/%s/g, value);
 		example = example.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		$('.' + EXAMPLE_BOX).html(example);
+		$('.' + EXAMPLE_BOX).html('<hr/><br/>' + example);
 		$('.' + EXAMPLE_BOX).show();
 	}
 
@@ -52,7 +52,10 @@ var module = (function (module) {
 
 		$('.actionsContainer select').on('change', function () {
 			var title = $("option:selected", this).attr('title');
-			$(this).attr('title', title);
+			var targetBox = this.getAttribute('class') === ACTION_IDS_SELECT ? 'box1' : 'box2';
+
+			$('.actionsContainer .box2').html('');
+			$('.actionsContainer .' + targetBox).html(title);
 
 			updateExampleBox(this);
 		});

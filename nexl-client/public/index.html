@@ -165,7 +165,7 @@
 <!-- ------------------------------------------------------------------------------------------------ -->
 <div id="addActionDialog" style="display: none;" title="Add action">
     <div class="actionsContainer">
-        <div>
+        <div class="actionsSelect">
             <label>Action ID</label>
             <select class="actionIds">
                 <option disabled selected value></option>
@@ -206,15 +206,16 @@
                 </option>
                 <option ref=".undefinedValueOperations" title="Undefined value operations">!</option>
                 <option title="Pushes current chain value to function parameters stack"
-                        example="See documentation for more information">?
+                        example="See documentation for more information">|
                 </option>
             </select>
         </div>
-
+        <div class="box1"></div>
+        <hr/>
 
         <div class="customValue">
             <label title="Action ID can be a constant value or nexl expression">Action Value</label>
-            <input type="text" title="Start typing action value. Action ID can be a constant value or nexl expression"/>
+            <input type="text" title="Start typing action value. Action ID can be a string value or nexl expression"/>
         </div>
 
         <div class="typeCast">
@@ -327,6 +328,8 @@
                 </option>
             </select>
         </div>
+
+        <div class="box2"></div>
 
         <div class="exampleBox"></div>
     </div>
