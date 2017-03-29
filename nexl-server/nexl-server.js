@@ -7,6 +7,22 @@
  **************************************************************************************/
 
 (function () {
+	// includes
+	const nexlEngine = require('nexl-engine');
+	const j79 = require('j79-utils');
+	const path = require('path');
+	const bodyParser = require('body-parser');
+	const util = require('util');
+	const express = require('express');
+	const app = express();
+	const osHomeDir = require('os-homedir');
+	const favicon = require('serve-favicon');
+	const figlet = require('figlet');
+	const commandLineArgs = require('command-line-args');
+	const chalk = require('chalk');
+	const fs = require('fs');
+	const version = require('./package.json').version;
+
 	var CMD_LINE_OPTS_DEF = [
 		{
 			name: 'nexl-sources',
@@ -30,21 +46,6 @@
 		},
 		{name: 'help', alias: 'h', type: Boolean, defaultValue: false, desc: 'display this help'}
 	];
-
-	// includes
-	const nexlEngine = require('nexl-engine');
-	const j79 = require('j79-utils');
-	const path = require('path');
-	const bodyParser = require('body-parser');
-	const util = require('util');
-	const express = require('express');
-	const app = express();
-	const osHomeDir = require('os-homedir');
-	const favicon = require('serve-favicon');
-	const figlet = require('figlet');
-	const commandLineArgs = require('command-line-args');
-	const chalk = require('chalk');
-	const fs = require('fs');
 
 	var NEXL_SOURCES_ROOT;
 	const FILE_SEPARATOR = path.sep;
@@ -222,6 +223,8 @@
 			if (err) {
 				throw 'Something went wrong...' + err
 			}
+
+			data = util.format('nexl-server version : %s\n%s', version, data);
 
 			res.status(200);
 			res.write(data);
