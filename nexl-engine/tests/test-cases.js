@@ -528,16 +528,6 @@ module.exports.push({
 	}
 });
 
-// ENV = DEV, INSTANCE = THIRD
-module.exports.push({
-	expression: '${ALL_APP_SERVER_INTERFACES}',
-	result: ['zombie', 'arrows', 'zebra'],
-	args: {
-		ENV: 'DEV',
-		INSTANCE: 'THIRD'
-	}
-});
-
 // ENV = QA
 module.exports.push({
 	expression: '${ALL_APP_SERVER_INTERFACES}',
@@ -564,16 +554,6 @@ module.exports.push({
 	args: {
 		ENV: 'PROD',
 		INSTANCE: 'SECOND'
-	}
-});
-
-// ENV = PROD, INSTANCE = XXX
-module.exports.push({
-	expression: '${ALL_APP_SERVER_INTERFACES}',
-	result: ['hothead1', 'awakening1', 'dynamite1', 'military1', 'cuddly2', 'grease2', 'fate2', 'atmosphere2', 'drp-prod'],
-	args: {
-		ENV: 'PROD',
-		INSTANCE: 'xxx'
 	}
 });
 
