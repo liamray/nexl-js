@@ -227,6 +227,7 @@ function convertStrItem2Obj(item, val, obj) {
 
 		var key = currentItem.substr(0, lastDotPos);
 		currentItem = currentItem.substr(lastDotPos + 1);
+		lastDotPos = 0;
 		if (currentRef[key] === undefined) {
 			currentRef[key] = {};
 		}
