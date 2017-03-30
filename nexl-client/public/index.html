@@ -170,43 +170,47 @@
             <select class="actionIds">
                 <option disabled selected value></option>
                 <option title="Object property resolution"
-                        example="the ${obj.%s} expression resolves %s property from obj1 object">.
+                        example="the ${obj.%s} expression resolves <u>%s</u> property from <u>obj1</u> object">.
                 </option>
-                <option title="Access array index or substring"
-                        example="the ${item[ %s ]} expression accesses array indexes ( in case of array ) or extracts characters by indexes ( in case of string )<br/>Indexes must be one of the following : ^ ( first item ), $ ( last item ) or integer ( including negative numbers ). Multiple ranges are also available">
+                <option title="Access array elements by index or make substring"
+                        example="the ${arr[ %s ]} expression resolves element(s) from <u>arr</u> array by <u>%s</u> index<br/><br/>The ${str[ %s ]} expression extracts character(s) from <u>str</u> string by <u>%s</u> index<br/><br/>You can specify the following as indexes :<br/> <b>^</b> first element<br/> <b>$</b> last element<br/> positive integer<br/> negative integer ( counts from end )<br/> internal nexl expression<br/><br/>Also you can provide elements range and/or multiple ranges">
                     []
                 </option>
                 <option title="Function call"
-                        example="the ${func( %s )} expression call a func function with %s arguments. Arguments must be nexl expression(s) separated with comma">
+                        example="the ${func( %s )} expression calls a <u>func</u> function with <u>%s</u> argument(s). Argument(s) must be nexl expression(s) separated with comma. Spaces are ignored">
                     ()
                 </option>
                 <option title=" Default value"
-                        example="the ${item@%s} expression is evaluating to %s default value if the item is undefined">@
+                        example="the ${item@%s} expression will be evaluated to <u>%s</u> value if <u>item</u> is undefined">
+                    @
                 </option>
                 <option ref=".typeCast" title="Typecast">:</option>
                 <option ref=".objectOperations" title="Object operations">~</option>
                 <option title="Object key reverse resolution"
-                        example="the ${obj1<%s} expression performs key resolution in obj1 object by %s value">
+                        example="the ${obj1&lt;&#8203;%s} expression performs key resolution for <u>obj1</u> object by <u>%s</u> value">
                     &lt;</option>
                 <option ref=".arrayOperations" title="Array operations">#</option>
-                <option title="Join array elements" example="the ${arr&%s} expression joins all array elements with %s">
+                <option title="Join array elements"
+                        example="the ${arr&%s} expression joins all array elements with <u>%s</u>">
                     &
                 </option>
                 <option ref=".stringOperations" title="String operations">^</option>
                 <option title="Eliminate items from array or object"
-                        example="the ${item-%s} expression eliminates a %s item from objOrArray">-
+                        example="the ${objOrArray-%s} expression eliminates a <u>%s</u> item from <u>objOrArray</u> instance">
+                    -
                 </option>
                 <option title="Add items to array or merge objects"
-                        example="in the ${item+%s} expression adds a %s to the end of array or merges a %s object to item object">
+                        example="in the ${objOrArray+%s} expression adds a <u>%s</u> value to the end of <u>objOrArray</u> array or merges a <u>%s</u> object to <u>objOrArray</u> object">
                     +
                 </option>
                 <option title="Mandatory value validator"
-                        example="the ${test*%s} expression will throw error with %s error message if the test item is undefined">
+                        example="the ${test*%s} expression throws error with <u>%s</u> error message if the <u>test</u> item is undefined">
                     *
                 </option>
                 <option ref=".undefinedValueOperations" title="Undefined value operations">!</option>
-                <option title="Pushes current chain value to function parameters stack"
-                        example="See documentation for more information">|
+                <option title="Push current value to function parameters stack"
+                        example="the ${%s|Math.round()} expression first pushes a <u>%s</u> value to the stack and then calls a <u>Math.round()</u> function which gets their arguments from that stack">
+                    |
                 </option>
             </select>
         </div>
@@ -223,18 +227,19 @@
             <select>
                 <option disabled selected value></option>
                 <option title="Casts a primitive to numeric"
-                        example="the ${item%s} expression expression casts item's value to numeric">num
+                        example="the ${item%s} expression expression casts item's value to <u>numeric</u>">num
                 </option>
                 <option title="Casts a primitive to string"
-                        example="the ${item%s} expression expression casts item's value to string">str
+                        example="the ${item%s} expression expression casts item's value to <u>string</u>">str
                 </option>
                 <option title="Casts a primitive to boolean"
-                        example="the ${item%s} expression expression casts item's value to boolean">bool
+                        example="the ${item%s} expression expression casts item's value to <u>boolean</u>">bool
                 </option>
-                <option title="Converts to null" example="the ${item%s} expression converts item's value to null">null
+                <option title="Converts to null"
+                        example="the ${item%s} expression converts item's value to <u>null</u>">null
                 </option>
                 <option title="Converts to undefined"
-                        example="the ${item%s} expression converts item's value to undefined">
+                        example="the ${item%s} expression converts item's value to <u>undefined</u>">
                     undefined
                 </option>
             </select>
@@ -244,23 +249,26 @@
             <label>Action Value</label>
             <select>
                 <option disabled selected value></option>
-                <option title="Resolves object keys" example="the ${obj~K} expression resolves a key set of obj object">
+                <option title="Resolves object key set as array"
+                        example="the ${obj~K} expression resolves a key set of <u>obj</u> object as array">
                     K
                 </option>
                 <option title="Resolves object values"
-                        example="the ${obj~V} expression resolves all values of obj object">
+                        example="the ${obj~V} expression resolves all values of <u>obj</u> object as array">
                     V
                 </option>
-                <option title="Converts to object" example="the ${item~O} converts an item to object">O</option>
+                <option title="Converts to object" example="the ${item~O} expression converts <u>item</u> to object">O
+                </option>
                 <option title="Produces XML from object"
-                        example="the ${obj~X} expression produces a XML from obj object">X
+                        example="the ${obj~X} expression produces an XML from <u>obj</u> object">X
                 </option>
                 <option title="Produces YAML from object"
-                        example="the ${obj~Y} expression produces a YAML from obj object">
+                        example="the ${obj~Y} expression produces a YAML from <u>obj</u> object">
                     Y
                 </option>
                 <option title="Produces key-value paris from object"
-                        example="the ${obj~P} expression produces a key-value pairs ( property file) from obj object">P
+                        example="the ${obj~P} expression produces a key-value pairs ( property file) from <u>obj</u> object">
+                    P
                 </option>
             </select>
         </div>
@@ -270,27 +278,28 @@
             <select>
                 <option disabled selected value></option>
                 <option title="Sorts array ascending"
-                        example="the ${arr#S} expression sorts arr array in ascending order">
+                        example="the ${arr#S} expression sorts <u>arr</u> array in ascending order">
                     S
                 </option>
                 <option title="Sorts array descending"
-                        example="the ${arr#s} expression sorts arr array in descending order">
+                        example="the ${arr#s} expression sorts <u>arr</u> array in descending order">
                     s
                 </option>
                 <option title="Unique value only"
-                        example="the ${arr#U} expression makes arr array elements unique ( omitting duplicates )">U
+                        example="the ${arr#U} expression makes <u>arr</u> array elements unique ( omitting duplicates )">
+                    U
                 </option>
                 <option title="Duplicate values only"
-                        example="the ${arr#D} expression leaves only duplicate items in arr array">D
+                        example="the ${arr#D} expression leaves only duplicate items in <u>arr</u> array">D
                 </option>
                 <option title="Calculates array length"
-                        example="the ${arr#LEN} expression calculates length of arr array">
+                        example="the ${arr#LEN} expression calculates length of <u>arr</u> array">
                     LEN
                 </option>
-                <option title="Converts to array" example="the ${item#A} expression converts an item to array">A
+                <option title="Converts to array" example="the ${item#A} expression converts <u>item</u> to array">A
                 </option>
-                <option title="Gets first array item or undefined"
-                        example="the ${arr#F} resolves the first array element if array has only one element. Otherwise this expression is evaluated to undefined">
+                <option title="Gets first array element or undefined"
+                        example="the ${arr#F} expression resolves the first array element if <u>arr</u> array has only one element. Otherwise this expression is evaluated to undefined">
                     F
                 </option>
             </select>
@@ -300,17 +309,20 @@
             <label>Action Value</label>
             <select>
                 <option disabled selected value></option>
-                <option title="Makse uppercase" example="the ${str^U} expression makes a str string uppercase">U
+                <option title="Uppercase"
+                        example="the ${str^U} expression converts a <u>str</u> string to uppercase letters">U
                 </option>
                 <option title="Capitalizes first letter"
-                        example="the ${str^U1} expression capitalizes a first letter of str string">U1
+                        example="the ${str^U1} expression capitalizes a first letter of <u>str</u> string">U1
                 </option>
-                <option title="Makes lowercase" example="the ${str^L} expression makes a str string lower">L</option>
+                <option title="Lowercase"
+                        example="the ${str^L} expression covnert a <u>str</u> string to lowercase letters">L
+                </option>
                 <option title="Calculates string length"
-                        example="the ${str^LEN} expression calculates length of str string">
+                        example="the ${str^LEN} expression calculates length of <u>str</u> string">
                     LEN
                 </option>
-                <option title="Trims a string" example="the ${str^T} expression trims a str string">T</option>
+                <option title="Trims a string" example="the ${str^T} expression trims a <u>str</u> string">T</option>
             </select>
         </div>
 
@@ -319,11 +331,11 @@
             <select>
                 <option disabled selected value></option>
                 <option title="Convert empty string, array or object to undefined"
-                        example="the ${item!E} expression converts item to undefined if this item is empty string, empty array or empty object">
+                        example="the ${item!E} expression converts <u>item</u> to undefined if this item is empty string, empty array or empty object">
                     E
                 </option>
                 <option title="Evaluates expression as undefined"
-                        example="the ${expr!U} expression is evaluated to undefined if it points to sub expression and one of them is evaluated to undefined">
+                        example="the ${expr!U} expression is evaluated to undefined if it points to sub expression(s) and one of those sub expressions are evaluated to undefined">
                     U
                 </option>
             </select>

@@ -29,7 +29,6 @@ var module = (function (module) {
 		}
 
 		example = 'Example : ' + example.replace(/%s/g, value);
-		example = example.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		$('.' + EXAMPLE_BOX).html('<hr/><br/>' + example);
 		$('.' + EXAMPLE_BOX).show();
 	}
