@@ -3,6 +3,7 @@
 
  Copyright (c) 2016-2017 Yevgeny Sergeyev
  License : Apache 2.0
+ WebSite : http://www.nexl-js.com
 
  nexl expressions processor
  **************************************************************************************/

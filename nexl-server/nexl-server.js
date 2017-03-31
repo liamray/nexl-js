@@ -1,7 +1,9 @@
 /**************************************************************************************
  nexl-server
+
  Copyright (c) 2016 Yevgeny Sergeyev
  License : Apache 2.0
+ WebSite : http://www.nexl-js.com
 
  JavaScript based read only configuration data storage where every single data element is a javascript variable
  **************************************************************************************/
@@ -451,9 +453,10 @@
 		app.use(errorHandler);
 	}
 
-	function printCurrentVersion() {
+	function printInfo() {
 		try {
-			console.log(util.format('nexl-server version is [%s]\n', version));
+			console.log(util.format('nexl-server version is [%s]', version));
+			console.log('WebSite http://www.nexl-js.com\n');
 		} catch (e) {
 			console.log("It's not fatal but failed to print a nexl-server version. Please open me a bug. Exception : " + e);
 		}
@@ -489,7 +492,7 @@
 		// validating nodejs version
 		j79.abortIfNodeVersionLowerThan(4);
 
-		printCurrentVersion();
+		printInfo();
 		applyBinders();
 		handleArgs();
 		createHttpServer();
