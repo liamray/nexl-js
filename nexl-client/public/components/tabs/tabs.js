@@ -247,7 +247,10 @@ var module = (function (module) {
 		var id = getEditAreaId($tab);
 
 		var aceEditor = ace.edit(id);
-		aceEditor.setTheme("ace/theme/monokai");
+		aceEditor.setOptions({
+			fontSize: "10pt"
+		});
+		aceEditor.setTheme("ace/theme/xcode");
 		aceEditor.getSession().setMode("ace/mode/javascript");
 		aceEditor.$blockScrolling = Infinity;
 		aceEditor.on("change", function () {
