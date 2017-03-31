@@ -355,11 +355,10 @@
 <div style="display: none;" id="scratch1">
 /*
     nexl source example
-    See expressions examples below. Put each expression into "Expression" field to test and click "Evaluate nexl
-    expression" ( F9 )
+    See expressions examples below. Put each expression in "Expression" field to test it and click "Evaluate nexl expression" ( F9 )
 
-    More documentation is here http://www.nexl-js.com
-    GitHub project https://github.com/yevgeny-sergeyev/nexl-js
+    WebSite        -> http://www.nexl-js.com
+    GitHub project -> https://github.com/yevgeny-sergeyev/nexl-js
 */
 
 distanceToMoon = 384400;
@@ -379,16 +378,13 @@ ${person.name}
 First resolves person object and then resolves a name property of that object
 
 ${fruits#S}
-Sort fruits array
+Resolves a fruits array and sorts it
 
 ${fruits#S&,}
-Sorts fruits array and then joins all elements with comma
-
-${fruits#S&\n}
-Sorts fruits array and then joins all elements with LF
+First sorts fruits array and then joins all elements with comma
 
 ${fruits[-1]}
-Resolves a second array element from the end
+Resolves a second element from the end of fruits array
 
 ${person~K}
 Resolves a key set of person object as array
@@ -400,8 +396,7 @@ ${person~K#s[$]}
 Resolves a key set of person object as array, sorts them in descending order, resolves last array element
 
 ${person.country[3..$]^U1}
-Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a
-first letter
+Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a first letter
 
 ${person~X}
 ${person~Y}
@@ -409,20 +404,32 @@ ${person~P}
 Produces an XML, YAML and key-value pairs ( property file ) from person object
 
 ${person&lt;Alex}
-Resolves a key name of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
+Resolves a key of person object by ‘Alex’ string value ( i.e. makes object property reverse resolution ).
+The result is array
 
 ${person&lt;Alex[0]}
-Resolves a key name of person object by ‘Alex’ value as array and then resolves first array element
+Resolves a key of person object by ‘Alex’ value as array and then resolves a first array element
 
-${person~K+${person~V}&,}
-Joins two arrays. The first array is a key set of person object, the second array are values of person object.
-Finally joins all array elements with comma
+${person~K+${person~V}&\t}
+Joins two arrays. The first array is a key set of a person object, the second array are values of a person object. Finally joins all array elements with tab character
 
 ${distanceToMoon~O}
 Converts a distanceToMoon primitive number to JavaScript object
 
+${distanceToMoon~O~P}
+Converts a distanceToMoon primitive number to JavaScript object and then produces a key-value pair of it
+
 ${distanceToMoon~O+${person}}
-Converts a distanceToMoon primitive number to JavaScript object and then merges to him a person object
+Converts a distanceToMoon primitive number to JavaScript object and then merges to him person object
+
+${Math.PI}
+Resolves a PI property from Math object
+
+${Math.PI|Math.round()}
+Resolves a PI property from Math object and pushes it to stack. Calles a Math.round() function which automatically gets a Math.PI argument from the stack
+
+${Math.PI|distanceToMoon|Math.max()}
+Pushes a Math.PI to the stack, then pushes a distanceToMoon to the stack. Finally calls a Math.max() function which gets arguments from the stack
 
 */
 </div>
