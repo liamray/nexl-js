@@ -189,6 +189,8 @@ var module = (function (module) {
 	}
 
 	function openAddActionDialog() {
+		module.addAction.reset();
+
 		$("#addActionDialog").dialog({
 			width: 330,
 				height: 380,

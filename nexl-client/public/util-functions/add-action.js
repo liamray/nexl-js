@@ -50,7 +50,7 @@ var module = (function (module) {
 		});
 
 		$('.actionsContainer select').on('change', function () {
-			var title = $("option:selected", this).attr('title');
+			var title = $("option:selected", this).attr('aTitle');
 			var targetBox = this.getAttribute('class') === ACTION_IDS_SELECT ? 'box1' : 'box2';
 
 			$('.actionsContainer .box2').html('');
@@ -67,6 +67,14 @@ var module = (function (module) {
 	$(document).ready(function () {
 		start();
 	});
+
+	module.addAction.reset = function () {
+		$('.actionsContainer select').val('');
+		$('.' + EXAMPLE_BOX).hide();
+		$(lastVisibleBox).hide();
+		$('.actionsContainer .box1').html('');
+		$('.actionsContainer .box2').html('');
+	};
 
 	module.addAction.getActionId = function () {
 		return $('.actionsContainer select').val();
