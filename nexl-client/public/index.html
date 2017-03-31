@@ -353,78 +353,78 @@
 </div>
 
 <div style="display: none;" id="scratch1">
-    /*
+/*
     nexl source example
     See expressions examples below. Put each expression into "Expression" field to test and click "Evaluate nexl
     expression" ( F9 )
 
     More documentation is here http://www.nexl-js.com
     GitHub project https://github.com/yevgeny-sergeyev/nexl-js
-    */
+*/
 
-    distanceToMoon = 384400;
+distanceToMoon = 384400;
 
-    fruits = ['Mango', 'Banana', 'Orange', 'Annona', 'Grape'];
+fruits = ['Mango', 'Banana', 'Orange', 'Annona', 'Grape'];
 
-    person = {
+person = {
     name: 'Alex',
     age: 25,
     country: 'Canada'
-    };
+};
 
-    /*
+/*
     ..:: Expressions examples ::..
 
-    ${person.name}
-    First resolves person object and then resolves a name property of that object
+${person.name}
+First resolves person object and then resolves a name property of that object
 
-    ${fruits#S}
-    Sort fruits array
+${fruits#S}
+Sort fruits array
 
-    ${fruits#S&,}
-    Sorts fruits array and then joins all elements with comma
+${fruits#S&,}
+Sorts fruits array and then joins all elements with comma
 
-    ${fruits#S&\n}
-    Sorts fruits array and then joins all elements with LF
+${fruits#S&\n}
+Sorts fruits array and then joins all elements with LF
 
-    ${fruits[-1]}
-    Resolves a second array element from the end
+${fruits[-1]}
+Resolves a second array element from the end
 
-    ${person~K}
-    Resolves a key set of person object as array
+${person~K}
+Resolves a key set of person object as array
 
-    ${person~V&,}
-    Resolves all values of person object as array and then joins all array elements with comma
+${person~V&,}
+Resolves all values of person object as array and then joins all array elements with comma
 
-    ${person~K#s[$]}
-    Resolves a key set of person object as array, sorts them in descending order, resolves last array element
+${person~K#s[$]}
+Resolves a key set of person object as array, sorts them in descending order, resolves last array element
 
-    ${person.country[3..$]^U1}
-    Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a
-    first letter
+${person.country[3..$]^U1}
+Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a
+first letter
 
-    ${person~X}
-    ${person~Y}
-    ${person~P}
-    Produces an XML, YAML and key-value pairs ( property file ) from person object
+${person~X}
+${person~Y}
+${person~P}
+Produces an XML, YAML and key-value pairs ( property file ) from person object
 
-    ${person&lt;Alex}
-    Resolves a key name of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
+${person&lt;Alex}
+Resolves a key name of person object by ‘Alex’ value ( i.e. makes object property reverse resolution )
 
-    ${person&lt;Alex[0]}
-    Resolves a key name of person object by ‘Alex’ value as array and then resolves first array element
+${person&lt;Alex[0]}
+Resolves a key name of person object by ‘Alex’ value as array and then resolves first array element
 
-    ${person~K+${person~V}&,}
-    Joins two arrays. The first array is a key set of person object, the second array are values of person object.
-    Finally joins all array elements with comma
+${person~K+${person~V}&,}
+Joins two arrays. The first array is a key set of person object, the second array are values of person object.
+Finally joins all array elements with comma
 
-    ${distanceToMoon~O}
-    Converts a distanceToMoon primitive number to JavaScript object
+${distanceToMoon~O}
+Converts a distanceToMoon primitive number to JavaScript object
 
-    ${distanceToMoon~O+${person}}
-    Converts a distanceToMoon primitive number to JavaScript object and then merges to him a person object
+${distanceToMoon~O+${person}}
+Converts a distanceToMoon primitive number to JavaScript object and then merges to him a person object
 
-    */
+*/
 </div>
 
 </body>
