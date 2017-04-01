@@ -1,6 +1,6 @@
 {
   "name": "nexl-engine",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "nexl scripting language processor",
   "main": "nexl-engine/nexl-engine.js",
   "scripts": {
@@ -35,10 +35,7 @@
   "author": "Yevgeny Sergeyev",
   "homepage": "http://www.nexl-js.com",
   "files": [
-    "nexl-engine.js",
-    "nexl-expressions-parser.js",
-    "nexl-source-utils.js",
-    "nexl-engine-utils.js"
+    "nexl-engine"
   ],
   "repository": {
     "type": "git",
