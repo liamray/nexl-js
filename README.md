@@ -100,7 +100,7 @@ Press <b>F9</b> to evaluate nexl expression ( or click <b>"Evaluate nexl express
 | ${person~V&amp;,} | Resolves all values of person object as array and then joins all array elements with comma |
 | ${person~K#s[$]} | Resolves a key set of person object as array, sorts them in descending order, resolves last array element |
 | ${person.country[3..$]^U1} | Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a first letter |
-| ${person~X}<br>${person~Y}<br>${person~P} | Produces an XML, YAML and key-value pairs ( property file ) from person object |
+| ${person\~X}<br>${person\~Y}<br>${person\~P} | Produces an XML, YAML and key-value pairs ( property file ) from person object |
 | ${person&lt;Alex} | Resolves a key of person object by &#39;Alex&#39; string value ( i.e. makes object property reverse resolution ).The result is array |
 | ${person&lt;Alex[0]} | Resolves a key of person object by &#39;Alex&#39; value as array and then resolves a first array element |
 | ${person\~K\+${person~V}&amp;\t} | Joins two arrays. The first array is a key set of a person object, the second array are values of a person object. Finally joins all array elements with tab character |
