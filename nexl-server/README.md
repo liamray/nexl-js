@@ -1,10 +1,9 @@
-### nexl-server :
+<b>nexl-server</b> hosts JavaScripts files and exposes their primitives, arrays and objects via REST API by using nexl scripting language
 
-    - is a configuration data storage server
-    - hosts a javascript files which are called nexl sources
-    - exposes all javascript variables from nexl sources via web services
+Visit [http://www.nexl-js.com](http://www.nexl-js.com) web site for quick start and more information
 
+GitHub project [nexl-js](https://github.com/yevgeny-sergeyev/nexl-js)
 
-nexl offers the following products : [nexl-server](https://www.npmjs.com/package/nexl-server) and [nexl-client](https://www.npmjs.com/package/nexl-client)
-
-Full description is available on [github nexl project page](https://github.com/yevgeny-sergeyev/nexl-js)
+Related products :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-client](https://www.npmjs.com/package/nexl-client)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-engine](https://www.npmjs.com/package/nexl-engine)<br/>

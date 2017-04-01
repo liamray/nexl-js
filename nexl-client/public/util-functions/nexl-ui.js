@@ -192,11 +192,14 @@ var module = (function (module) {
 		module.addAction.reset();
 
 		$("#addActionDialog").dialog({
-			width: 330,
+				width: 330,
 				height: 380,
 				modal: true,
 				resizable: true,
 				buttons: {
+					"Help": function () {
+						window.open('http://www.nexl-js.com/scripting-language.html');
+					},
 					"Select": function () {
 						actions += assembleActionIdAndValue(module.addAction.getActionId(), module.addAction.getActionValue());
 						actions = actions.replace(/</g, '&lt;').replace(/>/g, '&gt;');

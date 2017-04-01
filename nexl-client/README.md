@@ -1,11 +1,9 @@
-#### nexl-client :
+<b>nexl-client</b> is web-based GUI application for nexl-server
 
-    - is a web-based GUI application
-    - displays data from remote nexl-server
-    - simulates nexl-server's work locally
-    - is intended to design and test data items for nexl-server
+Visit [http://www.nexl-js.com](http://www.nexl-js.com) web site for quick start and more information
 
+GitHub project [nexl-js](https://github.com/yevgeny-sergeyev/nexl-js)
 
-nexl offers the following products : [nexl-server](https://www.npmjs.com/package/nexl-server) and [nexl-client](https://www.npmjs.com/package/nexl-client)
-
-Full description is available on [github nexl project page](https://github.com/yevgeny-sergeyev/nexl-js)
+Related products :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-server](https://www.npmjs.com/package/nexl-server)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-engine](https://www.npmjs.com/package/nexl-engine)<br/>

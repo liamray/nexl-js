@@ -1,8 +1,9 @@
-### nexl-engine :
-    - core module for nexl-server and nexl-client
-    - is intended to evaluate nexl expressions
+<b>nexl-engine</b> is nexl scripting language processor
 
+Visit [http://www.nexl-js.com](http://www.nexl-js.com) web site for quick start and more information
 
-nexl offers the following products : [nexl-server](https://www.npmjs.com/package/nexl-server) and [nexl-client](https://www.npmjs.com/package/nexl-client)
+GitHub project [nexl-js](https://github.com/yevgeny-sergeyev/nexl-js)
 
-Full description is available on [github nexl project page](https://github.com/yevgeny-sergeyev/nexl-js)
+Related products :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-server](https://www.npmjs.com/package/nexl-server)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[nexl-client](https://www.npmjs.com/package/nexl-client)<br/>
