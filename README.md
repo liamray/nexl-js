@@ -100,16 +100,16 @@ Press <b>F9</b> to evaluate nexl expression ( or click <b>"Evaluate nexl express
 | ${person~V&amp;,} | Resolves all values of person object as array and then joins all array elements with comma |
 | ${person~K#s[$]} | Resolves a key set of person object as array, sorts them in descending order, resolves last array element |
 | ${person.country[3..$]^U1} | Resolves a country property of person object, substrings it from fourth element to the end and then capitalizes a first letter |
-| ${person~X}${person~Y}${person~P} | Produces an XML, YAML and key-value pairs ( property file ) from person object |
+| ${person\~X}<br>${person\~Y}<br>${person\~P} | Produces an XML, YAML and key-value pairs ( property file ) from person object |
 | ${person&lt;Alex} | Resolves a key of person object by &#39;Alex&#39; string value ( i.e. makes object property reverse resolution ).The result is array |
 | ${person&lt;Alex[0]} | Resolves a key of person object by &#39;Alex&#39; value as array and then resolves a first array element |
-| ${person~K+${person~V}&amp;\t} | Joins two arrays. The first array is a key set of a person object, the second array are values of a person object. Finally joins all array elements with tab character |
+| ${person\~K\+${person~V}&amp;\t} | Joins two arrays. The first array is a key set of a person object, the second array are values of a person object. Finally joins all array elements with tab character |
 | ${distanceToMoon~O} | Converts a distanceToMoon primitive number to JavaScript object |
-| ${distanceToMoon~O~P} | Converts a distanceToMoon primitive number to JavaScript object and then produces a key-value pair of it distanceToMoon=384400 |
+| ${distanceToMoon\~O\~P} | Converts a distanceToMoon primitive number to JavaScript object and then produces a key-value pair of it distanceToMoon=384400 |
 | ${distanceToMoon~O+${person}} | Converts a distanceToMoon primitive number to JavaScript object and then merges to him person object |
 | ${Math.PI} | Resolves a PI property from Math object |
-| ${Math.PI&#124;Math.round()} | Resolves a PI property from Math object and pushes it to stack. Calles a Math.round() function which automatically gets a Math.PI argument from the stack |
-| ${Math.PI&#124;distanceToMoon&#124;Math.max()} | Pushes a Math.PI to the stack, then pushes a distanceToMoon to the stack. Finally calls a Math.max() function which gets arguments from the stack |
+| ${Math.PI\|Math.round()} | Resolves a PI property from Math object and pushes it to stack. Calles a Math.round() function which automatically gets a Math.PI argument from the stack |
+| ${Math.PI\|distanceToMoon&\|Math.max()} | Pushes a Math.PI to the stack, then pushes a distanceToMoon to the stack. Finally calls a Math.max() function which gets arguments from the stack |
 
 
 
