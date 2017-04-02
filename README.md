@@ -109,7 +109,7 @@ Press <b>F9</b> to evaluate nexl expression ( or click <b>"Evaluate nexl express
 | ${distanceToMoon~O+${person}} | Converts a distanceToMoon primitive number to JavaScript object and then merges to him person object |
 | ${Math.PI} | Resolves a PI property from Math object |
 | ${Math.PI\|Math.round()} | Resolves a PI property from Math object and pushes it to stack. Calles a Math.round() function which automatically gets a Math.PI argument from the stack |
-| ${Math.PI\|distanceToMoon&\|Math.max()} | Pushes a Math.PI to the stack, then pushes a distanceToMoon to the stack. Finally calls a Math.max() function which gets arguments from the stack |
+| ${Math.PI\|distanceToMoon\|Math.max()} | Pushes a Math.PI to the stack, then pushes a distanceToMoon to the stack. Finally calls a Math.max() function which gets arguments from the stack |
 
 
 
