@@ -25,7 +25,9 @@
     "scripting",
     "language",
     "ide",
-    "editor"
+    "editor",
+    "devop",
+    "devops"
   ],
   "license": "Apache 2.0",
   "author": "Yevgeny Sergeyev",
