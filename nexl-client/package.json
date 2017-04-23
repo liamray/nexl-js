@@ -1,6 +1,6 @@
 {
   "name": "nexl-client",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "web-based GUI application for nexl-server",
   "keywords": [
     "nexl",
@@ -58,7 +58,7 @@
     "request": "^2.78.0",
     "serve-favicon": "~2.3.0",
     "nexl-engine": "2.0.5",
-    "j79-utils": "1.1.7"
+    "j79-utils": "1.1.9"
   },
   "bin": {
     "nexl": "bin/nexl-client"

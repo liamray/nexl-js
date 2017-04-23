@@ -35,6 +35,28 @@ const ACTIONS = {
 	'RESERVED5': '?'
 };
 
+const ACTIONS_DESC = {
+	'.': 'Object property resolution',
+	'[': 'Access array elements by index',
+	'(': 'Function call',
+	'@': 'Default value',
+	':': 'Typecast',
+	'~': 'Object operations',
+	'#': 'Array operations',
+	'<': 'Object key reverse resolution',
+	'&': 'Join array elements',
+	'-': 'Eliminate items from arrays or objects',
+	'+': 'Add items to array or merge objects',
+	'^': 'String operations',
+	'!': 'Undefined value operations',
+	'*': 'Mandatory value validator',
+	'|': 'Push current value to stack',
+	'%': 'RESERVED',
+	'>': 'RESERVED',
+	'=': 'RESERVED',
+	'?': 'RESERVED'
+};
+
 const JS_PRIMITIVE_TYPES = {
 	NUM: '[object Number]',
 	BOOL: '[object Boolean]',
@@ -642,6 +664,7 @@ module.exports.ARRAY_OPERATIONS_OPTIONS = ARRAY_OPERATIONS_OPTIONS;
 module.exports.STRING_OPERATIONS_OPTIONS = STRING_OPERATIONS_OPTIONS;
 module.exports.UNDEFINED_VALUE_OPERATIONS_OPTIONS = UNDEFINED_VALUE_OPERATIONS_OPTIONS;
 module.exports.ACTIONS = ACTIONS;
+module.exports.ACTIONS_DESC = ACTIONS_DESC;
 
 module.exports.ARRAY_FIRST_ITEM = ARRAY_FIRST_ITEM;
 module.exports.ARRAY_LAST_ITEM = ARRAY_LAST_ITEM;

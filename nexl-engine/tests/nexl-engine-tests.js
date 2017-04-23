@@ -4,6 +4,7 @@ const util = require('util');
 const j79 = require('j79-utils');
 const assert = require('assert');
 const expressions = require('./test-cases');
+const winston = j79.winston;
 
 // nexl source file
 var nexlSource = {asFile: {fileName: 'nexl-sources/nexl-source1.js'}};
@@ -73,6 +74,8 @@ function testExpression(exprDef) {
 
 // entry point
 function start() {
+	winston.level = 'verbose';
+
 	// iterating over expressions definitions
 	var okCnt = 0;
 	var failCnt = 0;

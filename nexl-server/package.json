@@ -1,6 +1,6 @@
 {
   "name": "nexl-server",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "REST server which hosts JavaScripts files and exposes their primitives, arrays and objects via REST API by using nexl scripting language",
   "main": "nexl-server.js",
   "scripts": {
@@ -58,7 +58,7 @@
     "path": "^0.12.7",
     "serve-favicon": "^2.3.0",
     "nexl-engine": "2.0.5",
-    "j79-utils": "1.1.7"
+    "j79-utils": "1.1.9"
   },
   "bin": {
     "nexl-server": "bin/nexl-server"

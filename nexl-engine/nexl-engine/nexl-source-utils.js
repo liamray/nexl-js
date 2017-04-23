@@ -14,6 +14,7 @@ const util = require('util');
 const fs = require('fs');
 const vm = require('vm');
 const j79 = require('j79-utils');
+const winston = j79.winston;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,8 +109,11 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 
 	// is already included ?
 	if (this.filesRegistry.indexOf(fileName) >= 0) {
+		winston.debug('The [%s] is already included. Skipping...', fileName);
 		return '';
 	}
+
+	winston.debug('Including file [%s]', fileName);
 
 	// adding to registry
 	this.filesRegistry.push(fileName);
@@ -160,6 +164,8 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 };
 
 NexlSourceCodeAssembler.prototype.assemble = function () {
+	winston.debug('Assembling', this.nexlSource, 'nexl source');
+
 	this.filesRegistry = [];
 
 	// validating nexlSource
@@ -274,6 +280,8 @@ function resolveJsVariables(nexlSource) {
 	var sourceCode = new NexlSourceCodeAssembler(nexlSource).assemble();
 	var parsedCode = esprima.parse(sourceCode).body;
 	var result = [];
+
+	winston.debug('Resolving JavaScript variables for [%s] nexl source', nexlSource);
 
 	for (var i = 0; i < parsedCode.length; i++) {
 		var item = parsedCode[i];

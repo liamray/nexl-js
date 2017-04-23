@@ -14,6 +14,7 @@ const nexlSystemFuncs = require('./nexl-engine-system-functoins');
 const j79 = require('j79-utils');
 const deepMerge = require('deepmerge');
 const util = require('util');
+const winston = j79.winston;
 
 const SPECIAL_CHARS_MAP = {
 	'\\n': '\n',
@@ -132,46 +133,63 @@ function replaceSpecialChars(item) {
 }
 
 function castInner(value, currentType, requiredTypeJs) {
+	var result;
+
 	// NUM -> BOOL
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL) {
-		return value !== 0;
+		result = (value !== 0);
+		winston.debug('Casting numeric to boolean, [result=%s]', result);
+		return result;
 	}
 
 	// NUM -> STR
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR) {
-		return value + '';
+		result = value + '';
+		winston.debug('Casting numeric to boolean, [result=%s]', result);
+		return result;
 	}
 
 	// BOOL -> NUM
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM) {
-		return value ? 1 : 0;
+		result = value ? 1 : 0;
+		winston.debug('Casting boolean to numeric, [result=%s]', result);
+		return result;
 	}
 
 	// BOOL -> STR
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR) {
-		return value + '';
+		result = value + '';
+		winston.debug('Casting boolean to string, [result=%s]', result);
+		return result;
 	}
 
 	// STR -> NUM
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NUM) {
-		var result = parseFloat(value);
+		result = parseFloat(value);
 		if (isNaN(result)) {
 			result = undefined;
 		}
+		winston.debug('Casting string to numeric, [result=%s]', result);
 		return result;
 	}
 
 	// STR -> BOOL
 	if (currentType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.STR && requiredTypeJs === nexlExpressionsParser.JS_PRIMITIVE_TYPES.BOOL) {
+		result = undefined;
 		if (value === 'false') {
-			return false;
-		}
-		if (value === 'true') {
-			return true;
+			result = false;
 		}
 
-		return undefined;
+		if (value === 'true') {
+			result = true;
+		}
+
+		winston.debug('Casting string to boolean, [result=%s]', result);
+
+		return result;
 	}
+
+	winston.debug('Current value of a %s type cannot be casted to %s. Skipping this action...', currentType, requiredTypeJs);
 
 	return value;
 }
@@ -180,6 +198,7 @@ function castInner(value, currentType, requiredTypeJs) {
 function cast(value, type) {
 	// if type is not specified
 	if (type === undefined) {
+		winston.debug('Type is not specified. Skipping typecast...');
 		return value;
 	}
 
@@ -195,16 +214,19 @@ function cast(value, type) {
 
 	// if both types are same, return value as is
 	if (currentType === jsType) {
+		winston.debug('Source and destinations types are same [%s]. Skipping typecast...', jsType);
 		return value;
 	}
 
 	// cast to null
 	if (jsType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.NULL) {
+		winston.debug('Destination type is %s. Converting current value to %s', jsType, jsType);
 		return null;
 	}
 
 	// cast to undefined
 	if (jsType === nexlExpressionsParser.JS_PRIMITIVE_TYPES.UNDEFINED) {
+		winston.debug('Destination type is %s. Converting current value to %s', jsType, jsType);
 		return undefined;
 	}
 

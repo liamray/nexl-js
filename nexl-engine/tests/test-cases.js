@@ -1254,6 +1254,16 @@ module.exports.push({
 	throwsException: true
 });
 
+// casting
+module.exports.push({
+	expression: '${obj6:num}',
+	result: {
+		pack: 'good',
+		item1: 79,
+		item2: 71
+	}
+});
+
 // append to array
 module.exports.push({
 	expression: '${arr1+test&,}',
