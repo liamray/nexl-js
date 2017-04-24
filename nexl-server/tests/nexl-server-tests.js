@@ -1,6 +1,6 @@
 // test \n and \t args
 
-const nexlServer = require('../nexl-server');
+const nexlServer = require('../nexl-server/nexl-server');
 const testCases = require('./test-cases.js');
 const http = require('http');
 const util = require('util');

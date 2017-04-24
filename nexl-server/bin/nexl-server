@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-var nexlServer = require('../nexl-server.js');
+var nexlServer = require('../nexl-server/nexl-server.js');
 nexlServer();
