@@ -58,7 +58,7 @@
     "path": "^0.12.7",
     "serve-favicon": "^2.3.0",
     "nexl-engine": "2.0.5",
-    "j79-utils": "1.1.9"
+    "j79-utils": "1.1.10"
   },
   "bin": {
     "nexl-server": "bin/nexl-server"

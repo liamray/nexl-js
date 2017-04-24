@@ -303,10 +303,6 @@ function errorHandler(req, res, next) {
 	use(req, res);
 }
 
-function isNotInfo() {
-	return winston.levels[winston.level] < winston.levels['info'];
-}
-
 function printHelp() {
 	var maxLen = 0;
 	var groups = {};
@@ -523,7 +519,7 @@ function printInfo() {
 }
 
 function printStartupMessage() {
-	if (isNotInfo()) {
+	if (!j79.isLogLevel('info')) {
 		return;
 	}
 
