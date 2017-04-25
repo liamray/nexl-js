@@ -23,12 +23,10 @@ const winston = j79.winston;
 const nexlServerUtils = require('./nexl-server-utils');
 const version = require('./../package.json').version;
 
-// nexl rest root URLs
+// nexl rest root paths
 const NEXL_REST_URL = '/nexl-rest';
 const REST_LIST_SOURCES = NEXL_REST_URL + '/list-nexl-sources';
 const REST_LIST_JS_VARIABLES = NEXL_REST_URL + '/list-js-variables';
-
-var server;
 
 function throwError(e, res) {
 	res.status(500);
@@ -335,16 +333,17 @@ function applyBinders() {
 
 function createHttpServer() {
 	// creating http-server
-	server = app.listen(nexlServerUtils.cmdLineOpts.Network.port, nexlServerUtils.cmdLineOpts.Network.binding, function () {
+	var server = app.listen(nexlServerUtils.cmdLineOpts.Network.port, nexlServerUtils.cmdLineOpts.Network.binding, function () {
 		nexlServerUtils.printStartupMessage(server);
 	});
+
+	return server;
 }
 
 function start() {
 	nexlServerUtils.init();
 	applyBinders();
-	createHttpServer();
-	return server;
+	return createHttpServer();
 }
 
 module.exports = start;
