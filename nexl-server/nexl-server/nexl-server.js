@@ -16,7 +16,6 @@ const bodyParser = require('body-parser');
 const util = require('util');
 const express = require('express');
 const app = express();
-const osHomeDir = require('os-homedir');
 const favicon = require('serve-favicon');
 const figlet = require('figlet');
 const fs = require('fs');
@@ -24,33 +23,12 @@ const winston = j79.winston;
 const nexlServerUtils = require('./nexl-server-utils');
 const version = require('./../package.json').version;
 
+// nexl rest root URLs
 const NEXL_REST_URL = '/nexl-rest';
 const REST_LIST_SOURCES = NEXL_REST_URL + '/list-nexl-sources';
 const REST_LIST_JS_VARIABLES = NEXL_REST_URL + '/list-js-variables';
-const DEFAULT_NEXL_SOURCES_DIR = 'nexl-sources';
 
-
-var NEXL_SOURCES_ROOT;
 var server;
-
-function resolveNexlSourcesDir() {
-	// resolving nexl-source dir from command line arguments
-	NEXL_SOURCES_ROOT = nexlServerUtils.cmdLineOpts.Main['nexl-sources'];
-
-	// if not provided use a OS home dir + nexl-sources
-	if (!NEXL_SOURCES_ROOT) {
-		NEXL_SOURCES_ROOT = path.join(osHomeDir(), DEFAULT_NEXL_SOURCES_DIR);
-	}
-
-	// print error if nexl-sources directory doesn't exist
-	fs.exists(NEXL_SOURCES_ROOT, function (result) {
-		if (!result) {
-			winston.error("nexl sources directory [%s] doesn't exist ! But you can still create it without server restart", NEXL_SOURCES_ROOT);
-		}
-	});
-
-	winston.info('nexl sources directory is [%s]', NEXL_SOURCES_ROOT);
-}
 
 function throwError(e, res) {
 	res.status(500);
@@ -71,7 +49,7 @@ function retrieveHttpSource(req, res) {
 	throwError("Unsupported HTTP-method = [" + req.method + "]", res);
 }
 
-function enumerateFiles(dir, collection) {
+function enumerateFiles(dir) {
 	var fileItems = [];
 	var dirItems = [];
 
@@ -128,14 +106,14 @@ function listNexlSources(req, res) {
 	var input = retrieveHttpSource(req, res);
 
 	try {
-		var result = enumerateFiles(NEXL_SOURCES_ROOT);
+		var result = enumerateFiles(nexlServerUtils.nexlSourcesDir);
 	} catch (e) {
 		sendException(e, input, res);
 		res.end();
 		return;
 	}
 
-	// is jsonp ?
+	// is JsonP?
 	if (isJsonP(input)) {
 		sendJsonPResult(result, input, res);
 	} else {
@@ -143,16 +121,6 @@ function listNexlSources(req, res) {
 	}
 
 	res.end();
-}
-
-function validatePath(scriptPath) {
-	if (path.isAbsolute(scriptPath)) {
-		throw util.format('The [%s] path is unacceptable', scriptPath);
-	}
-
-	if (!scriptPath.match(/^[a-zA-Z_0-9]/)) {
-		throw util.format('The [%s] path is unacceptable', scriptPath);
-	}
 }
 
 function listJsVariables(req, res) {
@@ -166,10 +134,10 @@ function listJsVariables(req, res) {
 	scriptPath = scriptPath.replace(/^[\/\\]/g, '');
 
 	// validating nexl source path
-	validatePath(scriptPath);
+	nexlServerUtils.validatePath(scriptPath);
 
 	scriptPath = j79.fixPathSlashes(scriptPath);
-	scriptPath = nexlServerUtils.assemblePath(NEXL_SOURCES_ROOT, scriptPath);
+	scriptPath = path.join(nexlServerUtils.nexlSourcesDir, scriptPath);
 
 	var nexlSource = {
 		asFile: {
@@ -236,7 +204,7 @@ function prepareRequestAndValidate(req, res) {
 		callback: httpSource.callback
 	};
 
-	validatePath(input.url);
+	nexlServerUtils.validatePath(input.url);
 
 	delete httpSource["expression"];
 	delete httpSource["callback"];
@@ -302,7 +270,7 @@ function evalNexlExpressionInner(input, res) {
 function evalNexlExpression(input, res) {
 	// calculating absolute path for script
 	var scriptPath = j79.fixPathSlashes(input.url);
-	scriptPath = nexlServerUtils.assemblePath(NEXL_SOURCES_ROOT, scriptPath);
+	scriptPath = path.join(nexlServerUtils.nexlSourcesDir, scriptPath);
 
 	input.script2Exec = scriptPath;
 	evalNexlExpressionInner(input, res);
@@ -373,11 +341,7 @@ function createHttpServer() {
 }
 
 function start() {
-	j79.abortIfNodeVersionLowerThan(4);
-	nexlServerUtils.handleArgs();
-	nexlServerUtils.configureWinstonLogger();
-	resolveNexlSourcesDir();
-	nexlServerUtils.printInfo();
+	nexlServerUtils.init();
 	applyBinders();
 	createHttpServer();
 	return server;

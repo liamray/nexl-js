@@ -12,8 +12,7 @@
 const j79 = require('j79-utils');
 const path = require('path');
 const util = require('util');
-const express = require('express');
-const favicon = require('serve-favicon');
+const osHomeDir = require('os-homedir');
 const figlet = require('figlet');
 const commandLineArgs = require('command-line-args');
 const chalk = require('chalk');
@@ -21,8 +20,9 @@ const fs = require('fs');
 const winston = j79.winston;
 const version = require('./../package.json').version;
 
-const FILE_SEPARATOR = path.sep;
 const HR = Array(55).join('-');
+const DEFAULT_NEXL_SOURCES_DIR = 'nexl-sources';
+
 
 const CMD_LINE_OPTS_DEF = [
 	//////////////////////////////////////////////////////////////////////
@@ -206,19 +206,43 @@ function printStartupMessage(server) {
 	});
 }
 
-function assemblePath() {
-	// converting arguments to array
-	var args = Array.prototype.slice.call(arguments);
+function resolveNexlSourcesDir() {
+	// resolving nexl-source dir from command line arguments
+	module.exports.nexlSourcesDir = module.exports.cmdLineOpts.Main['nexl-sources'];
 
-	// joining array's elements
-	var path = args.join(FILE_SEPARATOR);
+	// if not provided use a OS home dir + nexl-sources
+	if (!module.exports.nexlSourcesDir) {
+		module.exports.nexlSourcesDir = path.join(osHomeDir(), DEFAULT_NEXL_SOURCES_DIR);
+	}
 
-	// removing double/triple/... slash characters
-	return path.replace(/\/{2,}/, "/").replace(/\\{2,}/, "\\");
+	// print error if nexl-sources directory doesn't exist
+	fs.exists(module.exports.nexlSourcesDir, function (result) {
+		if (!result) {
+			winston.error("nexl sources directory [%s] doesn't exist ! But you can still create it without server restart", module.exports.nexlSourcesDir);
+		}
+	});
+
+	winston.info('nexl sources directory is [%s]', module.exports.nexlSourcesDir);
 }
 
-module.exports.handleArgs = handleArgs;
-module.exports.configureWinstonLogger = configureWinstonLogger;
-module.exports.printInfo = printInfo;
+function validatePath(scriptPath) {
+	if (path.isAbsolute(scriptPath)) {
+		throw util.format('The [%s] path is unacceptable', scriptPath);
+	}
+
+	if (!scriptPath.match(/^[a-zA-Z_0-9]/)) {
+		throw util.format('The [%s] path is unacceptable', scriptPath);
+	}
+}
+
+function init() {
+	j79.abortIfNodeVersionLowerThan(4);
+	handleArgs();
+	configureWinstonLogger();
+	resolveNexlSourcesDir();
+	printInfo();
+}
+
 module.exports.printStartupMessage = printStartupMessage;
-module.exports.assemblePath = assemblePath;
+module.exports.validatePath = validatePath;
+module.exports.init = init;
