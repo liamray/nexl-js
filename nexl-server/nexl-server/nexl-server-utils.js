@@ -23,12 +23,17 @@ const version = require('./../package.json').version;
 const HR = Array(55).join('-');
 const DEFAULT_NEXL_SOURCES_DIR = 'nexl-sources';
 
+const NEXL_SOURCES = 'nexl-sources';
+const LOG_LEVEL = 'log-level';
+const LOG_FILE = 'log-file';
+const LOG_ROLLING_SIZE = 'log-rolling-size';
+const MAX_LOG_FILES = 'max-log-files';
 
 const CMD_LINE_OPTS_DEF = [
 	//////////////////////////////////////////////////////////////////////
 	// Main
 	{
-		name: 'nexl-sources',
+		name: NEXL_SOURCES,
 		alias: 's',
 		desc: 'Path to a directory with nexl sources ( JavaScript files ). Default value is ${HOME}/nexl-sources',
 		group: 'Main'
@@ -65,7 +70,7 @@ const CMD_LINE_OPTS_DEF = [
 	//////////////////////////////////////////////////////////////////////
 	// Logging
 	{
-		name: 'log-level',
+		name: LOG_LEVEL,
 		alias: 'v',
 		type: String,
 		defaultValue: 'info',
@@ -73,14 +78,14 @@ const CMD_LINE_OPTS_DEF = [
 		group: 'Logging'
 	},
 	{
-		name: 'log-file',
+		name: LOG_FILE,
 		alias: 'l',
 		type: String,
 		desc: 'Log file name for nexl-server. Log file will be produced only if this switch is specified',
 		group: 'Logging'
 	},
 	{
-		name: 'log-rolling-size',
+		name: LOG_ROLLING_SIZE,
 		alias: 'z',
 		type: Number,
 		defaultValue: 0,
@@ -88,10 +93,10 @@ const CMD_LINE_OPTS_DEF = [
 		group: 'Logging'
 	},
 	{
-		name: 'max-log-files',
+		name: MAX_LOG_FILES,
 		alias: 'a',
-		type: String,
-		desc: 'Max count of log files to roll. Default value is unlimited. Applicable only if --log-file and --log-rolling-size are provided',
+		type: Number,
+		desc: 'Max count of log files to roll. Default value is 99999. Applicable only if --log-file and --log-rolling-size are provided',
 		group: 'Logging'
 	}
 ];
@@ -152,23 +157,55 @@ function printLog(options) {
 	return j79.rawNowISODate() + ' ' + options.level.toUpperCase() + ' ' + (options.message ? options.message : '');
 }
 
+function addFileTransportIfNeeded() {
+	// log file name specified via arguments
+	var logFileName = module.exports.cmdLineOpts.Logging[LOG_FILE];
+
+	// is log file name not provided ?
+	if (logFileName == undefined || logFileName.length < 1) {
+		return;
+	}
+
+	// resolving rolling size ( in bytes )
+	var rollingSize = module.exports.cmdLineOpts.Logging[LOG_ROLLING_SIZE];
+	// is NaN ?
+	if (rollingSize !== rollingSize || rollingSize === undefined) {
+		rollingSize = 0;
+	}
+
+	// resolving max log files for rolling
+	var maxLogFiles = module.exports.cmdLineOpts.Logging[MAX_LOG_FILES];
+	// is NaN ?
+	if (maxLogFiles !== maxLogFiles || maxLogFiles === undefined) {
+		maxLogFiles = Number.MAX_SAFE_INTEGER;
+		maxLogFiles = 99999
+	}
+
+	winston.add(winston.transports.File, {
+		filename: logFileName,
+		formatter: printLog,
+		json: false,
+		tailable: rollingSize > 0,
+		maxsize: rollingSize,
+		maxFiles: maxLogFiles
+	});
+}
 function configureWinstonLogger() {
-	winston.configure({
-		transports: [
-			new (winston.transports.File)({
-				filename: 'somefile.log',
-				formatter: printLog,
-				json: false,
-				level: 'debug'
-			}),
-			new (winston.transports.Console)({
-				formatter: printLog,
-				level: 'debug'
-			})
-		]
+	// removing existing console transport
+	winston.remove(winston.transports.Console);
+
+	// add new console transport
+	winston.add(winston.transports.Console, {
+		formatter: printLog
 	});
 
-	var logLevel = module.exports.cmdLineOpts.Logging['log-level'];
+	// add file transport if file name is provided via arguments
+	addFileTransportIfNeeded();
+
+	// resolving log level from arguments
+	var logLevel = module.exports.cmdLineOpts.Logging[LOG_LEVEL];
+
+	// setting up log level. "info" by default
 	winston.level = logLevel ? logLevel : 'info';
 
 	winston.info('Use --help to view all command line switches');
@@ -208,7 +245,7 @@ function printStartupMessage(server) {
 
 function resolveNexlSourcesDir() {
 	// resolving nexl-source dir from command line arguments
-	module.exports.nexlSourcesDir = module.exports.cmdLineOpts.Main['nexl-sources'];
+	module.exports.nexlSourcesDir = module.exports.cmdLineOpts.Main[NEXL_SOURCES];
 
 	// if not provided use a OS home dir + nexl-sources
 	if (!module.exports.nexlSourcesDir) {
