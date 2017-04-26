@@ -154,7 +154,7 @@ function handleArgs() {
 }
 
 function printLog(options) {
-	return j79.rawNowISODate() + ' ' + options.level.toUpperCase() + ' ' + (options.message ? options.message : '');
+	return j79.rawNowISODate() + ' [' + options.level.toUpperCase() + '] ' + (options.message ? options.message : '');
 }
 
 function addFileTransportIfNeeded() {

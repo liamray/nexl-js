@@ -242,7 +242,7 @@ function sendResult(result, input, res) {
 	}
 }
 
-function evalNexlExpressionInner(input, res) {
+function evalNexlExpressionInner(input, req, res) {
 	var nexlSource = {
 		asFile: {
 			fileName: input.script2Exec
@@ -251,6 +251,12 @@ function evalNexlExpressionInner(input, res) {
 
 	var expression = input.expression;
 	var args = nexlEngine.convertStrItems2Obj(input.args);
+
+	if (j79.isLogLevel('verbose')) {
+		winston.info("%s request is accepted. [url=%s], [nexlSource=%s], [expression=%s], [args=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, input.script2Exec, expression, JSON.stringify(args), req.connection.remoteAddress);
+	} else {
+		winston.info("%s request is accepted. [url=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress);
+	}
 
 	// evaluating
 	try {
@@ -265,13 +271,13 @@ function evalNexlExpressionInner(input, res) {
 	res.end();
 }
 
-function evalNexlExpression(input, res) {
+function evalNexlExpression(input, req, res) {
 	// calculating absolute path for script
 	var scriptPath = j79.fixPathSlashes(input.url);
 	scriptPath = path.join(nexlServerUtils.nexlSourcesDir, scriptPath);
 
 	input.script2Exec = scriptPath;
-	evalNexlExpressionInner(input, res);
+	evalNexlExpressionInner(input, req, res);
 }
 
 function handleGetRequests(req, res) {
@@ -283,10 +289,8 @@ function handleGetRequests(req, res) {
 
 	var input = prepareRequestAndValidate(req, res);
 
-	winston.log('verbose', "GET request is accepted. [url=%s], [clientHost=%s]", req.url, req.connection.remoteAddress);
-
 	// not a root url, handling script
-	evalNexlExpression(input, res);
+	evalNexlExpression(input, req, res);
 }
 
 function use(req, res) {
@@ -298,9 +302,7 @@ function use(req, res) {
 function handlePostRequests(req, res) {
 	var input = prepareRequestAndValidate(req, res);
 
-	winston.log('verbose', "POST request is accepted. [url=%s], [clientHost=%s]", req.url, req.connection.remoteAddress);
-
-	evalNexlExpression(input, res);
+	evalNexlExpression(input, req, res);
 }
 
 function errorHandler(req, res, next) {

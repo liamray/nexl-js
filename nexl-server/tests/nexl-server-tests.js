@@ -107,7 +107,7 @@ function start() {
 	process.argv.push('--nexl-sources=../../nexl-engine/tests/nexl-sources');
 	process.argv.push('--port=' + DEFAULT_PORT);
 	process.argv.push('--binding=' + DEFAULT_HOST);
-	process.argv.push('--log-level=verbose');
+	process.argv.push('--log-level=info');
 
 	// starting nexl-server
 	var server = nexlServer();
