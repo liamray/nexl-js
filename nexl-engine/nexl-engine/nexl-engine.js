@@ -1177,7 +1177,10 @@ NexlExpressionEvaluator.prototype.eval = function () {
 
 	this.makeDeepResolution();
 
-	winston.debug('<<-- Finished evaluating [expression=%s] with [%s] action(s)', this.nexlExpressionMD.str, this.nexlExpressionMD.actions.length);
+	winston.log('silly', '<<-- Finished evaluating [expression=%s] with [%s] action(s). result = [%s]', this.nexlExpressionMD.str, this.nexlExpressionMD.actions.length, this.result);
+	if (!j79.isLogLevel('silly')) {
+		winston.debug('<<-- Finished evaluating [expression=%s] with [%s] action(s)', this.nexlExpressionMD.str, this.nexlExpressionMD.actions.length);
+	}
 
 	return this.result;
 };
