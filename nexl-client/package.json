@@ -52,7 +52,6 @@
     "drivelist": "3.x.x",
     "express": "~4.13.4",
     "jade": "~1.11.0",
-    "morgan": "~1.7.0",
     "openurl": "^1.1.1",
     "path": "0.12.7",
     "request": "^2.78.0",
