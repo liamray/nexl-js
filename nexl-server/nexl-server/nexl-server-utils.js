@@ -28,6 +28,8 @@ const LOG_LEVEL = 'log-level';
 const LOG_FILE = 'log-file';
 const LOG_ROLLING_SIZE = 'log-rolling-size';
 const MAX_LOG_FILES = 'max-log-files';
+const DEFAULT_ROLLING_SIZE = 999;
+const DEFAULT_LOG_LEVEL = 'info';
 
 const CMD_LINE_OPTS_DEF = [
 	//////////////////////////////////////////////////////////////////////
@@ -74,7 +76,7 @@ const CMD_LINE_OPTS_DEF = [
 		alias: 'v',
 		type: String,
 		defaultValue: 'info',
-		desc: 'Available log levels are : ' + Object.keys(winston.levels).join(','),
+		desc: 'Available log levels are : ' + Object.keys(winston.levels).join(',') + '. Default log level is ' + DEFAULT_LOG_LEVEL,
 		group: 'Logging'
 	},
 	{
@@ -89,14 +91,15 @@ const CMD_LINE_OPTS_DEF = [
 		alias: 'z',
 		type: Number,
 		defaultValue: 0,
-		desc: 'Rolling file size in bytes. Default value is 0 which means no rolling. Applicable only if --log-file is provided',
+		desc: 'Log file rolling size in bytes. Default value is 0 which means no rolling. Applicable only if --log-file is provided',
 		group: 'Logging'
 	},
 	{
 		name: MAX_LOG_FILES,
 		alias: 'a',
+		defaultValue: DEFAULT_ROLLING_SIZE,
 		type: Number,
-		desc: 'Max count of log files to roll. Default value is 99999. Applicable only if --log-file and --log-rolling-size are provided',
+		desc: 'Max count of log files to roll. Default value is ' + DEFAULT_ROLLING_SIZE + '. Applicable only if --log-file and --log-rolling-size are provided',
 		group: 'Logging'
 	}
 ];
@@ -178,7 +181,7 @@ function addFileTransportIfNeeded() {
 	// is NaN ?
 	if (maxLogFiles !== maxLogFiles || maxLogFiles === undefined) {
 		maxLogFiles = Number.MAX_SAFE_INTEGER;
-		maxLogFiles = 99999
+		maxLogFiles = 999
 	}
 
 	winston.add(winston.transports.File, {
@@ -206,7 +209,7 @@ function configureWinstonLogger() {
 	var logLevel = module.exports.cmdLineOpts.Logging[LOG_LEVEL];
 
 	// setting up log level. "info" by default
-	winston.level = logLevel ? logLevel : 'info';
+	winston.level = logLevel ? logLevel : DEFAULT_LOG_LEVEL;
 
 	winston.info('Use --help to view all command line options');
 }
