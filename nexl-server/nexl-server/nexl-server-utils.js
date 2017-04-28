@@ -44,7 +44,7 @@ const CMD_LINE_OPTS_DEF = [
 		alias: 'h',
 		type: Boolean,
 		defaultValue: false,
-		desc: 'Displays help',
+		desc: 'Displays available options',
 		group: 'Main'
 	},
 
@@ -208,7 +208,7 @@ function configureWinstonLogger() {
 	// setting up log level. "info" by default
 	winston.level = logLevel ? logLevel : 'info';
 
-	winston.info('Use --help to view all command line switches');
+	winston.info('Use --help to view all command line options');
 }
 
 function printInfo() {
