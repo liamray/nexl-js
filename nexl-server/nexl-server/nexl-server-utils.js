@@ -20,7 +20,7 @@ const fs = require('fs');
 const winston = j79.winston;
 const version = require('./../package.json').version;
 
-const HR = Array(55).join('-');
+const HR = new Array(55).join('-');
 const DEFAULT_NEXL_SOURCES_DIR = 'nexl-sources';
 
 const NEXL_SOURCES = 'nexl-sources';
