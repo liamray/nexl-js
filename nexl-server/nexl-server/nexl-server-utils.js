@@ -81,7 +81,7 @@ const CMD_LINE_OPTS_DEF = [
 		name: LOG_FILE,
 		alias: 'l',
 		type: String,
-		desc: 'Log file name for nexl-server. Log file will be produced only if this switch is specified',
+		desc: 'Log file name for nexl-server. Log file will be produced only if this options is specified',
 		group: 'Logging'
 	},
 	{
