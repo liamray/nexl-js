@@ -35,7 +35,7 @@ const CMD_LINE_OPTS_DEF = [
 	{
 		name: NEXL_SOURCES,
 		alias: 's',
-		desc: 'Path to a directory with nexl sources ( JavaScript files ). Default value is ${HOME}/nexl-sources',
+		desc: 'Path to directory with nexl sources ( JavaScript files ). Default value is ${HOME}/nexl-sources',
 		group: 'Main'
 	},
 
