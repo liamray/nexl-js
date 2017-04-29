@@ -6,6 +6,7 @@ const debug = require('debug')('nexl-client:server');
 const http = require('http');
 const openUrl = require('openurl');
 const commandLineArgs = require('command-line-args');
+const version = require('./../package.json').version;
 const j79 = require('j79-utils');
 const winston = j79.winston;
 
@@ -109,6 +110,10 @@ function start() {
 	handleArgs();
 
 	winston.level = module.exports.cmdLineOpts.Logging[LOG_LEVEL];
+
+	winston.info('Starting nexl-client...');
+	winston.info('nexl-client version is [%s]', version);
+	winston.info('WebSite http://www.nexl-js.com');
 
 	// Get port from environment and store in Express.
 	app.set('port', module.exports.cmdLineOpts.Network.port);

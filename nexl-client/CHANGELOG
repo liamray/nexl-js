@@ -1,3 +1,7 @@
+2.1.1 | 29-APR-2017
+===================
+    - fixed minor console error message when nexl-client starts
+
 2.1.0 | 29-APR-2017
 ===================
     - fixed ^M character bug in nexl-client. nexl-client didn't work in Linux because of ^M characters in shell executable
