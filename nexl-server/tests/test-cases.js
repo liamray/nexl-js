@@ -2,6 +2,66 @@ module.exports = [];
 
 module.exports.push({
 	request: {
+		source: '//nexl-source1.js',
+		args: {
+			expression: '${}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 500,
+		expectedResult: 'The [/nexl-source1.js] path is unacceptable'
+	}
+});
+
+module.exports.push({
+	request: {
+		source: '/../nexl-source1.js',
+		args: {
+			expression: '${}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 500,
+		expectedResult: 'The [../nexl-source1.js] path is unacceptable'
+	}
+});
+
+module.exports.push({
+	request: {
+		source: '/c:\\nexl-source1.js',
+		args: {
+			expression: '${}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 500,
+		expectedResult: 'The [c:\\nexl-source1.js] path is unacceptable'
+	}
+});
+
+module.exports.push({
+	request: {
+		source: '//nexl-source1.js',
+		args: {
+			expression: '${}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 500,
+		expectedResult: 'The [/nexl-source1.js] path is unacceptable'
+	}
+});
+
+module.exports.push({
+	request: {
 		source: '/nexl-source1.js',
 		args: {
 			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD}'

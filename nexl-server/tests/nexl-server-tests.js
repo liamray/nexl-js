@@ -46,14 +46,10 @@ function testCaseInner(options, testCase) {
 		})
 	});
 
-	req.on('error', function (e) {
-		console.log(e);
-		analyzeResult(testCase, res, null);
-	});
-
 	if (options.data !== undefined) {
 		req.write(options.data);
 	}
+
 	req.end();
 }
 

@@ -87,11 +87,13 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsText = function (asText) {
 
 		// directive has a relative path. is path4imports provided ?
 		if (!asText.path4imports) {
+			winston.error('Source code contains reference to [%s] file for import, but you didn\'t provide a [nexlSource.asFile.path4imports]', path.basename(includeDirective));
 			throw util.format('Source code contains reference to [%s] file for import, but you didn\'t provide a [nexlSource.asFile.path4imports]', includeDirective);
 		}
 
 		if (!fs.existsSync(asText.path4imports)) {
-			throw util.format('Path [%s] you provided in [nexlSource.asFile.path4imports] doesn\'t exist', asText.path4imports);
+			winston.error('Path [%s] you provided in [nexlSource.asFile.path4imports] doesn\'t exist', asText.path4imports);
+			throw util.format('Path [%s] you provided in [nexlSource.asFile.path4imports] doesn\'t exist', path.basename(asText.path4imports));
 		}
 
 		var fullPath = path.join(asText.path4imports, includeDirective);
@@ -120,12 +122,14 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 
 	// is file exists ?
 	if (!fs.existsSync(fileName)) {
-		throw util.format("The source [%s] file, doesn't exist", fileName);
+		winston.error("The [%s] source file, doesn't exist", fileName);
+		throw util.format("The [%s] source file, doesn't exist", path.basename(fileName));
 	}
 
 	// is it file and not a directory or something else ?
 	if (!fs.lstatSync(fileName).isFile()) {
-		throw util.format("The  [%s] source is not a file", fileName);
+		winston.error("The [%s] source is not a file", fileName);
+		throw util.format("The [%s] source is not a file", path.basename(fileName));
 	}
 
 	// reading file content
@@ -134,7 +138,8 @@ NexlSourceCodeAssembler.prototype.assembleSourceCodeAsFile = function (asFile) {
 	try {
 		text = fs.readFileSync(fileName, "UTF-8");
 	} catch (e) {
-		throw util.format("Failed to read [%s] source content , error : [%s]", fileName, e);
+		winston.error("Failed to read [%s] source content , error : [%s]", fileName, e);
+		throw util.format("Failed to read [%s] source content , error : [%s]", path.basename(fileName), e);
 	}
 
 	// resolving include directives

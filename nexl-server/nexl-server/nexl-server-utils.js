@@ -265,13 +265,17 @@ function resolveNexlSourcesDir() {
 	winston.info('nexl sources directory is [%s]', module.exports.nexlSourcesDir);
 }
 
-function validatePath(scriptPath) {
-	if (path.isAbsolute(scriptPath)) {
-		throw util.format('The [%s] path is unacceptable', scriptPath);
-	}
+function throw500Error(e, res) {
+	res.status(500);
+	res.write(e.toString());
+	res.end();
+	throw e;
+}
 
-	if (!scriptPath.match(/^[a-zA-Z_0-9]/)) {
-		throw util.format('The [%s] path is unacceptable', scriptPath);
+function validatePath(scriptPath, res) {
+	if (path.isAbsolute(scriptPath) || !scriptPath.match(/^[a-zA-Z_0-9]/)) {
+		var msg = util.format('The [%s] path is unacceptable', scriptPath);
+		throw500Error(msg, res);
 	}
 }
 
@@ -285,4 +289,5 @@ function init() {
 
 module.exports.printStartupMessage = printStartupMessage;
 module.exports.validatePath = validatePath;
+module.exports.throw500Error = throw500Error;
 module.exports.init = init;

@@ -28,13 +28,6 @@ const NEXL_REST_URL = '/nexl-rest';
 const REST_LIST_SOURCES = NEXL_REST_URL + '/list-nexl-sources';
 const REST_LIST_JS_VARIABLES = NEXL_REST_URL + '/list-js-variables';
 
-function throwError(e, res) {
-	res.status(500);
-	res.write(e.toString());
-	res.end();
-	throw e;
-}
-
 function retrieveHttpSource(req, res) {
 	if (req.method.toUpperCase() == "GET") {
 		return req.query;
@@ -44,7 +37,7 @@ function retrieveHttpSource(req, res) {
 		return req.body;
 	}
 
-	throwError("Unsupported HTTP-method = [" + req.method + "]", res);
+	nexlServerUtils.throw500Error("Unsupported HTTP-method = [" + req.method + "]", res);
 }
 
 function enumerateFiles(dir) {
@@ -126,13 +119,13 @@ function listJsVariables(req, res) {
 	var scriptPath = input.nexlSource;
 
 	if (!scriptPath || scriptPath.length < 1) {
-		throw "nexl source is not provided";
+		nexlServerUtils.throw500Error("nexl source is not provided", res);
 	}
 
 	scriptPath = scriptPath.replace(/^[\/\\]/g, '');
 
 	// validating nexl source path
-	nexlServerUtils.validatePath(scriptPath);
+	nexlServerUtils.validatePath(scriptPath, res);
 
 	scriptPath = j79.fixPathSlashes(scriptPath);
 	scriptPath = path.join(nexlServerUtils.nexlSourcesDir, scriptPath);
@@ -177,7 +170,7 @@ function handleRootPage(req, res) {
 
 	figlet("Welcome to nexl-server", function (err, data) {
 		if (err) {
-			throw 'Something went wrong...' + err
+			nexlServerUtils.throw500Error('Something went wrong...' + err, res);
 		}
 
 		data = util.format('nexl-server version : %s\n%s', version, data);
@@ -202,7 +195,7 @@ function prepareRequestAndValidate(req, res) {
 		callback: httpSource.callback
 	};
 
-	nexlServerUtils.validatePath(input.url);
+	nexlServerUtils.validatePath(input.url, res);
 
 	delete httpSource["expression"];
 	delete httpSource["callback"];
