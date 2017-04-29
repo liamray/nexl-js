@@ -37,7 +37,7 @@
   "author": "Yevgeny Sergeyev",
   "homepage": "http://www.nexl-js.com",
   "files": [
-    "nexl-server.js",
+    "nexl-server",
     "favicon.ico",
     "bin",
     "Readme.md"
