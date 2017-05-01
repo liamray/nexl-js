@@ -1,1 +1,0 @@
-nexl adapters are wrappers in different languages to access data items on remote nexl server

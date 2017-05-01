@@ -1,8 +1,0 @@
-2.1.0 | 29-APR-2017
-===================
-    - added log management support to produce log file(s), control log levels and roll log file by size
-
-
-2.0.5 | 01-APR-2017
-===================
-    - 2.x version is released
