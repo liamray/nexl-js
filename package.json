@@ -1,0 +1,51 @@
+{
+  "name": "nexl",
+  "version": "3.0.0",
+  "description": "",
+  "keywords": [
+    "nexl",
+    "nexl-js",
+    "nexl-engine",
+    "server",
+    "rest",
+    "web",
+    "service",
+    "http",
+    "centralized",
+    "config",
+    "configuration",
+    "storage",
+    "data",
+    "external",
+    "javascript",
+    "js",
+    "expression",
+    "scripting",
+    "language",
+    "ide",
+    "editor",
+    "devop",
+    "devops"
+  ],
+  "license": "Apache 2.0",
+  "author": {
+    "name": "Liam Ray",
+    "email": "info@nexl-js.com"
+  },
+  "homepage": "http://www.nexl-js.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liamray/nexl-js.git"
+  },
+  "scripts": {
+    "start": "node ./bin/nexl"
+  },
+  "bin": {
+    "nexl": "bin/nexl"
+  },
+  "files": [
+    "bin"
+  ],
+  "dependencies": {
+  }
+}
