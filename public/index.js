@@ -16,6 +16,24 @@ function makeMenu() {
 	$("#nexl-logo a").on('click', function () {
 		alert('About nexl');
 	});
+
+	// $("#jqxButton").jqxButton({width: 80, height: 31});
+
+	$("#nexl-login-menu").jqxMenu({
+		width: '80px',
+		height: '30px',
+		animationShowDuration: 300,
+		animationHideDuration: 200,
+		animationShowDelay: 200,
+		enableHover: true,
+		autoOpen: true,
+		showTopLevelArrows: true
+	});
+	$("#nexl-login-menu").jqxMenu('setItemOpenDirection', 'login', 'left', 'down');
+
+	$('#login').on('click', function () {
+		alert('Login !');
+	});
 }
 
 ////////////////////////////// nexl sources tree /////////////////////////
@@ -24,8 +42,8 @@ function makeNexlSourcesTree() {
 		{
 			icon: "images/dir.png",
 			label: "common",
+			id: 'common-id',
 			expanded: false,
-			selected: true,
 			items: [
 				{icon: "images/js-file.png", label: "interfaces.js"},
 				{icon: "images/js-file.png", label: "commons.js"},
@@ -128,6 +146,11 @@ function makeNexlSourcesTree() {
 		attachContextMenu();
 	});
 
+	$('#nexl-sources').on('select', function (event) {
+		alert(event.args.element.id);
+	});
+
+
 	attachContextMenu();
 	$("#jqxMenu").on('itemclick', function (event) {
 		var item = $.trim($(event.args).text());
@@ -179,7 +202,7 @@ function makeEditorTabs() {
 
 ////////////////////////////// splitters /////////////////////////
 function calcMainAreaHeight() {
-	return $(window).height() - $('#nexl-menu').height() - 75;
+	return $(window).height() - $('#nexl-menu').height() - 85;
 }
 
 function makeSplitters() {
@@ -201,10 +224,10 @@ function makeSplitters() {
 		$('#main-area').jqxSplitter({
 			height: calcMainAreaHeight()
 		});
-
-		$('#tabs-area').jqxSplitter('refresh');
 	});
-}
+
+	$('#tabs-area').jqxSplitter('refresh');
+};
 
 $(document).ready(function () {
 	makeMenu();
