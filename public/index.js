@@ -18,7 +18,7 @@ function makeMenu() {
 	});
 
 	$("#nexl-login-menu").jqxMenu({
-		width: '80px',
+		width: '90px',
 		height: '30px',
 		animationShowDuration: 300,
 		animationHideDuration: 200,
