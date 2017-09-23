@@ -1,7 +1,7 @@
 ///////////////////////// menu /////////////////////////
 function makeMenu() {
 	$("#nexl-main-menu").jqxMenu({
-		width: '350px',
+		width: '400px',
 		height: '30px',
 		animationShowDuration: 300,
 		animationHideDuration: 200,
@@ -31,6 +31,10 @@ function makeMenu() {
 
 	$('#login').on('click', function () {
 		alert('Login !');
+	});
+
+	$('#settings').on('click', function () {
+		alert('Settings !');
 	});
 }
 
@@ -117,9 +121,9 @@ function makeNexlSourcesTree() {
 		}
 	);
 	$('#nexl-sources').css('visibility', 'visible');
-	var contextMenu = $("#jqxMenu").jqxMenu({
-		width: '120px',
-		height: '84px',
+	var contextMenu = $("#popup-menu").jqxMenu({
+		width: '160px',
+		height: '110px',
 		autoOpenPopup: false,
 		mode: 'popup'
 	});
@@ -145,12 +149,12 @@ function makeNexlSourcesTree() {
 	});
 
 	$('#nexl-sources').on('select', function (event) {
-		alert(event.args.element.id);
+		console.log(event.args.element.id);
 	});
 
 
 	attachContextMenu();
-	$("#jqxMenu").on('itemclick', function (event) {
+	$("#popup-menu").on('itemclick', function (event) {
 		var item = $.trim($(event.args).text());
 		switch (item) {
 			case "Add Item":
