@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title id='Description'>nexl-js</title>
+    <link rel="stylesheet" href="jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="index.css" type="text/css"/>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1 minimum-scale=1"/>
+
+    <script type="text/javascript" src="jqwidgets/scripts/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxpanel.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxtree.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxsplitter.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxtabs.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+
+<div id='main-container'>
+    <hr/>
+    <div id="menu-container">
+
+        <div id="nexl-logo"><a href="#"></a></div>
+
+        <div id='nexl-menu'>
+            <ul>
+                <li>File
+                    <ul style='width: 250px;'>
+                        <li><a href="#New">New</a></li>
+                        <li><a href="#Save">Save</a></li>
+                        <li><a href="#Reload">Reload</a></li>
+                        <li><a href="#Close">Close</a></li>
+                        <li><a href="#CloseAll">Close All</a></li>
+                    </ul>
+                </li>
+                <li>View
+                    <ul>
+                        <li><a href="#Examples">Examples</a></li>
+                        <li><a href="#QuickTour">Quick tour</a></li>
+                    </ul>
+                </li>
+                <li>Expression
+                    <ul>
+                        <li><a href="#Build">Build</a></li>
+                        <li><a href="#Evaluate">Evaluate</a></li>
+                    </ul>
+                </li>
+                <li>Settings</li>
+                <li>About</li>
+            </ul>
+        </div>
+
+        <div id="auth"><a href="#">Login</a></div>
+    </div>
+
+    <div style="clear: both"></div>
+    <hr/>
+
+    <div id="main-area">
+        <div id='nexl-sources-container'>
+            <div id='nexl-sources' style='visibility: hidden; float: left;'>
+                <ul>
+                    <li id='home' item-selected='true'>root.js</li>
+                    <li item-expanded='true'>common
+                        <ul>
+                            <li>test.js</li>
+                            <li>common.js</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id='jqxMenu'>
+                <ul>
+                    <li>New</li>
+                    <li>Delete</li>
+                    <li>Rename</li>
+                    <li>XXX</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <div id="tabs-area">
+                <div id='tabbed-editor'>
+                    <ul style="margin-left: 30px;" id="unorderedList">
+                        <li>Node.js</li>
+                        <li>Active Server Pages</li>
+                    </ul>
+                    <div>
+                        xxx
+                    </div>
+                    <div>
+                        yyy
+                    </div>
+                    <div>
+                    </div>
+                </div>
+                <div id="output">output...</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
