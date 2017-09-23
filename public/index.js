@@ -1,6 +1,6 @@
 ///////////////////////// menu /////////////////////////
 function makeMenu() {
-	$("#nexl-menu").jqxMenu({
+	$("#nexl-main-menu").jqxMenu({
 		width: '350px',
 		height: '30px',
 		animationShowDuration: 300,
@@ -11,13 +11,11 @@ function makeMenu() {
 		showTopLevelArrows: true
 	});
 
-	$("#nexl-menu").css('visibility', 'visible');
+	$("#nexl-main-menu").css('visibility', 'visible');
 
 	$("#nexl-logo a").on('click', function () {
 		alert('About nexl');
 	});
-
-	// $("#jqxButton").jqxButton({width: 80, height: 31});
 
 	$("#nexl-login-menu").jqxMenu({
 		width: '80px',
@@ -202,7 +200,7 @@ function makeEditorTabs() {
 
 ////////////////////////////// splitters /////////////////////////
 function calcMainAreaHeight() {
-	return $(window).height() - $('#nexl-menu').height() - 85;
+	return $(window).height() - $('#nexl-main-menu').height() - 85;
 }
 
 function makeSplitters() {
