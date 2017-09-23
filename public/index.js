@@ -20,10 +20,84 @@ function makeMenu() {
 
 ////////////////////////////// nexl sources tree /////////////////////////
 function makeNexlSourcesTree() {
+	var source = [
+		{
+			icon: "images/dir.png",
+			label: "common",
+			expanded: false,
+			selected: true,
+			items: [
+				{icon: "images/js-file.png", label: "interfaces.js"},
+				{icon: "images/js-file.png", label: "commons.js"},
+				{icon: "images/js-file.png", label: "error-messages.js"}
+			]
+		},
+
+		{
+			icon: "images/dir.png",
+			label: "jenkins",
+			items: [
+				{
+					icon: "images/js-file.png",
+					label: "jenkins.js"
+				},
+				{
+					icon: "images/js-file.png",
+					label: "permissions.js"
+				}
+			]
+		},
+
+		{
+			icon: "images/dir.png",
+			label: "jvm-opts",
+			expanded: false,
+			items: [
+				{
+					icon: "images/dir.png",
+					label: "app-server",
+					items: [
+						{
+							icon: "images/js-file.png",
+							label: "app-server.js"
+						}
+					]
+				},
+				{
+					icon: "images/dir.png",
+					label: "pearl",
+					items: [
+						{
+							icon: "images/js-file.png",
+							label: "pearl-type1.js"
+						},
+						{
+							icon: "images/js-file.png",
+							label: "pearl-type2.js"
+						},
+						{
+							icon: "images/js-file.png",
+							label: "pearl-type3.js"
+						}
+					]
+				}
+			]
+		},
+		{
+			icon: "images/js-file.png", label: "test.js"
+		},
+		{
+			icon: "images/general-file.png", label: "Thumbs.db"
+		}
+	];
+
 	$('#nexl-sources').jqxTree(
 		{
 			height: '100%',
-			width: '100%'
+			width: '100%',
+			source: source,
+			allowDrag: true,
+			allowDrop: true
 		}
 	);
 	$('#nexl-sources').css('visibility', 'visible');
@@ -49,6 +123,10 @@ function makeNexlSourcesTree() {
 			}
 		});
 	};
+
+	$('#nexl-sources').on("dragEnd", function (event) {
+		attachContextMenu();
+	});
 
 	attachContextMenu();
 	$("#jqxMenu").on('itemclick', function (event) {
@@ -116,7 +194,7 @@ function makeSplitters() {
 		width: '100%',
 		height: '100%',
 		orientation: 'horizontal',
-		panels: [{size: '70%', min: 100, collapsible: false}, {size: '30%'}]
+		panels: [{size: '70%', collapsible: false}, {size: '30%'}]
 	});
 
 	$(window).resize(function () {

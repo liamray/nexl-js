@@ -18,6 +18,7 @@
     <script type="text/javascript" src="jqwidgets/jqxtree.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxsplitter.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxtabs.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxdragdrop.js"></script>
     <script type="text/javascript" src="index.js"></script>
 </head>
 <body>
@@ -64,17 +65,8 @@
 
     <div id="main-area">
         <div id='nexl-sources-container'>
-            <div id='nexl-sources' style='visibility: hidden; float: left;'>
-                <ul>
-                    <li id='home' item-selected='true'>root.js</li>
-                    <li item-expanded='true'>common
-                        <ul>
-                            <li>test.js</li>
-                            <li>common.js</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <div id='nexl-sources' style='visibility: hidden; float: left;'></div>
+
             <div id='jqxMenu'>
                 <ul>
                     <li>New</li>
