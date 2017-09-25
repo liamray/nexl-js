@@ -134,7 +134,7 @@ function makeEditorTabs() {
 
 ////////////////////////////// splitters /////////////////////////
 function calcMainAreaHeight() {
-	return $(window).height() - $('#nexl-main-menu').height() - 85;
+	return $(window).height() - $('#nexl-main-menu').height() - 45;
 }
 
 function makeSplitters() {
@@ -159,7 +159,7 @@ function makeSplitters() {
 	});
 
 	$('#tabs-area').jqxSplitter('refresh');
-};
+}
 
 $(document).ready(function () {
 	makeMenu();
