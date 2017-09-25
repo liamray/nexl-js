@@ -141,15 +141,15 @@ function makeSplitters() {
 	$('#main-area').jqxSplitter({
 		width: '100%',
 		height: calcMainAreaHeight(),
-		orientation: 'vertical',
-		panels: [{size: '20%'}, {size: '80%', min: '15%'}]
+		orientation: 'horizontal',
+		panels: [{size: '75%', collapsible: false}, {size: '25%'}]
 	});
 
-	$('#tabs-area').jqxSplitter({
+	$('#nexl-sources-and-tabs-area').jqxSplitter({
 		width: '100%',
 		height: '100%',
-		orientation: 'horizontal',
-		panels: [{size: '70%', collapsible: false}, {size: '30%'}]
+		orientation: 'vertical',
+		panels: [{size: '20%'}, {size: '80%'}]
 	});
 
 	$(window).resize(function () {
@@ -157,8 +157,6 @@ function makeSplitters() {
 			height: calcMainAreaHeight()
 		});
 	});
-
-	$('#tabs-area').jqxSplitter('refresh');
 }
 
 $(document).ready(function () {
