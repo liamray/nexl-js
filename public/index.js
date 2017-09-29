@@ -159,9 +159,9 @@ function makeSplitters() {
 	});
 }
 
-$(document).ready(function () {
+function init() {
 	makeMenu();
 	makeNexlSourcesTree();
 	makeEditorTabs();
 	makeSplitters();
-});
+}
