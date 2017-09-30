@@ -1,8 +1,8 @@
 body {
     min-height: 100%;
-    min-width: 640px;
+    min-width: 600px;
     width: auto !important;
-    width: 640px;
+    width: 600px;
 }
 
 #menu-container {
