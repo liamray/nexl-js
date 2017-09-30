@@ -159,9 +159,14 @@ function makeSplitters() {
 	});
 }
 
+function makeExpression() {
+	$("#expression-area").jqxInput({placeHolder: "Enter an expression", height: 25, width: 400, minLength: 1});
+}
+
 function init() {
 	makeMenu();
 	makeNexlSourcesTree();
 	makeEditorTabs();
 	makeSplitters();
+	makeExpression();
 }

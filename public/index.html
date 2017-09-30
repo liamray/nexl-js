@@ -19,6 +19,7 @@
     <script type="text/javascript" src="jqwidgets/jqxsplitter.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxtabs.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxdragdrop.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxinput.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="index.js"></script>
@@ -80,8 +81,8 @@
                 <li>Expression
                     <ul>
                         <li>
-                            <img style='float: left; margin-right: 5px;' src='images/build.png'/>
-                            <a href="#">Build</a>
+                            <img style='float: left; margin-right: 5px;' src='images/assemble.png'/>
+                            <a href="#">Assemble</a>
                         </li>
                         <li>
                             <img style='float: left; margin-right: 5px;' src='images/eval.png'/>
@@ -158,7 +159,13 @@
                 </div>
             </div>
         </div>
-        <div id="expressions-and-output-ares">output...</div>
+        <div id="expressions-and-output-areas">
+            <div id="expression-area">
+                <input type="text"/>
+                <div title="Evaluate nexl expression"><img src="images/eval.png"/></div>
+                <div title="Assemble nexl expression"><img src="images/build.png"/></div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

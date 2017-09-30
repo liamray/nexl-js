@@ -35,3 +35,14 @@ body {
     margin-right: 10px;
     margin-top: 10px;
 }
+
+#expression-area {
+    margin: 3px;
+}
+
+#expression-area img {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 2px;
+}
