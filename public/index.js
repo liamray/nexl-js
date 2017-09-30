@@ -134,7 +134,7 @@ function makeEditorTabs() {
 
 ////////////////////////////// splitters /////////////////////////
 function calcMainAreaHeight() {
-	return $(window).height() - $('#nexl-main-menu').height() - 45;
+	return $(window).height() - $('#nexl-main-menu').height() - 55;
 }
 
 function makeSplitters() {
@@ -159,14 +159,9 @@ function makeSplitters() {
 	});
 }
 
-function makeExpression() {
-	$("#expression-area").jqxInput({placeHolder: "Enter an expression", height: 25, width: 500, minLength: 1});
-}
-
 function init() {
 	makeMenu();
 	makeNexlSourcesTree();
 	makeEditorTabs();
 	makeSplitters();
-	makeExpression();
 }

@@ -27,6 +27,12 @@
     <script type="text/javascript">
         $(document).ready(function () {
             init();
+            $("#expression-area").jqxInput({
+                placeHolder: "Enter an expression",
+                height: 25,
+                width: '90%',
+                minLength: 1
+            });
         });
     </script>
 </head>
