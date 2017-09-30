@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title id='Description'>nexl-js</title>
+    <link rel="stylesheet" href="jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="index.css" type="text/css"/>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1 minimum-scale=1"/>
+
+    <script type="text/javascript" src="jqwidgets/scripts/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxpanel.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxtree.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxsplitter.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxtabs.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxdragdrop.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxinput.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            init();
+            $("#expression-area").jqxInput({
+                placeHolder: "Enter an expression",
+                height: 25,
+                width: '90%',
+                minLength: 1
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div id='main-container'>
+    <div id="menu-container">
+
+        <div id="nexl-logo"><a href="#"></a></div>
+
+        <div id='nexl-main-menu'>
+            <ul>
+                <li>File
+                    <ul style='width: 250px;'>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/new-dir.png'/>
+                            <a href="#">New directory</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/new-file.png'/>
+                            <a href="#">New file</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/save.png'/>
+                            <a href="#">Save</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/reload.png'/>
+                            <a href="#">Reload</a></li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/empty-img.png'/>
+                            <a href="#">Close</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/empty-img.png'/>
+                            <a href="#">Close All</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>View
+                    <ul>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/example.png'/>
+                            <a href="#">Examples</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/empty-img.png'/>
+                            <a href="#">Quick tour</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>Expression
+                    <ul>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/eval.png'/>
+                            <a href="#">Evaluate ( F9 )</a>
+                        </li>
+                        <li>
+                            <img style='float: left; margin-right: 5px;' src='images/assemble.png'/>
+                            <a href="#">Assemble</a>
+                        </li>
+                    </ul>
+                </li>
+                <li id="settings">
+                    <img style='float: left; margin-right: 5px;' src='images/settings.png'/>
+                    <a href="#">Settings</a>
+                </li>
+                <li id="about">
+                    <img style='float: left; margin-right: 5px;' src='images/about.png'/>
+                    <a href="#">About</a>
+                </li>
+            </ul>
+        </div>
+        <div style="float: right;padding-right: 15px;position: relative;top:11px;">
+            <div id="nexl-login-menu">
+                <ul>
+                    <li id="login">
+                        <img style='float: left; margin-right: 5px;' src='images/login.png'/>
+                        <a href="#Login">Login</a>
+                        <ul>
+                            <li id="register"><a href="#">Register</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-area">
+        <div>
+            <div id="nexl-sources-and-tabs-area">
+                <div id='nexl-sources-container'>
+                    <div id='nexl-sources' style='visibility: hidden; float: left;'></div>
+
+                    <div id='popup-menu'>
+                        <ul>
+                            <li>
+                                <img style='float: left; margin-right: 5px;' src='images/new-dir.png'/>
+                                <a href="#">New directory</a>
+                            </li>
+                            <li>
+                                <img style='float: left; margin-right: 5px;' src='images/new-file.png'/>
+                                <a href="#">New file</a>
+                            </li>
+                            <li>
+                                <img style='float: left; margin-right: 5px;' src='images/delete.png'/>
+                                <a href="#">Delete</a>
+                            </li>
+                            <li>
+                                <img style='float: left; margin-right: 5px;' src='images/empty-img.png'/>
+                                <a href="#">Rename</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="tabs-area">
+                    <div id='tabbed-editor'>
+                        <ul style="margin-left: 30px;" id="unorderedList">
+                            <li>Node.js</li>
+                            <li>Active Server Pages</li>
+                        </ul>
+                        <div>
+                            xxx
+                        </div>
+                        <div>
+                            yyy
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="expressions-and-output-areas">
+            <div id="expression-area">
+                <input type="text"/>
+                <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
+                <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
+                <div title="Most used expressions"><img src="images/multiple.png"/></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
