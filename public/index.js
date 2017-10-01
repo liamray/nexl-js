@@ -134,7 +134,7 @@ function makeEditorTabs() {
 
 ////////////////////////////// splitters /////////////////////////
 function calcMainAreaHeight() {
-	return $(window).height() - $('#nexl-main-menu').height() - 55;
+	return $(window).height() - $('#nexl-main-menu').height() - 45;
 }
 
 function makeSplitters() {
