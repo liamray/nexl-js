@@ -20,6 +20,7 @@
     <script type="text/javascript" src="jqwidgets/jqxtabs.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxdragdrop.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxinput.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxwindow.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="index.js"></script>
@@ -27,11 +28,28 @@
     <script type="text/javascript">
         $(document).ready(function () {
             init();
+
             $("#expression-area").jqxInput({
-                placeHolder: "Enter an expression",
+                placeHolder: "Enter nexl expression",
                 height: 25,
                 width: '90%',
                 minLength: 1
+            });
+
+            $('#window').jqxWindow({
+                position: {x: 250, y: 250},
+                showCollapseButton: true,
+                maxHeight: 400,
+                maxWidth: 700,
+                minHeight: 200,
+                minWidth: 200,
+                height: 300,
+                width: 500,
+                draggable: true,
+                initContent: function () {
+                    $('#window').jqxWindow('focus');
+                    $('#window').jqxWindow('show');
+                }
             });
         });
     </script>
@@ -121,6 +139,17 @@
         </div>
     </div>
 
+    <div id="window" style="display: none;">
+        <div id="windowHeader">
+                    <span>
+                        <img src="images/args.png" alt="" style="margin-right: 15px"/>Arguments
+                    </span>
+        </div>
+        <div style="overflow: hidden;" id="windowContent">
+            ..........
+        </div>
+    </div>
+
     <div id="main-area">
         <div>
             <div id="nexl-sources-and-tabs-area">
@@ -171,9 +200,9 @@
                 <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
                 <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
                 <div title="Most used expressions"><img src="images/multiple.png"/></div>
+                <div title="Copy URL"><img src="images/url.png"/></div>
             </div>
         </div>
-    </div>
 </div>
 </body>
 </html>
