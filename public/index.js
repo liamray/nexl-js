@@ -174,7 +174,7 @@ function makeArgsWindow() {
 }
 
 function assignEvents() {
-	$('#args-button').on('click', function () {
+	$('#args-button,#menu-view-args').on('click', function () {
 		$('#window').jqxWindow('focus');
 		$('#window').jqxWindow('show');
 	});
