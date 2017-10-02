@@ -142,7 +142,7 @@ function makeSplitters() {
 		width: '100%',
 		height: calcMainAreaHeight(),
 		orientation: 'horizontal',
-		panels: [{size: '75%', collapsible: false}, {size: '25%'}]
+		panels: [{size: '65%', collapsible: false}, {size: '35%'}]
 	});
 
 	$('#nexl-sources-and-tabs-area').jqxSplitter({
@@ -159,9 +159,32 @@ function makeSplitters() {
 	});
 }
 
+function makeArgsWindow() {
+	$('#window').jqxWindow({
+		position: {x: 250, y: 250},
+		showCollapseButton: true,
+		maxHeight: 400,
+		maxWidth: 700,
+		minHeight: 200,
+		minWidth: 200,
+		height: 300,
+		width: 500,
+		draggable: true
+	});
+}
+
+function assignEvents() {
+	$('#args-button').on('click', function () {
+		$('#window').jqxWindow('focus');
+		$('#window').jqxWindow('show');
+	});
+}
+
 function init() {
 	makeMenu();
 	makeNexlSourcesTree();
 	makeEditorTabs();
 	makeSplitters();
+	makeArgsWindow();
+	assignEvents();
 }

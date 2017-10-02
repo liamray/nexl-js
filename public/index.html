@@ -35,22 +35,6 @@
                 width: '90%',
                 minLength: 1
             });
-
-            $('#window').jqxWindow({
-                position: {x: 250, y: 250},
-                showCollapseButton: true,
-                maxHeight: 400,
-                maxWidth: 700,
-                minHeight: 200,
-                minWidth: 200,
-                height: 300,
-                width: 500,
-                draggable: true,
-                initContent: function () {
-                    $('#window').jqxWindow('focus');
-                    $('#window').jqxWindow('show');
-                }
-            });
         });
     </script>
 </head>
@@ -195,12 +179,13 @@
             </div>
         </div>
         <div id="expressions-and-output-areas">
+            nexl expressions tester
             <div id="expression-area">
                 <input type="text"/>
                 <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
                 <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
                 <div title="Most used expressions"><img src="images/multiple.png"/></div>
-                <div title="Copy URL"><img src="images/url.png"/></div>
+                <div title="Arguments" id="args-button"><img src="images/args.png"/></div>
             </div>
         </div>
 </div>
