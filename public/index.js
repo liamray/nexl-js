@@ -173,6 +173,28 @@ function makeArgsWindow() {
 	});
 }
 
+function makeOutputArea() {
+	$("#expression-area").jqxInput({
+		placeHolder: "Enter nexl expression",
+		height: 25,
+		width: '90%',
+		minLength: 1
+	});
+
+	$("#expression-and-url-expander").jqxExpander(
+		{
+			width: '100%',
+			animationType: 'slide',
+			toggleMode: "none"
+		}
+	);
+	$("#output-expander").jqxExpander({
+		width: '100%',
+		toggleMode: "none"
+
+	});
+}
+
 function assignEvents() {
 	$('#args-button,#menu-view-args').on('click', function () {
 		$('#window').jqxWindow('focus');
@@ -186,5 +208,6 @@ function init() {
 	makeEditorTabs();
 	makeSplitters();
 	makeArgsWindow();
+	makeOutputArea();
 	assignEvents();
 }

@@ -21,6 +21,7 @@
     <script type="text/javascript" src="jqwidgets/jqxdragdrop.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxinput.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxwindow.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxexpander.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="index.js"></script>
@@ -28,13 +29,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
             init();
-
-            $("#expression-area").jqxInput({
-                placeHolder: "Enter nexl expression",
-                height: 25,
-                width: '90%',
-                minLength: 1
-            });
         });
     </script>
 </head>
@@ -183,15 +177,37 @@
             </div>
         </div>
         <div id="expressions-and-output-areas">
-            nexl expressions tester
-            <div id="expression-area">
-                <input type="text"/>
-                <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
-                <div title="Arguments" id="args-button"><img src="images/args.png"/></div>
-                <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
-                <div title="Most used expressions"><img src="images/multiple.png"/></div>
+            <div>
+                <div id="expression-and-url-expander">
+                    <div>nexl expressions tester</div>
+                    <table width="100%">
+                        <tr>
+                            <td width="140px;">nexl expression</td>
+                            <td>
+                                <div id="expression-area">
+                                    <input type="text"/>
+                                    <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
+                                    <div title="Arguments" id="args-button"><img src="images/args.png"/></div>
+                                    <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
+                                    <div title="Most used expressions"><img src="images/multiple.png"/></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>URL</td>
+                            <td><a href="#">http://localhost:8080</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="output-expander">
+                <div>Output</div>
+                <div>
+                    <textarea readonly style="height: 100px;width:calc( 100% - 8px )"></textarea>
+                </div>
             </div>
         </div>
+    </div>
 </div>
 </body>
 </html>

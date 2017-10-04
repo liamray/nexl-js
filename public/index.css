@@ -38,6 +38,8 @@ body {
 
 #expression-area {
     margin: 3px;
+    float: left;
+    width: 100%;
 }
 
 #expression-area img {
