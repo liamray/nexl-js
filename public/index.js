@@ -185,13 +185,14 @@ function makeOutputArea() {
 		{
 			width: '100%',
 			animationType: 'slide',
-			toggleMode: "none"
+			toggleMode: "none",
+			showArrow: false
 		}
 	);
 	$("#output-expander").jqxExpander({
 		width: '100%',
-		toggleMode: "none"
-
+		toggleMode: "none",
+		showArrow: false
 	});
 }
 
