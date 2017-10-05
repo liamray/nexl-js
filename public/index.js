@@ -174,11 +174,20 @@ function makeArgsWindow() {
 }
 
 function makeOutputArea() {
-	$("#expression-area").jqxInput({
-		placeHolder: "Enter nexl expression",
-		height: 25,
-		width: '90%',
-		minLength: 1
+	$('#combo').jqxComboBox(
+		{
+			searchMode: 'startswith',
+			source: [1, 2, 3, 4],
+			width: 'calc( 100% - 330px )'
+		});
+
+	$("#eval-button").jqxButton({
+		width: 60,
+		height: 27,
+		imgPosition: "center",
+		textPosition: "left",
+		imgSrc: "images/eval.png",
+		textImageRelation: "imageBeforeText"
 	});
 
 	$("#expression-and-url-expander").jqxExpander(
@@ -191,6 +200,7 @@ function makeOutputArea() {
 	);
 	$("#output-expander").jqxExpander({
 		width: '100%',
+		height: '100%',
 		toggleMode: "none",
 		showArrow: false
 	});

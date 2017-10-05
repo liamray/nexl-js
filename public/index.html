@@ -22,6 +22,9 @@
     <script type="text/javascript" src="jqwidgets/jqxinput.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxwindow.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxexpander.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxlistbox.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxcombobox.js"></script>
+    <script type="text/javascript" src="jqwidgets/jqxdata.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="index.js"></script>
@@ -180,30 +183,25 @@
             <div>
                 <div id="expression-and-url-expander">
                     <div>nexl expressions tester</div>
-                    <table width="100%">
-                        <tr>
-                            <td width="140px;">nexl expression</td>
-                            <td>
-                                <div id="expression-area">
-                                    <input type="text"/>
-                                    <div title="Evaluate nexl expression ( F9 )"><img src="images/eval.png"/></div>
-                                    <div title="Arguments" id="args-button"><img src="images/args.png"/></div>
-                                    <div title="Assemble nexl expression"><img src="images/assemble.png"/></div>
-                                    <div title="Most used expressions"><img src="images/multiple.png"/></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>URL</td>
-                            <td><a href="#">http://localhost:8080</a></td>
-                        </tr>
-                    </table>
+                    <div>
+                        <div>
+                            <div style="width:115px;float: left;">nexl expression</div>
+                            <div id="combo" style="float: left;margin-right: 3px;"></div>
+                            <div>
+                                <button id="eval-button" title="Evaluate nexl expression"></button>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="width:115px;float: left;">URL</div>
+                            <div><a href="#" target="_blank">http://localhost:8080</a></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="output-expander">
                 <div>Output</div>
                 <div>
-                    <textarea readonly style="height: 100px;width:calc( 100% - 8px )"></textarea>
+                    <textarea readonly style="width:calc( 100% - 8px ); height:calc(100% - 80px);"></textarea>
                 </div>
             </div>
         </div>
