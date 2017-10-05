@@ -177,7 +177,7 @@ function makeOutputArea() {
 	$('#combo').jqxComboBox(
 		{
 			searchMode: 'startswith',
-			source: [1, 2, 3, 4],
+			source: ['${ifcs.main}', '${@1}', '${person}'],
 			width: 'calc( 100% - 215px )'
 		});
 
