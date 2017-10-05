@@ -178,16 +178,21 @@ function makeOutputArea() {
 		{
 			searchMode: 'startswith',
 			source: [1, 2, 3, 4],
-			width: 'calc( 100% - 330px )'
+			width: 'calc( 100% - 215px )'
 		});
 
 	$("#eval-button").jqxButton({
 		width: 60,
 		height: 27,
 		imgPosition: "center",
-		textPosition: "left",
-		imgSrc: "images/eval.png",
-		textImageRelation: "imageBeforeText"
+		imgSrc: "images/eval.png"
+	});
+
+	$("#assemble-expression").jqxButton({
+		width: 27,
+		height: 27,
+		imgPosition: "center",
+		imgSrc: "images/assemble.png"
 	});
 
 	$("#expression-and-url-expander").jqxExpander(

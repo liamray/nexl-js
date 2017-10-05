@@ -183,15 +183,21 @@
             <div>
                 <div id="expression-and-url-expander">
                     <div>nexl expressions tester</div>
-                    <div>
+                    <div style="margin: 4px 0 4px 4px;border: none;">
                         <div>
                             <div style="width:115px;float: left;">nexl expression</div>
-                            <div id="combo" style="float: left;margin-right: 3px;"></div>
-                            <div>
-                                <button id="eval-button" title="Evaluate nexl expression"></button>
+                            <div id="combo" style="float: left;margin-right: 2px;"></div>
+
+                            <div style="float: left;margin-right: 2px;">
+                                <button id="eval-button" title="Evaluate nexl expression ( F9 )"></button>
                             </div>
+
+                            <div style="float: left;">
+                                <button id="assemble-expression" title="Assemble nexl expression"></button>
+                            </div>
+
                         </div>
-                        <div>
+                        <div style="clear:both;padding-top:3px;">
                             <div style="width:115px;float: left;">URL</div>
                             <div><a href="#" target="_blank">http://localhost:8080</a></div>
                         </div>
@@ -201,7 +207,8 @@
             <div id="output-expander">
                 <div>Output</div>
                 <div>
-                    <textarea readonly style="width:calc( 100% - 8px ); height:calc(100% - 80px);"></textarea>
+                    <textarea readonly
+                              style="resize: none;width:calc( 100% - 6px ); height:calc(100% - 89px);"></textarea>
                 </div>
             </div>
         </div>
