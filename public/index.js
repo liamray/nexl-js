@@ -187,7 +187,8 @@ function makeOutputArea() {
 		{
 			searchMode: 'startswith',
 			source: ['${ifcs.main}', '${@1}', '${person}'],
-			width: 'calc( 100% - 215px )'
+			width: 'calc( 100% - 215px )',
+			dropDownVerticalAlignment: 'top'
 		});
 
 	$("#eval-button").jqxButton({
