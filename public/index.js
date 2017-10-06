@@ -178,7 +178,8 @@ function makeArgsWindow() {
 		minWidth: 200,
 		height: 300,
 		width: 500,
-		draggable: true
+		draggable: true,
+		position: 'center'
 	});
 }
 
@@ -187,7 +188,7 @@ function makeOutputArea() {
 		{
 			searchMode: 'startswith',
 			source: ['${ifcs.main}', '${@1}', '${person}'],
-			width: 'calc( 100% - 215px )',
+			width: 'calc( 100% - 240px )',
 			dropDownVerticalAlignment: 'top'
 		});
 
@@ -203,6 +204,13 @@ function makeOutputArea() {
 		height: 27,
 		imgPosition: "center",
 		imgSrc: "images/assemble.png"
+	});
+
+	$("#arguments-button").jqxButton({
+		width: 27,
+		height: 27,
+		imgPosition: "center",
+		imgSrc: "images/args.png"
 	});
 
 	$("#expression-and-url-expander").jqxExpander(
@@ -221,7 +229,7 @@ function makeOutputArea() {
 }
 
 function assignEvents() {
-	$('#args-button,#menu-view-args').on('click', function () {
+	$('#arguments-button,#menu-view-args').on('click', function () {
 		$('#window').jqxWindow('focus');
 		$('#window').jqxWindow('show');
 	});
