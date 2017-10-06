@@ -42,8 +42,8 @@ function makeMenu() {
 function makeNexlSourcesTree() {
 	$('#nexl-sources').jqxTree(
 		{
-			height: '100%',
 			width: '100%',
+			height: '100%',
 			source: nexlSourceSample,
 			allowDrag: true,
 			allowDrop: true
@@ -117,6 +117,15 @@ function makeNexlSourcesTree() {
 		else if (event.button) rightclick = (event.button == 2);
 		return rightclick;
 	}
+
+	$("#nexl-sources-expander").jqxExpander(
+		{
+			width: '100%',
+			height: '100%',
+			toggleMode: "none",
+			showArrow: false
+		}
+	);
 }
 
 ////////////////////////////// editor tabs /////////////////////////
@@ -198,7 +207,6 @@ function makeOutputArea() {
 	$("#expression-and-url-expander").jqxExpander(
 		{
 			width: '100%',
-			animationType: 'slide',
 			toggleMode: "none",
 			showArrow: false
 		}
