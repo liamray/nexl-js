@@ -156,7 +156,7 @@
                 </div>
                 <div id="tabs-area">
                     <div id='tabbed-editor'>
-                        <ul style="margin-left: 30px;" id="unorderedList">
+                        <ul>
                             <li>Node.js</li>
                             <li>Active Server Pages</li>
                         </ul>
@@ -170,40 +170,43 @@
                 </div>
             </div>
         </div>
+
         <div id="expressions-and-output-areas">
             <div>
                 <div id="expression-and-url-expander">
                     <div>nexl expressions tester</div>
-                    <div style="margin: 4px 0 4px 4px;border: none;">
+                    <div id="nexl-expressions-container">
                         <div>
-                            <div style="width:115px;float: left;position: relative; top:5px;">nexl expression</div>
-                            <div id="combo" style="float: left;margin-right: 2px;"></div>
+                            <div id="nexl-expression-label">nexl expression</div>
+                            <div id="nexl-expression-combo"></div>
 
-                            <div style="float: left;margin-right: 2px;">
+                            <div class="nexl-expression-buttons">
                                 <button id="eval-button" title="Evaluate nexl expression ( F9 )"></button>
                             </div>
 
-                            <div style="float: left;margin-right: 2px;">
+                            <div class="nexl-expression-buttons">
                                 <button id="assemble-expression" title="Assemble nexl expression"></button>
                             </div>
 
-                            <div style="float: left;">
+                            <div class="nexl-expression-buttons">
                                 <button id="arguments-button" title="Arguments"></button>
                             </div>
 
                         </div>
-                        <div style="clear:both;padding-top:3px;">
-                            <div style="width:115px;float: left;">URL</div>
+
+                        <div id="nexl-url-container">
+                            <div id="nexl-url-label">URL</div>
                             <div><a href="http://nexl-server:8080/interfaces.js?expression=${test}" target="_blank">http://nexl-server:8080/interfaces.js?expression=${test}</a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <div id="output-expander">
                 <div>Output</div>
                 <div>
-                    <textarea readonly style="resize: none;width:calc( 100% - 6px ); height:calc(100% - 89px);">
+                    <textarea readonly id="output-textarea">
 {
     "distanceToMoon": 384400,
     "car": {

@@ -185,7 +185,7 @@ function makeArgsWindow() {
 }
 
 function makeOutputArea() {
-	$('#combo').jqxComboBox(
+	$('#nexl-expression-combo').jqxComboBox(
 		{
 			searchMode: 'startswith',
 			source: ['${ifcs.main}', '${@1}', '${person}'],

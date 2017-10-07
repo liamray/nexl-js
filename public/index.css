@@ -152,7 +152,12 @@ body {
     content: url(images/empty-img.png);
 }
 
-/*--------*/
+/*--------------------------------------------------------------------------------------------------------------*/
+#tabbed-editor ul {
+    margin-left: 30px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
 
 #expression-area {
     margin: 3px;
@@ -165,4 +170,42 @@ body {
     height: 16px;
     position: relative;
     top: 2px;
+}
+
+#nexl-expressions-container {
+    margin: 4px 0 4px 4px;
+    border: none;
+}
+
+#nexl-expression-label {
+    width: 115px;
+    float: left;
+    position: relative;
+    top: 5px;
+}
+
+#nexl-expression-combo {
+    float: left;
+    margin-right: 2px;
+}
+
+.nexl-expression-buttons {
+    float: left;
+    margin-right: 2px;
+}
+
+#nexl-url-container {
+    clear: both;
+    padding-top: 3px;
+}
+
+#nexl-url-label {
+    width: 115px;
+    float: left;
+}
+
+#output-textarea {
+    resize: none;
+    width: calc(100% - 6px);
+    height: calc(100% - 89px);
 }
