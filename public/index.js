@@ -1,7 +1,7 @@
 ///////////////////////// menu /////////////////////////
 function makeMenu() {
 	$("#nexl-main-menu").jqxMenu({
-		width: '400px',
+		width: '410px',
 		height: '30px',
 		animationShowDuration: 300,
 		animationHideDuration: 200,
@@ -17,7 +17,7 @@ function makeMenu() {
 		alert('About nexl');
 	});
 
-	$("#nexl-login-menu").jqxMenu({
+	$("#auth-menu").jqxMenu({
 		width: '85px',
 		height: '30px',
 		animationShowDuration: 300,
@@ -28,7 +28,7 @@ function makeMenu() {
 		showTopLevelArrows: true,
 		rtl: true
 	});
-	$("#nexl-login-menu").jqxMenu('setItemOpenDirection', 'login', 'left', 'down');
+	$("#auth-menu").jqxMenu('setItemOpenDirection', 'login', 'left', 'down');
 
 	$('#login').on('click', function () {
 		alert('Login !');
