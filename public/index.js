@@ -170,7 +170,7 @@ function makeSplitters() {
 }
 
 function makeArgsWindow() {
-	$('#window').jqxWindow({
+	$('#args-wnd').jqxWindow({
 		position: {x: 250, y: 250},
 		showCollapseButton: true,
 		maxHeight: 400,
@@ -231,8 +231,8 @@ function makeOutputArea() {
 
 function assignEvents() {
 	$('#arguments-button,#menu-view-args').on('click', function () {
-		$('#window').jqxWindow('focus');
-		$('#window').jqxWindow('show');
+		$('#args-wnd').jqxWindow('focus');
+		$('#args-wnd').jqxWindow('show');
 	});
 }
 

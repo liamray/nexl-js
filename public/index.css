@@ -109,6 +109,19 @@ body {
 }
 
 /*--------------------------------------------------------------------------------------------------------------*/
+/* args */
+#args-wnd {
+    display: none;
+}
+
+#args-wnd-header span img {
+    margin-right: 15px;
+    content: url(images/args.png);
+}
+
+#args-wnd-content {
+    overflow: hidden;
+}
 
 #expression-area {
     margin: 3px;
