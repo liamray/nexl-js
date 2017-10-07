@@ -18,14 +18,15 @@ function makeMenu() {
 	});
 
 	$("#nexl-login-menu").jqxMenu({
-		width: '90px',
+		width: '85px',
 		height: '30px',
 		animationShowDuration: 300,
 		animationHideDuration: 200,
 		animationShowDelay: 200,
 		enableHover: true,
 		autoOpen: true,
-		showTopLevelArrows: true
+		showTopLevelArrows: true,
+		rtl: true
 	});
 	$("#nexl-login-menu").jqxMenu('setItemOpenDirection', 'login', 'left', 'down');
 
