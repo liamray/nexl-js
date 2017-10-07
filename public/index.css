@@ -123,6 +123,37 @@ body {
     overflow: hidden;
 }
 
+/*--------------------------------------------------------------------------------------------------------------*/
+/* nexl sources */
+
+#nexl-sources {
+    border: none;
+    visibility: hidden;
+    float: left;
+}
+
+#popup-menu ul li img {
+    margin-right: 5px;
+}
+
+#popup-menu-new-dir img {
+    content: url(images/args.png);
+}
+
+#popup-menu-new-file img {
+    content: url(images/new-file.png);
+}
+
+#popup-menu-delete img {
+    content: url(images/delete.png);
+}
+
+#popup-menu-rename img {
+    content: url(images/empty-img.png);
+}
+
+/*--------*/
+
 #expression-area {
     margin: 3px;
     float: left;
