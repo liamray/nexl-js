@@ -5,8 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var root = require('./routes/root');
 var nexlRest = require('./routes/nexl-rest');
-var evalExpression = require('./routes/eval-expression');
+var nexlExpressions = require('./routes/nexl-expressions');
 
 var app = express();
 
@@ -17,10 +18,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
-// todo : complete it
+// static resources, root page, nexl rest, nexl expressions
 app.use(express.static(path.join(__dirname, '../frontend')));
-app.use('/nexl-rest/*', nexlRest);
-app.use('/*', evalExpression);
+app.use('/', root);
+app.use('/nexl/rest/*', nexlRest);
+app.use('/*', nexlExpressions);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
