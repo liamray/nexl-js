@@ -1,0 +1,2 @@
+cd ..\angular
+ng serve
