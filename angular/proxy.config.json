@@ -1,0 +1,10 @@
+{
+  "/rest/*": {
+    "target": "http://localhost:3000/",
+    "secured": false,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/rest": ""
+    }
+  }
+}

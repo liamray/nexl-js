@@ -1,0 +1,83 @@
+
+#nexl-main-menu {
+    visibility: hidden;
+    margin-left: 5px;
+    float: left;
+    position: relative;
+    top: 10px;
+}
+
+#nexl-main-menu ul li {
+    margin-right: 5px;
+}
+
+#main-menu-new-dir img {
+    content: url(/assets/nexl/site/images/new-dir.png);
+}
+
+#main-menu-new-file img {
+    content: url(/assets/nexl/site/images/new-file.png);
+}
+
+#main-menu-save img {
+    content: url(/assets/nexl/site/images/save.png);
+}
+
+#main-menu-reload img {
+    content: url(/assets/nexl/site/images/reload.png);
+}
+
+#main-menu-close img, #main-menu-close-all img {
+    content: url(/assets/nexl/site/images/empty-img.png);
+}
+
+#main-menu-args img {
+    content: url(/assets/nexl/site/images/args.png);
+}
+
+#main-menu-examples img {
+    content: url(/assets/nexl/site/images/example.png);
+}
+
+#main-menu-tour img {
+    content: url(/assets/nexl/site/images/tour.png);
+}
+
+#main-menu-eval img {
+    content: url(/assets/nexl/site/images/eval.png);
+}
+
+#main-menu-wizard img {
+    content: url(/assets/nexl/site/images/assemble.png);
+}
+
+#main-menu-settings img {
+    float: left;
+    margin-right: 5px;
+    content: url(/assets/nexl/site/images/settings.png);
+}
+
+#main-menu-about img {
+    float: left;
+    margin-right: 5px;
+    content: url(/assets/nexl/site/images/about.png);
+}
+
+#auth-menu-container {
+    float: right;
+    padding-right: 15px;
+    position: relative;
+    top: 11px;
+}
+
+#auth-menu-login img {
+    content: url(/assets/nexl/site/images/login.png);
+    float: left;
+    margin-right: 5px;
+}
+
+#auth-menu-register img {
+    content: url(/assets/nexl/site/images/register.png);
+    float: left;
+    margin-right: 5px;
+}
