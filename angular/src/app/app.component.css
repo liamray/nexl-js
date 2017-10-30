@@ -1,0 +1,12 @@
+#nexl-logo {
+    float: left;
+}
+
+#nexl-logo a {
+    background-image: url("/assets/nexl/site/images/nexl-logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 55px;
+    height: 55px;
+    display: block;
+}

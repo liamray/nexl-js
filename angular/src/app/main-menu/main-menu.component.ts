@@ -8,7 +8,7 @@ import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu
 	styleUrls: ['./main-menu.component.css']
 })
 export class MainMenuComponent implements OnInit {
-	@ViewChild('mainMainRef') myMenu: jqxMenuComponent;
+	@ViewChild('mainMenuRef') myMenu: jqxMenuComponent;
 
 	constructor() {
 	}

@@ -23,7 +23,7 @@
     content: url(/assets/nexl/site/images/save.png);
 }
 
-#main-menu-reload img {
+#main-menu-refresh img {
     content: url(/assets/nexl/site/images/reload.png);
 }
 
@@ -61,23 +61,4 @@
     float: left;
     margin-right: 5px;
     content: url(/assets/nexl/site/images/about.png);
-}
-
-#auth-menu-container {
-    float: right;
-    padding-right: 15px;
-    position: relative;
-    top: 11px;
-}
-
-#auth-menu-login img {
-    content: url(/assets/nexl/site/images/login.png);
-    float: left;
-    margin-right: 5px;
-}
-
-#auth-menu-register img {
-    content: url(/assets/nexl/site/images/register.png);
-    float: left;
-    margin-right: 5px;
 }
