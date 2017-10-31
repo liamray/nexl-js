@@ -2,7 +2,6 @@
 #nexl-main-menu {
     visibility: hidden;
     margin-left: 5px;
-    float: left;
     position: relative;
     top: 10px;
 }

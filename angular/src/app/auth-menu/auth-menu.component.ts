@@ -3,7 +3,7 @@ import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu
 
 
 @Component({
-	selector: 'app-auth-menu',
+	selector: '.app-auth-menu',
 	templateUrl: './auth-menu.component.html',
 	styleUrls: ['./auth-menu.component.css']
 })
