@@ -5,6 +5,7 @@ import {AppComponent} from './app.component';
 import {MainMenuComponent} from './main-menu/main-menu.component';
 import {AuthMenuComponent} from './auth-menu/auth-menu.component';
 import {LogoComponent} from './logo/logo.component';
+import {SourcesExplorer} from './sources-explorer/sources-explorer.component';
 
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 
@@ -12,9 +13,10 @@ import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu
 	declarations: [
 		AppComponent,
 		jqxMenuComponent,
+		LogoComponent,
 		MainMenuComponent,
 		AuthMenuComponent,
-		LogoComponent
+		SourcesExplorer
 	],
 	imports: [
 		BrowserModule
