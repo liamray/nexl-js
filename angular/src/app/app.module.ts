@@ -8,11 +8,13 @@ import {NexlLogoComponent} from './nexl-logo/nexl-logo.component';
 import {NexlSourcesExplorer} from './nexl-sources-explorer/nexl-sources-explorer.component';
 
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
+import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		jqxMenuComponent,
+		jqxTreeComponent,
 		NexlLogoComponent,
 		MainMenuComponent,
 		AuthMenuComponent,

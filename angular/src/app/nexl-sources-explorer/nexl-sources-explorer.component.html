@@ -1,1 +1,13 @@
-Sources explorer !
+<jqxTree #tree
+         (onInitialized)="init()"
+         [width]="300" [height]="400"
+         [source]="treeSource">
+</jqxTree>
+
+<jqxMenu #popupMenu (onItemclick)="onPopup($event)"
+         [width]="120" [height]="56" [autoOpenPopup]="false" [mode]="'popup'">
+    <ul>
+        <li>Add Item</li>
+        <li>Remove Item</li>
+    </ul>
+</jqxMenu>
