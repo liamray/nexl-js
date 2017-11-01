@@ -12,13 +12,17 @@ import {NexlExpressionsTester} from './nexl-expressions-tester/nexl-expressions-
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
 import {jqxExpanderComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxexpander';
+import {jqxTabsComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtabs';
 
 @NgModule({
 	declarations: [
 		AppComponent,
+
 		jqxMenuComponent,
 		jqxTreeComponent,
 		jqxExpanderComponent,
+		jqxTabsComponent,
+
 		NexlLogoComponent,
 		MainMenuComponent,
 		AuthMenuComponent,
