@@ -1,3 +1,50 @@
-<div style="width:100%;height:100%;border:1px solid green;">
-    nexl expressions tester
-</div>
+<jqxExpander width="100%" height="50%" [showArrow]="false" [toggleMode]="'none'">
+
+    <div>nexl expressions tester</div>
+
+    <div id="nexl-expressions-container">
+        <div>
+            <div id="nexl-expression-label">nexl expression</div>
+            <div style="width:calc(100% - 240px); height:25px;float: left;">
+                <jqxComboBox
+                        width="100%"
+                        [searchMode]="'startswith'"
+                        [dropDownVerticalAlignment]="'top'"
+                        [source]="['${test}', '${ifcs.main}', '${@1}', '${person}']" [selectedIndex]='0'>
+                </jqxComboBox>
+            </div>
+            <div class="nexl-expression-buttons">
+                <button id="eval-button" title="Evaluate nexl expression ( F9 )"></button>
+            </div>
+
+            <div class="nexl-expression-buttons">
+                <button id="assemble-expression" title="Assemble nexl expression"></button>
+            </div>
+
+            <div class="nexl-expression-buttons">
+                <button id="arguments-button" title="Arguments"></button>
+            </div>
+
+        </div>
+
+        <div id="nexl-url-container">
+            <div id="nexl-url-label">URL</div>
+            <div><a href="http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}" target="_blank">http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}</a>
+            </div>
+        </div>
+
+    </div>
+</jqxExpander>
+
+<jqxExpander width="100%" height="50%" [showArrow]="false" [toggleMode]="'none'">
+
+    <div>Output</div>
+
+    <div>
+                    <textarea readonly id="output-textarea">
+blabla
+asdasd
+123123
+                    </textarea>
+    </div>
+</jqxExpander>

@@ -1,5 +1,5 @@
 .menu-container {
-    width:100%;
+    width: 100%;
     height: 50px;
 }
 
@@ -17,4 +17,14 @@
 
 .clear {
     clear: both;
+}
+
+.app-nexl-sources-explorer {
+}
+
+.app-nexl-sources-editor {
+}
+
+.app-nexl-expressions-tester {
+    border: 1px solid red;
 }

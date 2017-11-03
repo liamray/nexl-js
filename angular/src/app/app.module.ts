@@ -14,6 +14,8 @@ import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree
 import {jqxExpanderComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxexpander';
 import {jqxTabsComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtabs';
 import {jqxSplitterComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxsplitter';
+import {jqxComboBoxComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxcombobox';
+import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbuttons';
 
 @NgModule({
 	declarations: [
@@ -24,6 +26,8 @@ import {jqxSplitterComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqx
 		jqxExpanderComponent,
 		jqxTabsComponent,
 		jqxSplitterComponent,
+		jqxComboBoxComponent,
+		jqxButtonComponent,
 
 		NexlLogoComponent,
 		MainMenuComponent,
