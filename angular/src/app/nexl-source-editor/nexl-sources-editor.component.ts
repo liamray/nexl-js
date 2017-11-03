@@ -5,6 +5,6 @@ import {Component} from '@angular/core';
 	templateUrl: './nexl-sources-editor.component.html',
 	styleUrls: ['./nexl-sources-editor.component.css'],
 })
-export class NexlSourcesEditor {
+export class NexlSourcesEditorComponent {
 
 }

@@ -5,6 +5,6 @@ import {Component} from '@angular/core';
 	templateUrl: './nexl-expressions-tester.component.html',
 	styleUrls: ['./nexl-expressions-tester.component.css']
 })
-export class NexlExpressionsTester {
+export class NexlExpressionsTesterComponent {
 
 }

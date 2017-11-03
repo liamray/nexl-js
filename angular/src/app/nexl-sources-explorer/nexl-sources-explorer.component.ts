@@ -7,7 +7,7 @@ import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree
 	templateUrl: './nexl-sources-explorer.component.html',
 	styleUrls: ['./nexl-sources-explorer.component.css']
 })
-export class NexlSourcesExplorer {
+export class NexlSourcesExplorerComponent {
 	@ViewChild('tree') tree: jqxTreeComponent;
 	@ViewChild('popupMenu') popupMenu: jqxMenuComponent;
 

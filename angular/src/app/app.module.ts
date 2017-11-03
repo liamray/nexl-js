@@ -5,9 +5,9 @@ import {AppComponent} from './app.component';
 import {MainMenuComponent} from './main-menu/main-menu.component';
 import {AuthMenuComponent} from './auth-menu/auth-menu.component';
 import {NexlLogoComponent} from './nexl-logo/nexl-logo.component';
-import {NexlSourcesExplorer} from './nexl-sources-explorer/nexl-sources-explorer.component';
-import {NexlSourcesEditor} from './nexl-source-editor/nexl-sources-editor.component';
-import {NexlExpressionsTester} from './nexl-expressions-tester/nexl-expressions-tester.component';
+import {NexlSourcesExplorerComponent} from './nexl-sources-explorer/nexl-sources-explorer.component';
+import {NexlSourcesEditorComponent} from './nexl-source-editor/nexl-sources-editor.component';
+import {NexlExpressionsTesterComponent} from './nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
@@ -32,9 +32,9 @@ import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbu
 		NexlLogoComponent,
 		MainMenuComponent,
 		AuthMenuComponent,
-		NexlSourcesExplorer,
-		NexlSourcesEditor,
-		NexlExpressionsTester
+		NexlSourcesExplorerComponent,
+		NexlSourcesEditorComponent,
+		NexlExpressionsTesterComponent
 	],
 	imports: [
 		BrowserModule
