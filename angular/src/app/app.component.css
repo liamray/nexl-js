@@ -7,12 +7,7 @@
     clear: both;
 }
 
-.app-nexl-sources-explorer {
-}
-
-.app-nexl-sources-editor {
-}
-
-.app-nexl-expressions-tester {
-    border: 1px solid red;
+.content {
+    width: 100%;
+    height: calc(100% - 79px)
 }
