@@ -13,61 +13,61 @@ export class NexlSourcesExplorerComponent {
 
 	treeSource = [
 		{
-			icon: "/assets/nexl/site/images/dir.png",
+			icon: "/nexl/site/images/dir.png",
 			label: "common",
 			id: 'common-id',
 			expanded: false,
 			items: [
-				{icon: "/assets/nexl/site/images/js-file.png", label: "interfaces.js"},
-				{icon: "/assets/nexl/site/images/js-file.png", label: "commons.js"},
-				{icon: "/assets/nexl/site/images/js-file.png", label: "error-messages.js"}
+				{icon: "/nexl/site/images/js-file.png", label: "interfaces.js"},
+				{icon: "/nexl/site/images/js-file.png", label: "commons.js"},
+				{icon: "/nexl/site/images/js-file.png", label: "error-messages.js"}
 			]
 		},
 
 		{
-			icon: "/assets/nexl/site/images/dir.png",
+			icon: "/nexl/site/images/dir.png",
 			label: "jenkins",
 			items: [
 				{
-					icon: "/assets/nexl/site/images/js-file.png",
+					icon: "/nexl/site/images/js-file.png",
 					label: "jenkins.js"
 				},
 				{
-					icon: "/assets/nexl/site/images/js-file.png",
+					icon: "/nexl/site/images/js-file.png",
 					label: "permissions.js"
 				}
 			]
 		},
 
 		{
-			icon: "/assets/nexl/site/images/dir.png",
+			icon: "/nexl/site/images/dir.png",
 			label: "jvm-opts",
 			expanded: false,
 			items: [
 				{
-					icon: "/assets/nexl/site/images/dir.png",
+					icon: "/nexl/site/images/dir.png",
 					label: "app-server",
 					items: [
 						{
-							icon: "/assets/nexl/site/images/js-file.png",
+							icon: "/nexl/site/images/js-file.png",
 							label: "app-server.js"
 						}
 					]
 				},
 				{
-					icon: "/assets/nexl/site/images/dir.png",
+					icon: "/nexl/site/images/dir.png",
 					label: "pearl",
 					items: [
 						{
-							icon: "/assets/nexl/site/images/js-file.png",
+							icon: "/nexl/site/images/js-file.png",
 							label: "pearl-type1.js"
 						},
 						{
-							icon: "/assets/nexl/site/images/js-file.png",
+							icon: "/nexl/site/images/js-file.png",
 							label: "pearl-type2.js"
 						},
 						{
-							icon: "/assets/nexl/site/images/js-file.png",
+							icon: "/nexl/site/images/js-file.png",
 							label: "pearl-type3.js"
 						}
 					]
@@ -75,10 +75,10 @@ export class NexlSourcesExplorerComponent {
 			]
 		},
 		{
-			icon: "/assets/nexl/site/images/js-file.png", label: "test.js"
+			icon: "/nexl/site/images/js-file.png", label: "test.js"
 		},
 		{
-			icon: "/assets/nexl/site/images/general-file.png", label: "Thumbs.db"
+			icon: "/nexl/site/images/general-file.png", label: "Thumbs.db"
 		}
 	];
 

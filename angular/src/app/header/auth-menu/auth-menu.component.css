@@ -5,13 +5,13 @@
 }
 
 #auth-menu-login img {
-    content: url(/assets/nexl/site/images/login.png);
+    content: url(/nexl/site/images/login.png);
     float: left;
     margin-right: 5px;
 }
 
 #auth-menu-register img {
-    content: url(/assets/nexl/site/images/register.png);
+    content: url(/nexl/site/images/register.png);
     float: left;
     margin-right: 5px;
 }

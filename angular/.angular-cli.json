@@ -8,7 +8,7 @@
       "root": "src",
       "outDir": "dist",
       "assets": [
-        "assets",
+        "nexl",
         "favicon.ico"
       ],
       "index": "index.html",

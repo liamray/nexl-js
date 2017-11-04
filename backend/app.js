@@ -11,8 +11,7 @@ var nexlExpressions = require('./routes/nexl-expressions');
 
 var app = express();
 
-// uncomment after placing your favicon in /../frontend
-//app.use(favicon(path.join(__dirname, '../frontend', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../frontend/nexl/site/', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
