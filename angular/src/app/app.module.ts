@@ -2,9 +2,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
-import {MainMenuComponent} from './main-menu/main-menu.component';
-import {AuthMenuComponent} from './auth-menu/auth-menu.component';
-import {NexlLogoComponent} from './nexl-logo/nexl-logo.component';
+import {HeaderComponent} from './header/header.component';
+import {NexlLogoComponent} from './header/nexl-logo/nexl-logo.component';
+import {MainMenuComponent} from './header/main-menu/main-menu.component';
+import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 import {NexlSourcesExplorerComponent} from './nexl-sources-explorer/nexl-sources-explorer.component';
 import {NexlSourcesEditorComponent} from './nexl-source-editor/nexl-sources-editor.component';
 import {NexlExpressionsTesterComponent} from './nexl-expressions-tester/nexl-expressions-tester.component';
@@ -29,12 +30,14 @@ import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbu
 		jqxComboBoxComponent,
 		jqxButtonComponent,
 
+		HeaderComponent,
 		NexlLogoComponent,
 		MainMenuComponent,
 		AuthMenuComponent,
 		NexlSourcesExplorerComponent,
 		NexlSourcesEditorComponent,
-		NexlExpressionsTesterComponent
+		NexlExpressionsTesterComponent,
+		HeaderComponent
 	],
 	imports: [
 		BrowserModule
