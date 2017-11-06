@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 
 
@@ -7,7 +7,7 @@ import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu
 	templateUrl: './auth-menu.component.html',
 	styleUrls: ['./auth-menu.component.css']
 })
-export class AuthMenuComponent implements OnInit, AfterViewInit  {
+export class AuthMenuComponent implements OnInit, AfterViewInit {
 	@ViewChild('authMenuRef')
 	myMenu: jqxMenuComponent;
 
@@ -18,9 +18,7 @@ export class AuthMenuComponent implements OnInit, AfterViewInit  {
 
 	}
 
-	ngAfterViewInit(): void
-	{
+	ngAfterViewInit(): void {
 		this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
-
 	}
 }
