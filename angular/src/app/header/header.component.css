@@ -4,8 +4,13 @@
 
 .app-main-menu {
     float: left;
+    position: relative;
+    top: 8px;
+    left: 7px;
 }
 
 .app-auth-menu {
     float: right;
+    position: relative;
+    top: 8px;
 }
