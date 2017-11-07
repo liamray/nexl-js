@@ -1,20 +1,15 @@
 /*todo - replace id with classes    */
 
-#nexl-expressions-container {
+.nexl-expressions-container {
     margin: 4px 0 4px 4px;
     border: none;
 }
 
-#nexl-expression-label {
+.nexl-expression-label {
     width: 115px;
     float: left;
     position: relative;
     top: 5px;
-}
-
-#nexl-expression-combo {
-    float: left;
-    margin-right: 2px;
 }
 
 .nexl-expression-buttons {
@@ -22,17 +17,17 @@
     margin-right: 2px;
 }
 
-#nexl-url-container {
+.nexl-url-container {
     clear: both;
     padding-top: 3px;
 }
 
-#nexl-url-label {
+.nexl-url-label {
     width: 115px;
     float: left;
 }
 
-#output-textarea {
+.output-textarea {
     resize: none;
     width: calc(100% - 6px);
     height: calc(100% - 89px);
