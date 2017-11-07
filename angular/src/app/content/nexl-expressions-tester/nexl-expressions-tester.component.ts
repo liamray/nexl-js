@@ -6,5 +6,15 @@ import {Component} from '@angular/core';
 	styleUrls: ['./nexl-expressions-tester.component.css']
 })
 export class NexlExpressionsTesterComponent {
+	eval() {
+		alert(1);
+	}
 
+	assemble() {
+		alert(2);
+	}
+
+	args() {
+		alert(3);
+	}
 }
