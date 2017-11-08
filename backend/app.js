@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var root = require('./routes/root');
 var nexlRest = require('./routes/nexl-rest');
+var nexlReserved = require('./routes/nexl-reserved');
 var nexlExpressions = require('./routes/nexl-expressions');
 
 var app = express();
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/', root);
 app.use('/nexl/rest/*', nexlRest);
+app.use('/nexl/*', nexlReserved);
 app.use('/*', nexlExpressions);
 
 // catch 404 and forward to error handler
