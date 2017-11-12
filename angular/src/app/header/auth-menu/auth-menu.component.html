@@ -1,15 +1,29 @@
-<jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
-    <ul>
-        <li id="menu-direction">
-            <a href="#">Account. Logged in as LR</a>
-            <ul>
-                <li id="auth-menu-login">
-                    <img/> <a href="#">Login</a>
-                </li>
-                <li id="auth-menu-register">
-                    <img/> <a href="#">Register</a>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</jqxMenu>
+<div style="float: left;" #button1>
+    <jqxButton #textImageButton [height]='40' [width]="100"
+               [textImageRelation]='"imageBeforeText"' [textPosition]='"left"'
+               [imgSrc]='"/nexl/site/images/register.png"'
+    >
+        Register
+    </jqxButton>
+</div>
+<div style="float: left; margin-left: 5px;" #button2>
+    <jqxButton #textImageButton [height]='40' [width]="100"
+               [textImageRelation]='"imageBeforeText"' [textPosition]='"left"' [imgSrc]='"/nexl/site/images/login.png"'
+               (onClick)="menu.style.display = ''; button1.style.display = 'none'; button2.style.display = 'none'; ">
+        Login
+    </jqxButton>
+</div>
+<div style="float: left; margin-left: 5px;display: none;" #menu>
+    <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
+        <ul>
+            <li id="menu-direction">
+                <a href="#">Hello, Liam</a>
+                <ul>
+                    <li id="auth-menu-login">
+                        <img/> <a href="#" (click)="menu.style.display = 'none'; button1.style.display = ''; button2.style.display = ''; ">Logout</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </jqxMenu>
+</div>
