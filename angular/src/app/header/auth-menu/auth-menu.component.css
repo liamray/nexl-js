@@ -1,17 +1,4 @@
-#auth-menu-container {
-    padding-right: 15px;
-    position: relative;
-    top: 11px;
-}
-
-#auth-menu-login img {
-    content: url(/nexl/site/images/login.png);
+.item {
     float: left;
-    margin-right: 5px;
-}
-
-#auth-menu-register img {
-    content: url(/nexl/site/images/register.png);
-    float: left;
-    margin-right: 5px;
+    margin-left: 5px;
 }
