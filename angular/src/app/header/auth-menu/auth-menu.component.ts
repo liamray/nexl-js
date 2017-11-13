@@ -11,6 +11,8 @@ export class AuthMenuComponent implements OnInit, AfterViewInit {
 	@ViewChild('authMenuRef')
 	myMenu: jqxMenuComponent;
 
+	user: string;
+
 	constructor() {
 	}
 
@@ -20,5 +22,17 @@ export class AuthMenuComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit(): void {
 		this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
+	}
+
+	isLoggedIn() {
+		return this.user !== undefined;
+	}
+
+	isLoginVisible() {
+		return this.isLoggedIn() ? 'none' : '';
+	}
+
+	isLoginHidden() {
+		return !this.isLoggedIn() ? 'none' : '';
 	}
 }

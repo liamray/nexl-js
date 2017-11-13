@@ -1,24 +1,24 @@
-<div class="item">
+<div class="item" [style.display]="isLoginVisible()">
     <jqxButton [height]='32' [width]="94"
                [textImageRelation]='"imageBeforeText"' [textPosition]='"center"' [imgSrc]='"/nexl/site/images/register.png"'>
         Register
     </jqxButton>
 </div>
 
-<div class="item">
-    <jqxButton [height]='32' [width]="94"
+<div class="item" [style.display]="isLoginVisible()">
+    <jqxButton [height]='32' [width]="94" (click)="user = '';"
                [textImageRelation]='"imageBeforeText"' [textPosition]='"center"' [imgSrc]='"/nexl/site/images/login.png"'>
         Login
     </jqxButton>
 </div>
 
-<div class="item" #item>
+<div class="item" [style.display]="isLoginHidden()">
     <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
         <ul>
             <li id="menu-direction">
                 <a href="#">Hello, Liam</a>
                 <ul>
-                    <li (click)="item.style.display='none';">
+                    <li (click)="user = undefined;">
                         <img style='float: left; margin-right: 5px;' src='/nexl/site/images/logout.png' /><span>Logout</span>
                     </li>
                 </ul>
