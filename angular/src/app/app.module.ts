@@ -19,6 +19,7 @@ import {jqxTabsComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtabs
 import {jqxSplitterComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxsplitter';
 import {jqxComboBoxComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxcombobox';
 import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbuttons';
+import {jqxTooltipComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtooltip';
 
 @NgModule({
 	declarations: [
@@ -31,6 +32,7 @@ import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbu
 		jqxSplitterComponent,
 		jqxComboBoxComponent,
 		jqxButtonComponent,
+		jqxTooltipComponent,
 
 		HeaderComponent,
 		NexlLogoComponent,
