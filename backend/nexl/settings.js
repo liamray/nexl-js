@@ -26,5 +26,13 @@ function load(fileName) {
 	return JSON.parse(data);
 }
 
+function deleteSettingsFile(fileName) {
+	var fullPath = resolveFullPath(fileName);
+	if (fs.existsSync(fullPath)) {
+		fs.unlinkSync(fullPath);
+	}
+}
+
 module.exports.save = save;
 module.exports.load = load;
+module.exports.deleteSettingsFile = deleteSettingsFile;

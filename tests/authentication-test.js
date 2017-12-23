@@ -40,6 +40,8 @@ function test() {
 	});
 
 	assert(auth.isPasswordValid(userName, password));
+	auth.deleteUser(userName);
+	assert(!auth.isPasswordValid(userName, password));
 }
 
 test();
