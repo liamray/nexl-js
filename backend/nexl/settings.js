@@ -6,12 +6,12 @@ const fs = require('fs');
 const cmdLineArgs = require('./cmd-line-args');
 
 function resolveFullPath(fileName) {
-	return path.join(cmdLineArgs.NEXL_HOME_DIR, fileName);
+	return path.isAbsolute(fileName) ? fileName : path.join(cmdLineArgs.NEXL_HOME_DIR, fileName);
 }
 
 function save(dataObject, fileName) {
 	var fullPath = resolveFullPath(fileName);
-	var data = {};
+	var data = load(fullPath);
 	data = deepMerge(data, dataObject);
 	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
 }
