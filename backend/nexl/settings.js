@@ -1,49 +1,30 @@
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
 const path = require('path');
+const deepMerge = require('deepmerge');
+const fs = require('fs');
+const cmdLineArgs = require('./cmd-line-args');
 
-
-var settings = {};
-var defaultValues = {};
-
-module.exports.NEXL_HOME_DIR = 'nexl-home-dir';
-
-function resolveDefValue(key) {
-	var value = defaultValues[key];
-
-	if (j79.isString(value)) {
-		return value;
-	}
-
-	if (j79.isFunction(value)) {
-		return value();
-	}
-
-	throw 'No default value for [' + key + ']';
+function resolveFullPath(fileName) {
+	return path.join(cmdLineArgs.NEXL_HOME_DIR, fileName);
 }
 
-module.exports.set = function (key, value) {
-	settings[key] = value;
-};
+function save(dataObject, fileName) {
+	var fullPath = resolveFullPath(fileName);
+	var data = {};
+	data = deepMerge(data, dataObject);
+	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
+}
 
-module.exports.get = function (key) {
-	var result = settings[key];
-	if (result === undefined) {
-		return resolveDefValue(key);
-	} else {
-		return result;
+function load(fileName) {
+	var fullPath = resolveFullPath(fileName);
+	if (!fs.existsSync(fullPath)) {
+		return {};
 	}
-};
 
-module.exports.save = function () {
+	var data = fs.readFileSync(fullPath);
+	return JSON.parse(data);
+}
 
-};
-
-module.exports.load = function () {
-
-};
-
-
-defaultValues[module.exports.NEXL_HOME_DIR] = function () {
-	return path.join(osHomeDir(), 'nexl-sources');
-};
+module.exports.save = save;
+module.exports.load = load;
