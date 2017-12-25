@@ -19,5 +19,6 @@ assert(settings.load(TEST_FILE)['BMW'] === undefined);
 assert(settings.load(TEST_FILE)['cars']['BMW'] === 1);
 assert(settings.load(TEST_FILE)['cars']['X'] === undefined);
 
-
 settings.deleteSettingsFile(TEST_FILE);
+
+console.log('Settings tests are passed OK');

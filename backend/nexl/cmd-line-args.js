@@ -4,6 +4,7 @@ const version = require('./../../package.json').version;
 const osHomeDir = require('os-homedir');
 const fs = require('fs');
 const path = require('path');
+const mkdirp = require('mkdirp');
 
 const DEFAULT_NEXL_HOME_DIR = '.nexl';
 
@@ -88,7 +89,7 @@ function exportArgs() {
 	}
 
 	if (!fs.existsSync(nexlHome)) {
-		fs.mkdirSync(nexlHome);
+		mkdirp.sync(nexlHome);
 	}
 
 	module.exports.NEXL_HOME_DIR = nexlHome;

@@ -45,3 +45,5 @@ function test() {
 }
 
 test();
+
+console.log('Authentication tests are passed OK');
