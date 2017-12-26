@@ -59,15 +59,15 @@ function addUserToGroup(group, user) {
 		groupItem = [];
 	}
 
-	// creating group item if doesn't exist
-	if (groupItem.indexOf(user) < 0) {
-		groupItem.push(user);
+	// if user already exists don't add a new one
+	if (groupItem.indexOf(user) >= 0) {
+		return;
 	}
 
 	// saving
 	var record = {};
-	record[group] = groupItem;
-	settings.save(record);
+	record[group] = [user];
+	settings.save(record, GROUPS_FILE);
 }
 
 function removeUserFromGroup(group, user) {
@@ -91,11 +91,11 @@ function removeUserFromGroup(group, user) {
 	var record = {};
 	// cleaning the whole group ( otherwise it will merge arrays )
 	record[group] = undefined;
-	settings.save(record);
+	settings.save(record, GROUPS_FILE);
 
 	// storing group item
 	record[group] = groupItem;
-	settings.save(record);
+	settings.save(record, GROUPS_FILE);
 }
 
 // --------------------------------------------------------------------------------
