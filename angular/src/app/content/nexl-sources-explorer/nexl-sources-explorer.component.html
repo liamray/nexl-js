@@ -3,8 +3,7 @@
         nexl sources explorer
     </div>
     <div style="overflow: hidden;">
-        <jqxTree #tree (onInitialized)="init()" width="100%" height="100%" [source]="treeSource">
-        </jqxTree>
+        <jqxTree #tree (onInitialized)="init()" width="100%" height="100%" [source]="treeSource"></jqxTree>
 
         <jqxMenu #popupMenu (onItemclick)="onPopup($event)" [width]="120" [height]="56" [autoOpenPopup]="false"
                  [mode]="'popup'">

@@ -82,20 +82,26 @@ export class NexlSourcesExplorerComponent {
 		}
 	];
 
+	private openPopup(event) {
+		this.tree.selectItem(event.target);
+
+		let scrollTop = window.scrollY;
+		let scrollLeft = window.scrollX;
+		this.popupMenu.open(event.clientX + 5 + scrollLeft, event.clientY + 5 + scrollTop);
+		return false;
+	}
 
 	init(): void {
 		document.addEventListener('contextmenu', event => {
 			event.preventDefault();
-			if ((<HTMLElement>event.target).classList.contains('jqx-tree-item')) {
-				this.tree.selectItem(event.target);
 
-				let scrollTop = window.scrollY;
-				let scrollLeft = window.scrollX;
-				this.popupMenu.open(event.clientX + 5 + scrollLeft, event.clientY + 5 + scrollTop);
-				return false;
-			} else {
+			// is to close a popup ?
+			if (!(<HTMLElement>event.target).classList.contains('jqx-tree-item')) {
 				this.popupMenu.close();
+				return;
 			}
+
+			return this.openPopup(event);
 		});
 
 	}

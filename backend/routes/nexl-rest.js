@@ -6,7 +6,6 @@ var router = express.Router();
 /set-password
 /change-password
 /is-password-valid
-/is-password-valid
 /get-users-list
 /delete-user
 
