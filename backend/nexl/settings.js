@@ -1,5 +1,3 @@
-const j79 = require('j79-utils');
-const osHomeDir = require('os-homedir');
 const path = require('path');
 const deepMerge = require('deepmerge');
 const fs = require('fs');
