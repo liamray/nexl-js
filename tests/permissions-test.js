@@ -10,7 +10,7 @@ function test() {
 	permissions.addUserToGroup('qa', 'a');
 	permissions.addUserToGroup('programmers', 'liamr');
 	permissions.removeUserFromGroup('qa', 'john');
-	const groupUsers = permissions.getGroupUsers('qa');
+	const groupUsers = permissions.getUsersInGroup('qa');
 	console.log(groupUsers);
 }
 

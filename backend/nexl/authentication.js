@@ -6,7 +6,7 @@ const SALT_ROUNDS = 10;
 const TOKENS_FILE = 'tokens.js';
 const PASSWORDS_FILE = 'passwords.js';
 
-function generateNewToken(userName) {
+function generateToken(userName) {
 	// generating random token
 	var token = uuidv4();
 
@@ -61,6 +61,23 @@ function setPassword(userName, password, token) {
 	settings.save(credentials, PASSWORDS_FILE);
 }
 
+function changePassword(userName, currentPassword, newPassword) {
+	if (!settings.load(PASSWORDS_FILE)[userName]) {
+		throw 'User doesn\'t exist';
+	}
+
+	if (!isPasswordValid(userName, currentPassword)) {
+		throw 'Bad current password';
+	}
+
+	// set the password
+	var credentials = {};
+	credentials[userName] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+
+	// saving
+	settings.save(credentials, PASSWORDS_FILE);
+}
+
 function isPasswordValid(userName, password) {
 	var encrypedPasswprd = settings.load(PASSWORDS_FILE)[userName];
 	if (encrypedPasswprd === undefined) {
@@ -68,6 +85,11 @@ function isPasswordValid(userName, password) {
 	}
 
 	return bcrypt.compareSync(password, encrypedPasswprd);
+}
+
+function getUsersList() {
+	var users = settings.load(PASSWORDS_FILE);
+	return Object.keys(users);
 }
 
 function deleteUser(userName) {
@@ -79,8 +101,10 @@ function deleteUser(userName) {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.generateNewToken = generateNewToken;
+module.exports.generateToken = generateToken;
 module.exports.setPassword = setPassword;
+module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
+module.exports.getUsersList = getUsersList;
 module.exports.deleteUser = deleteUser;
 // --------------------------------------------------------------------------------

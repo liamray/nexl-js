@@ -26,7 +26,7 @@ function test() {
 		assert(true)
 	});
 
-	token = auth.generateNewToken(userName);
+	token = auth.generateToken(userName);
 	new Promise(function (resolve, reject) {
 		try {
 			auth.setPassword(userName, password, token);

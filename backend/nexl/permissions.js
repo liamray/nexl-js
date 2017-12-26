@@ -48,8 +48,18 @@ function setPermission(permissionId, value, target) {
 	settings.save(permission, PERMISSIONS_FILE);
 }
 
-function getGroupUsers(group) {
-	return settings.load(GROUPS_FILE, GROUPS_FILE)[group];
+function getUsersInGroup(groupName) {
+	return settings.load(GROUPS_FILE, GROUPS_FILE)[groupName];
+}
+
+function deleteGroup(groupName) {
+	if (!settings.load(GROUPS_FILE)[groupName]) {
+		return;
+	}
+
+	var groupItem = {};
+	groupItem[groupName] = undefined;
+	settings.save(groupItem, GROUPS_FILE);
 }
 
 function addUserToGroup(group, user) {
@@ -104,7 +114,8 @@ module.exports.TYPES = TYPES;
 
 module.exports.getPermission = getPermission;
 module.exports.setPermission = setPermission;
-module.exports.getGroupUsers = getGroupUsers;
 module.exports.addUserToGroup = addUserToGroup;
+module.exports.deleteGroup = deleteGroup;
+module.exports.getUsersInGroup = getUsersInGroup;
 module.exports.removeUserFromGroup = removeUserFromGroup;
 // --------------------------------------------------------------------------------
