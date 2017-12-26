@@ -83,6 +83,8 @@ function handleArgs() {
 }
 
 function exportArgs() {
+	handleArgs();
+
 	var nexlHome = cmdLineOpts['nexl-home'];
 	if (nexlHome === undefined) {
 		nexlHome = path.join(osHomeDir(), DEFAULT_NEXL_HOME_DIR);
@@ -92,8 +94,9 @@ function exportArgs() {
 		mkdirp.sync(nexlHome);
 	}
 
-	module.exports.NEXL_HOME_DIR = nexlHome;
+	return nexlHome;
 }
 
-handleArgs();
-exportArgs();
+// --------------------------------------------------------------------------------
+module.exports.NEXL_HOME_DIR = exportArgs();
+// --------------------------------------------------------------------------------

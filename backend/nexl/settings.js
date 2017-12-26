@@ -33,6 +33,8 @@ function deleteSettingsFile(fileName) {
 	}
 }
 
+// --------------------------------------------------------------------------------
 module.exports.save = save;
 module.exports.load = load;
 module.exports.deleteSettingsFile = deleteSettingsFile;
+// --------------------------------------------------------------------------------
