@@ -82,8 +82,7 @@ function handleArgs() {
 	}
 }
 
-function exportArgs() {
-	handleArgs();
+function getNexlHomeDir() {
 
 	var nexlHome = cmdLineOpts['nexl-home'];
 	if (nexlHome === undefined) {
@@ -97,6 +96,8 @@ function exportArgs() {
 	return nexlHome;
 }
 
+handleArgs();
+
 // --------------------------------------------------------------------------------
-module.exports.NEXL_HOME_DIR = exportArgs();
+module.exports.NEXL_HOME_DIR = getNexlHomeDir();
 // --------------------------------------------------------------------------------

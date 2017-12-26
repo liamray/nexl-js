@@ -1,3 +1,4 @@
+require('./tests-main');
 const auth = require('../backend/nexl/authentication');
 const assert = require('assert');
 

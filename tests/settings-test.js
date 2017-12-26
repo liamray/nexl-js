@@ -1,5 +1,10 @@
-const settings = require('../backend/nexl/settings.js');
+require('./tests-main');
+
+const settings = require('../backend/nexl/settings');
+const cmdLineArgs = require('../backend/nexl/cmd-line-args');
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 
 const TEST_FILE = 'test.js';
 
@@ -20,5 +25,7 @@ assert(settings.load(TEST_FILE)['cars']['BMW'] === 1);
 assert(settings.load(TEST_FILE)['cars']['X'] === undefined);
 
 settings.deleteSettingsFile(TEST_FILE);
+
+assert(!fs.existsSync(path.join(cmdLineArgs.NEXL_HOME_DIR, TEST_FILE)));
 
 console.log('Settings tests are passed OK');
