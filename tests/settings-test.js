@@ -1,6 +1,6 @@
 require('./tests-main');
 
-const settings = require('../backend/nexl/settings');
+const settings = require('../backend/api/settings');
 const cmdLineArgs = require('../backend/nexl/cmd-line-args');
 const assert = require('assert');
 const fs = require('fs');

@@ -5,10 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var root = require('./routes/root');
-var nexlRest = require('./routes/nexl-rest');
-var nexlReserved = require('./routes/nexl-reserved');
-var nexlExpressions = require('./routes/nexl-expressions');
+var root = require('./routes/root-route');
+var nexlRest = require('./routes/rest-route');
+var nexlReserved = require('./routes/reserved-route');
+var nexlExpressions = require('./routes/expressions-route');
 
 var app = express();
 

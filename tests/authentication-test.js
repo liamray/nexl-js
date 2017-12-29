@@ -1,5 +1,5 @@
 require('./tests-main');
-const auth = require('../backend/nexl/authentication');
+const auth = require('../backend/api/authentication');
 const assert = require('assert');
 
 

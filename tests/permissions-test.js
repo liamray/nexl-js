@@ -1,5 +1,5 @@
 require('./tests-main');
-const permissions = require('../backend/nexl/permissions');
+const permissions = require('../backend/api/permissions');
 const assert = require('assert');
 
 
