@@ -21,9 +21,9 @@ app.use(cookieParser());
 // static resources, root page, nexl rest, nexl expressions
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/', root);
-app.use('/nexl/rest/*', nexlRest);
-app.use('/nexl/*', nexlReserved);
-app.use('/*', nexlExpressions);
+app.use('/nexl/rest/', nexlRest);
+app.use('/nexl/', nexlReserved);
+app.use('/', nexlExpressions);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
