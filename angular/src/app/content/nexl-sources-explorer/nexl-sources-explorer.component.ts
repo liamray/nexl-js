@@ -1,86 +1,31 @@
-import {Component, ViewChild} from "@angular/core";
+import {Component, ViewChild, OnInit} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
+import {Http, Response} from "@angular/http";
 
 @Component({
 	selector: '.app-nexl-sources-explorer',
 	templateUrl: './nexl-sources-explorer.component.html',
 	styleUrls: ['./nexl-sources-explorer.component.css']
 })
-export class NexlSourcesExplorerComponent {
+export class NexlSourcesExplorerComponent implements OnInit {
 	@ViewChild('tree') tree: jqxTreeComponent;
 	@ViewChild('popupMenu') popupMenu: jqxMenuComponent;
 
-	treeSource = [
-		{
-			icon: "/nexl/site/images/dir.png",
-			label: "common",
-			id: 'common-id',
-			expanded: false,
-			items: [
-				{icon: "/nexl/site/images/js-file.png", label: "interfaces.js"},
-				{icon: "/nexl/site/images/js-file.png", label: "commons.js"},
-				{icon: "/nexl/site/images/js-file.png", label: "error-messages.js"}
-			]
-		},
+	treeSource = [];
 
-		{
-			icon: "/nexl/site/images/dir.png",
-			label: "jenkins",
-			items: [
-				{
-					icon: "/nexl/site/images/js-file.png",
-					label: "jenkins.js"
-				},
-				{
-					icon: "/nexl/site/images/js-file.png",
-					label: "permissions.js"
-				}
-			]
-		},
+	constructor(private http: Http) {
+	}
 
-		{
-			icon: "/nexl/site/images/dir.png",
-			label: "jvm-opts",
-			expanded: false,
-			items: [
-				{
-					icon: "/nexl/site/images/dir.png",
-					label: "app-server",
-					items: [
-						{
-							icon: "/nexl/site/images/js-file.png",
-							label: "app-server.js"
-						}
-					]
-				},
-				{
-					icon: "/nexl/site/images/dir.png",
-					label: "pearl",
-					items: [
-						{
-							icon: "/nexl/site/images/js-file.png",
-							label: "pearl-type1.js"
-						},
-						{
-							icon: "/nexl/site/images/js-file.png",
-							label: "pearl-type2.js"
-						},
-						{
-							icon: "/nexl/site/images/js-file.png",
-							label: "pearl-type3.js"
-						}
-					]
-				}
-			]
-		},
-		{
-			icon: "/nexl/site/images/js-file.png", label: "test.js"
-		},
-		{
-			icon: "/nexl/site/images/general-file.png", label: "Thumbs.db"
-		}
-	];
+	ngOnInit() {
+		this.http.get('http://localhost:3000/nexl/rest/get-nexl-sources').subscribe(
+			(response: Response)=> {
+				this.treeSource = response.json();
+			},
+			(err)=> {
+			}
+		);
+	}
 
 	private openPopup(event) {
 		this.tree.selectItem(event.target);
@@ -124,4 +69,18 @@ export class NexlSourcesExplorerComponent {
 				break;
 		}
 	};
+
+	select(event: any) {
+		console.log(event);
+	}
+
+	expand(event: any) {
+		console.log(event);
+
+/*
+		let item = event.args.element;
+		this.tree.addTo({label: 'Item'}, item.element);
+		this.tree.render();
+*/
+	}
 }

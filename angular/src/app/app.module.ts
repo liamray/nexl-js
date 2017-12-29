@@ -20,6 +20,7 @@ import {jqxSplitterComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqx
 import {jqxComboBoxComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxcombobox';
 import {jqxButtonComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbuttons';
 import {jqxTooltipComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtooltip';
+import {HttpModule} from "@angular/http";
 
 @NgModule({
 	declarations: [
@@ -45,6 +46,7 @@ import {jqxTooltipComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxt
 		ContentComponent
 	],
 	imports: [
+		HttpModule,
 		BrowserModule
 	],
 	providers: [],
