@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var devInterceptor = require('./interceptors/dev-interceptor');
 var root = require('./routes/root-route');
 var nexlRest = require('./routes/rest-route');
 var nexlReserved = require('./routes/reserved-route');
@@ -20,6 +21,12 @@ app.use(cookieParser());
 
 // static resources, root page, nexl rest, nexl expressions
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// dev interceptor
+if (app.get('env') === 'development') {
+	app.use(devInterceptor);
+}
+
 app.use('/', root);
 app.use('/nexl/rest/', nexlRest);
 app.use('/nexl/', nexlReserved);

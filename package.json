@@ -44,7 +44,9 @@
     "nexl": "bin/nexl"
   },
   "files": [
-    "bin"
+    "bin/nexl",
+    "backend",
+    "frontend"
   ],
   "dependencies": {
     "bcrypt": "^1.0.3",
