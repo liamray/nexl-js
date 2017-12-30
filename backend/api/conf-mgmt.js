@@ -24,7 +24,7 @@ function load(fileName) {
 	return JSON.parse(data);
 }
 
-function deleteSettingsFile(fileName) {
+function deleteConfFile(fileName) {
 	var fullPath = resolveFullPath(fileName);
 	if (fs.existsSync(fullPath)) {
 		fs.unlinkSync(fullPath);
@@ -34,5 +34,5 @@ function deleteSettingsFile(fileName) {
 // --------------------------------------------------------------------------------
 module.exports.save = save;
 module.exports.load = load;
-module.exports.deleteSettingsFile = deleteSettingsFile;
+module.exports.deleteConfFile = deleteConfFile;
 // --------------------------------------------------------------------------------

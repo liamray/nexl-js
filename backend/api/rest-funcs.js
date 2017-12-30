@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const settings = require('../api/settings');
 
 const DIR_ICON = '/nexl/site/images/dir.png';
 const DIR_RO_ICON = '/nexl/site/images/dir.png';

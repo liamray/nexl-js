@@ -15,7 +15,7 @@ const CMD_LINE_OPTS_DEF = [
 		name: 'nexl-home',
 		alias: 'n',
 		type: String,
-		desc: 'nexl home directory where nexl stores all its settings ( [${HOME}/.nexl] is a default value )'
+		desc: 'nexl home directory is where nexl stores all its settings ( [${HOME}/.nexl] is a default value )'
 	},
 	{
 		name: 'version',

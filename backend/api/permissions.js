@@ -1,4 +1,4 @@
-const settings = require('./settings');
+const confMgmt = require('./conf-mgmt');
 
 // example :
 // { liamr: { admin: true }, ... }
@@ -37,7 +37,7 @@ const PERMISSIONS = {
 
 
 function getPermission(permissionId, target) {
-	var permissions = settings.load(PERMISSIONS_FILE)[target];
+	var permissions = confMgmt.load(PERMISSIONS_FILE)[target];
 	return permissions === undefined ? undefined : permissions[permissionId];
 }
 
@@ -45,26 +45,26 @@ function setPermission(permissionId, value, target) {
 	var permission = {};
 	permission[target] = {};
 	permission[target][permissionId] = value;
-	settings.save(permission, PERMISSIONS_FILE);
+	confMgmt.save(permission, PERMISSIONS_FILE);
 }
 
 function getUsersInGroup(groupName) {
-	return settings.load(GROUPS_FILE, GROUPS_FILE)[groupName];
+	return confMgmt.load(GROUPS_FILE, GROUPS_FILE)[groupName];
 }
 
 function deleteGroup(groupName) {
-	if (!settings.load(GROUPS_FILE)[groupName]) {
+	if (!confMgmt.load(GROUPS_FILE)[groupName]) {
 		return;
 	}
 
 	var groupItem = {};
 	groupItem[groupName] = undefined;
-	settings.save(groupItem, GROUPS_FILE);
+	confMgmt.save(groupItem, GROUPS_FILE);
 }
 
 function addUserToGroup(group, user) {
 	// loading group item
-	var groupItem = settings.load(GROUPS_FILE)[group];
+	var groupItem = confMgmt.load(GROUPS_FILE)[group];
 	if (!groupItem) {
 		groupItem = [];
 	}
@@ -77,12 +77,12 @@ function addUserToGroup(group, user) {
 	// saving
 	var record = {};
 	record[group] = [user];
-	settings.save(record, GROUPS_FILE);
+	confMgmt.save(record, GROUPS_FILE);
 }
 
 function removeUserFromGroup(group, user) {
 	// loading group item
-	var groupItem = settings.load(GROUPS_FILE)[group];
+	var groupItem = confMgmt.load(GROUPS_FILE)[group];
 
 	// doesn't group exist ?
 	if (!groupItem) {
@@ -101,11 +101,11 @@ function removeUserFromGroup(group, user) {
 	var record = {};
 	// cleaning the whole group ( otherwise it will merge arrays )
 	record[group] = undefined;
-	settings.save(record, GROUPS_FILE);
+	confMgmt.save(record, GROUPS_FILE);
 
 	// storing group item
 	record[group] = groupItem;
-	settings.save(record, GROUPS_FILE);
+	confMgmt.save(record, GROUPS_FILE);
 }
 
 // --------------------------------------------------------------------------------

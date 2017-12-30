@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
-const settings = require('./settings');
+const confMgmt = require('./conf-mgmt');
 
 const SALT_ROUNDS = 10;
 const TOKENS_FILE = 'tokens.js';
@@ -18,19 +18,19 @@ function generateToken(userName) {
 	tokenInfo[userName] = encryptedToken;
 
 	// saving in [token.js] file
-	settings.save(tokenInfo, TOKENS_FILE);
+	confMgmt.save(tokenInfo, TOKENS_FILE);
 
 	return token;
 }
 
 function isTokenValid(userName, token) {
 	// loading existing token
-	var data = settings.load(TOKENS_FILE);
+	var data = confMgmt.load(TOKENS_FILE);
 
 	// getting specific token for userName
 	var encryptedToken = data[userName];
 
-	// encryptedToken doesn't exist in settings ?
+	// encryptedToken doesn't exist in config ?
 	if (encryptedToken === undefined) {
 		return false;
 	}
@@ -41,7 +41,7 @@ function isTokenValid(userName, token) {
 function removeToken(userName) {
 	var tokenInfo = {};
 	tokenInfo[userName] = undefined;
-	settings.save(tokenInfo, TOKENS_FILE);
+	confMgmt.save(tokenInfo, TOKENS_FILE);
 }
 
 function setPassword(userName, password, token) {
@@ -58,11 +58,11 @@ function setPassword(userName, password, token) {
 	credentials[userName] = bcrypt.hashSync(password, SALT_ROUNDS);
 
 	// saving
-	settings.save(credentials, PASSWORDS_FILE);
+	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 
 function changePassword(userName, currentPassword, newPassword) {
-	if (!settings.load(PASSWORDS_FILE)[userName]) {
+	if (!confMgmt.load(PASSWORDS_FILE)[userName]) {
 		throw 'User doesn\'t exist';
 	}
 
@@ -75,11 +75,11 @@ function changePassword(userName, currentPassword, newPassword) {
 	credentials[userName] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
 
 	// saving
-	settings.save(credentials, PASSWORDS_FILE);
+	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 
 function isPasswordValid(userName, password) {
-	var encrypedPasswprd = settings.load(PASSWORDS_FILE)[userName];
+	var encrypedPasswprd = confMgmt.load(PASSWORDS_FILE)[userName];
 	if (encrypedPasswprd === undefined) {
 		return false;
 	}
@@ -88,7 +88,7 @@ function isPasswordValid(userName, password) {
 }
 
 function getUsersList() {
-	var users = settings.load(PASSWORDS_FILE);
+	var users = confMgmt.load(PASSWORDS_FILE);
 	return Object.keys(users);
 }
 
@@ -97,7 +97,7 @@ function deleteUser(userName) {
 
 	var credentials = {};
 	credentials[userName] = undefined;
-	settings.save(credentials, PASSWORDS_FILE);
+	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 
 // --------------------------------------------------------------------------------
