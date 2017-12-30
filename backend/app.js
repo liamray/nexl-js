@@ -1,17 +1,19 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
-var devInterceptor = require('./interceptors/dev-interceptor');
-var root = require('./routes/root-route');
-var nexlRest = require('./routes/rest-route');
-var nexlReserved = require('./routes/reserved-route');
-var nexlExpressions = require('./routes/expressions-route');
+const devInterceptor = require('./interceptors/dev-interceptor');
+const root = require('./routes/root-route');
+const nexlRest = require('./routes/rest-route');
+const nexlReserved = require('./routes/reserved-route');
+const nexlExpressions = require('./routes/expressions-route');
+const fzfInterceptor = require('./interceptors/404-interceptor');
+const errorHandlerInterceptor = require('./interceptors/error-handler-interceptor');
 
-var app = express();
+const app = express();
 
 app.use(favicon(path.join(__dirname, '../frontend/nexl/site/', 'favicon.ico')));
 app.use(logger('dev'));
@@ -33,21 +35,11 @@ app.use('/nexl/', nexlReserved);
 app.use('/', nexlExpressions);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
-});
+app.use(fzfInterceptor);
 
 // error handler
-app.use(function (err, req, res, next) {
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(errorHandlerInterceptor);
 
-	// render the error page
-	res.status(err.status || 500);
-	res.render('error');
-});
-
+// --------------------------------------------------------------------------------
 module.exports = app;
+// --------------------------------------------------------------------------------

@@ -3,9 +3,11 @@ const restFuncs = require('../api/rest-funcs');
 
 const router = express.Router();
 
-
+// todo : make all request to be POST ( also create tests )
 router.get('/get-nexl-sources', function (req, res, next) {
-	restFuncs.getNexlSources().then(
+	var dir = req.query['dir'];
+
+	restFuncs.getNexlSources(dir).then(
 		function (data) {
 			res.send(data);
 		}).catch(

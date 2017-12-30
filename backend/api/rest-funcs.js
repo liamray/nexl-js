@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const settings = require('./settings');
 
 const DIR_ICON = '/nexl/site/images/dir.png';
 const DIR_RO_ICON = '/nexl/site/images/dir.png';
@@ -49,11 +50,14 @@ function assignIcons(fileName, item, files, dirs) {
 	}
 }
 
-function getNexlSources() {
+function getNexlSources(dir) {
 	return new Promise(function (resolve, reject) {
-		var dir = 'c:\\temp';
+		var nexlSourcesDir = settings.get(settings.NEXL_SOURCES_DIR);
 
-		fs.readdir(dir, function (err, items) {
+		// todo : check the [fullPath], is it still under the the [nexlSourcesDir] according to permission ?
+		var fullPath = path.join(nexlSourcesDir, dir || '');
+
+		fs.readdir(fullPath, function (err, items) {
 			if (err) {
 				reject(err);
 				return;
@@ -64,16 +68,16 @@ function getNexlSources() {
 
 			for (var index in items) {
 				var name = items[index];
-				var fullPath = path.join(dir, name);
+				var itemPath = path.join(fullPath, name);
 
-				if (!hasReadPermission(fullPath)) {
+				if (!hasReadPermission(itemPath)) {
 					continue;
 				}
 
 				var item = {};
 				item['label'] = name;
-				item['path'] = fullPath;
-				assignIcons(fullPath, item, files, dirs);
+				item['dir'] = dir;
+				assignIcons(itemPath, item, files, dirs);
 			}
 
 			// sorting files and dirs
