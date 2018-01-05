@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const settings = require('./settings');
+const util = require('util');
 
 const DIR_ICON = '/nexl/site/images/dir.png';
 const DIR_RO_ICON = '/nexl/site/images/dir.png';
@@ -34,7 +35,7 @@ function hasWritePermission(fileName) {
 }
 
 function validateRelativePath(relativePath) {
-	if (relativePath.indexOf('((\\|/)\.+(\\|/))|(^\.+)|(\.+$)') > -1) {
+	if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
 		throw 'Unacceptable path';
 	}
 }
@@ -45,13 +46,13 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 
 	items.forEach(function (name) {
 		var itemRelativePath = path.join(relativePath, name);
+		validateRelativePath(itemRelativePath);
 
 		if (!hasReadPermission(itemRelativePath)) {
 			return;
 		}
 
 		var fullPath = path.join(nexlSourcesDir, itemRelativePath);
-		validateRelativePath(fullPath);
 
 		var item = {
 			label: name,
@@ -87,9 +88,15 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 
 function getNexlSources(relativePath) {
 	return new Promise(function (resolve, reject) {
+		validateRelativePath(relativePath);
+
 		var nexlSourcesRootDir = settings.get(settings.NEXL_SOURCES_DIR);
 		var path2Scan = path.join(nexlSourcesRootDir, relativePath || '');
 		validateRelativePath(path2Scan);
+
+		if (!fs.existsSync(path2Scan)) {
+			throw util.format('The [%s] directory doesn\'t exist', relativePath);
+		}
 
 		fs.readdir(path2Scan, function (err, items) {
 			if (err) {
