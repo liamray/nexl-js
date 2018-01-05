@@ -2,6 +2,19 @@ import {Component, ViewChild, OnInit} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
 import {Http, Response} from "@angular/http";
+import * as $ from 'jquery';
+
+interface Value {
+	relativePath: string,
+	mustLoadChildItems: boolean
+}
+
+interface TreeItem {
+	label: string,
+	value: any,
+	id: string
+}
+
 
 @Component({
 	selector: '.app-nexl-sources-explorer',
@@ -75,12 +88,21 @@ export class NexlSourcesExplorerComponent implements OnInit {
 	}
 
 	expand(event: any) {
-		console.log(event);
-
-/*
-		let item = event.args.element;
-		this.tree.addTo({label: 'Item'}, item.element);
-		this.tree.render();
-*/
+		var element: TreeItem = <TreeItem>this.tree.getItem(event.args.element);
+		var value: Value = <Value>element.value;
+		if (!value.mustLoadChildItems) {
+			return;
+		}
+		value.mustLoadChildItems = false;
+		var $element = $(event.args.element);
+		var child = $element.find('ul:first').children()[0];
+		this.tree.removeItem(child);
+		this.http.get('http://localhost:3000/nexl/rest/get-nexl-sources', {params: {relativePath: value.relativePath}}).subscribe(
+			(response: Response)=> {
+				this.tree.addTo(response.json(), event.args.element);
+			},
+			(err)=> {
+			}
+		);
 	}
 }

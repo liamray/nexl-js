@@ -1,13 +1,14 @@
 const express = require('express');
 const restFuncs = require('../api/rest-funcs');
+const path = require('path');
 
 const router = express.Router();
 
 // todo : make all request to be POST ( also create tests )
 router.get('/get-nexl-sources', function (req, res, next) {
-	var dir = req.query['dir'];
+	var relativePath = req.query['relativePath'] || path.sep;
 
-	restFuncs.getNexlSources(dir).then(
+	restFuncs.getNexlSources(relativePath).then(
 		function (data) {
 			res.send(data);
 		}).catch(
