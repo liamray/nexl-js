@@ -2,6 +2,7 @@ import {Component, ViewChild, OnInit} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
 import {Http, Response} from "@angular/http";
+import {NexlSourcesService} from "../../services/nexl-sources.service";
 import * as $ from 'jquery';
 
 interface Value {
@@ -27,13 +28,13 @@ export class NexlSourcesExplorerComponent implements OnInit {
 
 	treeSource = [];
 
-	constructor(private http: Http) {
+	constructor(private nexlSourcesService: NexlSourcesService) {
 	}
 
 	ngOnInit() {
-		this.http.get('http://localhost:3000/nexl/rest/get-nexl-sources').subscribe(
-			(response: Response)=> {
-				this.treeSource = response.json();
+		this.nexlSourcesService.getNexlSources().subscribe(
+			(data: any)=> {
+				this.treeSource = data;
 			},
 			(err)=> {
 			}
@@ -97,9 +98,9 @@ export class NexlSourcesExplorerComponent implements OnInit {
 		var $element = $(event.args.element);
 		var child = $element.find('ul:first').children()[0];
 		this.tree.removeItem(child);
-		this.http.get('http://localhost:3000/nexl/rest/get-nexl-sources', {params: {relativePath: value.relativePath}}).subscribe(
-			(response: Response)=> {
-				this.tree.addTo(response.json(), event.args.element);
+		this.nexlSourcesService.getNexlSources(value.relativePath).subscribe(
+			(data: any)=> {
+				this.tree.addTo(data, event.args.element);
 			},
 			(err)=> {
 			}

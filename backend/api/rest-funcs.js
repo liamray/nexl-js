@@ -3,13 +3,7 @@ const path = require('path');
 const settings = require('./settings');
 const util = require('util');
 
-const DIR_ICON = '/nexl/site/images/dir.png';
-const DIR_RO_ICON = '/nexl/site/images/dir.png';
-
-const FILE_ICON = '/nexl/site/images/js-file.png';
-const FILE_RO_ICON = '/nexl/site/images/js-file-read-only.png';
-
-const LOADING_ITEM = [
+const CHILD_ITEM = [
 	{
 		label: 'Loading...',
 		disabled: true
@@ -57,15 +51,16 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 		var item = {
 			label: name,
 			value: {
-				relativePath: itemRelativePath
+				relativePath: itemRelativePath,
+				hasWritePermission: hasWritePermission(itemRelativePath)
 			}
 		};
 
 		// is directory ?
 		if (fs.statSync(fullPath).isDirectory()) {
 			item.value.mustLoadChildItems = true;
-			item.icon = hasWritePermission(itemRelativePath) ? DIR_ICON : DIR_RO_ICON;
-			item.items = LOADING_ITEM.slice();
+			item.value.isDir = true;
+			item.items = CHILD_ITEM.slice();
 			dirs.push(item);
 			return;
 		}
@@ -73,7 +68,7 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 		// is file ?
 		if (fs.statSync(fullPath).isFile()) {
 			item.value.mustLoadChildItems = false;
-			item.icon = hasWritePermission(itemRelativePath) ? FILE_ICON : FILE_RO_ICON;
+			item.value.isDir = false;
 			files.push(item);
 			return;
 		}

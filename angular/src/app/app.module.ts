@@ -12,6 +12,8 @@ import {NexlSourcesExplorerComponent} from './content/nexl-sources-explorer/nexl
 import {NexlSourcesEditorComponent} from './content/nexl-source-editor/nexl-sources-editor.component';
 import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/nexl-expressions-tester.component';
 
+import {NexlSourcesService} from "./services/nexl-sources.service";
+
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
 import {jqxExpanderComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxexpander';
@@ -49,7 +51,9 @@ import {HttpModule} from "@angular/http";
 		HttpModule,
 		BrowserModule
 	],
-	providers: [],
+	providers: [
+		NexlSourcesService
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {

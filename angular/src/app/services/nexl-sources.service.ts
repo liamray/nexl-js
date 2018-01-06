@@ -1,0 +1,32 @@
+import {Http, Response} from "@angular/http";
+import {Injectable} from "@angular/core";
+import 'rxjs/Rx';
+
+const GET_NEXL_SOURCES = 'http://localhost:3000/nexl/rest/get-nexl-sources';
+
+const RO_ICONS = ['/nexl/site/images/dir.png', '/nexl/site/images/js-file-read-only'];
+const WRITE_ICONS = ['/nexl/site/images/dir.png', '/nexl/site/images/js-file.png'];
+
+@Injectable()
+export class NexlSourcesService {
+	constructor(private http: Http) {
+	}
+
+	substIcons(json: any) {
+		json.forEach((item)=> {
+			var icons = item.value.hasWritePermission ? WRITE_ICONS : RO_ICONS;
+			item.icon = item.value.isDir ? icons[0] : icons[1];
+		});
+	}
+
+	getNexlSources(relativePath?: string) {
+		return this.http.get(GET_NEXL_SOURCES, {params: {relativePath: relativePath || '/'}}).map(
+			(response: Response)=> {
+				const data = response.json();
+				this.substIcons(data);
+				return data;
+			}
+		);
+
+	}
+}
