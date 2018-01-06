@@ -1,21 +1,8 @@
 import {Component, ViewChild, OnInit} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
-import {Http, Response} from "@angular/http";
 import {NexlSourcesService} from "../../services/nexl-sources.service";
 import * as $ from 'jquery';
-
-interface Value {
-	relativePath: string,
-	mustLoadChildItems: boolean
-}
-
-interface TreeItem {
-	label: string,
-	value: any,
-	id: string
-}
-
 
 @Component({
 	selector: '.app-nexl-sources-explorer',
@@ -89,8 +76,8 @@ export class NexlSourcesExplorerComponent implements OnInit {
 	}
 
 	expand(event: any) {
-		var element: TreeItem = <TreeItem>this.tree.getItem(event.args.element);
-		var value: Value = <Value>element.value;
+		var element: any = this.tree.getItem(event.args.element);
+		var value: any = element.value;
 		if (!value.mustLoadChildItems) {
 			return;
 		}
