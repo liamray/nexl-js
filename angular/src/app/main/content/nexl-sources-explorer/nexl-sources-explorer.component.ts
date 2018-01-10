@@ -1,7 +1,7 @@
 import {Component, ViewChild, OnInit} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtree';
-import {NexlSourcesService} from "../../services/nexl-sources.service";
+import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
 
 @Component({
