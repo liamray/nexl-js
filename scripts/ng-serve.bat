@@ -1,2 +1,2 @@
 cd ..\angular
-ng serve
+ng serve --aot

@@ -4,8 +4,8 @@ import 'rxjs/Rx';
 
 const GET_NEXL_SOURCES = 'http://localhost:3000/nexl/rest/get-nexl-sources';
 
-const RO_ICONS = ['/nexl/site/images/dir.png', '/nexl/site/images/js-file-read-only'];
-const WRITE_ICONS = ['/nexl/site/images/dir.png', '/nexl/site/images/js-file.png'];
+const RO_ICONS = ['./nexl/site/images/dir.png', './nexl/site/images/js-file-read-only'];
+const WRITE_ICONS = ['./nexl/site/images/dir.png', './nexl/site/images/js-file.png'];
 
 @Injectable()
 export class NexlSourcesService {
