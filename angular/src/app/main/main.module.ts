@@ -1,4 +1,5 @@
 import {NgModule} from "@angular/core";
+import {HttpClientModule} from "@angular/common/http";
 
 import { jqxMenuComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import { jqxTreeComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
@@ -9,7 +10,6 @@ import { jqxComboBoxComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqx
 import { jqxButtonComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons';
 import { jqxTooltipComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip';
 
-import {HttpModule} from "@angular/http";
 import {HeaderComponent} from './header/header.component';
 import {NexlLogoComponent} from './header/nexl-logo/nexl-logo.component';
 import {MainMenuComponent} from './header/main-menu/main-menu.component';
@@ -48,7 +48,7 @@ import {BrowserModule} from '@angular/platform-browser';
 	],
 
 	imports: [
-		HttpModule,
+		HttpClientModule,
 		BrowserModule
 	],
 
