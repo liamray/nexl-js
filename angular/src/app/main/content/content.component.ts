@@ -1,6 +1,5 @@
 import {HostListener, Component, AfterViewInit, ViewChild} from '@angular/core';
-import {jqxSplitterComponent} from 'jqwidgets-framework/jqwidgets-ts/angular_jqxsplitter';
-
+import { jqxSplitterComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter';
 
 @Component({
 	selector: '.app-content',
