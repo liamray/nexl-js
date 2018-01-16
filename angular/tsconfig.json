@@ -17,7 +17,16 @@
     ]
   },
   "include": [
-    "src/**/*",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/**/*"
+    "src/**/*"
+  ],
+  "files": [
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtree",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtabs",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip"
   ]
 }
