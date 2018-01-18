@@ -9,6 +9,7 @@ import { jqxSplitterComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqx
 import { jqxComboBoxComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox';
 import { jqxButtonComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons';
 import { jqxTooltipComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip';
+import { jqxWindowComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 
 import {HeaderComponent} from './header/header.component';
 import {NexlLogoComponent} from './header/nexl-logo/nexl-logo.component';
@@ -23,6 +24,7 @@ import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/
 import {NexlSourcesService} from "../services/nexl-sources.service";
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
 	declarations: [
@@ -34,6 +36,7 @@ import {BrowserModule} from '@angular/platform-browser';
 		jqxComboBoxComponent,
 		jqxButtonComponent,
 		jqxTooltipComponent,
+    jqxWindowComponent,
 
 		HeaderComponent,
 		NexlLogoComponent,
@@ -44,7 +47,8 @@ import {BrowserModule} from '@angular/platform-browser';
 		NexlExpressionsTesterComponent,
 		HeaderComponent,
 		ContentComponent,
-		MainComponent
+		MainComponent,
+		LoginComponent
 	],
 
 	imports: [

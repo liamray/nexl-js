@@ -1,38 +1,32 @@
 import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
-import { jqxMenuComponent } from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
-
+import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 
 @Component({
-	selector: '.app-auth-menu',
-	templateUrl: './auth-menu.component.html',
-	styleUrls: ['./auth-menu.component.css']
+  selector: '.app-auth-menu',
+  templateUrl: './auth-menu.component.html',
+  styleUrls: ['./auth-menu.component.css']
 })
 export class AuthMenuComponent implements OnInit, AfterViewInit {
-	@ViewChild('authMenuRef')
-	myMenu: jqxMenuComponent;
+  @ViewChild('authMenuRef')
+  myMenu: jqxMenuComponent;
 
-	user: string;
+  constructor() {
+  }
 
-	constructor() {
-	}
+  ngOnInit() {
 
-	ngOnInit() {
+  }
 
-	}
+  ngAfterViewInit(): void {
+    this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
+  }
 
-	ngAfterViewInit(): void {
-		this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
-	}
+  isLoginVisible() {
+    return true;
+  }
 
-	isLoggedIn() {
-		return this.user !== undefined;
-	}
+  isLoginHidden() {
+    return false;
+  }
 
-	isLoginVisible() {
-		return this.isLoggedIn() ? 'none' : '';
-	}
-
-	isLoginHidden() {
-		return !this.isLoggedIn() ? 'none' : '';
-	}
 }

@@ -1,0 +1,32 @@
+<jqxWindow #loginWindow
+           [autoOpen]="true"
+           [isModal]="true"
+           [width]="275"
+           [height]="130">
+
+  <div #windowHeader>
+    <span>nexl login</span>
+  </div>
+
+  <div style="overflow: hidden;" #windowContent>
+
+    <div class="block">
+      <label for="userName">User name</label>
+      <input type="text" id="userName"/>
+    </div>
+
+    <div class="block">
+      <label for="password">Password</label>
+      <input type="password" id="password"/>
+    </div>
+
+    <hr>
+
+    <div class="buttons">
+      <input type="button" value="Login">
+      <input type="button" value="Cancel">
+    </div>
+
+
+  </div>
+</jqxWindow>

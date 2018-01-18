@@ -1,34 +1,36 @@
+<app-login #loginWindow></app-login>
+
 <div class="item" [style.display]="isLoginVisible()" title="OMG">
-    <jqxTooltip [position]="'bottom-left'" [content]="'Registers nexl internal user'">
-        <jqxButton [height]='32' [width]="94" title="Allows"
-                   [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-                   [imgSrc]='"./nexl/site/images/register.png"'>
-            Register
-        </jqxButton>
-    </jqxTooltip>
+  <jqxTooltip [position]="'bottom-left'" [content]="'Registers nexl internal user'">
+    <jqxButton [height]='32' [width]="94" title="Allows"
+               [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
+               [imgSrc]='"./nexl/site/images/register.png"'>
+      Register
+    </jqxButton>
+  </jqxTooltip>
 </div>
 
 <div class="item" [style.display]="isLoginVisible()" title="OMG">
-    <jqxButton [height]='32' [width]="94" (click)="user = '';"
-               [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-               [imgSrc]='"./nexl/site/images/login.png"'>
-        Login
-    </jqxButton>
+  <jqxButton [height]='32' [width]="94" (click)="loginWindow.show()"
+             [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
+             [imgSrc]='"./nexl/site/images/login.png"'>
+    Login
+  </jqxButton>
 </div>
 
 
 <div class="item" [style.display]="isLoginHidden()">
-    <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
+  <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
+    <ul>
+      <li id="menu-direction">
+        Hello, Liam
         <ul>
-            <li id="menu-direction">
-                Hello, Liam
-                <ul>
-                    <li (click)="user = undefined;">
-                        <img style='float: left; margin-right: 5px;'
-                             src='./nexl/site/images/logout.png'/><span>Logout</span>
-                    </li>
-                </ul>
-            </li>
+          <li (click)="user = undefined;">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/images/logout.png'/><span>Logout</span>
+          </li>
         </ul>
-    </jqxMenu>
+      </li>
+    </ul>
+  </jqxMenu>
 </div>
