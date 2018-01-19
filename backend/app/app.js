@@ -25,7 +25,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
-app.use(favicon(path.join(__dirname, '../frontend/nexl/site/', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../../frontend/nexl/site/', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // static resources, root page, nexl rest, nexl expressions
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../../frontend')));
 
 // dev interceptor
 if (app.get('env') === common.DEV_MODE) {
