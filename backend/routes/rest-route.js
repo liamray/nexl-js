@@ -19,11 +19,6 @@ router.get('/get-nexl-sources', function (req, res, next) {
 
 /*
  /get-nexl-sources
- /generate-token
- /set-password
- /change-password
- /is-password-valid
- /get-users-list
  /delete-user
 
  /is-admin
