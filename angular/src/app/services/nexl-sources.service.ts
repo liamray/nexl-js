@@ -1,9 +1,9 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams} from "@angular/common/http";
-import {environment} from '../../environments/environment';
+import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
-const GET_NEXL_SOURCES_URL = environment.nexlRootUrl + '/rest/get-nexl-sources';
+const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/rest/get-nexl-sources');
 
 const RO_ICONS = ['./nexl/site/images/dir.png', './nexl/site/images/js-file-read-only'];
 const WRITE_ICONS = ['./nexl/site/images/dir.png', './nexl/site/images/js-file.png'];
