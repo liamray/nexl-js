@@ -26,6 +26,7 @@ import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
 import {AuthService} from "../services/auth.service";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import {AuthService} from "../services/auth.service";
 
   imports: [
     HttpClientModule,
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
 
   providers: [

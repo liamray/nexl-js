@@ -1,10 +1,15 @@
 .block label {
   display: inline-block;
-  width: 80px;
+  width: 83px;
   text-align: left;
   margin: 5px;
 }
 
 .block input {
   width: 160px;
+}
+
+.button {
+  float: right;
+  margin: 0 3px;
 }

@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
+import {NgForm} from "@angular/forms";
 
 
 @Component({
@@ -22,8 +23,12 @@ export class LoginComponent implements OnInit {
     this.loginWindow.open();
   }
 
-  onLogin() {
-    console.log('Logging  in...');
-    this.authService.login('test', 'test');
+  onLogin(loginForm: NgForm) {
+    const username = loginForm.form.controls['username'].value;
+    const password = loginForm.form.controls['password'].value;
+
+    console.log('Logging in with %s:%s', username, password);
+
+    this.authService.login(username, password);
   }
 }
