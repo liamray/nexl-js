@@ -25,6 +25,7 @@ import {NexlSourcesService} from "../services/nexl-sources.service";
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
+import {AuthService} from "../services/auth.service";
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import {LoginComponent} from './login/login.component';
   ],
 
   providers: [
-    NexlSourcesService
+    NexlSourcesService,
+    AuthService
   ],
 
   exports: [

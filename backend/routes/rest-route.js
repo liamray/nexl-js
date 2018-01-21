@@ -4,9 +4,8 @@ const path = require('path');
 
 const router = express.Router();
 
-// todo : make all request to be POST ( also create tests )
-router.get('/get-nexl-sources', function (req, res, next) {
-	var relativePath = req.query['relativePath'] || path.sep;
+router.post('/get-nexl-sources', function (req, res, next) {
+	var relativePath = req.body['relativePath'] || path.sep;
 
 	restFuncs.getNexlSources(relativePath).then(
 		function (data) {

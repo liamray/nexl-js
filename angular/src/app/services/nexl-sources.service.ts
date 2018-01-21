@@ -21,8 +21,10 @@ export class NexlSourcesService {
   }
 
   getNexlSources(relativePath?: string) {
-    const params = new HttpParams().set('relativePath', relativePath || '/');
-    return this.httpClient.get<any>(GET_NEXL_SOURCES_URL, {params: params}).map(
+    const params = {
+      relativePath: relativePath || '/'
+    };
+    return this.httpClient.post<any>(GET_NEXL_SOURCES_URL,params).map(
       (data) => {
         this.substIcons(data);
         return data;

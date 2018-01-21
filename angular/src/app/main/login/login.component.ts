@@ -1,9 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
-import {HttpClient} from "@angular/common/http";
-import {UtilsService} from "../../services/utils.service";
+import {AuthService} from "../../services/auth.service";
 
-const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 
 @Component({
   selector: 'app-login',
@@ -13,7 +11,7 @@ const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 export class LoginComponent implements OnInit {
   @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -26,12 +24,6 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     console.log('Logging  in...');
-
-    this.httpClient.post(LOGIN_URL, {
-      username: 'test',
-      password: 'test'
-    }, {
-      responseType: 'text'
-    }).subscribe(data => console.log(data));
+    this.authService.login('test', 'test');
   }
 }
