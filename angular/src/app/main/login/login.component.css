@@ -1,15 +1,25 @@
 .block label {
   display: inline-block;
-  width: 83px;
+  width: 120px;
   text-align: left;
-  margin: 5px;
+  margin: 5px 0 10px 30px;
 }
 
 .block input {
-  width: 160px;
+  width: 190px;
 }
 
 .button {
   float: right;
-  margin: 0 3px;
+  margin-left: 5px;
+}
+
+.buttons {
+  margin: 10px 30px 0 0;
+}
+
+.messageBox {
+  height: 20px;
+  margin-left: 5px;
+  color: red;
 }

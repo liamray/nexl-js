@@ -2,14 +2,16 @@
            [autoOpen]="true"
            [isModal]="true"
            [resizable]="false"
-           [width]="275"
-           [height]="140">
+           [width]="390"
+           [height]="170">
 
   <div #windowHeader>
     <span>nexl login</span>
   </div>
 
   <div style="overflow: hidden;" #windowContent>
+
+    <div #messageBox class="messageBox"></div>
 
     <form #loginForm="ngForm">
       <div class="block">
@@ -22,9 +24,7 @@
         <input type="password" id="password" name="password" ngModel required/>
       </div>
 
-      <hr>
-
-      <div>
+      <div class="buttons">
         <div class="button">
           <jqxButton [height]='32' [width]="94" [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
                      [imgSrc]='"./nexl/site/images/login.png"' (click)="onLogin(loginForm)"
