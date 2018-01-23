@@ -1,8 +1,7 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
-import {HttpResponseBase} from "@angular/common/http/src/response";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 

@@ -4,8 +4,9 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const crypto = require('crypto');
 const session = require('express-session');
+
+const utils = require('../api/utils');
 const common = require('./common');
 
 const devInterceptor = require('../interceptors/dev-interceptor');
@@ -20,7 +21,7 @@ const errorHandlerInterceptor = require('../interceptors/error-handler-intercept
 const app = express();
 
 app.use(session({
-    secret: crypto.randomBytes(64).toString('hex'),
+    secret: utils.generateRandomBytes(64),
     resave: false,
     saveUninitialized: false
 }));
