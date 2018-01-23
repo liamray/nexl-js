@@ -23,14 +23,19 @@ router.post('/login', function (req, res) {
         return;
     }
 
-    // authenticated. store token in the session, send token back
-    const token = utils.generateRandomBytes(16);
-    req.session.token = token;
-
-    res.send({
+    // authenticated. generate a token
+    const credentials = {
         username: username,
-        token: token
-    });
+        token: utils.generateRandomBytes(16)
+    };
+
+    // store credentials in the session
+    req.session.credentials = credentials;
+
+    // send it back to the client
+    res.send(credentials);
+
+    res.end();
 });
 
 // --------------------------------------------------------------------------------
