@@ -6,7 +6,7 @@ const SALT_ROUNDS = 10;
 const TOKENS_FILE = 'tokens.js';
 const PASSWORDS_FILE = 'passwords.js';
 
-function generateToken(userName) {
+function generateToken(username) {
 	// generating random token
 	var token = uuidv4();
 
@@ -15,7 +15,7 @@ function generateToken(userName) {
 
 	// preparing to save
 	var tokenInfo = {};
-	tokenInfo[userName] = encryptedToken;
+	tokenInfo[username] = encryptedToken;
 
 	// saving in [token.js] file
 	confMgmt.save(tokenInfo, TOKENS_FILE);
@@ -23,12 +23,12 @@ function generateToken(userName) {
 	return token;
 }
 
-function isTokenValid(userName, token) {
+function isTokenValid(username, token) {
 	// loading existing token
 	var data = confMgmt.load(TOKENS_FILE);
 
-	// getting specific token for userName
-	var encryptedToken = data[userName];
+	// getting specific token for username
+	var encryptedToken = data[username];
 
 	// encryptedToken doesn't exist in config ?
 	if (encryptedToken === undefined) {
@@ -38,48 +38,48 @@ function isTokenValid(userName, token) {
 	return bcrypt.compareSync(token, encryptedToken);
 }
 
-function removeToken(userName) {
+function removeToken(username) {
 	var tokenInfo = {};
-	tokenInfo[userName] = undefined;
+	tokenInfo[username] = undefined;
 	confMgmt.save(tokenInfo, TOKENS_FILE);
 }
 
-function setPassword(userName, password, token) {
+function setPassword(username, password, token) {
 	// is token valid ?
-	if (!isTokenValid(userName, token)) {
+	if (!isTokenValid(username, token)) {
 		throw 'Bad token';
 	}
 
 	// remove token
-	removeToken(userName);
+	removeToken(username);
 
 	// set the password
 	var credentials = {};
-	credentials[userName] = bcrypt.hashSync(password, SALT_ROUNDS);
+	credentials[username] = bcrypt.hashSync(password, SALT_ROUNDS);
 
 	// saving
 	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 
-function changePassword(userName, currentPassword, newPassword) {
-	if (!confMgmt.load(PASSWORDS_FILE)[userName]) {
+function changePassword(username, currentPassword, newPassword) {
+	if (!confMgmt.load(PASSWORDS_FILE)[username]) {
 		throw 'User doesn\'t exist';
 	}
 
-	if (!isPasswordValid(userName, currentPassword)) {
+	if (!isPasswordValid(username, currentPassword)) {
 		throw 'Bad current password';
 	}
 
 	// set the password
 	var credentials = {};
-	credentials[userName] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+	credentials[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
 
 	// saving
 	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 
-function isPasswordValid(userName, password) {
-	var encrypedPasswprd = confMgmt.load(PASSWORDS_FILE)[userName];
+function isPasswordValid(username, password) {
+	var encrypedPasswprd = confMgmt.load(PASSWORDS_FILE)[username];
 	if (encrypedPasswprd === undefined) {
 		return false;
 	}
@@ -92,11 +92,11 @@ function getUsersList() {
 	return Object.keys(users);
 }
 
-function deleteUser(userName) {
-	removeToken(userName);
+function deleteUser(username) {
+	removeToken(username);
 
 	var credentials = {};
-	credentials[userName] = undefined;
+	credentials[username] = undefined;
 	confMgmt.save(credentials, PASSWORDS_FILE);
 }
 

@@ -19,7 +19,9 @@
 }
 
 .messageBox {
-  height: 20px;
+  width: 300px;
+  height: 19px;
   margin-left: 5px;
   color: red;
+  overflow: hidden;
 }

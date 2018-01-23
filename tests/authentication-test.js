@@ -3,19 +3,19 @@ const auth = require('../backend/api/authentication');
 const assert = require('assert');
 
 
-const userName = 'liamr';
+const username = 'liamr';
 const password = '123456';
 
 
 function test() {
-	auth.deleteUser(userName);
+	auth.deleteUser(username);
 
-	assert(!auth.isPasswordValid(userName, password));
+	assert(!auth.isPasswordValid(username, password));
 
 	var token = '654321';
 	new Promise(function (resolve, reject) {
 		try {
-			auth.setPassword(userName, password, token);
+			auth.setPassword(username, password, token);
 		} catch (e) {
 			reject();
 		}
@@ -26,10 +26,10 @@ function test() {
 		assert(true)
 	});
 
-	token = auth.generateToken(userName);
+	token = auth.generateToken(username);
 	new Promise(function (resolve, reject) {
 		try {
-			auth.setPassword(userName, password, token);
+			auth.setPassword(username, password, token);
 		} catch (e) {
 			reject();
 		}
@@ -40,9 +40,9 @@ function test() {
 		assert(false)
 	});
 
-	assert(auth.isPasswordValid(userName, password));
-	auth.deleteUser(userName);
-	assert(!auth.isPasswordValid(userName, password));
+	assert(auth.isPasswordValid(username, password));
+	auth.deleteUser(username);
+	assert(!auth.isPasswordValid(username, password));
 }
 
 test();

@@ -35,8 +35,20 @@ export class LoginComponent implements OnInit {
     const username = loginForm.form.controls['username'].value;
     const password = loginForm.form.controls['password'].value;
 
-    this.messageBox.nativeElement.innerHTML = 'Bad credentials';
+    this.authService.login(username, password)
+      .subscribe(
+        response => {
+          this.setErrMsg('');
+        },
+        err => {
+          var errMsg = err.status === 500 ? err.error : err.message;
+          this.setErrMsg(errMsg);
+          loginForm.form.patchValue({password: ''});
+        })
+  }
 
-    this.authService.login(username, password);
+  private setErrMsg(errMsg: string) {
+    this.messageBox.nativeElement.innerHTML = errMsg;
+    this.messageBox.nativeElement.title = errMsg;
   }
 }

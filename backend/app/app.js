@@ -4,7 +4,6 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const crypto = require('crypto');
 const session = require('express-session');
 const common = require('./common');
@@ -30,8 +29,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
 
 // static resources, root page, nexl rest, nexl expressions
 app.use(express.static(path.join(__dirname, '../../frontend')));
