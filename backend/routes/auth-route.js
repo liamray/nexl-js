@@ -18,7 +18,7 @@ router.post('/login', function (req, res) {
 
     // if not authenticated, clear token and send error
     if (!auth.isPasswordValid(username, req.body.password)) {
-        req.session.token = undefined;
+        req.session.credentials = undefined;
         res.status(500).send('Bad credentials');
         return;
     }
