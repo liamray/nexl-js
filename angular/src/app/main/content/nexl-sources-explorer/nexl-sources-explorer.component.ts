@@ -91,6 +91,7 @@ export class NexlSourcesExplorerComponent implements OnInit {
         this.tree.addTo(data, event.args.element);
       },
       (err) => {
+        alert(err.statusText);
       }
     );
   }
