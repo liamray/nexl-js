@@ -41,8 +41,7 @@ export class LoginComponent implements OnInit {
           this.setErrMsg('');
         },
         err => {
-          var errMsg = err.status === 500 ? err.error : err.message;
-          this.setErrMsg(errMsg);
+          this.setErrMsg(err.statusText);
           loginForm.form.patchValue({password: ''});
         })
   }

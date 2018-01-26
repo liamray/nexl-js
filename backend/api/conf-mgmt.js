@@ -4,13 +4,12 @@ const fs = require('fs');
 const cmdLineArgs = require('./cmd-line-args');
 
 const CONF_FILES = {
-	SETTINGS: 'settings.js',
-	TOKENS: 'tokens.js',
-	PASSWORDS: 'passwords.js',
-	SECURITY: 'security-settings.js',
-	ADMINS: 'admins.js',
-	GROUPS: 'groups.js',
-	PERMISSIONS: 'permissions.js'
+	SETTINGS: 'settings.js', // general settings
+	TOKENS: 'tokens.js', // tokens to register a user and reset password
+	PASSWORDS: 'passwords.js', // password for login
+	ADMINS: 'admins.js', // administrators list
+	GROUPS: 'groups.js', // logical groups
+	PERMISSIONS: 'permissions.js' // permissions matrix
 };
 
 function resolveFullPath(fileName) {

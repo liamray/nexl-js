@@ -1,34 +1,29 @@
 const express = require('express');
-const restFuncs = require('../api/rest-funcs');
 const path = require('path');
+
+const restFuncs = require('../api/rest-funcs');
+const utils = require('../api/utils');
+const security = require('../api/security');
 
 const router = express.Router();
 
 router.post('/get-nexl-sources', function (req, res, next) {
 	var relativePath = req.body['relativePath'] || path.sep;
+	var username = utils.resolveUsername(req);
+
+	if (!security.hasReadPermission(username)) {
+		utils.sendError(res, 'You don\'t have a read permission');
+		return;
+	}
 
 	restFuncs.getNexlSources(relativePath).then(
 		function (data) {
 			res.send(data);
 		}).catch(
 		function (err) {
-			res.status(500).send(err);
+			utils.sendError(res, err);
 		});
 });
-
-/*
- /get-nexl-sources
- /delete-user
-
- /is-admin
- /get-all-permissions
- /set-all-permissions
-
- /add-user-to-group
- /remove-user-from-group
- /delete-group
- */
-
 
 // --------------------------------------------------------------------------------
 module.exports = router;

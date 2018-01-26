@@ -1,16 +1,17 @@
 <jqxExpander width="100%" height="100%" [showArrow]="false" [toggleMode]="'none'">
-    <div>
-        nexl sources explorer
-    </div>
-    <div style="overflow: hidden;">
-        <jqxTree #tree (onInitialized)="init()" width="100%" height="100%" [source]="treeSource" (onSelect)="select($event)" (onExpand)="expand($event)"></jqxTree>
+  <div>
+    nexl sources explorer
+  </div>
+  <div style="overflow: hidden;">
+    <jqxTree #tree (onInitialized)="init()" width="100%" height="100%" [source]="treeSource" (onSelect)="select($event)"
+             (onExpand)="expand($event)"></jqxTree>
 
-        <jqxMenu #popupMenu (onItemclick)="onPopup($event)" [width]="120" [height]="56" [autoOpenPopup]="false"
-                 [mode]="'popup'">
-            <ul>
-                <li>Add Item</li>
-                <li>Remove Item</li>
-            </ul>
-        </jqxMenu>
-    </div>
+    <jqxMenu #popupMenu (onItemclick)="onPopup($event)" [width]="120" [height]="56" [autoOpenPopup]="false"
+             [mode]="'popup'">
+      <ul>
+        <li>Add Item</li>
+        <li>Remove Item</li>
+      </ul>
+    </jqxMenu>
+  </div>
 </jqxExpander>

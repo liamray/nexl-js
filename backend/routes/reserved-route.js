@@ -1,8 +1,10 @@
 const express = require('express');
+const utils = require('../api/utils');
+
 const router = express.Router();
 
 router.get('/', function (req, res, next) {
-	res.status(500).send("[/nexl] path is reserved for internal purposes");
+	utils.sendError(res, '[/nexl] path is reserved for internal purposes');
 });
 
 // --------------------------------------------------------------------------------

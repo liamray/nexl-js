@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const settings = require('./settings');
 const util = require('util');
+
+const settings = require('./settings');
+const security = require('./security');
 
 const CHILD_ITEM = [
 	{
@@ -20,14 +22,6 @@ function sortFilesFunc(a, b) {
 	return 0;
 }
 
-function hasReadPermission(fileName) {
-	return true;
-}
-
-function hasWritePermission(fileName) {
-	return true;
-}
-
 function validateRelativePath(relativePath) {
 	if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
 		throw 'Unacceptable path';
@@ -42,17 +36,12 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 		var itemRelativePath = path.join(relativePath, name);
 		validateRelativePath(itemRelativePath);
 
-		if (!hasReadPermission(itemRelativePath)) {
-			return;
-		}
-
 		var fullPath = path.join(nexlSourcesDir, itemRelativePath);
 
 		var item = {
 			label: name,
 			value: {
-				relativePath: itemRelativePath,
-				hasWritePermission: hasWritePermission(itemRelativePath)
+				relativePath: itemRelativePath
 			}
 		};
 

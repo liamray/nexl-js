@@ -19,15 +19,14 @@ router.post('/login', function (req, res) {
 	// if not authenticated, clear token and send error
 	if (!auth.isPasswordValid(username, req.body.password)) {
 		req.session.credentials = undefined;
-		res.status(500).send('Bad credentials');
+		utils.sendError(res, 'Bad credentials');
 		return;
 	}
 
 	// authenticated. generate a token
 	const credentials = {
 		username: username,
-		token: utils.generateRandomBytes(16),
-		isAdmin: false
+		token: utils.generateRandomBytes(16)
 	};
 
 	// store credentials in the session
