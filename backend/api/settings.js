@@ -3,9 +3,6 @@ const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
 const path = require('path');
 
-
-const SETTINGS_FILE = 'settings.js';
-
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
 
@@ -32,14 +29,14 @@ function resolveDefaultValue(name) {
 }
 
 function get(name) {
-	var value = confMgmt.load(SETTINGS_FILE)[name];
+	var value = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[name];
 	return value ? value : resolveDefaultValue(name);
 }
 
 function set(name, value) {
 	var data = {};
 	data[name] = value;
-	confMgmt.save(data, SETTINGS_FILE);
+	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
 }
 
 // --------------------------------------------------------------------------------

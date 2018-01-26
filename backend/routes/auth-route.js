@@ -14,28 +14,29 @@ const router = express.Router();
 */
 
 router.post('/login', function (req, res) {
-    const username = req.body.username;
+	const username = req.body.username;
 
-    // if not authenticated, clear token and send error
-    if (!auth.isPasswordValid(username, req.body.password)) {
-        req.session.credentials = undefined;
-        res.status(500).send('Bad credentials');
-        return;
-    }
+	// if not authenticated, clear token and send error
+	if (!auth.isPasswordValid(username, req.body.password)) {
+		req.session.credentials = undefined;
+		res.status(500).send('Bad credentials');
+		return;
+	}
 
-    // authenticated. generate a token
-    const credentials = {
-        username: username,
-        token: utils.generateRandomBytes(16)
-    };
+	// authenticated. generate a token
+	const credentials = {
+		username: username,
+		token: utils.generateRandomBytes(16),
+		isAdmin: false
+	};
 
-    // store credentials in the session
-    req.session.credentials = credentials;
+	// store credentials in the session
+	req.session.credentials = credentials;
 
-    // send it back to the client
-    res.send(credentials);
+	// send it back to the client
+	res.send(credentials);
 
-    res.end();
+	res.end();
 });
 
 // --------------------------------------------------------------------------------

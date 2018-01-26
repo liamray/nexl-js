@@ -21,9 +21,9 @@ const errorHandlerInterceptor = require('../interceptors/error-handler-intercept
 const app = express();
 
 app.use(session({
-    secret: utils.generateRandomBytes(64),
-    resave: false,
-    saveUninitialized: false
+	secret: utils.generateRandomBytes(64),
+	resave: false,
+	saveUninitialized: false
 }));
 app.use(favicon(path.join(__dirname, '../../frontend/nexl/site/', 'favicon.ico')));
 app.use(logger('dev'));
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, '../../frontend')));
 
 // dev interceptor
 if (app.get('env') === common.DEV_MODE) {
-    app.use(devInterceptor);
+	app.use(devInterceptor);
 }
 
 app.use('/', root);
