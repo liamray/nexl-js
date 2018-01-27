@@ -1,59 +1,64 @@
-<jqxMenu #mainMenuRef [width]="350" [height]="30" [showTopLevelArrows]="true">
-    <ul>
-        <li>File
-            <ul>
-                <li id="main-menu-new-dir">
-                    <img/> <a href="#">New directory</a>
-                </li>
-                <li id="main-menu-new-file">
-                    <img/> <a href="#">New file</a>
-                </li>
-                <li id="main-menu-save">
-                    <img/> <a href="#">Save</a>
-                </li>
-                <li id="main-menu-refresh">
-                    <img/> <a href="#">Refresh all</a></li>
-                <li id="main-menu-close">
-                    <img/> <a href="#">Close</a>
-                </li>
-                <li id="main-menu-close-all">
-                    <img/><a href="#">Close all</a>
-                </li>
+<app-security #securityWindow></app-security>
 
-            </ul>
+<jqxMenu #mainMenuRef [width]="350" [height]="30" [showTopLevelArrows]="true">
+  <ul>
+    <li>File
+      <ul>
+        <li id="main-menu-new-dir">
+          <img/> <a href="#">New directory</a>
         </li>
-        <li>View
-            <ul>
-                <li id="main-menu-examples">
-                    <img/> <a href="#">Examples</a>
-                </li>
-                <li id="main-menu-settings">
-                    <img/> <a href="#">Settings</a>
-                </li>
-            </ul>
+        <li id="main-menu-new-file">
+          <img/> <a href="#">New file</a>
         </li>
-        <li>Expression
-            <ul>
-                <li id="main-menu-args">
-                    <img/> <a id="menu-view-args" href="#">Arguments</a>
-                </li>
-                <li id="main-menu-eval">
-                    <img/> <a href="#">Evaluate ( F9 )</a>
-                </li>
-                <li id="main-menu-wizard">
-                    <img/> <a href="#">Wizard</a>
-                </li>
-            </ul>
+        <li id="main-menu-save">
+          <img/> <a href="#">Save</a>
         </li>
-        <li>Help
-            <ul>
-                <li id="main-menu-tour">
-                    <img/> <a href="#">Quick tour</a>
-                </li>
-                <li id="main-menu-about">
-                    <img/> <a href="#">About</a>
-                </li>
-            </ul>
+        <li id="main-menu-refresh">
+          <img/> <a href="#">Refresh all</a></li>
+        <li id="main-menu-close">
+          <img/> <a href="#">Close</a>
         </li>
-    </ul>
+        <li id="main-menu-close-all">
+          <img/><a href="#">Close all</a>
+        </li>
+
+      </ul>
+    </li>
+    <li>View
+      <ul>
+        <li id="main-menu-examples">
+          <img/> <a href="#">Examples</a>
+        </li>
+        <li id="main-menu-security" (click)="securityWindow.open()">
+          <img/> <a href="#">Security</a>
+        </li>
+        <li id="main-menu-settings">
+          <img/> <a href="#">Settings</a>
+        </li>
+      </ul>
+    </li>
+    <li>Expression
+      <ul>
+        <li id="main-menu-args">
+          <img/> <a id="menu-view-args" href="#">Arguments</a>
+        </li>
+        <li id="main-menu-eval">
+          <img/> <a href="#">Evaluate ( F9 )</a>
+        </li>
+        <li id="main-menu-wizard">
+          <img/> <a href="#">Wizard</a>
+        </li>
+      </ul>
+    </li>
+    <li>Help
+      <ul>
+        <li id="main-menu-tour">
+          <img/> <a href="#">Quick tour</a>
+        </li>
+        <li id="main-menu-about">
+          <img/> <a href="#">About</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
 </jqxMenu>

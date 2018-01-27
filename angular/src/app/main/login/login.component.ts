@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   }
 
-  show() {
+  open() {
     this.loginWindow.open();
   }
 

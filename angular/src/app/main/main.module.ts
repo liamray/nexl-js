@@ -27,6 +27,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
 import {AuthService} from "../services/auth.service";
 import {FormsModule} from "@angular/forms";
+import { SecurityComponent } from './security/security.component';
+import { AdminsComponent } from './security/admins/admins.component';
+import { GroupsComponent } from './security/groups/groups.component';
+import { PermissionsComponent } from './security/permissions/permissions.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +54,11 @@ import {FormsModule} from "@angular/forms";
     HeaderComponent,
     ContentComponent,
     MainComponent,
-    LoginComponent
+    LoginComponent,
+    SecurityComponent,
+    AdminsComponent,
+    GroupsComponent,
+    PermissionsComponent
   ],
 
   imports: [
