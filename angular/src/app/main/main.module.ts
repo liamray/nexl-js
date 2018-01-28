@@ -10,6 +10,8 @@ import {jqxComboBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxco
 import {jqxButtonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons';
 import {jqxTooltipComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
+import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
+
 
 import {HeaderComponent} from './header/header.component';
 import {NexlLogoComponent} from './header/nexl-logo/nexl-logo.component';
@@ -27,10 +29,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
 import {AuthService} from "../services/auth.service";
 import {FormsModule} from "@angular/forms";
-import { SecurityComponent } from './security/security.component';
-import { AdminsComponent } from './security/admins/admins.component';
-import { GroupsComponent } from './security/groups/groups.component';
-import { PermissionsComponent } from './security/permissions/permissions.component';
+import { SecurityComponent } from './permissions/permissions.component';
+import { AdminsComponent } from './permissions/admins/admins.component';
+import { GroupsComponent } from './permissions/groups/groups.component';
+import { PermissionsComponent } from './permissions/permissions/permissions.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { PermissionsComponent } from './security/permissions/permissions.compone
     jqxButtonComponent,
     jqxTooltipComponent,
     jqxWindowComponent,
+    jqxGridComponent,
 
     HeaderComponent,
     NexlLogoComponent,

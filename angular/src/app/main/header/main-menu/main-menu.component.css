@@ -56,10 +56,10 @@
     content: url(/nexl/site/images/settings.png);
 }
 
-#main-menu-security img {
+#main-menu-permissions img {
     float: left;
     margin-right: 5px;
-    content: url(/nexl/site/images/security.png);
+    content: url(/nexl/site/images/permissions.png);
 }
 
 #main-menu-about img {
