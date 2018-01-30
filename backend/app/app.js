@@ -11,10 +11,10 @@ const common = require('./common');
 
 const devInterceptor = require('../interceptors/dev-interceptor');
 const root = require('../routes/root-route');
-const nexlRest = require('../routes/rest-route');
-const nexlAuth = require('../routes/auth-route');
-const nexlReserved = require('../routes/reserved-route');
-const nexlExpressions = require('../routes/expressions-route');
+const sourcesRoute = require('../routes/sources-route');
+const authRoute = require('../routes/auth-route');
+const reservedRoute = require('../routes/reserved-route');
+const expressionsRoute = require('../routes/expressions-route');
 const notFoundInterceptor = require('../interceptors/404-interceptor');
 const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
 
@@ -40,10 +40,10 @@ if (app.get('env') === common.DEV_MODE) {
 }
 
 app.use('/', root);
-app.use('/nexl/rest/', nexlRest);
-app.use('/nexl/auth/', nexlAuth);
-app.use('/nexl/', nexlReserved);
-app.use('/', nexlExpressions);
+app.use('/nexl/sources/', sourcesRoute);
+app.use('/nexl/auth/', authRoute);
+app.use('/nexl/', reservedRoute);
+app.use('/', expressionsRoute);
 
 // catch 404 and forward to error handler
 app.use(notFoundInterceptor);

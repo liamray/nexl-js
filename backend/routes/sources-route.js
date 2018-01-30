@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 
-const restFuncs = require('../api/rest-funcs');
+const sources = require('../api/sources');
 const utils = require('../api/utils');
 const security = require('../api/security');
 
@@ -16,7 +16,7 @@ router.post('/get-nexl-sources', function (req, res, next) {
 		return;
 	}
 
-	restFuncs.getNexlSources(relativePath).then(
+	sources.getNexlSources(relativePath).then(
 		function (data) {
 			res.send(data);
 		}).catch(
