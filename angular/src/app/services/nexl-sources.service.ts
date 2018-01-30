@@ -3,7 +3,7 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
-const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/rest/get-nexl-sources');
+const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/get-nexl-sources');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
