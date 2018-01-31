@@ -1,9 +1,9 @@
 const express = require('express');
 const path = require('path');
 
-const sources = require('../api/sources');
-const utils = require('../api/utils');
-const security = require('../api/security');
+const sources = require('./sources-route-impl');
+const utils = require('../../api/utils');
+const security = require('../../api/security');
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 require('./tests-main');
-const auth = require('../backend/api/authentication');
+const auth = require('../backend/routes/auth/authentication');
 const assert = require('assert');
 
 

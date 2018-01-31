@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
-const confMgmt = require('./conf-mgmt');
+const confMgmt = require('../../api/conf-mgmt');
 
 const SALT_ROUNDS = 10;
 

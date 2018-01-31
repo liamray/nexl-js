@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const settings = require('./settings');
-const security = require('./security');
+const settings = require('../../api/settings');
+const security = require('../../api/security');
 
 const CHILD_ITEM = [
 	{

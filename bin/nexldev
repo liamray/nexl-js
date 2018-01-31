@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const common = require('../backend/app/common');
+const common = require('../backend/api/common');
 
-const app = require('../backend/app/app');
+const app = require('../backend/app');
 const debug = require('debug')('nexl:server');
 const http = require('http');
 

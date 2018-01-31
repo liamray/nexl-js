@@ -6,17 +6,17 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
-const utils = require('../api/utils');
-const common = require('./common');
+const utils = require('./api/utils');
+const common = require('./api/common');
 
-const devInterceptor = require('../interceptors/dev-interceptor');
-const root = require('../routes/root-route');
-const sourcesRoute = require('../routes/sources-route');
-const authRoute = require('../routes/auth-route');
-const reservedRoute = require('../routes/reserved-route');
-const expressionsRoute = require('../routes/expressions-route');
-const notFoundInterceptor = require('../interceptors/404-interceptor');
-const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
+const devInterceptor = require('./interceptors/dev-interceptor');
+const root = require('./routes/root-route');
+const sourcesRoute = require('./routes/sources/sources-route');
+const authRoute = require('./routes/auth/auth-route');
+const reservedRoute = require('./routes/reserved-route');
+const expressionsRoute = require('./routes/expressions/expressions-route');
+const notFoundInterceptor = require('./interceptors/404-interceptor');
+const errorHandlerInterceptor = require('./interceptors/error-handler-interceptor');
 
 const app = express();
 
@@ -25,7 +25,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false
 }));
-app.use(favicon(path.join(__dirname, '../../frontend/nexl/site/', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../frontend/nexl/site/', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
