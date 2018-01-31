@@ -10,10 +10,10 @@ const utils = require('./api/utils');
 const common = require('./api/common');
 
 const devInterceptor = require('./interceptors/dev-interceptor');
-const root = require('./routes/root-route');
+const root = require('./routes/root/root-route');
 const sourcesRoute = require('./routes/sources/sources-route');
 const authRoute = require('./routes/auth/auth-route');
-const reservedRoute = require('./routes/reserved-route');
+const reservedRoute = require('./routes/reserved/reserved-route');
 const expressionsRoute = require('./routes/expressions/expressions-route');
 const notFoundInterceptor = require('./interceptors/404-interceptor');
 const errorHandlerInterceptor = require('./interceptors/error-handler-interceptor');
