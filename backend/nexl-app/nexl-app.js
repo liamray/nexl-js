@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const utils = require('../api/utils');
-const common = require('../api/common');
+const settings = require('../api/settings');
 
 const expressionsRoute = require('../routes/expressions/expressions-route');
 const notFoundInterceptor = require('../interceptors/404-interceptor');
@@ -83,16 +83,27 @@ class NexlApp {
 	};
 
 	start() {
+		// resolving port from settings
+		const port = settings.get(settings.NEXL_HTTP_PORT);
+
+		// interceptors
 		this.applyInterceptors();
+
+		// creating http server
 		this.nexlServer = http.createServer(this.nexlApp);
 
-		this.nexlServer.listen(common.PORT);
+		// error event handler
 		this.nexlServer.on('error', (error) => {
 			this.onError(error);
 		});
+
+		// listening handler
 		this.nexlServer.on('listening', () => {
 			this.onListen();
 		});
+
+		// starting http server
+		this.nexlServer.listen(port);
 	}
 }
 
