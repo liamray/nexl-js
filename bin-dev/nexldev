@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+const NexlApp = require('../backend/nexl-app/nexl-app');
+const devInterceptor = require('./dev-interceptor');
+
+class NexlDevApp extends NexlApp {
+	applyInterceptors() {
+		this.nexlApp.use(devInterceptor);
+		super.applyInterceptors();
+	}
+}
+
+new NexlDevApp().start();
