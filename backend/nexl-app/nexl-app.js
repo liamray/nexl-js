@@ -22,6 +22,10 @@ const reservedRoute = require('../routes/reserved/reserved-route');
 
 class NexlApp {
 	constructor() {
+		// resolving port from settings
+		this.port = settings.get(settings.NEXL_HTTP_PORT);
+
+		// creating app
 		this.nexlApp = express();
 	}
 
@@ -30,16 +34,14 @@ class NexlApp {
 			throw error;
 		}
 
-		const port = this.nexlServer.address().port;
-
 		// handle specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				console.error(port + ' requires elevated privileges');
+				console.error('Cannot start server on [' + this.port + '] port');
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				console.error(port + ' is already in use');
+				console.error('The [' + this.port + '] port is already in use');
 				process.exit(1);
 				break;
 			default:
@@ -83,9 +85,6 @@ class NexlApp {
 	};
 
 	start() {
-		// resolving port from settings
-		const port = settings.get(settings.NEXL_HTTP_PORT);
-
 		// interceptors
 		this.applyInterceptors();
 
@@ -103,7 +102,7 @@ class NexlApp {
 		});
 
 		// starting http server
-		this.nexlServer.listen(port);
+		this.nexlServer.listen(this.port);
 	}
 }
 
