@@ -9,19 +9,6 @@ function isAdmin(user) {
 	return admins.admins && admins.admins.indexOf(user) >= 0;
 }
 
-function testResource(permission, permissionType, resource) {
-	var permissionValue = permission[permissionType];
-	if (!permissionValue) {
-		return false;
-	}
-
-	if (permissionType === EXTERNAL_INCLUDES_PERMISSION) {
-		return permissionValue;
-	} else {
-		return new RegExp(regex).test(resource);
-	}
-}
-
 function hasPermission(user, permissionType, resource) {
 	if (isAdmin(user)) {
 		return true;
