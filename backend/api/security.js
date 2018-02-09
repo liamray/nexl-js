@@ -32,13 +32,13 @@ function hasPermission(user, permissionType, resource) {
 	var result = false;
 	for (var entity in permissions) {
 		// is user or group present in permission matrix ?
-		if (!entities.indexOf(entity)) {
+		if (entities.indexOf(entity) < 0) {
 			continue;
 		}
 
 		var permission = permissions[entity];
 		var permissionValue = permission[permissionType];
-		if ( permissionValue !== undefined ) {
+		if (permissionValue !== undefined) {
 			result = result || permissionValue;
 		}
 	}
