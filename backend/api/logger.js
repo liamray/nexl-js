@@ -18,9 +18,9 @@ function init() {
 
 	// loading log setting
 	const logFile = settings.get(settings.LOG_FILE);
-	const rollingSize = settings.get(settings.LOG_ROLLING_SIZE_KB); // 0 by default
-	const maxLogFiles = settings.get(settings.MAX_LOG_FILES); // 999 by default
-	const logLevel = settings.get(settings.LOG_LEVEL); // info by default
+	const rollingSize = settings.get(settings.LOG_ROLLING_SIZE_KB);
+	const maxLogFiles = settings.get(settings.MAX_LOG_FILES);
+	const logLevel = settings.get(settings.LOG_LEVEL);
 
 	// adding file transport
 	winston.add(winston.transports.File, {
