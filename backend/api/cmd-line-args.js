@@ -8,7 +8,7 @@ const mkdirp = require('mkdirp');
 
 const DEFAULT_NEXL_HOME_DIR = '.nexl';
 
-var cmdLineOpts;
+let cmdLineOpts;
 
 const CMD_LINE_OPTS_DEF = [
 	{
@@ -34,19 +34,19 @@ const CMD_LINE_OPTS_DEF = [
 function printHelp() {
 	console.log('Available command line options are :');
 
-	var maxLen = 0;
+	let maxLen = 0;
 	// discovering length of longest option
-	for (var item in CMD_LINE_OPTS_DEF) {
+	for (let item in CMD_LINE_OPTS_DEF) {
 		// length
-		var item = CMD_LINE_OPTS_DEF[item];
+		const item = CMD_LINE_OPTS_DEF[item];
 		maxLen = Math.max(maxLen, item.name.length);
 	}
 
-	for (var index in CMD_LINE_OPTS_DEF) {
-		var item = CMD_LINE_OPTS_DEF[index];
-		var spaces = maxLen - item.name.length + 1;
-		spaces = Array(spaces).join(' ');
-		var text;
+	for (let index in CMD_LINE_OPTS_DEF) {
+		const item = CMD_LINE_OPTS_DEF[index];
+		let spaces = maxLen - item.name.length + 1;
+		spaces = new Array(spaces).join(' ');
+		let text;
 		if (item.alias) {
 			text = util.format("\t-%s, --%s %s %s", item.alias, item.name, spaces, item.desc);
 		} else {
@@ -83,14 +83,9 @@ function handleArgs() {
 }
 
 function getNexlHomeDir() {
-
-	var nexlHome = cmdLineOpts['nexl-home'];
+	let nexlHome = cmdLineOpts['nexl-home'];
 	if (nexlHome === undefined) {
 		nexlHome = path.join(osHomeDir(), DEFAULT_NEXL_HOME_DIR);
-	}
-
-	if (!fs.existsSync(nexlHome)) {
-		mkdirp.sync(nexlHome);
 	}
 
 	return nexlHome;

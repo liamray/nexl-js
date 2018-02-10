@@ -23,12 +23,12 @@
     "@angular/router": "^5.1.0",
     "core-js": "^2.4.1",
     "jquery": "^3.2.1",
-    "jqwidgets-scripts": "^5.4.0",
+    "jqwidgets-scripts": "^5.5.0",
     "rxjs": "^5.5.2",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.4",
+    "@angular/cli": "1.6.8",
     "@angular/compiler-cli": "^5.1.0",
     "@angular/language-service": "^5.1.0",
     "@types/jasmine": "~2.8.3",

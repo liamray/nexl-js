@@ -26,6 +26,6 @@ assert(confMgmt.load(TEST_FILE)['cars']['X'] === undefined);
 
 confMgmt.deleteConfFile(TEST_FILE);
 
-assert(!fs.existsSync(path.join(cmdLineArgs.NEXL_HOME_DIR, TEST_FILE)));
+assert(!fs.existsSync(path.join(confMgmt.resolveNexlHomeDir(), TEST_FILE)));
 
 console.log('Configuration management tests are passed OK');

@@ -1,23 +1,15 @@
 const express = require('express');
-const auth = require('./auth-route-impl');
+
+const security = require('../../api/security');
 const utils = require('../../api/utils');
 
 const router = express.Router();
-
-/*
-/logout
-/generate-token
-/set-password
-/change-password
-/is-password-valid
-/get-users-list
-*/
 
 router.post('/login', function (req, res) {
 	const username = req.body.username;
 
 	// if not authenticated, clear token and send error
-	if (!auth.isPasswordValid(username, req.body.password)) {
+	if (!security.isPasswordValid(username, req.body.password)) {
 		req.session.credentials = undefined;
 		utils.sendError(res, 'Bad credentials');
 		return;

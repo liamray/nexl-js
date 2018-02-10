@@ -1,22 +1,34 @@
-const confMgmt = require('./conf-mgmt');
-const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
 const path = require('path');
+const j79 = require('j79-utils');
+
+const confMgmt = require('./conf-mgmt');
+const cmdLineArgs = require('./cmd-line-args');
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
 const NEXL_HTTP_PORT = 'http-port';
+const LOG_FILE = 'log-file';
 
 // default values
 const DEFAULT_VALUES = {};
 
 // def value for nexl sources dire
 DEFAULT_VALUES[NEXL_SOURCES_DIR] = function () {
-	return path.join(osHomeDir(), 'nexl-sources');
+	const nexlSourcesDir = path.join(osHomeDir(), 'nexl-sources');
+	set(NEXL_SOURCES_DIR, nexlSourcesDir);
+	return nexlSourcesDir;
 };
 
 // default http port
 DEFAULT_VALUES[NEXL_HTTP_PORT] = 3000;
+
+// def value for nexl sources dire
+DEFAULT_VALUES[LOG_FILE] = function () {
+	const logFile = path.join(confMgmt.resolveNexlHomeDir(), 'nexl.log');
+	set(LOG_FILE, logFile);
+	return logFile;
+};
 
 function resolveDefaultValue(name) {
 	const value = DEFAULT_VALUES[name];
@@ -48,6 +60,7 @@ function set(name, value) {
 // --------------------------------------------------------------------------------
 module.exports.NEXL_SOURCES_DIR = NEXL_SOURCES_DIR;
 module.exports.NEXL_HTTP_PORT = NEXL_HTTP_PORT;
+module.exports.LOG_FILE = LOG_FILE;
 module.exports.get = get;
 module.exports.set = set;
 // --------------------------------------------------------------------------------
