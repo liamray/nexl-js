@@ -7,6 +7,7 @@ const cmdLineArgs = require('./cmd-line-args');
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
+const NEXL_HTTP_BINDING = 'http-binding';
 const NEXL_HTTP_PORT = 'http-port';
 const LOG_FILE = 'log-file';
 const LOG_LEVEL = 'log-level';
@@ -23,7 +24,8 @@ DEFAULT_VALUES[NEXL_SOURCES_DIR] = function () {
 	return path.join(osHomeDir(), 'nexl-sources');
 };
 
-// default http port
+// http binding and port
+DEFAULT_VALUES[NEXL_HTTP_BINDING] = 'localhost';
 DEFAULT_VALUES[NEXL_HTTP_PORT] = 3000;
 
 // def value for nexl sources dire
@@ -72,6 +74,8 @@ function set(name, value) {
 
 // --------------------------------------------------------------------------------
 module.exports.NEXL_SOURCES_DIR = NEXL_SOURCES_DIR;
+
+module.exports.NEXL_HTTP_BINDING = NEXL_HTTP_BINDING;
 module.exports.NEXL_HTTP_PORT = NEXL_HTTP_PORT;
 
 module.exports.LOG_FILE = LOG_FILE;

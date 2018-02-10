@@ -47,6 +47,7 @@ function getAvailLevels() {
 }
 
 function logHttpRequest(req, res, next) {
+	winston.debug("[%s] request is accepted. [url=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress);
 	next();
 }
 

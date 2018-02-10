@@ -1,4 +1,3 @@
-const debug = require('debug')('nexl:server');
 const http = require('http');
 const express = require('express');
 const path = require('path');
@@ -6,7 +5,6 @@ const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const fs = require('fs');
 
 const confMgmt = require('../api/conf-mgmt');
 const utils = require('../api/utils');
@@ -25,7 +23,8 @@ const reservedRoute = require('../routes/reserved/reserved-route');
 class NexlApp {
 	constructor() {
 		// resolving port from settings
-		this.port = settings.get(settings.NEXL_HTTP_PORT);
+		this.httpBinding = settings.get(settings.NEXL_HTTP_BINDING);
+		this.httpPort = settings.get(settings.NEXL_HTTP_PORT);
 
 		// creating app
 		this.nexlApp = express();
@@ -72,11 +71,11 @@ class NexlApp {
 		// handle specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				console.error('Cannot start server on [' + this.port + '] port');
+				console.error('Cannot start server on [' + this.httpPort + '] port');
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				console.error('The [' + this.port + '] port is already in use');
+				console.error('The [' + this.httpPort + '] port is already in use');
 				process.exit(1);
 				break;
 			default:
@@ -85,7 +84,7 @@ class NexlApp {
 	};
 
 	onListen() {
-		debug('nexl is up and listening on [%s:%s]', this.nexlServer.address().address, this.nexlServer.address().port);
+		logger.log.info('nexl is up and listening on [%s:%s]', this.nexlServer.address().address, this.nexlServer.address().port);
 	};
 
 	startNexlServer() {
@@ -103,7 +102,7 @@ class NexlApp {
 		});
 
 		// starting http server
-		this.nexlServer.listen(this.port);
+		this.nexlServer.listen(this.httpPort, this.httpBinding);
 	}
 
 	start() {
