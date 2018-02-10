@@ -92,12 +92,16 @@ function initNexlHomeDir() {
 
 	// 2) generating admin token
 	const token = security.generateToken(utils.ADMIN_USERNAME);
-	const tokens = [token];
+	const tokens = {
+		tokens: [token]
+	};
 	save(tokens, CONF_FILES.TOKENS);
 	logger.log.info('Use the following token to register an [%s] user : [%s]', utils.ADMIN_USERNAME, token);
 
 	// 3) adding admin to admins group
-	const admins = [utils.ADMIN_USERNAME];
+	const admins = {
+		admins: [utils.ADMIN_USERNAME]
+	};
 	save(admins, CONF_FILES.ADMINS);
 }
 

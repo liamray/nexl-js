@@ -1,5 +1,6 @@
-import {Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
+import {PermissionsService} from "../../../services/permissions.service";
 
 
 @Component({
@@ -7,24 +8,46 @@ import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
   templateUrl: './admins.component.html',
   styleUrls: ['./admins.component.css']
 })
-export class AdminsComponent {
+export class AdminsComponent implements AfterViewInit {
   @ViewChild('myGrid') myGrid: jqxGridComponent;
 
-  source: any =
+  constructor(private permissionsService: PermissionsService) {
+  }
+
+  source =
     {
-      localdata: [],
-      datafields:
-        [
-          { name: 'Username', type: 'string' }
-        ],
+      localdata: [
+        ['liamr'],
+        ['xxx']
+      ],
+      datafields: [
+        {name: 'admins', type: 'string', map: '0'}
+      ],
       datatype: 'array'
     };
 
-  dataAdapter: any = new jqx.dataAdapter(this.source);
+  dataAdapter = new jqx.dataAdapter(this.source);
 
   columns: any[] =
     [
-      { text: 'Username', columntype: 'textbox', filtertype: 'input', datafield: 'name', width: 215 }
+      {text: 'Admins', datafield: 'admins'}
     ];
 
+  ngAfterViewInit(): void {
+    this.permissionsService.getAdmins().subscribe(response => {
+      console.log(response);
+    });
+
+    jqwidgets.createInstance('#adminsGrid', 'jqxGrid', {
+      source: this.dataAdapter,
+      columns: this.columns,
+      width: 400,
+      height: 200,
+      filterable: false,
+      showeverpresentrow: true,
+      everpresentrowposition: 'top',
+      everpresentrowactionsmode: 'column',
+      editable: true,
+    });
+  }
 }

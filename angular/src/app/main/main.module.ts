@@ -33,6 +33,7 @@ import { SecurityComponent } from './permissions/permissions.component';
 import { AdminsComponent } from './permissions/admins/admins.component';
 import { GroupsComponent } from './permissions/groups/groups.component';
 import { PermissionsComponent } from './permissions/permissions/permissions.component';
+import {PermissionsService} from "../services/permissions.service";
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { PermissionsComponent } from './permissions/permissions/permissions.comp
 
   providers: [
     NexlSourcesService,
-    AuthService
+    AuthService,
+    PermissionsService
   ],
 
   exports: [

@@ -1,20 +1,21 @@
 const express = require('express');
+const router = express.Router();
 
 const utils = require('../../api/utils');
 const security = require('../../api/security');
-
-const router = express.Router();
+const confMgmt = require('../../api/conf-mgmt');
 
 router.post('/get-admins', function (req, res, next) {
-	var username = utils.resolveUsername(req);
+	const username = utils.resolveUsername(req);
 
-	/*
-		if (!security.hasReadPermission(username)) {
-			utils.sendError(res, 'You don\'t have a read permission');
-			return;
-		}
-	*/
+	// only admins permitted for this action
+	if (!security.isAdmin(username)) {
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
 
+	const admins = confMgmt.load(confMgmt.CONF_FILES.ADMINS);
+	res.send(admins);
 });
 
 // --------------------------------------------------------------------------------
