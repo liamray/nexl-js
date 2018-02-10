@@ -1,10 +1,12 @@
 const path = require('path');
 const deepMerge = require('deepmerge');
 const fs = require('fs');
+const util = require('util');
 
 const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
 const security = require('./security');
+const logger = require('./logger');
 
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
@@ -60,7 +62,7 @@ function createNexlHomeDirIfNeeded() {
 
 	// is nexl home dir is a real dir ?
 	if (!fs.lstatSync(nexlHomeDir).isDirectory()) {
-		throw util.format('The [%s] nexl home directory points to existing file. Recreate it as a directory or use another nexl home directory in the following way :\nnexl --nexl-home=/path/to/your/directory', nexlHomeDir);
+		throw util.format('The [%s] nexl home directory points to existing file. Recreate it as a directory or use another nexl home directory in the following way :\nnexl --nexl-home=/path/to/nexl/home/directory', nexlHomeDir);
 	}
 }
 
@@ -89,8 +91,10 @@ function initNexlHomeDir() {
 	save(permission, CONF_FILES.PERMISSIONS);
 
 	// 2) generating admin token
-	const tokens = [security.generateToken(utils.ADMIN_USERNAME)];
+	const token = security.generateToken(utils.ADMIN_USERNAME);
+	const tokens = [token];
 	save(tokens, CONF_FILES.TOKENS);
+	logger.log.info('Use the following token to register an [%s] user : [%s]', utils.ADMIN_USERNAME, token);
 
 	// 3) adding admin to admins group
 	const admins = [utils.ADMIN_USERNAME];
