@@ -73,11 +73,13 @@ class NexlApp {
 		// handle specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				console.error('Cannot start server on [' + this.httpPort + '] port');
+				logger.log.error('Cannot start server on [' + this.httpPort + '] port');
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_BINDING);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				console.error('The [' + this.httpPort + '] port is already in use');
+				logger.log.error('The [%s] port is already in use', this.httpPort);
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_BINDING);
 				process.exit(1);
 				break;
 			default:
