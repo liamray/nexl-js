@@ -29,6 +29,7 @@
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid"
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon"
   ]
 }

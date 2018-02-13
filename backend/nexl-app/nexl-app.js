@@ -74,12 +74,12 @@ class NexlApp {
 		switch (error.code) {
 			case 'EACCES':
 				logger.log.error('Cannot start server on [' + this.httpPort + '] port');
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_BINDING);
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_PORT);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
 				logger.log.error('The [%s] port is already in use', this.httpPort);
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_BINDING);
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_PORT);
 				process.exit(1);
 				break;
 			default:

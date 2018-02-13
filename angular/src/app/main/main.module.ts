@@ -11,6 +11,7 @@ import {jqxButtonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {jqxTooltipComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
+import {jqxRibbonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -47,6 +48,7 @@ import {PermissionsService} from "../services/permissions.service";
     jqxTooltipComponent,
     jqxWindowComponent,
     jqxGridComponent,
+    jqxRibbonComponent,
 
     HeaderComponent,
     NexlLogoComponent,

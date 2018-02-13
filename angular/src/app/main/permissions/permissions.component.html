@@ -2,8 +2,8 @@
            [autoOpen]="true"
            [isModal]="true"
            [resizable]="false"
-           [width]="500"
-           [height]="300">
+           [width]="600"
+           [height]="400">
 
   <div #windowHeader>
     <img src="/nexl/site/images/permissions.png" style="margin-left: 5px;">
@@ -11,23 +11,25 @@
   </div>
 
   <div style="overflow: hidden;" #windowContent>
-    <jqxTabs #tabsReference
-             [width]='"100%"' [height]='"100%"' [position]='"top"'
-             [animationType]='"none"' [selectionTracker]='false'>
-      <ul>
-        <li style="margin-left: 30px;">Admins</li>
+
+    <jqxRibbon #jqxRibbon
+               [width]="'100%'"
+               [height]="'100%'"
+               [position]="'left'"
+               [selectionMode]="'click'"
+               [animationType]="'none'">
+
+      <ul id="header" style="width: 115px;">
+        <li>Admins</li>
         <li>Groups</li>
         <li>Permissions</li>
       </ul>
       <div>
         <app-security-admins></app-security-admins>
-      </div>
-      <div>
         <app-security-groups></app-security-groups>
-      </div>
-      <div>
         <app-security-permissions></app-security-permissions>
       </div>
-    </jqxTabs>
+    </jqxRibbon>
+
   </div>
 </jqxWindow>
