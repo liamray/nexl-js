@@ -1,1 +1,23 @@
-<div id="adminsGrid"></div>
+<div class="container">
+  <h4 style="text-align: center">Admins</h4>
+
+  <div style="float:left">
+    Click
+    <jqxButton (click)="addNewItem()">Add</jqxButton>
+    button for new empty record&nbsp;
+  </div>
+
+  <div class="tooltip">
+    <jqxTooltip
+      [position]="'mouse'"
+      [autoHideDelay]="10000"
+      [content]="'<p style=\'text-align: left;\'>Users with administrative permissions have full access to nexl server<br/>It\'s not recommended but you can add a [unauthorized] reserved user name here to be an admin.<br/>Unauthorized users don\'t require authentication</p>'">
+      <img src='/nexl/site/images/tooltip.png' style="position: relative; top: 3px;"/>
+    </jqxTooltip>
+  </div>
+
+  <div class="space"></div>
+
+  <div id="adminsGrid"></div>
+
+</div>

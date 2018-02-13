@@ -9,9 +9,7 @@ import {PermissionsService} from "../../../services/permissions.service";
   styleUrls: ['./admins.component.css']
 })
 export class AdminsComponent implements AfterViewInit {
-  @ViewChild('myGrid') myGrid: jqxGridComponent;
-
-  grid: jqxGridComponent;
+  adminsGrid: jqxGridComponent;
 
   constructor(private permissionsService: PermissionsService) {
   }
@@ -32,15 +30,16 @@ export class AdminsComponent implements AfterViewInit {
       {text: 'Admins', datafield: 'admins'},
       {
         text: ' ',
-        datafield: 'Delete',
         sortable: false,
+        editable: false,
+        showeverpresentrow: false,
         columntype: 'button',
         cellsrenderer: (): string => {
           return 'Delete';
         },
         buttonclick: (row: number): void => {
-          const rowdata = this.grid.getrowdata(row);
-          this.grid.deleterow(rowdata.uid);
+          const rowdata = this.adminsGrid.getrowdata(row);
+          this.adminsGrid.deleterow(rowdata.uid);
         }
       }
     ];
@@ -59,16 +58,13 @@ export class AdminsComponent implements AfterViewInit {
   initGrid(items) {
     this.packItems(items);
 
-    this.grid = jqwidgets.createInstance('#adminsGrid', 'jqxGrid', {
+    this.adminsGrid = jqwidgets.createInstance('#adminsGrid', 'jqxGrid', {
       source: this.dataAdapter,
       columns: this.columns,
-      width: 400,
-      height: 200,
+      width: '100%',
+      height: 230,
       filterable: false,
-      // showeverpresentrow: true,
-      // everpresentrowposition: 'top',
       sortable: true,
-      // everpresentrowactionsmode: 'column',
       editable: true
     });
   }
@@ -77,5 +73,9 @@ export class AdminsComponent implements AfterViewInit {
     this.permissionsService.getAdmins().subscribe(response => {
       this.initGrid(response.admins);
     });
+  }
+
+  addNewItem() {
+    this.adminsGrid.addrow(1, {});
   }
 }
