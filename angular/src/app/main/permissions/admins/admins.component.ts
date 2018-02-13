@@ -27,7 +27,11 @@ export class AdminsComponent implements AfterViewInit {
   dataAdapter = new jqx.dataAdapter(this.source);
   columns: any[] =
     [
-      {text: 'Admins', datafield: 'admins'},
+      {
+        text: 'Admins',
+        datafield: 'admins',
+        align: 'center'
+      },
       {
         text: ' ',
         sortable: false,
@@ -62,7 +66,7 @@ export class AdminsComponent implements AfterViewInit {
       source: this.dataAdapter,
       columns: this.columns,
       width: '100%',
-      height: 230,
+      height: 260,
       filterable: false,
       sortable: true,
       editable: true
