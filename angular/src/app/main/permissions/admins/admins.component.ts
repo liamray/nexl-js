@@ -1,6 +1,6 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
-import {PermissionsService} from "../../../services/permissions.service";
+import {ADMINS, PermissionsService} from "../../../services/permissions.service";
 
 
 @Component({
@@ -74,7 +74,7 @@ export class AdminsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.permissionsService.getAdmins().subscribe(response => {
+    this.permissionsService.get(ADMINS).subscribe(response => {
       this.initGrid(response.admins);
     });
   }

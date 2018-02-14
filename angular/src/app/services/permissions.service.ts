@@ -3,20 +3,21 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 
-const GET_ADMINS = UtilsService.prefixUrl('/permissions/get-admins');
+export const ADMINS = UtilsService.prefixUrl('/permissions/get-admins');
+export const GROUPS = UtilsService.prefixUrl('/permissions/get-groups');
 
 @Injectable()
 export class PermissionsService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getAdmins() {
+  get(what) {
     const opts: any = {
       observe: 'response',
       responseType: 'json'
     };
 
-    return this.httpClient.post<any>(GET_ADMINS, {}, opts).map(response => {
+    return this.httpClient.post<any>(what, {}, opts).map(response => {
       return response['body'];
     });
   }

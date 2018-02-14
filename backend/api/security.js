@@ -21,8 +21,8 @@ function hasPermission(user, permissionType, resource) {
 	const groups = confMgmt.load(confMgmt.CONF_FILES.GROUPS);
 
 	// collecting groups which contain our user into the entities array
-	var entities = [user];
-	for (var group in groups) {
+	const entities = [user];
+	for (let group in groups) {
 		if (groups[group].indexOf(user) >= 0) {
 			entities.push(group);
 		}
@@ -32,15 +32,15 @@ function hasPermission(user, permissionType, resource) {
 	const permissions = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
 
 	// iterating over permissions and checking
-	var result = false;
-	for (var entity in permissions) {
+	let result = false;
+	for (let entity in permissions) {
 		// is user or group present in permission matrix ?
 		if (entities.indexOf(entity) < 0) {
 			continue;
 		}
 
-		var permission = permissions[entity];
-		var permissionValue = permission[permissionType];
+		const permission = permissions[entity];
+		const permissionValue = permission[permissionType];
 		if (permissionValue !== undefined) {
 			result = result || permissionValue;
 		}
