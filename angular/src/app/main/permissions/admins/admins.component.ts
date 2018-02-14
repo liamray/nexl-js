@@ -75,7 +75,7 @@ export class AdminsComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.permissionsService.get(ADMINS).subscribe(response => {
-      this.initGrid(response.admins);
+      this.initGrid(response);
     });
   }
 

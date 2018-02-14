@@ -19,7 +19,7 @@ router.post('/get-admins', function (req, res, next) {
 });
 
 
-router.post('/get-groups', function (req, res, next) {
+router.post('/get-permissions', function (req, res, next) {
 	const username = utils.resolveUsername(req);
 
 	// only admins permitted for this action
@@ -28,7 +28,7 @@ router.post('/get-groups', function (req, res, next) {
 		return;
 	}
 
-	const groups = confMgmt.load(confMgmt.CONF_FILES.GROUPS);
+	const groups = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
 	res.send(groups);
 });
 

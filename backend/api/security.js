@@ -9,7 +9,7 @@ const EXTERNAL_INCLUDES_PERMISSION = 'externalIncludes';
 
 function isAdmin(user) {
 	const admins = confMgmt.load(confMgmt.CONF_FILES.ADMINS);
-	return admins.admins && admins.admins.indexOf(user) >= 0;
+	return admins && admins.indexOf(user) >= 0;
 }
 
 function hasPermission(user, permissionType, resource) {
@@ -17,16 +17,7 @@ function hasPermission(user, permissionType, resource) {
 		return true;
 	}
 
-	// loading groups
-	const groups = confMgmt.load(confMgmt.CONF_FILES.GROUPS);
-
-	// collecting groups which contain our user into the entities array
 	const entities = [user];
-	for (let group in groups) {
-		if (groups[group].indexOf(user) >= 0) {
-			entities.push(group);
-		}
-	}
 
 	// loading permissions matrix
 	const permissions = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);

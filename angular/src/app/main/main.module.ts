@@ -32,7 +32,6 @@ import {AuthService} from "../services/auth.service";
 import {FormsModule} from "@angular/forms";
 import { SecurityComponent } from './permissions/permissions.component';
 import { AdminsComponent } from './permissions/admins/admins.component';
-import { GroupsComponent } from './permissions/groups/groups.component';
 import { PermissionsComponent } from './permissions/permissions/permissions.component';
 import {PermissionsService} from "../services/permissions.service";
 
@@ -63,7 +62,6 @@ import {PermissionsService} from "../services/permissions.service";
     LoginComponent,
     SecurityComponent,
     AdminsComponent,
-    GroupsComponent,
     PermissionsComponent
   ],
 
