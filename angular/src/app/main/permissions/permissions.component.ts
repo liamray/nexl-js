@@ -18,4 +18,9 @@ export class SecurityComponent implements OnInit {
   open() {
     this.securityWindow.open();
   }
+
+  save() {
+    console.log('saving...');
+    this.securityWindow.close();
+  }
 }

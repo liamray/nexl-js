@@ -70,7 +70,7 @@ export class AdminsComponent implements AfterViewInit {
       source: this.dataAdapter,
       columns: this.columns,
       width: '100%',
-      height: 260,
+      height: 210,
       filterable: false,
       sortable: true,
       editable: true
