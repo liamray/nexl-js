@@ -1,5 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
+import {AdminsComponent} from "./admins/admins.component";
+import {PermissionsComponent} from "./permissions/permissions.component";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-permissions',
@@ -10,7 +13,14 @@ export class SecurityComponent implements OnInit {
   @ViewChild('securityWindow')
   securityWindow: jqxWindowComponent;
 
-  constructor() { }
+  @ViewChild('admins')
+  admins: AdminsComponent;
+
+  @ViewChild('permissions')
+  permissions: PermissionsComponent;
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
@@ -20,7 +30,13 @@ export class SecurityComponent implements OnInit {
   }
 
   save() {
-    console.log('saving...');
-    this.securityWindow.close();
+    Observable.forkJoin(this.admins.save(), this.permissions.save()).subscribe(
+      (val) => {
+        console.log('All OK');
+      },
+      (err) => {
+        console.log('ERR :(');
+      }
+    );
   }
 }

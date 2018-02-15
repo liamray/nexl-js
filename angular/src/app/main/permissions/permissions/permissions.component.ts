@@ -1,6 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import {ACTIONS, PermissionsService} from "../../../services/permissions.service";
+import {Observable} from "rxjs/Observable";
 
 
 @Component({
@@ -10,6 +11,7 @@ import {ACTIONS, PermissionsService} from "../../../services/permissions.service
 })
 export class PermissionsComponent implements AfterViewInit {
   assignPermissions: jqxGridComponent;
+  changed = false;
 
   constructor(private permissionsService: PermissionsService) {
   }
@@ -77,6 +79,8 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   initGrid(items) {
+    this.changed = false;
+
     this.packItems(items);
 
     this.assignPermissions = jqwidgets.createInstance('#assignPermissions', 'jqxGrid', {
@@ -87,6 +91,10 @@ export class PermissionsComponent implements AfterViewInit {
       filterable: false,
       sortable: true,
       editable: true
+    });
+
+    (<any>this.assignPermissions).addEventHandler('cellvaluechanged', () => {
+      this.changed = true;
     });
   }
 
@@ -101,8 +109,13 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   save() {
-    this.permissionsService.service(this.assignPermissions.getrows(), ACTIONS.SET_PERMISSIONS).subscribe(response => {
-      console.log('updated permissions');
-    });
+    if (!this.changed) {
+      return Observable.create(function (obs) {
+        obs.next();
+        obs.complete();
+      });
+    }
+
+    return this.permissionsService.service(this.assignPermissions.getrows(), ACTIONS.SET_PERMISSIONS);
   }
 }

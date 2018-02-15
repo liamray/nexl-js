@@ -2,6 +2,7 @@ import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import {ACTIONS, PermissionsService} from "../../../services/permissions.service";
 import jqxGrid = jqwidgets.jqxGrid;
+import {Observable} from "rxjs/Observable";
 
 
 @Component({
@@ -77,7 +78,7 @@ export class AdminsComponent implements AfterViewInit {
     });
 
     (<any>this.adminsGrid).addEventHandler('cellvaluechanged', () => {
-      console.log('changed !');
+      this.changed = true;
     });
   }
 
@@ -88,16 +89,17 @@ export class AdminsComponent implements AfterViewInit {
   }
 
   addNewItem() {
-    this.changed = false;
+    this.adminsGrid.addrow(1, {});
   }
 
   save() {
     if (!this.changed) {
-      return;
+      return Observable.create(function (obs) {
+        obs.next();
+        obs.complete();
+      });
     }
 
-    this.permissionsService.service(this.adminsGrid.getrows(), ACTIONS.SET_ADMINS).subscribe(response => {
-      console.log('updated admins');
-    });
+    return this.permissionsService.service(this.adminsGrid.getrows(), ACTIONS.SET_ADMINS);
   }
 }
