@@ -1,6 +1,6 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
-import {PERMISSIONS, PermissionsService} from "../../../services/permissions.service";
+import {ACTIONS, PermissionsService} from "../../../services/permissions.service";
 
 
 @Component({
@@ -91,12 +91,18 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.permissionsService.get(PERMISSIONS).subscribe(response => {
+    this.permissionsService.service({}, ACTIONS.GET_PERMISSIONS).subscribe(response => {
       this.initGrid(response);
     });
   }
 
   addNewItem() {
     this.assignPermissions.addrow(1, {});
+  }
+
+  save() {
+    this.permissionsService.service(this.assignPermissions.getrows(), ACTIONS.SET_PERMISSIONS).subscribe(response => {
+      console.log('updated permissions');
+    });
   }
 }

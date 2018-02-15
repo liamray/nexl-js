@@ -6,6 +6,7 @@ const settings = require('./settings');
 const logger = require('./logger');
 
 const UNAUTHORIZED_USERNAME = 'unauthorized';
+const AUTHORIZED_USERNAME = 'authorized';
 const ADMIN_USERNAME = 'admin';
 
 function generateRandomBytes(length) {
@@ -54,6 +55,7 @@ function initNexlSourcesDir() {
 
 // --------------------------------------------------------------------------------
 module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
+module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
 module.exports.ADMIN_USERNAME = ADMIN_USERNAME;
 
 module.exports.generateRandomBytes = generateRandomBytes;

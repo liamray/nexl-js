@@ -3,21 +3,28 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 
-export const ADMINS = UtilsService.prefixUrl('/permissions/get-admins');
-export const PERMISSIONS = UtilsService.prefixUrl('/permissions/get-permissions');
+export enum ACTIONS {
+  GET_ADMINS = 'get-admins',
+  GET_PERMISSIONS = 'get-permissions',
+  SET_ADMINS = 'set-admins',
+  SET_PERMISSIONS = 'set-permissions'
+}
 
 @Injectable()
 export class PermissionsService {
   constructor(private httpClient: HttpClient) {
   }
 
-  get(what) {
+  service(data, action) {
+    const url = UtilsService.prefixUrl('/permissions/' + action);
+
     const opts: any = {
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
+      body: data
     };
 
-    return this.httpClient.post<any>(what, {}, opts).map(response => {
+    return this.httpClient.post<any>(url, {}, opts).map(response => {
       return response['body'];
     });
   }

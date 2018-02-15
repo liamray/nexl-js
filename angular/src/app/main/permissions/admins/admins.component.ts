@@ -1,6 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
-import {ADMINS, PermissionsService} from "../../../services/permissions.service";
+import {ACTIONS, PermissionsService} from "../../../services/permissions.service";
+import jqxGrid = jqwidgets.jqxGrid;
 
 
 @Component({
@@ -10,6 +11,7 @@ import {ADMINS, PermissionsService} from "../../../services/permissions.service"
 })
 export class AdminsComponent implements AfterViewInit {
   adminsGrid: jqxGridComponent;
+  changed = false;
 
   constructor(private permissionsService: PermissionsService) {
   }
@@ -60,6 +62,8 @@ export class AdminsComponent implements AfterViewInit {
   }
 
   initGrid(items) {
+    this.changed = false;
+
     this.packItems(items);
 
     this.adminsGrid = jqwidgets.createInstance('#adminsGrid', 'jqxGrid', {
@@ -71,15 +75,29 @@ export class AdminsComponent implements AfterViewInit {
       sortable: true,
       editable: true
     });
+
+    (<any>this.adminsGrid).addEventHandler('cellvaluechanged', () => {
+      console.log('changed !');
+    });
   }
 
   ngAfterViewInit(): void {
-    this.permissionsService.get(ADMINS).subscribe(response => {
+    this.permissionsService.service({}, ACTIONS.GET_ADMINS).subscribe(response => {
       this.initGrid(response);
     });
   }
 
   addNewItem() {
-    this.adminsGrid.addrow(1, {});
+    this.changed = false;
+  }
+
+  save() {
+    if (!this.changed) {
+      return;
+    }
+
+    this.permissionsService.service(this.adminsGrid.getrows(), ACTIONS.SET_ADMINS).subscribe(response => {
+      console.log('updated admins');
+    });
   }
 }
