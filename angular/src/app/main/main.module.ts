@@ -12,6 +12,7 @@ import {jqxTooltipComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtoo
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import {jqxRibbonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon';
+import {jqxLoaderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxloader';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -34,6 +35,8 @@ import { SecurityComponent } from './permissions/permissions.component';
 import { AdminsComponent } from './permissions/admins/admins.component';
 import { PermissionsComponent } from './permissions/permissions/permissions.component';
 import {PermissionsService} from "../services/permissions.service";
+import {LoaderComponent} from './loader/loader.component';
+import {LoaderService} from "../services/loader.service";
 
 @NgModule({
   declarations: [
@@ -48,6 +51,7 @@ import {PermissionsService} from "../services/permissions.service";
     jqxWindowComponent,
     jqxGridComponent,
     jqxRibbonComponent,
+    jqxLoaderComponent,
 
     HeaderComponent,
     NexlLogoComponent,
@@ -62,7 +66,8 @@ import {PermissionsService} from "../services/permissions.service";
     LoginComponent,
     SecurityComponent,
     AdminsComponent,
-    PermissionsComponent
+    PermissionsComponent,
+    LoaderComponent
   ],
 
   imports: [
@@ -74,7 +79,8 @@ import {PermissionsService} from "../services/permissions.service";
   providers: [
     NexlSourcesService,
     AuthService,
-    PermissionsService
+    PermissionsService,
+    LoaderService
   ],
 
   exports: [

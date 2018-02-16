@@ -3,6 +3,9 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {AdminsComponent} from "./admins/admins.component";
 import {PermissionsComponent} from "./permissions/permissions.component";
 import {Observable} from "rxjs/Observable";
+import {jqxLoaderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxloader';
+import {LoaderService} from "../../services/loader.service";
+
 
 @Component({
   selector: 'app-permissions',
@@ -19,7 +22,7 @@ export class SecurityComponent implements OnInit {
   @ViewChild('permissions')
   permissions: PermissionsComponent;
 
-  constructor() {
+  constructor(private loaderService: LoaderService) {
   }
 
   ngOnInit() {
@@ -30,11 +33,16 @@ export class SecurityComponent implements OnInit {
   }
 
   save() {
+    this.securityWindow.close();
+    this.loaderService.loader.open();
+
     Observable.forkJoin(this.admins.save(), this.permissions.save()).subscribe(
       (val) => {
+        this.loaderService.loader.close();
         console.log('All OK');
       },
       (err) => {
+        this.loaderService.loader.close();
         console.log('ERR :(');
       }
     );
