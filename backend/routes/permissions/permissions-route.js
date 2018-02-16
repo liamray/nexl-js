@@ -18,6 +18,18 @@ router.post('/get-admins', function (req, res, next) {
 	res.send(admins);
 });
 
+router.post('/set-admins', function (req, res, next) {
+	const username = utils.resolveUsername(req);
+
+	// only admins permitted for this action
+	if (!security.isAdmin(username)) {
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	confMgmt.save(req.body, confMgmt.CONF_FILES.ADMINS);
+	res.send('OK');
+});
 
 router.post('/get-permissions', function (req, res, next) {
 	const username = utils.resolveUsername(req);
@@ -28,8 +40,21 @@ router.post('/get-permissions', function (req, res, next) {
 		return;
 	}
 
-	const groups = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
-	res.send(groups);
+	const permissions = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
+	res.send(permissions);
+});
+
+router.post('/set-permissions', function (req, res, next) {
+	const username = utils.resolveUsername(req);
+
+	// only admins permitted for this action
+	if (!security.isAdmin(username)) {
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	confMgmt.save(req.body, confMgmt.CONF_FILES.PERMISSIONS);
+	res.send('OK');
 });
 
 // --------------------------------------------------------------------------------

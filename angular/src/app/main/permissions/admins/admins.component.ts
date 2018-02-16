@@ -100,6 +100,13 @@ export class AdminsComponent implements AfterViewInit {
       });
     }
 
-    return this.permissionsService.service(this.adminsGrid.getrows(), ACTIONS.SET_ADMINS);
+    // converting rows to normal object
+    const rows = this.adminsGrid.getrows();
+    const data = [];
+    for (let row in rows) {
+      data.push(rows[row]['admins']);
+    }
+
+    return this.permissionsService.service(data, ACTIONS.SET_ADMINS);
   }
 }

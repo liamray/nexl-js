@@ -24,7 +24,7 @@ export class PermissionsService {
       body: data
     };
 
-    return this.httpClient.post<any>(url, {}, opts).map(response => {
+    return this.httpClient.post<any>(url, data, opts).map(response => {
       return response['body'];
     });
   }

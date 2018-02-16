@@ -1,8 +1,8 @@
-module.exports = function (err, req, res, next) {
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
+const logger = require('../api/logger');
+const util = require('../api/utils');
 
-	// render the error page
-	res.status(err.status || 500);
-	res.render('error');
+module.exports = function (err, req, res, next) {
+	logger.log.error('Error occurred !', err.message);
+	logger.log.error(err.stack);
+	util.sendError(res, 'Internal server error !')
 };

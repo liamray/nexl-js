@@ -37,13 +37,13 @@ export class SecurityComponent implements OnInit {
     this.loaderService.loader.open();
 
     Observable.forkJoin(this.admins.save(), this.permissions.save()).subscribe(
-      (val) => {
+      () => {
         this.loaderService.loader.close();
-        console.log('All OK');
       },
       (err) => {
         this.loaderService.loader.close();
-        console.log('ERR :(');
+        console.log(err);
+        alert('Error occurred !');
       }
     );
   }

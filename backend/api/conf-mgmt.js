@@ -8,6 +8,8 @@ const utils = require('./utils');
 const security = require('./security');
 const logger = require('./logger');
 
+const ENCODING = 'UTF-8';
+
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
 	TOKENS: 'tokens.js', // tokens to register a user and reset password
@@ -29,7 +31,7 @@ function save(dataObject, fileName) {
 	const fullPath = resolveFullPath(fileName);
 	let data = load(fullPath);
 	data = deepMerge(data, dataObject);
-	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
+	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2), ENCODING);
 }
 
 function load(fileName) {
@@ -38,7 +40,7 @@ function load(fileName) {
 		return {};
 	}
 
-	const data = fs.readFileSync(fullPath);
+	const data = fs.readFileSync(fullPath, ENCODING);
 	return JSON.parse(data);
 }
 

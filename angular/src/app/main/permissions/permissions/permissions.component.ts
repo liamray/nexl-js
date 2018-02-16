@@ -116,6 +116,20 @@ export class PermissionsComponent implements AfterViewInit {
       });
     }
 
-    return this.permissionsService.service(this.assignPermissions.getrows(), ACTIONS.SET_PERMISSIONS);
+    // converting rows to normal object
+    const rows = this.assignPermissions.getrows();
+    console.log(rows);
+    const data = {};
+    for (let row in rows) {
+      const item = rows[row];
+
+      const obj = {};
+      obj['read'] = item['read'];
+      obj['write'] = item['write'];
+
+      data[item['user']] = obj;
+    }
+
+    return this.permissionsService.service({}, ACTIONS.SET_PERMISSIONS);
   }
 }
