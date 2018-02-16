@@ -28,7 +28,7 @@ router.post('/set-admins', function (req, res, next) {
 	}
 
 	confMgmt.save(req.body, confMgmt.CONF_FILES.ADMINS);
-	res.send('OK');
+	res.send({});
 });
 
 router.post('/get-permissions', function (req, res, next) {
@@ -54,7 +54,7 @@ router.post('/set-permissions', function (req, res, next) {
 	}
 
 	confMgmt.save(req.body, confMgmt.CONF_FILES.PERMISSIONS);
-	res.send('OK');
+	res.send({});
 });
 
 // --------------------------------------------------------------------------------

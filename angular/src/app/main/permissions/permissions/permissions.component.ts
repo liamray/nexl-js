@@ -22,8 +22,8 @@ export class PermissionsComponent implements AfterViewInit {
       datafields: [
 
         {name: 'user', type: 'string', map: '0'},
-        {name: 'read', type: 'string', map: '1'},
-        {name: 'write', type: 'string', map: '2'}
+        {name: 'read', type: 'boolean', map: '1'},
+        {name: 'write', type: 'boolean', map: '2'}
       ],
       datatype: 'array'
     };
@@ -118,7 +118,6 @@ export class PermissionsComponent implements AfterViewInit {
 
     // converting rows to normal object
     const rows = this.assignPermissions.getrows();
-    console.log(rows);
     const data = {};
     for (let row in rows) {
       const item = rows[row];
@@ -130,6 +129,6 @@ export class PermissionsComponent implements AfterViewInit {
       data[item['user']] = obj;
     }
 
-    return this.permissionsService.service({}, ACTIONS.SET_PERMISSIONS);
+    return this.permissionsService.service(data, ACTIONS.SET_PERMISSIONS);
   }
 }
