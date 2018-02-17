@@ -1,5 +1,5 @@
 <jqxWindow #settingsWindow
-           [autoOpen]="false"
+           [autoOpen]="true"
            [isModal]="true"
            [resizable]="false"
            [width]="600"
@@ -22,11 +22,18 @@
 
       <ul id="header" style="width: 150px;">
         <li>General</li>
-        <li>...</li>
+        <li>Bindings</li>
+        <li>Logger</li>
+        <li>Callbacks</li>
+        <li>UI</li>
       </ul>
+
       <div>
-        <div>general</div>
-        <div>...</div>
+        <app-general></app-general>
+        <app-bindings></app-bindings>
+        <app-logger></app-logger>
+        <app-callbacks></app-callbacks>
+        <app-ui></app-ui>
       </div>
     </jqxRibbon>
 

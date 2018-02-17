@@ -38,6 +38,11 @@ import {PermissionsService} from "../services/permissions.service";
 import {LoaderComponent} from './loader/loader.component';
 import {LoaderService} from "../services/loader.service";
 import {SettingsComponent} from './settings/settings.component';
+import {GeneralComponent} from './settings/general/general.component';
+import {BindingsComponent} from './settings/bindings/bindings.component';
+import {LoggerComponent} from './settings/logger/logger.component';
+import {CallbacksComponent} from './settings/callbacks/callbacks.component';
+import {UiComponent} from './settings/ui/ui.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +74,12 @@ import {SettingsComponent} from './settings/settings.component';
     AdminsComponent,
     AssignPermissionsComponent,
     LoaderComponent,
-    SettingsComponent
+    SettingsComponent,
+    GeneralComponent,
+    BindingsComponent,
+    LoggerComponent,
+    CallbacksComponent,
+    UiComponent
   ],
 
   imports: [
