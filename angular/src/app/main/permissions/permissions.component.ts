@@ -3,7 +3,6 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {AdminsComponent} from "./admins/admins.component";
 import {PermissionsComponent} from "./permissions/permissions.component";
 import {Observable} from "rxjs/Observable";
-import {jqxLoaderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxloader';
 import {LoaderService} from "../../services/loader.service";
 
 

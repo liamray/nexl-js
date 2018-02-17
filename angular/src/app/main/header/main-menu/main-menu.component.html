@@ -1,4 +1,5 @@
 <app-permissions #permissionsWindow></app-permissions>
+<app-settings #settingsWindow></app-settings>
 
 <jqxMenu #mainMenuRef [width]="350" [height]="30" [showTopLevelArrows]="true">
   <ul>
@@ -32,7 +33,7 @@
         <li id="main-menu-permissions" (click)="permissionsWindow.open()">
           <img/> <a href="#">Permissions</a>
         </li>
-        <li id="main-menu-settings">
+        <li id="main-menu-settings" (click)="settingsWindow.open()">
           <img/> <a href="#">Settings</a>
         </li>
       </ul>

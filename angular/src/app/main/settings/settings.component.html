@@ -1,0 +1,58 @@
+<jqxWindow #settingsWindow
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="600"
+           [height]="400">
+
+  <div #windowHeader>
+    <img src="/nexl/site/images/settings.png" style="margin-left: 5px;">
+    <span style="position: relative; top: -5px;margin-left: 3px;">nexl settings</span>
+  </div>
+
+  <div style="overflow: hidden;" #windowContent>
+
+    <jqxRibbon #jqxRibbon
+               [width]="'100%'"
+               [height]="'calc( 100% - 50px )'"
+
+               [position]="'left'"
+               [selectionMode]="'click'"
+               [animationType]="'none'">
+
+      <ul id="header" style="width: 150px;">
+        <li>General</li>
+        <li>...</li>
+      </ul>
+      <div>
+        <div>general</div>
+        <div>...</div>
+      </div>
+    </jqxRibbon>
+
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="save()"
+                   [imgSrc]='"./nexl/site/images/save.png"'>
+          Save
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="settingsWindow.close()"
+                   [imgSrc]='"./nexl/site/images/close.png"'>
+          Cancel
+        </jqxButton>
+      </div>
+
+    </div>
+
+  </div>
+</jqxWindow>

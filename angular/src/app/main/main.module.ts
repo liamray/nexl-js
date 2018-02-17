@@ -37,6 +37,7 @@ import { PermissionsComponent } from './permissions/permissions/permissions.comp
 import {PermissionsService} from "../services/permissions.service";
 import {LoaderComponent} from './loader/loader.component';
 import {LoaderService} from "../services/loader.service";
+import {SettingsComponent} from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import {LoaderService} from "../services/loader.service";
     SecurityComponent,
     AdminsComponent,
     PermissionsComponent,
-    LoaderComponent
+    LoaderComponent,
+    SettingsComponent
   ],
 
   imports: [
