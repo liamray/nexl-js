@@ -6,7 +6,7 @@ import {Observable} from "rxjs/Observable";
 
 
 @Component({
-  selector: 'app-security-admins',
+  selector: 'app-admins',
   templateUrl: './admins.component.html',
   styleUrls: ['./admins.component.css']
 })

@@ -31,9 +31,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
 import {AuthService} from "../services/auth.service";
 import {FormsModule} from "@angular/forms";
-import { SecurityComponent } from './permissions/permissions.component';
-import { AdminsComponent } from './permissions/admins/admins.component';
-import { PermissionsComponent } from './permissions/permissions/permissions.component';
+import {PermissionsComponent} from './permissions/permissions.component';
+import {AdminsComponent} from './permissions/admins/admins.component';
+import {AssignPermissionsComponent} from './permissions/assignpermissions/assignpermissions.component';
 import {PermissionsService} from "../services/permissions.service";
 import {LoaderComponent} from './loader/loader.component';
 import {LoaderService} from "../services/loader.service";
@@ -65,9 +65,9 @@ import {SettingsComponent} from './settings/settings.component';
     ContentComponent,
     MainComponent,
     LoginComponent,
-    SecurityComponent,
-    AdminsComponent,
     PermissionsComponent,
+    AdminsComponent,
+    AssignPermissionsComponent,
     LoaderComponent,
     SettingsComponent
   ],

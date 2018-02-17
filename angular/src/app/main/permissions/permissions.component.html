@@ -1,4 +1,4 @@
-<jqxWindow #securityWindow
+<jqxWindow #permissionsWindow
            [autoOpen]="true"
            [isModal]="true"
            [resizable]="false"
@@ -25,8 +25,8 @@
         <li>Assign Permissions</li>
       </ul>
       <div>
-        <app-security-admins #admins></app-security-admins>
-        <app-security-permissions #permissions></app-security-permissions>
+        <app-admins #admins></app-admins>
+        <app-assign-permissions #assignpermissions></app-assign-permissions>
       </div>
     </jqxRibbon>
 
@@ -46,7 +46,7 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="securityWindow.close()"
+                   (click)="permissionsWindow.close()"
                    [imgSrc]='"./nexl/site/images/close.png"'>
           Cancel
         </jqxButton>

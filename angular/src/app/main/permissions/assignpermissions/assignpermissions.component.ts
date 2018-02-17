@@ -5,11 +5,11 @@ import {Observable} from "rxjs/Observable";
 
 
 @Component({
-  selector: 'app-security-permissions',
-  templateUrl: './permissions.component.html',
-  styleUrls: ['./permissions.component.css']
+  selector: 'app-assign-permissions',
+  templateUrl: './assignpermissions.component.html',
+  styleUrls: ['./assignpermissions.component.css']
 })
-export class PermissionsComponent implements AfterViewInit {
+export class AssignPermissionsComponent implements AfterViewInit {
   assignPermissions: jqxGridComponent;
   changed = false;
 

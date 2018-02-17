@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {AdminsComponent} from "./admins/admins.component";
-import {PermissionsComponent} from "./permissions/permissions.component";
+import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
 import {Observable} from "rxjs/Observable";
 import {LoaderService} from "../../services/loader.service";
 
@@ -11,15 +11,15 @@ import {LoaderService} from "../../services/loader.service";
   templateUrl: './permissions.component.html',
   styleUrls: ['./permissions.component.css']
 })
-export class SecurityComponent implements OnInit {
-  @ViewChild('securityWindow')
-  securityWindow: jqxWindowComponent;
+export class PermissionsComponent implements OnInit {
+  @ViewChild('permissionsWindow')
+  permissionsWindow: jqxWindowComponent;
 
   @ViewChild('admins')
   admins: AdminsComponent;
 
-  @ViewChild('permissions')
-  permissions: PermissionsComponent;
+  @ViewChild('assignpermissions')
+  assignpermissions: AssignPermissionsComponent;
 
   constructor(private loaderService: LoaderService) {
   }
@@ -28,14 +28,14 @@ export class SecurityComponent implements OnInit {
   }
 
   open() {
-    this.securityWindow.open();
+    this.permissionsWindow.open();
   }
 
   save() {
-    this.securityWindow.close();
+    this.permissionsWindow.close();
     this.loaderService.loader.open();
 
-    Observable.forkJoin(this.admins.save(), this.permissions.save()).subscribe(
+    Observable.forkJoin(this.admins.save(), this.assignpermissions.save()).subscribe(
       () => {
         this.loaderService.loader.close();
       },
