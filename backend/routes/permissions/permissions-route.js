@@ -27,7 +27,7 @@ router.post('/set-admins', function (req, res, next) {
 		return;
 	}
 
-	confMgmt.save(req.body, confMgmt.CONF_FILES.ADMINS);
+	confMgmt.save(req.body, confMgmt.CONF_FILES.ADMINS, true);
 	res.send({});
 });
 
@@ -53,7 +53,7 @@ router.post('/set-permissions', function (req, res, next) {
 		return;
 	}
 
-	confMgmt.save(req.body, confMgmt.CONF_FILES.PERMISSIONS);
+	confMgmt.save(req.body, confMgmt.CONF_FILES.PERMISSIONS, true);
 	res.send({});
 });
 

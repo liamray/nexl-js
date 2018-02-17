@@ -27,10 +27,17 @@ function resolveFullPath(fileName) {
 	return path.isAbsolute(fileName) ? fileName : path.join(resolveNexlHomeDir(), fileName);
 }
 
-function save(dataObject, fileName) {
+function save(dataObject, fileName, isOverwrite) {
 	const fullPath = resolveFullPath(fileName);
-	let data = load(fullPath);
-	data = deepMerge(data, dataObject);
+	let data;
+
+	if (isOverwrite) {
+		data = dataObject;
+	} else {
+		data = load(fullPath);
+		data = deepMerge(data, dataObject);
+	}
+
 	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2), ENCODING);
 }
 
