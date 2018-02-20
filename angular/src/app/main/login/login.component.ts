@@ -21,6 +21,11 @@ export class LoginComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.loginWindow.close();
+    setTimeout(_ => {
+      this.loginWindow.height(170);
+      this.loginWindow.width(390);
+      this.loginWindow.position('center');
+    }, 1);
   }
 
   open() {

@@ -1,11 +1,9 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
-import {Observable} from "rxjs/Observable";
 import {LoaderService} from "../../services/loader.service";
 import {PermissionsService} from "../../services/permissions.service";
-import {UtilsService} from "../../services/utils.service";
 
 
 @Component({
@@ -30,6 +28,11 @@ export class PermissionsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.permissionsWindow.close();
+    setTimeout(_ => {
+      this.permissionsWindow.width(600);
+      this.permissionsWindow.height(400);
+      this.permissionsWindow.position('center');
+    }, 1);
   }
 
   open() {

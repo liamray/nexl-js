@@ -9,7 +9,7 @@ import jqxWindow = jqwidgets.jqxWindow;
 })
 export class SettingsComponent implements AfterViewInit {
   @ViewChild('settingsWindow')
-  settingsWindow: jqxWindow;
+  settingsWindow: jqxWindowComponent;
 
   constructor() {
   }
@@ -20,6 +20,11 @@ export class SettingsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.settingsWindow.close();
+    setTimeout(_ => {
+      this.settingsWindow.width(600);
+      this.settingsWindow.height(400);
+      this.settingsWindow.position('center');
+    }, 1);
   }
 
 }
