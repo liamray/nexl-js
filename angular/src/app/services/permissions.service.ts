@@ -3,13 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 
-export enum ACTIONS {
-  GET_ADMINS = 'get-admins',
-  GET_PERMISSIONS = 'get-permissions',
-  SET_ADMINS = 'set-admins',
-  SET_PERMISSIONS = 'set-permissions'
-}
-
 @Injectable()
 export class PermissionsService {
   constructor(private httpClient: HttpClient) {
@@ -24,8 +17,14 @@ export class PermissionsService {
       body: data
     };
 
-    return this.httpClient.post<any>(url, data, opts).map(response => {
-      return response['body'];
-    });
+    return this.httpClient.post<any>(url, data, opts);
+  }
+
+  load() {
+    return this.service({}, 'load');
+  }
+
+  save(data) {
+    return this.service(data, 'save');
   }
 }

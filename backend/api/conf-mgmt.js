@@ -1,5 +1,4 @@
 const path = require('path');
-const deepMerge = require('deepmerge');
 const fs = require('fs');
 const util = require('util');
 
@@ -27,18 +26,11 @@ function resolveFullPath(fileName) {
 	return path.isAbsolute(fileName) ? fileName : path.join(resolveNexlHomeDir(), fileName);
 }
 
-function save(dataObject, fileName, isOverwrite) {
+function save(dataObject, fileName) {
 	const fullPath = resolveFullPath(fileName);
-	let data;
-
-	if (isOverwrite) {
-		data = dataObject;
-	} else {
-		data = load(fullPath);
-		data = deepMerge(data, dataObject);
-	}
-
-	fs.writeFileSync(fullPath, JSON.stringify(data, null, 2), ENCODING);
+	const currentData = load(fullPath);
+	const result = utils.deepMergeAndPeel(currentData, dataObject);
+	fs.writeFileSync(fullPath, JSON.stringify(result, null, 2), ENCODING);
 }
 
 function load(fileName) {

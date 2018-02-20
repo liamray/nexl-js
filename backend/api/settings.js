@@ -58,7 +58,7 @@ function resolveDefaultValue(name) {
 function get(name) {
 	let value = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[name];
 
-	if (!value) {
+	if (value === undefined) {
 		value = resolveDefaultValue(name);
 		set(name, value);
 	}

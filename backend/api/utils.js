@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const deepMerge = require('deepmerge');
 
 const settings = require('./settings');
 const logger = require('./logger');
@@ -52,6 +53,20 @@ function initNexlSourcesDir() {
 	fs.writeFileSync(examplesDest, examples, 'UTF-8');
 }
 
+function deepMergeAndPeel(obj1, obj2) {
+	// iterating over obj1 and deleting fields which not present in obj2
+	for (let key in obj1) {
+		if (obj2[key] === undefined) {
+			delete obj1[key];
+		}
+	}
+
+	return deepMerge(obj1, obj2, {
+		arrayMerge: function (target, source) {
+			return source.slice(0);
+		}
+	});
+}
 
 // --------------------------------------------------------------------------------
 module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
@@ -62,4 +77,6 @@ module.exports.generateRandomBytes = generateRandomBytes;
 module.exports.resolveUsername = resolveUsername;
 module.exports.sendError = sendError;
 module.exports.initNexlSourcesDir = initNexlSourcesDir;
+
+module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------

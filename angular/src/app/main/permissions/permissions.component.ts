@@ -4,6 +4,8 @@ import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
 import {Observable} from "rxjs/Observable";
 import {LoaderService} from "../../services/loader.service";
+import {PermissionsService} from "../../services/permissions.service";
+import {UtilsService} from "../../services/utils.service";
 
 
 @Component({
@@ -21,29 +23,49 @@ export class PermissionsComponent implements OnInit {
   @ViewChild('assignpermissions')
   assignpermissions: AssignPermissionsComponent;
 
-  constructor(private loaderService: LoaderService) {
+  permissions: any;
+
+  constructor(private loaderService: LoaderService, private permissionsService: PermissionsService) {
   }
 
   ngOnInit() {
   }
 
   open() {
-    this.permissionsWindow.open();
+    // opening indicator
+    this.loaderService.loader.open();
+
+    // loading data
+    this.permissionsService.load().subscribe(
+      (data: any) => {
+        this.permissions = data.body;
+        this.loaderService.loader.close();
+        this.admins.set(this.permissions.admins);
+        this.assignpermissions.set(this.permissions.assignPermissions);
+        this.permissionsWindow.open();
+      },
+      err => {
+        this.loaderService.loader.close();
+        alert('Something went wrong !');
+        console.log(err);
+      });
   }
 
   save() {
     this.permissionsWindow.close();
     this.loaderService.loader.open();
 
-    Observable.forkJoin(this.admins.save(), this.assignpermissions.save()).subscribe(
-      () => {
+    this.permissions.admins = this.admins.get();
+    this.permissions.assignPermissions = this.assignpermissions.get();
+
+    this.permissionsService.save(this.permissions).subscribe(
+      val => {
         this.loaderService.loader.close();
       },
-      (err) => {
+      err => {
         this.loaderService.loader.close();
+        alert('Something went wrong !');
         console.log(err);
-        alert('Error occurred !');
-      }
-    );
+      });
   }
 }

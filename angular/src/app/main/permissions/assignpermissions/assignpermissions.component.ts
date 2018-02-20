@@ -1,8 +1,5 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
-import {ACTIONS, PermissionsService} from "../../../services/permissions.service";
-import {Observable} from "rxjs/Observable";
-
 
 @Component({
   selector: 'app-assign-permissions',
@@ -11,9 +8,8 @@ import {Observable} from "rxjs/Observable";
 })
 export class AssignPermissionsComponent implements AfterViewInit {
   assignPermissions: jqxGridComponent;
-  changed = false;
 
-  constructor(private permissionsService: PermissionsService) {
+  constructor() {
   }
 
   source =
@@ -67,22 +63,7 @@ export class AssignPermissionsComponent implements AfterViewInit {
       }
     ];
 
-  packItems(items) {
-    if (!items) {
-      return;
-    }
-
-    for (let key in items) {
-      const value = items[key];
-      this.source.localdata.push([key, value.read, value.write]);
-    }
-  }
-
-  initGrid(items) {
-    this.changed = false;
-
-    this.packItems(items);
-
+  ngAfterViewInit(): void {
     this.assignPermissions = jqwidgets.createInstance('#assignPermissions', 'jqxGrid', {
       source: this.dataAdapter,
       columns: this.columns,
@@ -92,33 +73,28 @@ export class AssignPermissionsComponent implements AfterViewInit {
       sortable: true,
       editable: true
     });
-
-    (<any>this.assignPermissions).addEventHandler('cellvaluechanged', () => {
-      this.changed = true;
-    });
-  }
-
-  ngAfterViewInit(): void {
-    this.permissionsService.service({}, ACTIONS.GET_PERMISSIONS).subscribe(response => {
-      this.initGrid(response);
-    });
   }
 
   addNewItem() {
     this.assignPermissions.addrow(1, {});
   }
 
-  save() {
-    if (!this.changed) {
-      return Observable.create(function (obs) {
-        obs.next();
-        obs.complete();
-      });
+  set(data) {
+    this.source.localdata = [];
+
+    for (let key in data) {
+      const value = data[key];
+      this.source.localdata.push([key, value.read, value.write]);
     }
 
+    this.assignPermissions.updatebounddata();
+  }
+
+  get() {
     // converting rows to normal object
     const rows = this.assignPermissions.getrows();
-    const data = {};
+    const result = {};
+
     for (let row in rows) {
       const item = rows[row];
 
@@ -126,9 +102,9 @@ export class AssignPermissionsComponent implements AfterViewInit {
       obj['read'] = item['read'];
       obj['write'] = item['write'];
 
-      data[item['user']] = obj;
+      result[item['user'] || ''] = obj;
     }
 
-    return this.permissionsService.service(data, ACTIONS.SET_PERMISSIONS);
+    return result;
   }
 }

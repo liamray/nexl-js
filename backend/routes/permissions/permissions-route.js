@@ -5,7 +5,7 @@ const utils = require('../../api/utils');
 const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
 
-router.post('/get-admins', function (req, res, next) {
+router.post('/load', function (req, res, next) {
 	const username = utils.resolveUsername(req);
 
 	// only admins permitted for this action
@@ -14,11 +14,13 @@ router.post('/get-admins', function (req, res, next) {
 		return;
 	}
 
-	const admins = confMgmt.load(confMgmt.CONF_FILES.ADMINS);
-	res.send(admins);
+	res.send({
+		admins: confMgmt.load(confMgmt.CONF_FILES.ADMINS),
+		assignPermissions: confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS)
+	});
 });
 
-router.post('/set-admins', function (req, res, next) {
+router.post('/save', function (req, res, next) {
 	const username = utils.resolveUsername(req);
 
 	// only admins permitted for this action
@@ -27,33 +29,9 @@ router.post('/set-admins', function (req, res, next) {
 		return;
 	}
 
-	confMgmt.save(req.body, confMgmt.CONF_FILES.ADMINS, true);
-	res.send({});
-});
+	confMgmt.save(req.body.admins, confMgmt.CONF_FILES.ADMINS);
+	confMgmt.save(req.body.assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
 
-router.post('/get-permissions', function (req, res, next) {
-	const username = utils.resolveUsername(req);
-
-	// only admins permitted for this action
-	if (!security.isAdmin(username)) {
-		utils.sendError(res, 'admin permissions required');
-		return;
-	}
-
-	const permissions = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
-	res.send(permissions);
-});
-
-router.post('/set-permissions', function (req, res, next) {
-	const username = utils.resolveUsername(req);
-
-	// only admins permitted for this action
-	if (!security.isAdmin(username)) {
-		utils.sendError(res, 'admin permissions required');
-		return;
-	}
-
-	confMgmt.save(req.body, confMgmt.CONF_FILES.PERMISSIONS, true);
 	res.send({});
 });
 
