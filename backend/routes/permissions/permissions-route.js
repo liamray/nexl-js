@@ -4,12 +4,16 @@ const router = express.Router();
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
+const logger = require('../../api/logger');
+
 
 router.post('/load', function (req, res, next) {
 	const username = utils.resolveUsername(req);
+	logger.log.debug('Loading permissions for [%s] user', username);
 
 	// only admins permitted for this action
 	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to read permissions', username);
 		utils.sendError(res, 'admin permissions required');
 		return;
 	}
@@ -22,9 +26,11 @@ router.post('/load', function (req, res, next) {
 
 router.post('/save', function (req, res, next) {
 	const username = utils.resolveUsername(req);
+	logger.log.debug('Saving permissions for [%s] user', username);
 
 	// only admins permitted for this action
 	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to save permissions', username);
 		utils.sendError(res, 'admin permissions required');
 		return;
 	}

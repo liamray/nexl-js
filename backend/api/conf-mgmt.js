@@ -30,12 +30,16 @@ function save(dataObject, fileName) {
 	const fullPath = resolveFullPath(fileName);
 	const currentData = load(fullPath);
 	const result = utils.deepMergeAndPeel(currentData, dataObject);
+	logger.log.debug('Saving data into the [%s] file', fullPath);
 	fs.writeFileSync(fullPath, JSON.stringify(result, null, 2), ENCODING);
 }
 
 function load(fileName) {
 	const fullPath = resolveFullPath(fileName);
+	logger.log.debug('Loading data from the [%s] file', fullPath);
+
 	if (!fs.existsSync(fullPath)) {
+		logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
 		return {};
 	}
 
