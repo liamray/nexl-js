@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {NgForm} from "@angular/forms";
@@ -9,7 +9,7 @@ import {NgForm} from "@angular/forms";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements AfterViewInit {
   @ViewChild('loginWindow')
   loginWindow: jqxWindowComponent;
 
@@ -19,8 +19,8 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService) {
   }
 
-  ngOnInit() {
-
+  ngAfterViewInit() {
+    this.loginWindow.close();
   }
 
   open() {

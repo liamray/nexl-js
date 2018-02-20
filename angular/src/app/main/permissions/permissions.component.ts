@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
@@ -13,7 +13,7 @@ import {UtilsService} from "../../services/utils.service";
   templateUrl: './permissions.component.html',
   styleUrls: ['./permissions.component.css']
 })
-export class PermissionsComponent implements OnInit {
+export class PermissionsComponent implements AfterViewInit {
   @ViewChild('permissionsWindow')
   permissionsWindow: jqxWindowComponent;
 
@@ -28,7 +28,8 @@ export class PermissionsComponent implements OnInit {
   constructor(private loaderService: LoaderService, private permissionsService: PermissionsService) {
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.permissionsWindow.close();
   }
 
   open() {

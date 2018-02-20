@@ -1,14 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
+import jqxWindow = jqwidgets.jqxWindow;
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements AfterViewInit {
   @ViewChild('settingsWindow')
-  settingsWindow: jqxWindowComponent;
+  settingsWindow: jqxWindow;
 
   constructor() {
   }
@@ -17,7 +18,8 @@ export class SettingsComponent implements OnInit {
     this.settingsWindow.open();
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.settingsWindow.close();
   }
 
 }
