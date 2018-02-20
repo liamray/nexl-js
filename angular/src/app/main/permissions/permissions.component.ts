@@ -28,11 +28,6 @@ export class PermissionsComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.permissionsWindow.close();
-    setTimeout(_ => {
-      this.permissionsWindow.width(600);
-      this.permissionsWindow.height(400);
-      this.permissionsWindow.position('center');
-    }, 1);
   }
 
   open() {

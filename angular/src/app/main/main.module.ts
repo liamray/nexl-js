@@ -43,6 +43,7 @@ import {BindingsComponent} from './settings/bindings/bindings.component';
 import {LoggerComponent} from './settings/logger/logger.component';
 import {CallbacksComponent} from './settings/callbacks/callbacks.component';
 import {UiComponent} from './settings/ui/ui.component';
+import {SplashscreenComponent} from './splashscreen/splashscreen.component';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import {UiComponent} from './settings/ui/ui.component';
     BindingsComponent,
     LoggerComponent,
     CallbacksComponent,
-    UiComponent
+    UiComponent,
+    SplashscreenComponent
   ],
 
   imports: [
