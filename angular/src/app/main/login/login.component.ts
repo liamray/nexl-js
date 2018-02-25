@@ -1,7 +1,8 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {NgForm} from "@angular/forms";
+import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 
 @Component({
@@ -15,6 +16,12 @@ export class LoginComponent implements AfterViewInit {
 
   @ViewChild('messageBox')
   messageBox: ElementRef;
+
+  @ViewChild('loginButton')
+  loginButton: jqxButtonComponent;
+
+  @ViewChild('cancelButton')
+  cancelButton: jqxButtonComponent;
 
   constructor(private authService: AuthService) {
   }
@@ -49,5 +56,14 @@ export class LoginComponent implements AfterViewInit {
   private setErrMsg(errMsg: string) {
     this.messageBox.nativeElement.innerHTML = errMsg;
     this.messageBox.nativeElement.title = errMsg;
+  }
+
+  initContent = () => {
+    this.loginButton.createComponent();
+    this.cancelButton.createComponent();
+  }
+
+  close() {
+    this.loginWindow.close()
   }
 }

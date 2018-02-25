@@ -4,6 +4,7 @@ import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
 import {LoaderService} from "../../services/loader.service";
 import {PermissionsService} from "../../services/permissions.service";
+import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 
 @Component({
@@ -20,6 +21,12 @@ export class PermissionsComponent implements AfterViewInit {
 
   @ViewChild('assignpermissions')
   assignpermissions: AssignPermissionsComponent;
+
+  @ViewChild('saveButton')
+  saveButton: jqxButtonComponent;
+
+  @ViewChild('cancelButton')
+  cancelButton: jqxButtonComponent;
 
   permissions: any;
 
@@ -66,5 +73,10 @@ export class PermissionsComponent implements AfterViewInit {
         alert('Something went wrong !');
         console.log(err);
       });
+  }
+
+  initContent = () => {
+    this.saveButton.createComponent();
+    this.cancelButton.createComponent();
   }
 }

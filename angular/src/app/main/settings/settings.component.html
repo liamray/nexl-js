@@ -1,9 +1,11 @@
 <jqxWindow #settingsWindow
-           [autoOpen]="true"
+           [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
            [width]="600"
-           [height]="400">
+           [height]="400"
+           [initContent]="initContent"
+>
 
   <div #windowHeader>
     <img src="/nexl/site/images/settings.png" style="margin-left: 5px;">
@@ -15,7 +17,6 @@
     <jqxRibbon #jqxRibbon
                [width]="'100%'"
                [height]="'calc( 100% - 50px )'"
-
                [position]="'left'"
                [selectionMode]="'click'"
                [animationType]="'none'">
@@ -44,7 +45,9 @@
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
                    (click)="save()"
-                   [imgSrc]='"./nexl/site/images/save.png"'>
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/save.png"'
+                   #saveButton>
           Save
         </jqxButton>
       </div>
@@ -54,7 +57,9 @@
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
                    (click)="settingsWindow.close()"
-                   [imgSrc]='"./nexl/site/images/close.png"'>
+                   [imgSrc]='"./nexl/site/images/close.png"'
+                   [auto-create]="false"
+                   #cancelButton>
           Cancel
         </jqxButton>
       </div>

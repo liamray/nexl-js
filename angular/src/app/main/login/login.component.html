@@ -1,5 +1,6 @@
 <jqxWindow #loginWindow
-           [autoOpen]="true"
+           [autoOpen]="false"
+           [initContent]="initContent"
            [isModal]="true"
            [resizable]="false"
            [width]="390"
@@ -28,15 +29,29 @@
 
       <div class="buttons">
         <div class="button">
-          <jqxButton [height]='32' [width]="94" [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-                     [imgSrc]='"./nexl/site/images/login.png"' (click)="onLogin(loginForm)"
-                     [disabled]="!loginForm.valid">
+          <jqxButton
+            [height]='32'
+            [width]="94"
+            [textImageRelation]='"imageBeforeText"'
+            [textPosition]='"center"'
+            [imgSrc]='"./nexl/site/images/login.png"'
+            [disabled]="!loginForm.valid"
+            [auto-create]="false"
+            (click)="onLogin(loginForm)"
+            #loginButton>
             Login
           </jqxButton>
         </div>
         <div class="button">
-          <jqxButton [height]='32' [width]="94" [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-                     [imgSrc]='"./nexl/site/images/close.png"' (click)="loginWindow.close()">
+          <jqxButton
+            [height]='32'
+            [width]="94"
+            [textImageRelation]='"imageBeforeText"'
+            [textPosition]='"center"'
+            [imgSrc]='"./nexl/site/images/close.png"'
+            [auto-create]="false"
+            (click)="close()"
+            #cancelButton>
             Cancel
           </jqxButton>
         </div>

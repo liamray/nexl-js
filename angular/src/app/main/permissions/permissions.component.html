@@ -1,9 +1,10 @@
 <jqxWindow #permissionsWindow
-           [autoOpen]="true"
+           [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
            [width]="600"
-           [height]="400">
+           [height]="400"
+           [initContent]="initContent">
 
   <div #windowHeader>
     <img src="/nexl/site/images/permissions.png" style="margin-left: 5px;">
@@ -36,8 +37,10 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
+                   [auto-create]="false"
                    (click)="save()"
-                   [imgSrc]='"./nexl/site/images/save.png"'>
+                   [imgSrc]='"./nexl/site/images/save.png"'
+                   #saveButton>
           Save
         </jqxButton>
       </div>
@@ -45,9 +48,11 @@
         <jqxButton [height]='32'
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
+                   [auto-create]="false"
                    [textPosition]='"center"'
                    (click)="permissionsWindow.close()"
-                   [imgSrc]='"./nexl/site/images/close.png"'>
+                   [imgSrc]='"./nexl/site/images/close.png"'
+                   #cancelButton>
           Cancel
         </jqxButton>
       </div>
