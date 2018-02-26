@@ -25,7 +25,7 @@ export class SettingsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.settingsWindow.close();
+    // this.settingsWindow.close();
   }
 
   save() {

@@ -16,7 +16,7 @@ export class SplashscreenComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(_ => {
       this.splash.close();
-    }, 1000);
+    }, 100);
   }
 
 }

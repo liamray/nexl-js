@@ -1,9 +1,47 @@
 <div class="container">
-  nexl home dir<br/>
-  nexl sources dir<br/>
-  nexl sources path<br/>
-  nexl sources encoding<br/>
-  Encrypt nexl sources dir<br/>
-  HTTP timeout<br/>
-  LDAP authentication<br/>
+  <div class="field">
+    <label for="nexl-home-dir">nexl home dir</label>
+    <input type="text" id="nexl-home-dir" disabled>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="'<p style=\'text-align: left;\'> nexl home directory contains nexl settings, authentication data and log file<br/> nexl home directory can be specified as a run argument to nexl server in the following way:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This argument might be usefull if you need to start multiple nexl server instances<br/> By default nexl server uses a [${HOME}/.nexl] directory </p>'">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+
+  </div>
+
+  <div class="field">
+    <label for="nexl-sources-dir">nexl sources dir</label>
+    <input type="text" id="nexl-sources-dir">
+  </div>
+
+  <div class="field">
+    <label for="nexl-sources-path">nexl sources path</label>
+    <input type="text" id="nexl-sources-path">
+  </div>
+
+  <div class="field">
+    <label for="nexl-source-encoding">nexl sources encoding</label>
+    <select id="nexl-source-encoding">
+      <option>utf8</option>
+      <option>ascii</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="encrypt-nexl-sources">Encrypt nexl sources</label>
+    <input type="checkbox" id="encrypt-nexl-sources" style="width: 13px;margin-left:0;">
+  </div>
+
+  <div class="field">
+    <label for="http-timeout">HTTP timeout</label>
+    <input type="text" id="http-timeout">
+  </div>
+
+  <div class="field">
+    <label for="ldap-auth">LDAP authentication</label>
+    <input type="text" id="ldap-auth">
+  </div>
 </div>
