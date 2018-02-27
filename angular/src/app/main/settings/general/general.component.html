@@ -1,7 +1,11 @@
 <div class="container">
   <div class="field">
-    <label for="nexl-home-dir">nexl home dir</label>
-    <input type="text" id="nexl-home-dir" disabled>
+    <label>nexl home dir</label>
+    <jqxInput
+      [disabled]="true"
+      [width]="204"
+      [height]="25">
+    </jqxInput>
     <jqxTooltip
       style="display: inline-block; position: relative; top: 4px;"
       [position]="'mouse'"
@@ -12,8 +16,11 @@
   </div>
 
   <div class="field">
-    <label for="nexl-sources-dir">nexl sources dir</label>
-    <input type="text" id="nexl-sources-dir">
+    <label>nexl sources dir</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
     <jqxTooltip
       style="display: inline-block; position: relative; top: 4px;"
       [position]="'mouse'"
@@ -23,11 +30,20 @@
     </jqxTooltip>
   </div>
 
-  <div class="field">
-    <label for="nexl-sources-path">nexl sources path</label>
-    <input type="text" id="nexl-sources-path">
+  <div class="field" style="margin-top: 15px;">
+    <label>nexl sources path</label>
+    <div style="width: 100px;float: left;">
+      <jqxButton [height]='28'
+                 [width]='40'
+                 [textPosition]='"center"'
+                 (click)="path.open()"
+                 style="position: relative; top: -3px;"
+                 #cancelButton>
+        ...
+      </jqxButton>
+    </div>
     <jqxTooltip
-      style="display: inline-block; position: relative; top: 4px;"
+      style="display: inline-block; position: relative; top: 4px; left: 108px;"
       [position]="'mouse'"
       [autoHideDelay]="100000"
       [content]="'<p style=\'text-align: left;\'> Directories listed in nexl sources path will be also exposed by nexl server via REST ( similarly to nexl sources dir )<br/> Files from those directories can be included to another nexl sources with @ directive </p>'">
@@ -35,12 +51,32 @@
     </jqxTooltip>
   </div>
 
-  <div class="field">
-    <label for="nexl-source-encoding">nexl sources encoding</label>
-    <select id="nexl-source-encoding">
-      <option>utf8</option>
-      <option>ascii</option>
-    </select>
+  <div class="field" style="margin-top: 15px;">
+    <label>nexl sources encoding</label>
+    <div style="width: 200px;float: left">
+      <jqxDropDownList
+        [width]="200"
+        [height]="25"
+        [dropDownHeight]="53"
+        [source]="encodings"
+        [selectedIndex]="0">
+      </jqxDropDownList>
+    </div>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px; left: 8px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <div class="field" style="margin-top: 17px;">
+    <label>HTTP timeout</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
     <jqxTooltip
       style="display: inline-block; position: relative; top: 4px;"
       [position]="'mouse'"
@@ -51,20 +87,11 @@
   </div>
 
   <div class="field">
-    <label for="http-timeout">HTTP timeout</label>
-    <input type="text" id="http-timeout">
-    <jqxTooltip
-      style="display: inline-block; position: relative; top: 4px;"
-      [position]="'mouse'"
-      [autoHideDelay]="100000"
-      [content]="''">
-      <img src='/nexl/site/images/tooltip.png'/>
-    </jqxTooltip>
-  </div>
-
-  <div class="field">
-    <label for="ldap-auth">LDAP authentication</label>
-    <input type="text" id="ldap-auth">
+    <label>LDAP authentication</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
     <jqxTooltip
       style="display: inline-block; position: relative; top: 4px;"
       [position]="'mouse'"
@@ -74,3 +101,5 @@
     </jqxTooltip>
   </div>
 </div>
+
+<app-path #path></app-path>

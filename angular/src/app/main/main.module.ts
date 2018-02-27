@@ -13,6 +13,8 @@ import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import {jqxRibbonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon';
 import {jqxLoaderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxloader';
+import {jqxInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxinput';
+import {jqxDropDownListComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -44,6 +46,7 @@ import {LoggerComponent} from './settings/logger/logger.component';
 import {CallbacksComponent} from './settings/callbacks/callbacks.component';
 import {UiComponent} from './settings/ui/ui.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
+import {PathComponent} from "./settings/general/path/path.component";
 
 @NgModule({
   declarations: [
@@ -59,6 +62,8 @@ import {SplashscreenComponent} from './splashscreen/splashscreen.component';
     jqxGridComponent,
     jqxRibbonComponent,
     jqxLoaderComponent,
+    jqxInputComponent,
+    jqxDropDownListComponent,
 
     HeaderComponent,
     NexlLogoComponent,
@@ -81,7 +86,8 @@ import {SplashscreenComponent} from './splashscreen/splashscreen.component';
     LoggerComponent,
     CallbacksComponent,
     UiComponent,
-    SplashscreenComponent
+    SplashscreenComponent,
+    PathComponent
   ],
 
   imports: [

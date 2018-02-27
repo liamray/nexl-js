@@ -31,6 +31,9 @@
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxloader"
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxloader",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxinput",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist"
+
   ]
 }

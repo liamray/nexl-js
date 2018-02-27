@@ -17,10 +17,7 @@ hr {
   width: 180px;
   display: inline-block;
   float: left;
-}
-
-.field input {
-  width: 200px;
+  padding-top: 3px;
 }
 
 .field select {
