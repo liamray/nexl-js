@@ -6,20 +6,33 @@
       style="display: inline-block; position: relative; top: 4px;"
       [position]="'mouse'"
       [autoHideDelay]="100000"
-      [content]="'<p style=\'text-align: left;\'> nexl home directory contains nexl settings, authentication data and log file<br/> nexl home directory can be specified as a run argument to nexl server in the following way:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This argument might be usefull if you need to start multiple nexl server instances<br/> By default nexl server uses a [${HOME}/.nexl] directory </p>'">
+      [content]="'<p style=\'text-align: left;\'> nexl home directory contains nexl settings, authentication data and log file(s)<br/> nexl home directory can be specified as a run argument to nexl server in the following way:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This argument might be usefull if you need to start multiple nexl server instances<br/> By default nexl server uses a [${HOME}/.nexl] directory </p>'">
       <img src='/nexl/site/images/tooltip.png'/>
     </jqxTooltip>
-
   </div>
 
   <div class="field">
     <label for="nexl-sources-dir">nexl sources dir</label>
     <input type="text" id="nexl-sources-dir">
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="'<p style=\'text-align: left;\'> nexl sources directory contains JavaScript files to be exposed by nexl server via REST<br/> Those files appear in [nexl sources explorer] window<br/> For example, the [weight] variable from [examples.js] file located in the nexl sources dir<br/> will be exposed via REST in the following way :<br/> <span style=\'margin-left:30px; font-style: italic\'>http://your-nexl-server:3000/examples.js?expression=${weight}</span> </p>'">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
   </div>
 
   <div class="field">
     <label for="nexl-sources-path">nexl sources path</label>
     <input type="text" id="nexl-sources-path">
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="'<p style=\'text-align: left;\'> Directories listed in nexl sources path will be also exposed by nexl server via REST ( similarly to nexl sources dir )<br/> Files from those directories can be included to another nexl sources with @ directive </p>'">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
   </div>
 
   <div class="field">
@@ -28,20 +41,36 @@
       <option>utf8</option>
       <option>ascii</option>
     </select>
-  </div>
-
-  <div class="field">
-    <label for="encrypt-nexl-sources">Encrypt nexl sources</label>
-    <input type="checkbox" id="encrypt-nexl-sources" style="width: 13px;margin-left:0;">
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
   </div>
 
   <div class="field">
     <label for="http-timeout">HTTP timeout</label>
     <input type="text" id="http-timeout">
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
   </div>
 
   <div class="field">
     <label for="ldap-auth">LDAP authentication</label>
     <input type="text" id="ldap-auth">
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
   </div>
 </div>

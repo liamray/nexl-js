@@ -19,6 +19,10 @@ hr {
   float: left;
 }
 
-.field input, select {
+.field input {
   width: 200px;
+}
+
+.field select {
+  width: 204px;
 }
