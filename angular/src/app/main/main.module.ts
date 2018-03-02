@@ -15,6 +15,7 @@ import {jqxRibbonComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxribb
 import {jqxLoaderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxloader';
 import {jqxInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxinput';
 import {jqxDropDownListComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist';
+import {jqxNumberInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnumberinput';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -64,6 +65,7 @@ import {PathComponent} from "./settings/general/path/path.component";
     jqxLoaderComponent,
     jqxInputComponent,
     jqxDropDownListComponent,
+    jqxNumberInputComponent,
 
     HeaderComponent,
     NexlLogoComponent,

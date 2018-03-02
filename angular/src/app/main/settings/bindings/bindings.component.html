@@ -1,8 +1,105 @@
 <div class="container">
-  HTTP binding<br/>
-  HTTP port<br/>
-  HTTPS binding<br/>
-  HTTPS port<br/>
-  HTTPS cert<br/>
-  HTTPS pem<br/>
+  <!--http binding-->
+  <div class="field">
+    <label>HTTP binding</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <!--http port-->
+  <div class="field">
+    <label>HTTP port</label>
+    <div style="width:204px; float:left;">
+      <jqxNumberInput
+        [inputMode]="'simple'"
+        [digits]="5"
+        [decimalDigits]="0"
+        [height]="25">
+      </jqxNumberInput>
+    </div>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <!--https binding-->
+  <div class="field">
+    <label>HTTPS binding</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <!--https port-->
+  <div class="field">
+    <label>HTTPS port</label>
+    <div style="width:204px; float:left;">
+      <jqxNumberInput
+        [inputMode]="'simple'"
+        [digits]="5"
+        [decimalDigits]="0"
+        [height]="25">
+      </jqxNumberInput>
+    </div>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <!--ssl key path-->
+  <div class="field">
+    <label>SSL key location</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
+
+  <!--ssl cert path-->
+  <div class="field">
+    <label>SSL cert location</label>
+    <jqxInput
+      [width]="204"
+      [height]="25">
+    </jqxInput>
+    <jqxTooltip
+      style="display: inline-block; position: relative; top: 4px;"
+      [position]="'mouse'"
+      [autoHideDelay]="100000"
+      [content]="''">
+      <img src='/nexl/site/images/tooltip.png'/>
+    </jqxTooltip>
+  </div>
 </div>
