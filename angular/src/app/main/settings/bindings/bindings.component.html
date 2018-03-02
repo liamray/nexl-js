@@ -18,16 +18,21 @@
   <!--http port-->
   <div class="field">
     <label>HTTP port</label>
-    <div style="width:204px; float:left;">
+    <div style="width:80px; float:left;">
       <jqxNumberInput
         [inputMode]="'simple'"
         [digits]="5"
         [decimalDigits]="0"
-        [height]="25">
+        [spinButtons]="true"
+        [min]="1"
+        [max]="65535"
+        [width]="80"
+        [height]="25"
+      >
       </jqxNumberInput>
     </div>
     <jqxTooltip
-      style="display: inline-block; position: relative; top: 4px;"
+      style="display: inline-block; position: relative; top: 4px;left:129px"
       [position]="'mouse'"
       [autoHideDelay]="100000"
       [content]="''">
@@ -54,16 +59,20 @@
   <!--https port-->
   <div class="field">
     <label>HTTPS port</label>
-    <div style="width:204px; float:left;">
+    <div style="width:80px; float:left;">
       <jqxNumberInput
         [inputMode]="'simple'"
         [digits]="5"
         [decimalDigits]="0"
+        [spinButtons]="true"
+        [min]="1"
+        [max]="65535"
+        [width]="80"
         [height]="25">
       </jqxNumberInput>
     </div>
     <jqxTooltip
-      style="display: inline-block; position: relative; top: 4px;"
+      style="display: inline-block; position: relative; top: 4px;left:129px"
       [position]="'mouse'"
       [autoHideDelay]="100000"
       [content]="''">
