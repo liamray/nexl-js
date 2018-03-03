@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
+import {BindingsComponent} from "./bindings/bindings.component";
 
 @Component({
   selector: 'app-settings',
@@ -10,6 +11,9 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 export class SettingsComponent implements AfterViewInit {
   @ViewChild('settingsWindow')
   settingsWindow: jqxWindowComponent;
+
+  @ViewChild('bindings')
+  bindings: BindingsComponent;
 
   @ViewChild('saveButton')
   saveButton: jqxButtonComponent;
@@ -29,7 +33,8 @@ export class SettingsComponent implements AfterViewInit {
   }
 
   save() {
-    this.settingsWindow.close();
+    const any = this.bindings.validate();
+    console.log(any);
   }
 
   initContent = () => {
