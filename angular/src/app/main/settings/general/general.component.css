@@ -1,25 +1,22 @@
 .container {
-  margin: 5px;
+  margin: 10px;
 }
 
-hr {
-  width: 90%;
-  margin-left: 0;
-  padding-right: 15px;
+.item {
+  width: 400px;
+  float: left;
+  margin-top: 10px;
 }
 
-.field {
-  clear: both;
-  padding-top: 10px;
-}
-
-.field label {
+.item label {
   width: 180px;
   display: inline-block;
   float: left;
-  padding-top: 3px;
 }
 
-.field select {
-  width: 204px;
+.tooltip {
+  display: inline-block;
+  position: relative;
+  left: -7px;
+  top: 14px;
 }
