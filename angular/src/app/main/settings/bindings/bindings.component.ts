@@ -31,8 +31,8 @@ export class BindingsComponent implements OnInit {
   rules = [
     {input: '#httpBinding', message: 'HTTP binding required', action: 'keyup, blur', rule: 'required'},
     {
-      input: '#httpTimeout',
-      message: 'HTTP timeout must be a positive integer',
+      input: '#httpPort',
+      message: 'HTTP port must be a positive integer',
       action: 'keyup, blur',
       rule: (input: any, commit: any): any => {
         return false;
@@ -48,6 +48,6 @@ export class BindingsComponent implements OnInit {
   }
 
   validate() {
-    this.validator.validate(document.getElementById('bindingsForm'));
+    return this.validator.validate(document.getElementById('bindingsForm'));
   }
 }
