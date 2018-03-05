@@ -32,10 +32,10 @@ export class SettingsComponent {
   uiRef;
 
   general: any;
-  bindings: BindingsComponent;
-  logger: LoggerComponent;
-  callbacks: CallbacksComponent;
-  ui: UiComponent;
+  bindings: any;
+  logger: any;
+  callbacks: any;
+  ui: any;
 
   @ViewChild('saveButton')
   saveButton: jqxButtonComponent;
@@ -51,14 +51,14 @@ export class SettingsComponent {
   }
 
   save() {
-    const any = this.bindings.validate();
+    const any = this.bindings.instance.validate();
     console.log(any);
   }
 
   initContent = () => {
     jqwidgets.createInstance('#ribbon', 'jqxRibbon', {
-      width: 600,
-      height: 400,
+      width: '100%',
+      height: 'calc( 100% - 50px )',
       position: 'left',
       selectionMode: 'click',
       animationType: 'none'
