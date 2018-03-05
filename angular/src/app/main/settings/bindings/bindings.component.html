@@ -1,125 +1,132 @@
 <div class="container">
-  <jqxValidator #myValidator [rules]="rules" [hintType]="'label'" [animationDuration]="0">
+  <jqxValidator #validator [rules]="rules" [hintType]="'label'" [animationDuration]="0">
+    <form id='bindingsForm' action="./">
 
-    <!--HTTP binding-->
-    <div class="item">
-      <label>HTTP binding</label>
-      <jqxInput
-        id="httpBinding"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
+      <!--HTTP binding-->
+      <div class="item">
+        <label>HTTP binding</label>
+        <jqxInput
+          #httpBinding
+          id="httpBinding"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
 
-    <div style="clear: both"></div>
+      <div style="clear: both"></div>
 
-    <!--HTTP port-->
-    <div class="item">
-      <label>HTTP port</label>
-      <jqxInput
-        id="httpPort"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
+      <!--HTTP port-->
+      <div class="item">
+        <label>HTTP port</label>
+        <jqxInput
+          #httpPort
+          id="httpPort"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
 
-    <div style="clear: both"></div>
-    <br/>
-    <hr>
+      <div style="clear: both"></div>
+      <br/>
+      <hr>
 
-    <!--HTTPS binding-->
-    <div class="item">
-      <label>HTTPS binding</label>
-      <jqxInput
-        id="httpsBinding"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
+      <!--HTTPS binding-->
+      <div class="item">
+        <label>HTTPS binding</label>
+        <jqxInput
+          #httpsBinding
+          id="httpsBinding"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
 
-    <div style="clear: both"></div>
+      <div style="clear: both"></div>
 
-    <!--HTTPS port-->
-    <div class="item">
-      <label>HTTPS port</label>
-      <jqxInput
-        id="httpsPort"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
+      <!--HTTPS port-->
+      <div class="item">
+        <label>HTTPS port</label>
+        <jqxInput
+          #httpsPort
+          id="httpsPort"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
 
-    <div style="clear: both"></div>
+      <div style="clear: both"></div>
 
-    <!--SSL key location-->
-    <div class="item">
-      <label>SSL key location</label>
-      <jqxInput
-        id="sslKeyLocation"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
+      <!--SSL key location-->
+      <div class="item">
+        <label>SSL key location</label>
+        <jqxInput
+          #sslKeyLocation
+          id="sslKeyLocation"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
 
-    <div style="clear: both"></div>
+      <div style="clear: both"></div>
 
-    <!--SSL cert location-->
-    <div class="item">
-      <label>SSL cert location</label>
-      <jqxInput
-        id="sslCertLocation"
-        [width]="205"
-        [height]="25">
-      </jqxInput>
-    </div>
-    <div class="tooltip">
-      <jqxTooltip
-        [position]="'mouse'"
-        [autoHideDelay]="100000"
-        [content]="'<p style=\'text-align: left;\'>...</p>'">
-        <img src='/nexl/site/images/tooltip.png'/>
-      </jqxTooltip>
-    </div>
-
+      <!--SSL cert location-->
+      <div class="item">
+        <label>SSL cert location</label>
+        <jqxInput
+          #sslCertLocation
+          id="sslCertLocation"
+          [width]="205"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="100000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png'/>
+        </jqxTooltip>
+      </div>
+    </form>
   </jqxValidator>
 </div>
