@@ -46,6 +46,8 @@
       <label>nexl sources path</label>
       <jqxButton [height]='28'
                  [width]='40'
+                 #openPathButton
+                 [auto-create]="false"
                  [textPosition]='"center"'
                  (click)="path.open()"
                  style="position: relative; top: -3px;"

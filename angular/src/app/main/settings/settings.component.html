@@ -1,5 +1,5 @@
 <jqxWindow #settingsWindow
-           [autoOpen]="true"
+           [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
            [width]="600"
@@ -14,29 +14,33 @@
 
   <div style="overflow: hidden;" #windowContent>
 
-    <jqxRibbon #jqxRibbon
-               [width]="'100%'"
-               [height]="'calc( 100% - 50px )'"
-               [position]="'left'"
-               [selectionMode]="'click'"
-               [animationType]="'none'">
-
+    <div id="ribbon">
       <ul id="header" style="width: 150px;">
         <li>General</li>
-        <li>Bindings & SSL</li>
+        <li>Bindings</li>
         <li>Logger</li>
         <li>Callbacks</li>
         <li>UI</li>
       </ul>
 
       <div>
-        <app-general></app-general>
-        <app-bindings></app-bindings>
-        <app-logger></app-logger>
-        <app-callbacks></app-callbacks>
-        <app-ui></app-ui>
+        <div>
+          <div #general></div>
+        </div>
+        <div>
+          <div #bindings></div>
+        </div>
+        <div>
+          <div #logger></div>
+        </div>
+        <div>
+          <div #callbacks></div>
+        </div>
+        <div>
+          <div #ui></div>
+        </div>
       </div>
-    </jqxRibbon>
+    </div>
 
     <div class="buttons">
       <div class="button">

@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {jqxValidatorComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator";
 
 @Component({
   selector: 'app-bindings',
@@ -6,8 +7,29 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./bindings.component.css']
 })
 export class BindingsComponent implements OnInit {
+  @ViewChild('validator')
+  validator: jqxValidatorComponent;
+
+  @ViewChild('httpBinding')
+  httpBinding: any;
+
+  @ViewChild('httpPort')
+  httpPort: any;
+
+  @ViewChild('httpsBinding')
+  httpsBinding: any;
+
+  @ViewChild('httpsPort')
+  httpsPort: any;
+
+  @ViewChild('sslKeyLocation')
+  sslKeyLocation: any;
+
+  @ViewChild('sslCertLocation')
+  sslCertLocation: any;
+
   rules = [
-    {input: '#nexlSourcesDir', message: 'nexl sources dir is required', action: 'keyup, blur', rule: 'required'},
+    {input: '#httpBinding', message: 'HTTP binding required', action: 'keyup, blur', rule: 'required'},
     {
       input: '#httpTimeout',
       message: 'HTTP timeout must be a positive integer',
@@ -25,4 +47,7 @@ export class BindingsComponent implements OnInit {
   ngOnInit() {
   }
 
+  validate() {
+    this.validator.validate(document.getElementById('bindingsForm'));
+  }
 }

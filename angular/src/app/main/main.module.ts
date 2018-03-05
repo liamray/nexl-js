@@ -107,6 +107,8 @@ import {PathComponent} from "./settings/general/path/path.component";
     LoaderService
   ],
 
+  entryComponents: [GeneralComponent, BindingsComponent, LoggerComponent, CallbacksComponent, UiComponent],
+
   exports: [
     MainComponent
   ]

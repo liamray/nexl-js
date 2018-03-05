@@ -1,4 +1,5 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 @Component({
   selector: 'app-general',
@@ -8,6 +9,9 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 export class GeneralComponent implements OnInit {
   @ViewChild('httpTimeout')
   httpTimeout: any;
+
+  @ViewChild('openPathButton')
+  openPathButton: jqxButtonComponent;
 
   encodings = ['utf8', 'ascii'];
 
@@ -31,4 +35,7 @@ export class GeneralComponent implements OnInit {
   ngOnInit() {
   }
 
+  createButtons() {
+    this.openPathButton.createComponent();
+  }
 }
