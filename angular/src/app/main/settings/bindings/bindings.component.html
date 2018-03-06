@@ -1,5 +1,6 @@
 <div class="container">
-  <jqxValidator #validator [rules]="rules" [hintType]="'label'" [animationDuration]="0">
+  <jqxValidator #validator [rules]="rules" [hintType]="'label'" [animationDuration]="0"
+                (onValidationSuccess)="onSuccess($event)">
     <form id='bindingsForm' action="./">
 
       <!--HTTP binding-->
@@ -8,7 +9,7 @@
         <jqxInput
           #httpBinding
           id="httpBinding"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>
@@ -29,7 +30,7 @@
         <jqxInput
           #httpPort
           id="httpPort"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>
@@ -52,7 +53,7 @@
         <jqxInput
           #httpsBinding
           id="httpsBinding"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>
@@ -73,7 +74,7 @@
         <jqxInput
           #httpsPort
           id="httpsPort"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>
@@ -94,7 +95,7 @@
         <jqxInput
           #sslKeyLocation
           id="sslKeyLocation"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>
@@ -115,7 +116,7 @@
         <jqxInput
           #sslCertLocation
           id="sslCertLocation"
-          [width]="205"
+          [width]="width"
           [height]="25">
         </jqxInput>
       </div>

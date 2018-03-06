@@ -28,6 +28,8 @@ export class BindingsComponent implements OnInit {
   @ViewChild('sslCertLocation')
   sslCertLocation: any;
 
+  width: 190;
+
   rules = [
     {input: '#httpBinding', message: 'HTTP binding required', action: 'keyup, blur', rule: 'required'},
     {
@@ -35,7 +37,8 @@ export class BindingsComponent implements OnInit {
       message: 'HTTP port must be a positive integer',
       action: 'keyup, blur',
       rule: (input: any, commit: any): any => {
-        return false;
+        const val = this.httpPort.value();
+        return val.match(/^[0-9]+$/) !== null;
       }
     }
   ];
@@ -49,5 +52,9 @@ export class BindingsComponent implements OnInit {
 
   validate() {
     return this.validator.validate(document.getElementById('bindingsForm'));
+  }
+
+  onSuccess(evnt) {
+    console.log(evnt);
   }
 }

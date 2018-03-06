@@ -1,9 +1,9 @@
 .container {
-  margin: 10px;
+  margin-left: 25px;
 }
 
 .item {
-  width: 400px;
+  width: 380px;
   float: left;
   margin-top: 10px;
 }

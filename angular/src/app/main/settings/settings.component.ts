@@ -51,17 +51,19 @@ export class SettingsComponent {
   }
 
   save() {
-    const any = this.bindings.instance.validate();
-    console.log(any);
+    this.bindings.instance.validate();
   }
 
   initContent = () => {
-    jqwidgets.createInstance('#ribbon', 'jqxRibbon', {
+    const ribbon = jqwidgets.createInstance('#ribbon', 'jqxRibbon', {
       width: '100%',
-      height: 'calc( 100% - 50px )',
+      height: '315px',
       position: 'left',
       selectionMode: 'click',
       animationType: 'none'
+    });
+    ribbon.addEventHandler('select', (event) => {
+      this.bindings.instance.validate();
     });
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
