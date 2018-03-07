@@ -42,13 +42,8 @@ import {PermissionsService} from "../services/permissions.service";
 import {LoaderComponent} from './loader/loader.component';
 import {LoaderService} from "../services/loader.service";
 import {SettingsComponent} from './settings/settings.component';
-import {GeneralComponent} from './settings/general/general.component';
-import {BindingsComponent} from './settings/bindings/bindings.component';
-import {LoggerComponent} from './settings/logger/logger.component';
-import {CallbacksComponent} from './settings/callbacks/callbacks.component';
-import {UiComponent} from './settings/ui/ui.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
-import {PathComponent} from "./settings/general/path/path.component";
+import {PathComponent} from "./settings/path/path.component";
 
 @NgModule({
   declarations: [
@@ -85,11 +80,6 @@ import {PathComponent} from "./settings/general/path/path.component";
     AssignPermissionsComponent,
     LoaderComponent,
     SettingsComponent,
-    GeneralComponent,
-    BindingsComponent,
-    LoggerComponent,
-    CallbacksComponent,
-    UiComponent,
     SplashscreenComponent,
     PathComponent
   ],
@@ -107,7 +97,7 @@ import {PathComponent} from "./settings/general/path/path.component";
     LoaderService
   ],
 
-  entryComponents: [GeneralComponent, BindingsComponent, LoggerComponent, CallbacksComponent, UiComponent],
+  entryComponents: [],
 
   exports: [
     MainComponent

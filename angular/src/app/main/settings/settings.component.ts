@@ -1,11 +1,9 @@
-import {AfterViewInit, Component, ComponentFactoryResolver, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import {BindingsComponent} from "./bindings/bindings.component";
-import {GeneralComponent} from "./general/general.component";
-import {LoggerComponent} from "./logger/logger.component";
-import {CallbacksComponent} from "./callbacks/callbacks.component";
-import {UiComponent} from "./ui/ui.component";
+import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
+import jqxValidator = jqwidgets.jqxValidator;
+import {UtilsService} from "../../services/utils.service";
 
 @Component({
   selector: 'app-settings',
@@ -16,26 +14,14 @@ export class SettingsComponent {
   @ViewChild('settingsWindow')
   settingsWindow: jqxWindowComponent;
 
-  @ViewChild('general', {read: ViewContainerRef})
-  generalRef;
+  @ViewChild('ribbon')
+  ribbon: jqxRibbonComponent;
 
-  @ViewChild('bindings', {read: ViewContainerRef})
-  bindingsRef;
+  @ViewChild('validator')
+  validator: jqxValidator;
 
-  @ViewChild('logger', {read: ViewContainerRef})
-  loggerRef;
-
-  @ViewChild('callbacks', {read: ViewContainerRef})
-  callbacksRef;
-
-  @ViewChild('ui', {read: ViewContainerRef})
-  uiRef;
-
-  general: any;
-  bindings: any;
-  logger: any;
-  callbacks: any;
-  ui: any;
+  @ViewChild('httpPort')
+  httpPort: any;
 
   @ViewChild('saveButton')
   saveButton: jqxButtonComponent;
@@ -43,40 +29,50 @@ export class SettingsComponent {
   @ViewChild('cancelButton')
   cancelButton: jqxButtonComponent;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
-  }
+  isSaving: boolean;
+  width = 190;
+  encodings = ['utf8', 'ascii'];
+  rules =
+    [
+      {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#httpPort', message: 'HTTP port is required!', action: 'keyup, blur', rule: 'required'},
+      {
+        input: '#httpPort', message: 'HTTP port must be a positive integer', action: 'keyup, blur',
+        rule: (input: any, commit: any): any => {
+          const val = this.httpPort.val() || '';
+          return UtilsService.isPositiveIneger(val);
+        }
+      }
+    ];
+
 
   open() {
     this.settingsWindow.open();
   }
 
-  save() {
-    this.bindings.instance.validate();
-  }
-
   initContent = () => {
-    const ribbon = jqwidgets.createInstance('#ribbon', 'jqxRibbon', {
-      width: '100%',
-      height: '315px',
-      position: 'left',
-      selectionMode: 'click',
-      animationType: 'none'
-    });
-    ribbon.addEventHandler('select', (event) => {
-      this.bindings.instance.validate();
-    });
+    this.ribbon.createComponent();
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
-    this.general.instance.createButtons();
+  }
 
-  };
+  validate() {
+    this.validator.validate(document.getElementById('settingsForm'));
+  }
 
-  ngOnInit() {
-    this.general = this.generalRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(GeneralComponent));
-    this.bindings = this.bindingsRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(BindingsComponent));
-    this.logger = this.loggerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(LoggerComponent));
-    this.callbacks = this.callbacksRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(CallbacksComponent));
-    this.ui = this.uiRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(UiComponent));
+  save() {
+    this.isSaving = true;
+    this.validate();
+  }
 
+  onValidationSuccess(event) {
+    if (this.isSaving) {
+      this.settingsWindow.close();
+    }
+  }
+
+  onValidationError(event) {
+    this.isSaving = false;
   }
 }
