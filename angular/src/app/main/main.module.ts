@@ -17,6 +17,7 @@ import {jqxInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxinput
 import {jqxDropDownListComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist';
 import {jqxNumberInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnumberinput';
 import {jqxValidatorComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator';
+import {jqxCheckBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -63,6 +64,7 @@ import {PathComponent} from "./settings/path/path.component";
     jqxDropDownListComponent,
     jqxNumberInputComponent,
     jqxValidatorComponent,
+    jqxCheckBoxComponent,
 
     HeaderComponent,
     NexlLogoComponent,

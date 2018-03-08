@@ -298,14 +298,159 @@
               </div>
 
             </div>
+
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--Logger-->
             <div>
-              <div>Logger</div>
+              <div style="margin-top: 5px;"></div>
+              <!--Log file location-->
+              <div class="item">
+                <label>Log file location</label>
+                <jqxInput
+                  #logFileLocation
+                  id="logFileLocation"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--Log level-->
+              <div class="item" style="margin-top: 10px;">
+                <label>Log level</label>
+                <jqxDropDownList
+                  [width]="width - 50"
+                  [height]="25"
+                  [dropDownHeight]="130"
+                  [source]="logLevels"
+                  [selectedIndex]="0">
+                </jqxDropDownList>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--Rolling file size-->
+              <div class="item">
+                <label>Rolling file size</label>
+                <jqxInput
+                  #rollingFileSize
+                  id="rollingFileSize"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--Max rolling files-->
+              <div class="item">
+                <label>Max rolling files</label>
+                <jqxInput
+                  #maxRollingFiles
+                  id="maxRollingFiles"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
             </div>
             <div>
               <div>Callbacks</div>
             </div>
+
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--UI-->
             <div>
-              <div>UI</div>
+              <div style="margin-top: 5px;"></div>
+
+              <!--Autoscroll from source-->
+              <div class="item">
+                <label>Autoscroll from source</label>
+                <jqxCheckBox
+                  style='margin-left: 10px; float: left;'
+                  [width]='120'
+                  [height]='25'>
+                </jqxCheckBox>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--Autoscroll to source-->
+              <div class="item">
+                <label>Autoscroll to source</label>
+                <jqxCheckBox
+                  style='margin-left: 10px; float: left;'
+                  [width]='120'
+                  [height]='25'>
+                </jqxCheckBox>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--Theme-->
+              <div class="item" style="margin-top: 10px;">
+                <label>Theme</label>
+                <jqxDropDownList
+                  [width]="width - 50"
+                  [height]="25"
+                  [dropDownHeight]="130"
+                  [source]="themes"
+                  [selectedIndex]="0">
+                </jqxDropDownList>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='/nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
             </div>
           </div>
         </jqxRibbon>

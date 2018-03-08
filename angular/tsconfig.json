@@ -35,7 +35,7 @@
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxinput",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxnumberinput",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator"
-
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox"
   ]
 }

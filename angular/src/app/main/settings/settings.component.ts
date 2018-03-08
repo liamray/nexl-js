@@ -32,6 +32,8 @@ export class SettingsComponent {
   isSaving: boolean;
   width = 190;
   encodings = ['utf8', 'ascii'];
+  themes = [];
+  logLevels = ['fatal', 'error', 'info', 'debug', 'verbose'];
   rules =
     [
       {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
