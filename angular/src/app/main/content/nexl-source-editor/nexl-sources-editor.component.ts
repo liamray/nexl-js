@@ -6,5 +6,5 @@ import {Component} from '@angular/core';
 	styleUrls: ['./nexl-sources-editor.component.css'],
 })
 export class NexlSourcesEditorComponent {
-
+  // https://ace.c9.io/build/kitchen-sink.html
 }

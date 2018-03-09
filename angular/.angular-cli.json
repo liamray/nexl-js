@@ -20,7 +20,8 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css"
+        "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css",
+        "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.dark.css"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

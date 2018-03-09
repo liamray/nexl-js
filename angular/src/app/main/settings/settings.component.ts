@@ -32,7 +32,7 @@ export class SettingsComponent {
   isSaving: boolean;
   width = 190;
   encodings = ['utf8', 'ascii'];
-  themes = [];
+  themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
   logLevels = ['fatal', 'error', 'info', 'debug', 'verbose'];
   rules =
     [
