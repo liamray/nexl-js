@@ -18,8 +18,8 @@ function init() {
 
 	// loading log setting
 	const logFile = settings.get(settings.LOG_FILE);
-	const rollingSize = settings.get(settings.LOG_ROLLING_SIZE_KB);
-	const maxLogFiles = settings.get(settings.MAX_LOG_FILES);
+	const logRotateFileSize = settings.get(settings.LOG_ROTATE_FILE_SIZE);
+	const logRotateFilesCount = settings.get(settings.LOG_ROTATE_FILES_COUNT);
 	const logLevel = settings.get(settings.LOG_LEVEL);
 
 	// adding file transport
@@ -27,9 +27,9 @@ function init() {
 		filename: logFile,
 		formatter: logFormatter,
 		json: false,
-		tailable: rollingSize > 0,
-		maxsize: rollingSize * 1024,
-		maxFiles: maxLogFiles
+		tailable: logRotateFileSize > 0,
+		maxsize: logRotateFileSize * 1024,
+		maxFiles: logRotateFilesCount
 	});
 
 	// setting up log level

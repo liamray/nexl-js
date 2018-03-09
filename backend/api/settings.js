@@ -11,8 +11,8 @@ const NEXL_HTTP_BINDING = 'http-binding';
 const NEXL_HTTP_PORT = 'http-port';
 const LOG_FILE = 'log-file';
 const LOG_LEVEL = 'log-level';
-const MAX_LOG_FILES = 'max-log-files';
-const LOG_ROLLING_SIZE_KB = 'log-rolling-size-kb';
+const LOG_ROTATE_FILE_SIZE = 'log-rotate-file-size-kb';
+const LOG_ROTATE_FILES_COUNT = 'log-rotate-files-count';
 
 // --------------------------------------------------------------------------------
 
@@ -34,8 +34,8 @@ DEFAULT_VALUES[LOG_FILE] = function () {
 };
 
 DEFAULT_VALUES[LOG_LEVEL] = 'info';
-DEFAULT_VALUES[MAX_LOG_FILES] = 999;
-DEFAULT_VALUES[LOG_ROLLING_SIZE_KB] = 0; // not rolling
+DEFAULT_VALUES[LOG_ROTATE_FILES_COUNT] = 999;
+DEFAULT_VALUES[LOG_ROTATE_FILE_SIZE] = 0; // not rolling
 
 // --------------------------------------------------------------------------------
 
@@ -80,8 +80,8 @@ module.exports.NEXL_HTTP_PORT = NEXL_HTTP_PORT;
 
 module.exports.LOG_FILE = LOG_FILE;
 module.exports.LOG_LEVEL = LOG_LEVEL;
-module.exports.MAX_LOG_FILES = MAX_LOG_FILES;
-module.exports.LOG_ROLLING_SIZE_KB = LOG_ROLLING_SIZE_KB;
+module.exports.LOG_ROTATE_FILE_SIZE = LOG_ROTATE_FILE_SIZE;
+module.exports.LOG_ROTATE_FILES_COUNT = LOG_ROTATE_FILES_COUNT;
 
 module.exports.get = get;
 module.exports.set = set;
