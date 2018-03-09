@@ -15,7 +15,7 @@
 
   <div class="container">
 
-    <jqxValidator #validator [rules]="rules"
+    <jqxValidator #validator [rules]="validationRules"
                   [animationDuration]="0"
                   [hintType]="'label'"
                   (onValidationSuccess)="onValidationSuccess($event)"
@@ -44,7 +44,6 @@
             <!-- ------------------------------------------------------------------------------ -->
             <!--General-->
             <div>
-              <div style="margin-top: 5px;"></div>
               <!--nexl home dir-->
               <div class="item">
                 <label>nexl home dir</label>
@@ -384,8 +383,39 @@
               </div>
               <div style="clear: both"></div>
             </div>
+
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--Callbacks-->
             <div>
-              <div>Callbacks</div>
+              <div style="margin: 5px;">
+                <div style="float:left">
+                  Click
+                  <jqxButton (click)="addNewItem()">here</jqxButton>
+                  to add a new callback&nbsp;
+                </div>
+
+                <div>
+                  <jqxTooltip
+                    [position]="'mouse'"
+                    [autoHideDelay]="10000"
+                    [content]="'<p style=\'text-align: left;\'>...</p>'">
+                    <img src='/nexl/site/images/tooltip.png' style="position: relative; top: 3px;"/>
+                  </jqxTooltip>
+                </div>
+
+                <div style="clear: both; height: 5px;"></div>
+
+                <jqxGrid
+                  #callbacksGrid
+                  [source]="callbacksDataAdapter"
+                  [columns]="callbackColumns"
+                  [width]="'100%'"
+                  [height]="'265px;'"
+                  [filterable]="false"
+                  [sortable]="true"
+                  [editable]="true"
+                ></jqxGrid>
+              </div>
             </div>
 
             <!-- ------------------------------------------------------------------------------ -->

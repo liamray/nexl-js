@@ -4,6 +4,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import jqxValidator = jqwidgets.jqxValidator;
 import {UtilsService} from "../../services/utils.service";
+import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 
 @Component({
   selector: 'app-settings',
@@ -23,6 +24,9 @@ export class SettingsComponent {
   @ViewChild('httpPort')
   httpPort: any;
 
+  @ViewChild('callbacksGrid')
+  callbacksGrid: jqxGridComponent;
+
   @ViewChild('saveButton')
   saveButton: jqxButtonComponent;
 
@@ -34,7 +38,40 @@ export class SettingsComponent {
   encodings = ['utf8', 'ascii'];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
   logLevels = ['fatal', 'error', 'info', 'debug', 'verbose'];
-  rules =
+  callbackSource =
+    {
+      localdata: [],
+      datafields: [
+        {name: 'admins', type: 'string', map: '0'}
+      ],
+      datatype: 'array'
+    };
+  callbacksDataAdapter = new jqx.dataAdapter(this.callbackSource);
+  callbackColumns: any[] =
+    [
+      {
+        text: 'Callbacks',
+        datafield: 'Callbacks',
+        align: 'center',
+        width: '330px'
+      },
+      {
+        text: ' ',
+        sortable: false,
+        editable: false,
+        showeverpresentrow: false,
+        columntype: 'button',
+        cellsrenderer: (): string => {
+          return 'Delete';
+        },
+        buttonclick: (row: number): void => {
+          const rowdata = this.callbacksGrid.getrowdata(row);
+          this.callbacksGrid.deleterow(rowdata.uid);
+        }
+      }
+    ];
+
+  validationRules =
     [
       {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
       {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
@@ -76,5 +113,9 @@ export class SettingsComponent {
 
   onValidationError(event) {
     this.isSaving = false;
+  }
+
+  addNewItem() {
+    this.callbacksGrid.addrow(1, {});
   }
 }
