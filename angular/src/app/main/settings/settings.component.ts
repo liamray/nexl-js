@@ -15,6 +15,9 @@ export class SettingsComponent {
   @ViewChild('settingsWindow')
   settingsWindow: jqxWindowComponent;
 
+  @ViewChild('pathWindow')
+  pathWindow: any;
+
   @ViewChild('ribbon')
   ribbon: jqxRibbonComponent;
 

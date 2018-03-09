@@ -57,7 +57,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="100000"
-                  [content]="'<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> nexl home directory can be specified as a run argument to nexl server in the following way:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This argument might be usefull if you need to start multiple nexl server instances<br/> By default nexl server uses a [${HOME}/.nexl] directory </p>'">
+                  [content]="'<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This might be usefull if you need to start multiple nexl server instances<br/> By default nexl home dir located in [${HOME}/.nexl] directory </p>'">
                   <img src='/nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
               </div>
@@ -85,14 +85,15 @@
               <div style="clear: both"></div>
 
               <!--nexl sources path-->
-              <div class="item" style="margin-top: 13px;">
+              <div class="item" style="margin-top: 10px;">
+
                 <label>nexl sources path</label>
                 <jqxButton [height]='28'
                            [width]='40'
                            #openPathButton
                            [auto-create]="false"
                            [textPosition]='"center"'
-                           (click)="path.open()"
+                           (click)="pathWindow.open()"
                            style="position: relative; top: -3px;"
                            #nexlSourcesPath>
                   ...
@@ -109,10 +110,12 @@
 
               <div style="clear: both"></div>
 
+
               <!--nexl sources encoding-->
-              <div class="item" style="margin-top: 5px;">
+              <div class="item" style="margin-top: 15px;">
                 <label>nexl sources encoding</label>
                 <jqxDropDownList
+                  style="margin-top: -4px;"
                   [width]="width - 50"
                   [height]="25"
                   [dropDownHeight]="53"
@@ -410,7 +413,7 @@
                   [source]="callbacksDataAdapter"
                   [columns]="callbackColumns"
                   [width]="'100%'"
-                  [height]="'265px;'"
+                  [height]="'265px'"
                   [filterable]="false"
                   [sortable]="true"
                   [editable]="true"
@@ -518,3 +521,5 @@
 
   </div>
 </jqxWindow>
+
+<app-path #pathWindow></app-path>

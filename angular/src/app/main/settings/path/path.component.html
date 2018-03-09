@@ -2,15 +2,44 @@
            [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
-           [width]="320"
-           [height]="200"
+           [width]="400"
+           [height]="300"
 >
 
-  <div #windowHeader>
+  <div>
+    <img src="/nexl/site/images/dir.png" style="margin-left: 5px;">
     <span style="position: relative; top: -5px;margin-left: 3px;">Edit nexl sources path</span>
   </div>
 
   <div>
-    Path component goes here
+    <div style="margin: 5px;">
+      <div style="float:left">
+        Click
+        <jqxButton (click)="addNewItem()">here</jqxButton>
+        to add a new item&nbsp;
+      </div>
+
+      <div>
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="10000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='/nexl/site/images/tooltip.png' style="position: relative; top: 3px;"/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both; height: 5px;"></div>
+
+      <jqxGrid
+        #pathGrid
+        [source]="pathDataAdapter"
+        [columns]="pathColumns"
+        [width]="'100%'"
+        [height]="'200px'"
+        [filterable]="false"
+        [sortable]="true"
+        [editable]="true"
+      ></jqxGrid>
+    </div>
   </div>
 </jqxWindow>
