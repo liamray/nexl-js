@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
+import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 @Component({
   selector: 'app-path',
@@ -13,6 +14,12 @@ export class PathComponent {
 
   @ViewChild('pathGrid')
   pathGrid: jqxGridComponent;
+
+  @ViewChild('okButton')
+  okButton: jqxButtonComponent;
+
+  @ViewChild('cancelButton')
+  cancelButton: jqxButtonComponent;
 
   pathSource =
     {
@@ -55,4 +62,10 @@ export class PathComponent {
   open() {
     this.pathWindow.open();
   }
+
+  initContent = () => {
+    this.okButton.createComponent();
+    this.cancelButton.createComponent();
+  }
+
 }

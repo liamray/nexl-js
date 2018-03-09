@@ -4,6 +4,7 @@
            [resizable]="false"
            [width]="400"
            [height]="300"
+           [initContent]="initContent"
 >
 
   <div>
@@ -35,11 +36,40 @@
         [source]="pathDataAdapter"
         [columns]="pathColumns"
         [width]="'100%'"
-        [height]="'200px'"
+        [height]="'180px'"
         [filterable]="false"
         [sortable]="true"
         [editable]="true"
       ></jqxGrid>
     </div>
+
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="save()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/ok.png"'
+                   #okButton>
+          Ok
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="settingsWindow.close()"
+                   [imgSrc]='"./nexl/site/images/close.png"'
+                   [auto-create]="false"
+                   #cancelButton>
+          Cancel
+        </jqxButton>
+      </div>
+
+    </div>
+
   </div>
 </jqxWindow>
