@@ -53,10 +53,11 @@ export class SettingsComponent {
         text: 'Callbacks',
         datafield: 'Callbacks',
         align: 'center',
-        width: '330px'
+        width: '360px'
       },
       {
         text: ' ',
+        align: 'center',
         sortable: false,
         editable: false,
         showeverpresentrow: false,
