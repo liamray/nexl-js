@@ -5,6 +5,7 @@ import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.
 import {LoaderService} from "../../services/loader.service";
 import {PermissionsService} from "../../services/permissions.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
+import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 
 
 @Component({
@@ -13,20 +14,12 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
   styleUrls: ['./permissions.component.css']
 })
 export class PermissionsComponent implements AfterViewInit {
-  @ViewChild('permissionsWindow')
-  permissionsWindow: jqxWindowComponent;
-
-  @ViewChild('admins')
-  admins: AdminsComponent;
-
-  @ViewChild('assignpermissions')
-  assignpermissions: AssignPermissionsComponent;
-
-  @ViewChild('saveButton')
-  saveButton: jqxButtonComponent;
-
-  @ViewChild('cancelButton')
-  cancelButton: jqxButtonComponent;
+  @ViewChild('ribbon') ribbon: jqxRibbonComponent;
+  @ViewChild('permissionsWindow') permissionsWindow: jqxWindowComponent;
+  @ViewChild('admins') admins: AdminsComponent;
+  @ViewChild('assignpermissions') assignpermissions: AssignPermissionsComponent;
+  @ViewChild('saveButton') saveButton: jqxButtonComponent;
+  @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   permissions: any;
 
@@ -76,6 +69,7 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   initContent = () => {
+    this.ribbon.createComponent();
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
   }
