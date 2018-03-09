@@ -23,6 +23,8 @@ export class SettingsComponent {
   @ViewChild('httpsPort') httpsPort: any;
   @ViewChild('sslKeyLocation') sslKeyLocation: any;
   @ViewChild('sslCertLocation') sslCertLocation: any;
+  @ViewChild('logRotateFileSize') logRotateFileSize: any;
+  @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
   @ViewChild('callbacksGrid') callbacksGrid: jqxGridComponent;
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
