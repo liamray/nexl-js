@@ -12,29 +12,20 @@ import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent {
-  @ViewChild('settingsWindow')
-  settingsWindow: jqxWindowComponent;
-
-  @ViewChild('pathWindow')
-  pathWindow: any;
-
-  @ViewChild('ribbon')
-  ribbon: jqxRibbonComponent;
-
-  @ViewChild('validator')
-  validator: jqxValidator;
-
-  @ViewChild('httpPort')
-  httpPort: any;
-
-  @ViewChild('callbacksGrid')
-  callbacksGrid: jqxGridComponent;
-
-  @ViewChild('saveButton')
-  saveButton: jqxButtonComponent;
-
-  @ViewChild('cancelButton')
-  cancelButton: jqxButtonComponent;
+  @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
+  @ViewChild('pathWindow') pathWindow: any;
+  @ViewChild('ribbon') ribbon: jqxRibbonComponent;
+  @ViewChild('validator') validator: jqxValidator;
+  @ViewChild('httpTimeout') httpTimeout: any;
+  @ViewChild('httpBinding') httpBiding: any;
+  @ViewChild('httpPort') httpPort: any;
+  @ViewChild('httpsBinding') httpsBiding: any;
+  @ViewChild('httpsPort') httpsPort: any;
+  @ViewChild('sslKeyLocation') sslKeyLocation: any;
+  @ViewChild('sslCertLocation') sslCertLocation: any;
+  @ViewChild('callbacksGrid') callbacksGrid: jqxGridComponent;
+  @ViewChild('saveButton') saveButton: jqxButtonComponent;
+  @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   isSaving: boolean;
   width = 190;
@@ -78,6 +69,13 @@ export class SettingsComponent {
   validationRules =
     [
       {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
+      {
+        input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
+        rule: (input: any, commit: any): any => {
+          const val = this.httpTimeout.val() || '0';
+          return UtilsService.isPositiveIneger(val);
+        }
+      },
       {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
       {input: '#httpPort', message: 'HTTP port is required!', action: 'keyup, blur', rule: 'required'},
       {
@@ -85,6 +83,22 @@ export class SettingsComponent {
         rule: (input: any, commit: any): any => {
           const val = this.httpPort.val() || '';
           return UtilsService.isPositiveIneger(val);
+        }
+      },
+      {
+        input: '#httpsPort', message: 'HTTPS port must be a positive integer', action: 'keyup, blur',
+        rule: (input: any, commit: any): any => {
+          const val = this.httpsPort.val() || '0';
+          return UtilsService.isPositiveIneger(val);
+        }
+      },
+      {
+        input: '#sslCertLocation',
+        message: 'You have to provide all those HTTPS binding and SSL setting for HTTPS connector. Leave those 4 fields empty if don\'t need SSL connection',
+        action: 'keyup, blur',
+        rule: (input: any, commit: any): any => {
+          const vals = [this.httpsBiding.val(), this.httpsPort.val(), this.sslKeyLocation.val(), this.sslCertLocation.val()];
+          return UtilsService.areAllEmpty(vals) || UtilsService.areAllNotEmpty(vals);
         }
       }
     ];

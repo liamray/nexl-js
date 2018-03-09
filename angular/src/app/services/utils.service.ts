@@ -8,4 +8,24 @@ export class UtilsService {
   static isPositiveIneger(str) {
     return str.match(/^[0-9]+$/) !== null;
   }
+
+  static areAllEmpty(arr) {
+    for (let index in arr) {
+      if (arr[index] !== '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static areAllNotEmpty(arr) {
+    for (let index in arr) {
+      if (arr[index] === '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
