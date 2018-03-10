@@ -58,7 +58,11 @@ router.post('/save', function (req, res, next) {
 	const data = {};
 	for (let index in SETTINGS_2_LOAD) {
 		const key = SETTINGS_2_LOAD[index];
-		data[key] = req.body[key];
+		let val = req.body[key];
+		if (val === undefined) {
+			val = settings.resolveDefaultValue(key);
+		}
+		data[key] = val;
 	}
 
 	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
