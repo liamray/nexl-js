@@ -17,7 +17,7 @@ function init() {
 	});
 
 	// loading log setting
-	const logFile = settings.get(settings.LOG_FILE);
+	const logFile = settings.get(settings.LOG_FILE_LOCATION);
 	const logRotateFileSize = settings.get(settings.LOG_ROTATE_FILE_SIZE);
 	const logRotateFilesCount = settings.get(settings.LOG_ROTATE_FILES_COUNT);
 	const logLevel = settings.get(settings.LOG_LEVEL);

@@ -45,6 +45,7 @@ import {LoaderService} from "../services/loader.service";
 import {SettingsComponent} from './settings/settings.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
 import {PathComponent} from "./settings/path/path.component";
+import {SettingsService} from "../services/settings.service";
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import {PathComponent} from "./settings/path/path.component";
     NexlSourcesService,
     AuthService,
     PermissionsService,
-    LoaderService
+    LoaderService,
+    SettingsService
   ],
 
   entryComponents: [],

@@ -25,8 +25,8 @@ const reservedRoute = require('../routes/reserved/reserved-route');
 class NexlApp {
 	constructor() {
 		// resolving port from settings
-		this.httpBinding = settings.get(settings.NEXL_HTTP_BINDING);
-		this.httpPort = settings.get(settings.NEXL_HTTP_PORT);
+		this.httpBinding = settings.get(settings.HTTP_BINDING);
+		this.httpPort = settings.get(settings.HTTP_PORT);
 
 		// creating app
 		this.nexlApp = express();

@@ -48,6 +48,7 @@
               <div class="item">
                 <label>nexl home dir</label>
                 <jqxInput
+                  [(ngModel)]="settings['nexl-home-dir']"
                   [disabled]="true"
                   [width]="width"
                   [height]="25">
@@ -69,7 +70,8 @@
                 <label>nexl sources dir</label>
                 <jqxInput
                   id="nexlSourcesDir"
-                  [value]="nexlSourcesDir"
+                  name="nexlSourcesDir"
+                  [(ngModel)]="settings['nexl-sources-dir']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -117,6 +119,7 @@
                 <label>nexl sources encoding</label>
                 <jqxDropDownList
                   style="margin-top: -4px;"
+                  [(ngModel)]="settings['nexl-sources-encoding']"
                   [width]="width - 50"
                   [height]="25"
                   [dropDownHeight]="53"
@@ -141,6 +144,7 @@
                 <jqxInput
                   #httpTimeout
                   id="httpTimeout"
+                  [(ngModel)]="settings['http-timeout']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -158,9 +162,10 @@
 
               <!--LDAP auth-->
               <div class="item">
-                <label>LDAP authentication</label>
+                <label>LDAP URL</label>
                 <jqxInput
-                  id="ldapAuthentiction"
+                  id="ldapUrl"
+                  [(ngModel)]="settings['ldap-url']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -185,6 +190,7 @@
                 <jqxInput
                   #httpBinding
                   id="httpBinding"
+                  [(ngModel)]="settings['http-binding']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -205,6 +211,7 @@
                 <jqxInput
                   #httpPort
                   id="httpPort"
+                  [(ngModel)]="settings['http-port']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -227,6 +234,7 @@
                 <jqxInput
                   #httpsBinding
                   id="httpsBinding"
+                  [(ngModel)]="settings['https-binding']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -247,6 +255,7 @@
                 <jqxInput
                   #httpsPort
                   id="httpsPort"
+                  [(ngModel)]="settings['https-port']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -267,6 +276,7 @@
                 <jqxInput
                   #sslKeyLocation
                   id="sslKeyLocation"
+                  [(ngModel)]="settings['ssl-key-location']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -287,6 +297,7 @@
                 <jqxInput
                   #sslCertLocation
                   id="sslCertLocation"
+                  [(ngModel)]="settings['ssl-cert-location']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -312,6 +323,7 @@
                 <jqxInput
                   #logFileLocation
                   id="logFileLocation"
+                  [(ngModel)]="settings['log-file-location']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -330,6 +342,7 @@
               <div class="item" style="margin-top: 10px;">
                 <label>Log level</label>
                 <jqxDropDownList
+                  [(ngModel)]="settings['log-level']"
                   [width]="width - 50"
                   [height]="25"
                   [dropDownHeight]="130"
@@ -353,6 +366,7 @@
                 <jqxInput
                   #logRotateFileSize
                   id="logRotateFileSize"
+                  [(ngModel)]="settings['log-rotate-file-size-kb']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -373,6 +387,7 @@
                 <jqxInput
                   #logRotateFilesCount
                   id="logRotateFilesCount"
+                  [(ngModel)]="settings['log-rotate-files-count']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>

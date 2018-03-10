@@ -7,12 +7,23 @@ const cmdLineArgs = require('./cmd-line-args');
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
-const NEXL_HTTP_BINDING = 'http-binding';
-const NEXL_HTTP_PORT = 'http-port';
-const LOG_FILE = 'log-file';
+const NEXL_SOURCES_ENCODING = 'nexl-sources-encoding';
+const HTTP_TIMEOUT = 'http-timeout';
+const LDAP_URL = 'ldap-url';
+
+const HTTP_BINDING = 'http-binding';
+const HTTP_PORT = 'http-port';
+const HTTPS_BINDING = 'https-binding';
+const HTTPS_PORT = 'https-port';
+const SSL_CERT_LOCATION = 'ssl-cert-location';
+const SSL_KEY_LOCATION = 'ssl-key-location';
+
+const LOG_FILE_LOCATION = 'log-file-location';
 const LOG_LEVEL = 'log-level';
 const LOG_ROTATE_FILE_SIZE = 'log-rotate-file-size-kb';
 const LOG_ROTATE_FILES_COUNT = 'log-rotate-files-count';
+
+const NEXL_CALLBACKS = 'nexl-callbacks';
 
 // --------------------------------------------------------------------------------
 
@@ -25,11 +36,11 @@ DEFAULT_VALUES[NEXL_SOURCES_DIR] = function () {
 };
 
 // http binding and port
-DEFAULT_VALUES[NEXL_HTTP_BINDING] = 'localhost';
-DEFAULT_VALUES[NEXL_HTTP_PORT] = 3000;
+DEFAULT_VALUES[HTTP_BINDING] = 'localhost';
+DEFAULT_VALUES[HTTP_PORT] = 3000;
 
 // def value for nexl sources dire
-DEFAULT_VALUES[LOG_FILE] = function () {
+DEFAULT_VALUES[LOG_FILE_LOCATION] = function () {
 	return path.join(confMgmt.resolveNexlHomeDir(), 'nexl.log');
 };
 
@@ -74,21 +85,20 @@ function set(name, value) {
 
 // --------------------------------------------------------------------------------
 module.exports.NEXL_SOURCES_DIR = NEXL_SOURCES_DIR;
-// nexl sources path
-// nexl sources encoding
-// http timeout
-// ldap auth
-// https binding
-// https port
-// ssl cert location
-// ssl key location
-// callbacks
-//
+module.exports.NEXL_SOURCES_ENCODING = NEXL_SOURCES_ENCODING;
+module.exports.HTTP_TIMEOUT = HTTP_TIMEOUT;
+module.exports.LDAP_URL = LDAP_URL;
 
-module.exports.NEXL_HTTP_BINDING = NEXL_HTTP_BINDING;
-module.exports.NEXL_HTTP_PORT = NEXL_HTTP_PORT;
+module.exports.HTTP_BINDING = HTTP_BINDING;
+module.exports.HTTP_PORT = HTTP_PORT;
+module.exports.HTTPS_BINDING = HTTPS_BINDING;
+module.exports.HTTPS_PORT = HTTPS_PORT;
+module.exports.SSL_CERT_LOCATION = SSL_CERT_LOCATION;
+module.exports.SSL_KEY_LOCATION = SSL_KEY_LOCATION;
 
-module.exports.LOG_FILE = LOG_FILE;
+module.exports.NEXL_CALLBACKS = NEXL_CALLBACKS;
+
+module.exports.LOG_FILE_LOCATION = LOG_FILE_LOCATION;
 module.exports.LOG_LEVEL = LOG_LEVEL;
 module.exports.LOG_ROTATE_FILE_SIZE = LOG_ROTATE_FILE_SIZE;
 module.exports.LOG_ROTATE_FILES_COUNT = LOG_ROTATE_FILES_COUNT;

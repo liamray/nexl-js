@@ -5,6 +5,8 @@ import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribb
 import jqxValidator = jqwidgets.jqxValidator;
 import {UtilsService} from "../../services/utils.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
+import {SettingsService} from "../../services/settings.service";
+import {LoaderService} from "../../services/loader.service";
 
 @Component({
   selector: 'app-settings',
@@ -29,7 +31,7 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  nexlSourcesDir = '/home/l/nexl-sources';
+  settings = {};
   isSaving: boolean;
   width = 190;
   encodings = ['utf8', 'ascii'];
@@ -106,9 +108,26 @@ export class SettingsComponent {
       }
     ];
 
+  constructor(private settingsService: SettingsService, private loaderService: LoaderService) {
+
+  }
 
   open() {
-    this.settingsWindow.open();
+    // opening indicator
+    this.loaderService.loader.open();
+
+    // loading data
+    this.settingsService.load().subscribe(
+      (data: any) => {
+        this.settings = data.body;
+        this.loaderService.loader.close();
+        this.settingsWindow.open();
+      },
+      err => {
+        this.loaderService.loader.close();
+        alert('Something went wrong !');
+        console.log(err);
+      });
   }
 
   initContent = () => {
