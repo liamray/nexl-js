@@ -29,6 +29,7 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
+  nexlSourcesDir = '/home/l/nexl-sources';
   isSaving: boolean;
   width = 190;
   encodings = ['utf8', 'ascii'];

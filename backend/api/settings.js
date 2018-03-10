@@ -74,6 +74,16 @@ function set(name, value) {
 
 // --------------------------------------------------------------------------------
 module.exports.NEXL_SOURCES_DIR = NEXL_SOURCES_DIR;
+// nexl sources path
+// nexl sources encoding
+// http timeout
+// ldap auth
+// https binding
+// https port
+// ssl cert location
+// ssl key location
+// callbacks
+//
 
 module.exports.NEXL_HTTP_BINDING = NEXL_HTTP_BINDING;
 module.exports.NEXL_HTTP_PORT = NEXL_HTTP_PORT;
