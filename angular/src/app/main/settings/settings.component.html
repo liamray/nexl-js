@@ -48,6 +48,7 @@
               <div class="item">
                 <label>nexl home dir</label>
                 <jqxInput
+                  name="nexlHomeDir"
                   [(ngModel)]="settings['nexl-home-dir']"
                   [disabled]="true"
                   [width]="width"
@@ -119,6 +120,7 @@
                 <label>nexl sources encoding</label>
                 <jqxDropDownList
                   style="margin-top: -4px;"
+                  name="nexlSourcesEncoding"
                   [(ngModel)]="settings['nexl-sources-encoding']"
                   [width]="width - 50"
                   [height]="25"
@@ -144,6 +146,7 @@
                 <jqxInput
                   #httpTimeout
                   id="httpTimeout"
+                  name="httpTimeout"
                   [(ngModel)]="settings['http-timeout']"
                   [width]="width"
                   [height]="25">
@@ -165,6 +168,7 @@
                 <label>LDAP URL</label>
                 <jqxInput
                   id="ldapUrl"
+                  name="ldapUrl"
                   [(ngModel)]="settings['ldap-url']"
                   [width]="width"
                   [height]="25">
@@ -190,6 +194,7 @@
                 <jqxInput
                   #httpBinding
                   id="httpBinding"
+                  name="httpBinding"
                   [(ngModel)]="settings['http-binding']"
                   [width]="width"
                   [height]="25">
@@ -211,6 +216,7 @@
                 <jqxInput
                   #httpPort
                   id="httpPort"
+                  name="httpPort"
                   [(ngModel)]="settings['http-port']"
                   [width]="width"
                   [height]="25">
@@ -234,6 +240,7 @@
                 <jqxInput
                   #httpsBinding
                   id="httpsBinding"
+                  name="httpsBinding"
                   [(ngModel)]="settings['https-binding']"
                   [width]="width"
                   [height]="25">
@@ -255,6 +262,7 @@
                 <jqxInput
                   #httpsPort
                   id="httpsPort"
+                  name="httpsPort"
                   [(ngModel)]="settings['https-port']"
                   [width]="width"
                   [height]="25">
@@ -276,6 +284,7 @@
                 <jqxInput
                   #sslKeyLocation
                   id="sslKeyLocation"
+                  name="sslKeyLocation"
                   [(ngModel)]="settings['ssl-key-location']"
                   [width]="width"
                   [height]="25">
@@ -297,6 +306,7 @@
                 <jqxInput
                   #sslCertLocation
                   id="sslCertLocation"
+                  name="sslCertLocation"
                   [(ngModel)]="settings['ssl-cert-location']"
                   [width]="width"
                   [height]="25">
@@ -323,6 +333,7 @@
                 <jqxInput
                   #logFileLocation
                   id="logFileLocation"
+                  name="logFileLocation"
                   [(ngModel)]="settings['log-file-location']"
                   [width]="width"
                   [height]="25">
@@ -342,6 +353,7 @@
               <div class="item" style="margin-top: 10px;">
                 <label>Log level</label>
                 <jqxDropDownList
+                  name="logLevel"
                   [(ngModel)]="settings['log-level']"
                   [width]="width - 50"
                   [height]="25"
@@ -366,6 +378,7 @@
                 <jqxInput
                   #logRotateFileSize
                   id="logRotateFileSize"
+                  name="logRotateFileSize"
                   [(ngModel)]="settings['log-rotate-file-size-kb']"
                   [width]="width"
                   [height]="25">
@@ -387,6 +400,7 @@
                 <jqxInput
                   #logRotateFilesCount
                   id="logRotateFilesCount"
+                  name="logRotateFilesCount"
                   [(ngModel)]="settings['log-rotate-files-count']"
                   [width]="width"
                   [height]="25">
