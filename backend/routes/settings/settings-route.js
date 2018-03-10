@@ -10,17 +10,6 @@ const logger = require('../../api/logger');
 
 const SETTINGS_2_LOAD = [settings.NEXL_SOURCES_DIR, settings.NEXL_SOURCES_ENCODING, settings.HTTP_TIMEOUT, settings.LDAP_URL, settings.HTTP_BINDING, settings.HTTP_PORT, settings.HTTPS_BINDING, settings.HTTPS_PORT, settings.SSL_CERT_LOCATION, settings.SSL_KEY_LOCATION, settings.LOG_FILE_LOCATION, settings.LOG_LEVEL, settings.LOG_ROTATE_FILE_SIZE, settings.LOG_ROTATE_FILES_COUNT, settings.NEXL_CALLBACKS];
 
-function filterSettings(settings) {
-	const result = {};
-	for (let key in settings) {
-		if (SETTINGS_2_LOAD.indexOf(key) >= 0) {
-			result[key] = settings[key];
-		}
-	}
-
-	return result;
-}
-
 router.post('/load', function (req, res, next) {
 	const username = utils.resolveUsername(req);
 	logger.log.debug('Loading settings for [%s] user', username);
@@ -32,12 +21,26 @@ router.post('/load', function (req, res, next) {
 		return;
 	}
 
-	// load setting one by one according to SETTINGS_2_LOAD
-	// optimize settings.get() method -> allow to pass a whole object
+	// loading all settings
 	let allSettings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
-	let filteredSettings = filterSettings(allSettings);
-	filteredSettings['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
-	res.send(filteredSettings);
+	const data = {};
+
+	// building a data object where it's key set is a SETTINGS_2_LOAD and values are stored in allSettings
+	for (let index in SETTINGS_2_LOAD) {
+		const key = SETTINGS_2_LOAD[index];
+
+		let val = allSettings[key];
+		if (val === undefined) {
+			val = settings.resolveDefaultValue(key);
+		}
+
+		data[key] = val;
+	}
+
+	// adding nexl home dir which is not apart of settings, but requires to display
+	data['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
+
+	res.send(data);
 });
 
 router.post('/save', function (req, res, next) {
@@ -51,10 +54,14 @@ router.post('/save', function (req, res, next) {
 		return;
 	}
 
-	// load all settings, iterate over new items and compare with loaded ( of course filter items by SETTINGS_2_LOAD )
+	// filtering settings
+	const data = {};
+	for (let index in SETTINGS_2_LOAD) {
+		const key = SETTINGS_2_LOAD[index];
+		data[key] = req.body[key];
+	}
 
-	confMgmt.save(req.body.admins, confMgmt.CONF_FILES.ADMINS);
-	confMgmt.save(req.body.assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
+	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
 
 	res.send({});
 });

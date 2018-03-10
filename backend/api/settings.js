@@ -105,4 +105,5 @@ module.exports.LOG_ROTATE_FILES_COUNT = LOG_ROTATE_FILES_COUNT;
 
 module.exports.get = get;
 module.exports.set = set;
+module.exports.resolveDefaultValue = resolveDefaultValue;
 // --------------------------------------------------------------------------------

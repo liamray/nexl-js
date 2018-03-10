@@ -146,9 +146,22 @@ export class SettingsComponent {
   }
 
   onValidationSuccess(event) {
-    if (this.isSaving) {
-      this.settingsWindow.close();
+    if (!this.isSaving) {
+      return;
     }
+
+    this.settingsWindow.close();
+    this.loaderService.loader.open();
+
+    this.settingsService.save(this.settings).subscribe(
+      val => {
+        this.loaderService.loader.close();
+      },
+      err => {
+        this.loaderService.loader.close();
+        alert('Something went wrong !');
+        console.log(err);
+      });
   }
 
   onValidationError(event) {
