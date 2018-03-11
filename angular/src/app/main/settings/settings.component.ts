@@ -18,6 +18,7 @@ export class SettingsComponent {
   @ViewChild('pathWindow') pathWindow: any;
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
   @ViewChild('validator') validator: jqxValidator;
+  @ViewChild('nexlSourcesEncoding') nexlSourcesEncoding: any;
   @ViewChild('httpTimeout') httpTimeout: any;
   @ViewChild('httpBinding') httpBiding: any;
   @ViewChild('httpPort') httpPort: any;
@@ -25,6 +26,7 @@ export class SettingsComponent {
   @ViewChild('httpsPort') httpsPort: any;
   @ViewChild('sslKeyLocation') sslKeyLocation: any;
   @ViewChild('sslCertLocation') sslCertLocation: any;
+  @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
   @ViewChild('callbacksGrid') callbacksGrid: jqxGridComponent;
@@ -117,10 +119,12 @@ export class SettingsComponent {
     this.loaderService.loader.open();
 
     // loading data
-    this.settingsService.load().subscribe(
+    this.settingsService.service({}, 'load').subscribe(
       (data: any) => {
         this.settings = data.body;
         this.loaderService.loader.close();
+        this.logLevel.val(this.settings['log-level']);
+        this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
         this.settingsWindow.open();
       },
       err => {
@@ -153,7 +157,7 @@ export class SettingsComponent {
     this.settingsWindow.close();
     this.loaderService.loader.open();
 
-    this.settingsService.save(this.settings).subscribe(
+    this.settingsService.service(this.settings, 'save').subscribe(
       val => {
         this.loaderService.loader.close();
       },

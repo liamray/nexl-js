@@ -54,6 +54,7 @@ function logHttpRequest(req, res, next) {
 // --------------------------------------------------------------------------------
 module.exports.init = init;
 module.exports.log = winston;
+module.exports.LEVELS = Object.keys(winston.levels);
 module.exports.logHttpRequest = logHttpRequest;
 module.exports.isLogLevel = isLogLevel;
 module.exports.getAvailLevels = getAvailLevels;

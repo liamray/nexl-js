@@ -1,9 +1,11 @@
 const osHomeDir = require('os-homedir');
 const path = require('path');
 const j79 = require('j79-utils');
+const logger = require('./logger');
 
 const confMgmt = require('./conf-mgmt');
-const cmdLineArgs = require('./cmd-line-args');
+
+// todo : bind all settings constants in one object
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
@@ -48,7 +50,31 @@ DEFAULT_VALUES[LOG_LEVEL] = 'info';
 DEFAULT_VALUES[LOG_ROTATE_FILES_COUNT] = 999;
 DEFAULT_VALUES[LOG_ROTATE_FILE_SIZE] = 0; // not rolling
 
+
 // --------------------------------------------------------------------------------
+
+// validations
+const VALIDATORS = {};
+const AVAILABLE_ENCODINGS = ['utf8', 'ascii'];
+
+VALIDATORS[LOG_LEVEL] = function (key, val) {
+	return logger.LEVELS.indexOf(val) >= 0;
+};
+
+VALIDATORS[NEXL_SOURCES_ENCODING] = function (key, val) {
+	return AVAILABLE_ENCODINGS.indexOf(val) >= 0;
+};
+
+// --------------------------------------------------------------------------------
+
+function isValid(key, val) {
+	const validator = VALIDATORS[key];
+	if (validator === undefined) {
+		return true;
+	}
+
+	return validator(key, val);
+}
 
 function resolveDefaultValue(name) {
 	const value = DEFAULT_VALUES[name];
@@ -103,7 +129,10 @@ module.exports.LOG_LEVEL = LOG_LEVEL;
 module.exports.LOG_ROTATE_FILE_SIZE = LOG_ROTATE_FILE_SIZE;
 module.exports.LOG_ROTATE_FILES_COUNT = LOG_ROTATE_FILES_COUNT;
 
+module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
+
 module.exports.get = get;
 module.exports.set = set;
 module.exports.resolveDefaultValue = resolveDefaultValue;
+module.exports.isValid = isValid;
 // --------------------------------------------------------------------------------

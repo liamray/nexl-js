@@ -19,12 +19,4 @@ export class SettingsService {
 
     return this.httpClient.post<any>(url, data, opts);
   }
-
-  load() {
-    return this.service({}, 'load');
-  }
-
-  save(data) {
-    return this.service(data, 'save');
-  }
 }

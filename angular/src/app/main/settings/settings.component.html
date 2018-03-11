@@ -121,6 +121,7 @@
                 <jqxDropDownList
                   style="margin-top: -4px;"
                   name="nexlSourcesEncoding"
+                  #nexlSourcesEncoding
                   [(ngModel)]="settings['nexl-sources-encoding']"
                   [width]="width - 50"
                   [height]="25"
@@ -354,6 +355,7 @@
                 <label>Log level</label>
                 <jqxDropDownList
                   name="logLevel"
+                  #logLevel
                   [(ngModel)]="settings['log-level']"
                   [width]="width - 50"
                   [height]="25"
