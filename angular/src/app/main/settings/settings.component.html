@@ -36,7 +36,7 @@
             <li>General</li>
             <li>Bindings & SSL</li>
             <li>Logger</li>
-            <li>Callbacks</li>
+            <li>Notifications</li>
             <li>UI</li>
           </ul>
 
@@ -420,13 +420,13 @@
             </div>
 
             <!-- ------------------------------------------------------------------------------ -->
-            <!--Callbacks-->
+            <!--Notifications-->
             <div>
               <div style="margin: 5px;">
                 <div style="float:left">
                   Click
                   <jqxButton (click)="addNewItem()">here</jqxButton>
-                  to add a new callback&nbsp;
+                  to add a new notification&nbsp;
                 </div>
 
                 <div>
@@ -441,9 +441,9 @@
                 <div style="clear: both; height: 5px;"></div>
 
                 <jqxGrid
-                  #callbacksGrid
-                  [source]="callbacksDataAdapter"
-                  [columns]="callbackColumns"
+                  #notificationsGrid
+                  [source]="notificationsDataAdapter"
+                  [columns]="notificationsColumns"
                   [width]="'100%'"
                   [height]="'265px'"
                   [filterable]="false"

@@ -5,7 +5,7 @@ const logger = require('./logger');
 
 const confMgmt = require('./conf-mgmt');
 
-// todo : bind all settings constants in one object
+// todo : bind all settings constants in one object...
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';

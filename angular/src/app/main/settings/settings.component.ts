@@ -29,7 +29,7 @@ export class SettingsComponent {
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
-  @ViewChild('callbacksGrid') callbacksGrid: jqxGridComponent;
+  @ViewChild('notificationsGrid') notificationsGrid: jqxGridComponent;
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
@@ -39,20 +39,20 @@ export class SettingsComponent {
   encodings = ['utf8', 'ascii'];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
   logLevels = ['fatal', 'error', 'info', 'debug', 'verbose'];
-  callbackSource =
+  notificationsSource =
     {
       localdata: [],
       datafields: [
-        {name: 'admins', type: 'string', map: '0'}
+        {name: 'notifications', type: 'string', map: '0'}
       ],
       datatype: 'array'
     };
-  callbacksDataAdapter = new jqx.dataAdapter(this.callbackSource);
-  callbackColumns: any[] =
+  notificationsDataAdapter = new jqx.dataAdapter(this.notificationsSource);
+  notificationsColumns: any[] =
     [
       {
-        text: 'Callbacks',
-        datafield: 'Callbacks',
+        text: 'Notifications',
+        datafield: 'Notifications',
         align: 'center',
         width: '360px'
       },
@@ -67,8 +67,8 @@ export class SettingsComponent {
           return 'Delete';
         },
         buttonclick: (row: number): void => {
-          const rowdata = this.callbacksGrid.getrowdata(row);
-          this.callbacksGrid.deleterow(rowdata.uid);
+          const rowdata = this.notificationsGrid.getrowdata(row);
+          this.notificationsGrid.deleterow(rowdata.uid);
         }
       }
     ];
@@ -173,6 +173,6 @@ export class SettingsComponent {
   }
 
   addNewItem() {
-    this.callbacksGrid.addrow(1, {});
+    this.notificationsGrid.addrow(1, {});
   }
 }
