@@ -5,8 +5,8 @@ import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribb
 import jqxValidator = jqwidgets.jqxValidator;
 import {UtilsService} from "../../services/utils.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
-import {SettingsService} from "../../services/settings.service";
 import {LoaderService} from "../../services/loader.service";
+import {HttpRequestService} from "../../services/http.requests.service";
 
 @Component({
   selector: 'app-settings',
@@ -110,7 +110,7 @@ export class SettingsComponent {
       }
     ];
 
-  constructor(private settingsService: SettingsService, private loaderService: LoaderService) {
+  constructor(private http: HttpRequestService, private loaderService: LoaderService) {
 
   }
 
@@ -119,7 +119,7 @@ export class SettingsComponent {
     this.loaderService.loader.open();
 
     // loading data
-    this.settingsService.service({}, 'load').subscribe(
+    this.http.json({}, '/settings/load').subscribe(
       (data: any) => {
         this.settings = data.body;
         this.loaderService.loader.close();
@@ -157,7 +157,7 @@ export class SettingsComponent {
     this.settingsWindow.close();
     this.loaderService.loader.open();
 
-    this.settingsService.service(this.settings, 'save').subscribe(
+    this.http.json(this.settings, '/settings/save').subscribe(
       val => {
         this.loaderService.loader.close();
       },

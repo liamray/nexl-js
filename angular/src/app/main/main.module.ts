@@ -30,22 +30,21 @@ import {NexlSourcesExplorerComponent} from './content/nexl-sources-explorer/nexl
 import {NexlSourcesEditorComponent} from './content/nexl-source-editor/nexl-sources-editor.component';
 import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/nexl-expressions-tester.component';
 
-import {NexlSourcesService} from "../services/nexl-sources.service";
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
 import {LoginComponent} from './login/login.component';
-import {AuthService} from "../services/auth.service";
 import {FormsModule} from "@angular/forms";
 import {PermissionsComponent} from './permissions/permissions.component';
 import {AdminsComponent} from './permissions/admins/admins.component';
 import {AssignPermissionsComponent} from './permissions/assignpermissions/assignpermissions.component';
-import {PermissionsService} from "../services/permissions.service";
 import {LoaderComponent} from './loader/loader.component';
 import {LoaderService} from "../services/loader.service";
 import {SettingsComponent} from './settings/settings.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
 import {PathComponent} from "./settings/path/path.component";
-import {SettingsService} from "../services/settings.service";
+import {HttpRequestService} from "../services/http.requests.service";
+import {AuthService} from "../services/auth.service";
+import {NexlSourcesService} from "../services/nexl-sources.service";
 
 @NgModule({
   declarations: [
@@ -94,11 +93,10 @@ import {SettingsService} from "../services/settings.service";
   ],
 
   providers: [
-    NexlSourcesService,
-    AuthService,
-    PermissionsService,
     LoaderService,
-    SettingsService
+    AuthService,
+    NexlSourcesService,
+    HttpRequestService
   ],
 
   entryComponents: [],

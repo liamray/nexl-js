@@ -4,27 +4,18 @@ import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 
 @Injectable()
-export class PermissionsService {
+export class HttpRequestService {
   constructor(private httpClient: HttpClient) {
   }
 
-  service(data, action) {
-    const url = UtilsService.prefixUrl('/permissions/' + action);
-
+  json(data, url) {
     const opts: any = {
       observe: 'response',
       responseType: 'json',
       body: data
     };
 
-    return this.httpClient.post<any>(url, data, opts);
+    return this.httpClient.post<any>(UtilsService.prefixUrl(url), data, opts);
   }
 
-  load() {
-    return this.service({}, 'load');
-  }
-
-  save(data) {
-    return this.service(data, 'save');
-  }
 }

@@ -3,9 +3,9 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
 import {LoaderService} from "../../services/loader.service";
-import {PermissionsService} from "../../services/permissions.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
+import {HttpRequestService} from "../../services/http.requests.service";
 
 
 @Component({
@@ -23,7 +23,7 @@ export class PermissionsComponent implements AfterViewInit {
 
   permissions: any;
 
-  constructor(private loaderService: LoaderService, private permissionsService: PermissionsService) {
+  constructor(private loaderService: LoaderService, private http: HttpRequestService) {
   }
 
   ngAfterViewInit() {
@@ -35,7 +35,7 @@ export class PermissionsComponent implements AfterViewInit {
     this.loaderService.loader.open();
 
     // loading data
-    this.permissionsService.load().subscribe(
+    this.http.json({}, '/permissions/load').subscribe(
       (data: any) => {
         this.permissions = data.body;
         this.loaderService.loader.close();
@@ -57,7 +57,7 @@ export class PermissionsComponent implements AfterViewInit {
     this.permissions.admins = this.admins.get();
     this.permissions.assignPermissions = this.assignpermissions.get();
 
-    this.permissionsService.save(this.permissions).subscribe(
+    this.http.json(this.permissions, '/permissions/save').subscribe(
       val => {
         this.loaderService.loader.close();
       },
