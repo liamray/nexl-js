@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
@@ -36,9 +36,9 @@ export class SettingsComponent {
   settings = {};
   isSaving: boolean;
   width = 190;
-  encodings = ['utf8', 'ascii'];
+  encodings = [];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
-  logLevels = ['fatal', 'error', 'info', 'debug', 'verbose'];
+  logLevels = [];
   notificationsSource =
     {
       localdata: [],
@@ -114,10 +114,7 @@ export class SettingsComponent {
 
   }
 
-  open() {
-    // opening indicator
-    this.loaderService.loader.open();
-
+  openInner() {
     // loading data
     this.http.json({}, '/settings/load').subscribe(
       (data: any) => {
@@ -132,6 +129,31 @@ export class SettingsComponent {
         alert('Something went wrong !');
         console.log(err);
       });
+
+  }
+
+  open() {
+    // opening indicator
+    this.loaderService.loader.open();
+
+    if (this.encodings.length > 0 && this.logLevels.length > 0) {
+      this.openInner();
+      return;
+    }
+
+    // loading available values from server
+    this.http.json({}, '/settings/avail-values').subscribe(
+      (data: any) => {
+        this.encodings = data.body.encodings;
+        this.logLevels = data.body.logLevels;
+        this.openInner();
+      },
+      err => {
+        this.loaderService.loader.close();
+        alert('Something went wrong !');
+        console.log(err);
+      }
+    );
   }
 
   initContent = () => {

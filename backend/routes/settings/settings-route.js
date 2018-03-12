@@ -14,6 +14,15 @@ const logger = require('../../api/logger');
 
 const SETTINGS_2_LOAD = [settings.NEXL_SOURCES_DIR, settings.NEXL_SOURCES_ENCODING, settings.HTTP_TIMEOUT, settings.LDAP_URL, settings.HTTP_BINDING, settings.HTTP_PORT, settings.HTTPS_BINDING, settings.HTTPS_PORT, settings.SSL_CERT_LOCATION, settings.SSL_KEY_LOCATION, settings.LOG_FILE_LOCATION, settings.LOG_LEVEL, settings.LOG_ROTATE_FILE_SIZE, settings.LOG_ROTATE_FILES_COUNT, settings.NEXL_CALLBACKS];
 
+router.post('/avail-values', function (req, res, next) {
+	const data = {
+		logLevels: logger.getAvailLevels(),
+		encodings: settings.AVAILABLE_ENCODINGS
+	};
+
+	res.send(data);
+});
+
 router.post('/load', function (req, res, next) {
 	const username = utils.resolveUsername(req);
 	logger.log.debug('Loading settings for [%s] user', username);
