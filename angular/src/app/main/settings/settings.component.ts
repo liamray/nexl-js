@@ -101,7 +101,7 @@ export class SettingsComponent {
       },
       {
         input: '#sslCertLocation',
-        message: 'You have to provide all those HTTPS binding and SSL setting for HTTPS connector. Leave those 4 fields empty if don\'t need SSL connection',
+        message: 'Please provide all those 4 fields to setup HTTPS connection ( or leave everything empty )',
         action: 'keyup, blur',
         rule: (input: any, commit: any): any => {
           const vals = [this.httpsBiding.val(), this.httpsPort.val(), this.sslKeyLocation.val(), this.sslCertLocation.val()];

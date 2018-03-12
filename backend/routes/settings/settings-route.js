@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const util = require('util');
+const j79 = require('j79-utils');
 
 const utils = require('../../api/utils');
 const security = require('../../api/security');
@@ -57,21 +58,38 @@ router.post('/save', function (req, res, next) {
 		return;
 	}
 
-	// filtering settings
+	// filtering and validating settings
 	const data = {};
 	for (let index in SETTINGS_2_LOAD) {
 		const key = SETTINGS_2_LOAD[index];
+
 		let val = req.body[key];
 		if (val === undefined) {
 			val = settings.resolveDefaultValue(key);
 		}
 
+		// validating
 		if (!settings.isValid(key, val)) {
 			utils.sendError(res, util.format('Unacceptable value for [%s] key', key));
 			return;
 		}
 
 		data[key] = val;
+	}
+
+	// special SSL settings validation
+	const sslSettings = [data[settings.HTTPS_BINDING], data[settings.HTTPS_PORT], data[settings.SSL_CERT_LOCATION], data[settings.SSL_KEY_LOCATION]];
+	let valuesCnt = 0;
+	for (let index in sslSettings) {
+		const val = sslSettings[index];
+		if (j79.isString(val) && val !== '') {
+			valuesCnt++;
+		}
+	}
+
+	if (valuesCnt !== 0 && valuesCnt !== 4) {
+		utils.sendError(res, util.format('Please provide all 4 following parameters to setup HTTPS connection : https binding, https port, ssl cert location, ssl key location. Got only [%s] of them', valuesCnt));
+		return;
 	}
 
 	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
