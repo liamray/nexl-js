@@ -3,6 +3,7 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {UtilsService} from "../../../services/utils.service";
+import {SettingsService} from "../settings.component";
 
 @Component({
   selector: 'app-path',
@@ -50,19 +51,17 @@ export class PathComponent {
       }
     ];
 
+  constructor(private settingsService: SettingsService) {
+  }
+
   addNewItem() {
     this.pathGrid.addrow(1, {});
   }
 
-  open(path) {
-    this.path = path || [];
-    UtilsService.arr2DS(this.path, this.pathSource);
+  open() {
+    UtilsService.arr2DS(this.settingsService.getNexlSourcesPath(), this.pathSource);
     this.pathGrid.updatebounddata();
     this.pathWindow.open();
-  }
-
-  getPath() {
-    return this.path;
   }
 
   initContent = () => {
@@ -71,7 +70,7 @@ export class PathComponent {
   }
 
   save() {
-    this.path = UtilsService.arrFromDS(this.pathGrid.getrows(), 'path');
+    this.settingsService.setNexlSourcesPath(UtilsService.arrFromDS(this.pathGrid.getrows(), 'path'));
     this.pathWindow.close();
   }
 }

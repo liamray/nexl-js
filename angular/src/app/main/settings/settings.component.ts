@@ -8,10 +8,23 @@ import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {LoaderService} from "../../services/loader.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 
+export class SettingsService {
+  path: any;
+
+  getNexlSourcesPath() {
+    return this.path || {};
+  }
+
+  setNexlSourcesPath(path) {
+    this.path = path;
+  }
+}
+
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css']
+  styleUrls: ['./settings.component.css'],
+  providers: [SettingsService]
 })
 export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
@@ -101,7 +114,7 @@ export class SettingsComponent {
       }
     ];
 
-  constructor(private http: HttpRequestService, private loaderService: LoaderService) {
+  constructor(private http: HttpRequestService, private loaderService: LoaderService, private settingsService: SettingsService) {
   }
 
   openInner() {
@@ -114,6 +127,7 @@ export class SettingsComponent {
         this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
         UtilsService.arr2DS(this.settings.notifications || [], this.notificationsSource);
         this.notificationsGrid.updatebounddata();
+        this.settingsService.setNexlSourcesPath(this.settings['nexl-sources-path']);
         this.settingsWindow.open();
       },
       err => {
@@ -171,7 +185,7 @@ export class SettingsComponent {
     this.settingsWindow.close();
     this.loaderService.loader.open();
     this.settings.notifications = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
-    this.settings['nexl-sources-path'] = this.pathWindow.getPath();
+    this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.json(this.settings, '/settings/save').subscribe(
       val => {
@@ -190,9 +204,5 @@ export class SettingsComponent {
 
   addNewItem() {
     this.notificationsGrid.addrow(1, {});
-  }
-
-  openPathWindow() {
-    this.pathWindow.open(this.settings['nexl-sources-path']);
   }
 }
