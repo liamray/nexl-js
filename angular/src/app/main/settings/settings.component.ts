@@ -98,15 +98,6 @@ export class SettingsComponent {
           const val = this.httpsPort.val() || '0';
           return UtilsService.isPositiveIneger(val);
         }
-      },
-      {
-        input: '#sslCertLocation',
-        message: 'Please provide all those 4 fields to setup HTTPS connection ( or leave everything empty )',
-        action: 'keyup, blur',
-        rule: (input: any, commit: any): any => {
-          const vals = [this.httpsBiding.val(), this.httpsPort.val(), this.sslKeyLocation.val(), this.sslCertLocation.val()];
-          return UtilsService.areAllEmpty(vals) || UtilsService.areAllNotEmpty(vals);
-        }
       }
     ];
 

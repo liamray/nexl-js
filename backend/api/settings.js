@@ -38,6 +38,8 @@ DEFAULT_VALUES[NEXL_SOURCES_DIR] = function () {
 // http binding and port
 DEFAULT_VALUES[HTTP_BINDING] = 'localhost';
 DEFAULT_VALUES[HTTP_PORT] = 3000;
+DEFAULT_VALUES[HTTPS_BINDING] = 'localhost';
+DEFAULT_VALUES[HTTPS_PORT] = 443;
 
 // def value for nexl sources dire
 DEFAULT_VALUES[LOG_FILE_LOCATION] = function () {

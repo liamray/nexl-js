@@ -86,21 +86,6 @@ router.post('/save', function (req, res, next) {
 		data[key] = val;
 	}
 
-	// special SSL settings validation
-	const sslSettings = [data[settings.HTTPS_BINDING], data[settings.HTTPS_PORT], data[settings.SSL_CERT_LOCATION], data[settings.SSL_KEY_LOCATION]];
-	let valuesCnt = 0;
-	for (let index in sslSettings) {
-		const val = sslSettings[index];
-		if (j79.isString(val) && val !== '') {
-			valuesCnt++;
-		}
-	}
-
-	if (valuesCnt !== 0 && valuesCnt !== 4) {
-		utils.sendError(res, util.format('Please provide all 4 following parameters to setup HTTPS connection : https binding, https port, ssl cert location, ssl key location. Got only [%s] of them', valuesCnt));
-		return;
-	}
-
 	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
 
 	res.send({});
