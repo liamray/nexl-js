@@ -9,23 +9,20 @@ export class UtilsService {
     return str.match(/^[0-9]+$/) !== null;
   }
 
-  static areAllEmpty(arr) {
-    for (let index in arr) {
-      if (arr[index] !== '') {
-        return false;
-      }
-    }
+  static arr2DS(arr, ds) {
+    ds.localdata = [];
 
-    return true;
+    for (let index in arr) {
+      ds.localdata.push([arr[index]]);
+    }
   }
 
-  static areAllNotEmpty(arr) {
-    for (let index in arr) {
-      if (arr[index] === '') {
-        return false;
-      }
+  static arrFromDS(rows, key) {
+    const result = [];
+    for (let row in rows) {
+      result.push(rows[row][key]);
     }
 
-    return true;
+    return result;
   }
 }

@@ -12,7 +12,7 @@ const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
 
-const SETTINGS_2_LOAD = [settings.NEXL_SOURCES_DIR, settings.NEXL_SOURCES_ENCODING, settings.HTTP_TIMEOUT, settings.LDAP_URL, settings.HTTP_BINDING, settings.HTTP_PORT, settings.HTTPS_BINDING, settings.HTTPS_PORT, settings.SSL_CERT_LOCATION, settings.SSL_KEY_LOCATION, settings.LOG_FILE_LOCATION, settings.LOG_LEVEL, settings.LOG_ROTATE_FILE_SIZE, settings.LOG_ROTATE_FILES_COUNT, settings.NEXL_CALLBACKS];
+const SETTINGS_2_LOAD = [settings.NEXL_SOURCES_DIR, settings.NEXL_SOURCES_PATH, settings.NEXL_SOURCES_ENCODING, settings.HTTP_TIMEOUT, settings.LDAP_URL, settings.HTTP_BINDING, settings.HTTP_PORT, settings.HTTPS_BINDING, settings.HTTPS_PORT, settings.SSL_CERT_LOCATION, settings.SSL_KEY_LOCATION, settings.LOG_FILE_LOCATION, settings.LOG_LEVEL, settings.LOG_ROTATE_FILE_SIZE, settings.LOG_ROTATE_FILES_COUNT, settings.NOTIFICATIONS];
 
 router.post('/avail-values', function (req, res, next) {
 	const data = {

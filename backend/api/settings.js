@@ -7,6 +7,7 @@ const confMgmt = require('./conf-mgmt');
 
 // available settings
 const NEXL_SOURCES_DIR = 'nexl-sources-dir';
+const NEXL_SOURCES_PATH = 'nexl-sources-path';
 const NEXL_SOURCES_ENCODING = 'nexl-sources-encoding';
 const HTTP_TIMEOUT = 'http-timeout';
 const LDAP_URL = 'ldap-url';
@@ -23,7 +24,7 @@ const LOG_LEVEL = 'log-level';
 const LOG_ROTATE_FILE_SIZE = 'log-rotate-file-size-kb';
 const LOG_ROTATE_FILES_COUNT = 'log-rotate-files-count';
 
-const NEXL_CALLBACKS = 'nexl-callbacks';
+const NOTIFICATIONS = 'notifications';
 
 // --------------------------------------------------------------------------------
 
@@ -111,6 +112,7 @@ function set(name, value) {
 
 // --------------------------------------------------------------------------------
 module.exports.NEXL_SOURCES_DIR = NEXL_SOURCES_DIR;
+module.exports.NEXL_SOURCES_PATH = NEXL_SOURCES_PATH;
 module.exports.NEXL_SOURCES_ENCODING = NEXL_SOURCES_ENCODING;
 module.exports.HTTP_TIMEOUT = HTTP_TIMEOUT;
 module.exports.LDAP_URL = LDAP_URL;
@@ -122,7 +124,7 @@ module.exports.HTTPS_PORT = HTTPS_PORT;
 module.exports.SSL_CERT_LOCATION = SSL_CERT_LOCATION;
 module.exports.SSL_KEY_LOCATION = SSL_KEY_LOCATION;
 
-module.exports.NEXL_CALLBACKS = NEXL_CALLBACKS;
+module.exports.NOTIFICATIONS = NOTIFICATIONS;
 
 module.exports.LOG_FILE_LOCATION = LOG_FILE_LOCATION;
 module.exports.LOG_LEVEL = LOG_LEVEL;

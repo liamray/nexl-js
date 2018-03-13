@@ -1,6 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import jqxGrid = jqwidgets.jqxGrid;
+import {UtilsService} from "../../../services/utils.service";
 
 
 @Component({
@@ -65,24 +66,11 @@ export class AdminsComponent implements AfterViewInit {
   }
 
   set(data) {
-    this.source.localdata = [];
-
-    for (let index in data) {
-      const item = data[index];
-      this.source.localdata.push([item]);
-    }
-
+    UtilsService.arr2DS(data, this.source);
     this.adminsGrid.updatebounddata();
   }
 
   get() {
-    // converting rows to normal object
-    const rows = this.adminsGrid.getrows();
-    const result = [];
-    for (let row in rows) {
-      result.push(rows[row]['admins']);
-    }
-
-    return result;
+    return UtilsService.arrFromDS(this.adminsGrid.getrows(), 'admins');
   }
 }

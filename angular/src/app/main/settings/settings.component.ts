@@ -33,7 +33,7 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  settings = {};
+  settings: any = {};
   isSaving: boolean;
   width = 190;
   encodings = [];
@@ -52,7 +52,7 @@ export class SettingsComponent {
     [
       {
         text: 'Notifications',
-        datafield: 'Notifications',
+        datafield: 'notifications',
         align: 'center',
         width: '360px'
       },
@@ -102,7 +102,6 @@ export class SettingsComponent {
     ];
 
   constructor(private http: HttpRequestService, private loaderService: LoaderService) {
-
   }
 
   openInner() {
@@ -113,6 +112,8 @@ export class SettingsComponent {
         this.loaderService.loader.close();
         this.logLevel.val(this.settings['log-level']);
         this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
+        UtilsService.arr2DS(this.settings.notifications || [], this.notificationsSource);
+        this.notificationsGrid.updatebounddata();
         this.settingsWindow.open();
       },
       err => {
@@ -169,6 +170,8 @@ export class SettingsComponent {
 
     this.settingsWindow.close();
     this.loaderService.loader.open();
+    this.settings.notifications = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
+    this.settings['nexl-sources-path'] = this.pathWindow.getPath();
 
     this.http.json(this.settings, '/settings/save').subscribe(
       val => {
@@ -187,5 +190,9 @@ export class SettingsComponent {
 
   addNewItem() {
     this.notificationsGrid.addrow(1, {});
+  }
+
+  openPathWindow() {
+    this.pathWindow.open(this.settings['nexl-sources-path']);
   }
 }
