@@ -8,7 +8,7 @@ import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {LoaderService} from "../../services/loader.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 
-export class SettingsService {
+export class PathService {
   path: any;
 
   getNexlSourcesPath() {
@@ -24,7 +24,7 @@ export class SettingsService {
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
-  providers: [SettingsService]
+  providers: [PathService]
 })
 export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
@@ -114,7 +114,7 @@ export class SettingsComponent {
       }
     ];
 
-  constructor(private http: HttpRequestService, private loaderService: LoaderService, private settingsService: SettingsService) {
+  constructor(private http: HttpRequestService, private loaderService: LoaderService, private settingsService: PathService) {
   }
 
   openInner() {

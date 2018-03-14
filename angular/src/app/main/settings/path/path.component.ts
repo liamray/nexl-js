@@ -3,7 +3,7 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {UtilsService} from "../../../services/utils.service";
-import {SettingsService} from "../settings.component";
+import {PathService} from "../settings.component";
 
 @Component({
   selector: 'app-path',
@@ -51,7 +51,7 @@ export class PathComponent {
       }
     ];
 
-  constructor(private settingsService: SettingsService) {
+  constructor(private settingsService: PathService) {
   }
 
   addNewItem() {
