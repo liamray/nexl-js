@@ -51,51 +51,19 @@ function hasWritePermission(user) {
 const SALT_ROUNDS = 10;
 
 function generateToken(username) {
-	// generating random token
-	const token = uuidv4();
-
-	// encrypting
-	const encryptedToken = bcrypt.hashSync(token, SALT_ROUNDS);
-
-	// preparing to save
-	const tokenInfo = {};
-	tokenInfo[username] = encryptedToken;
-
-	// saving in [token.js] file
-	confMgmt.save(tokenInfo, confMgmt.CONF_FILES.TOKENS);
-
-	return token;
-}
-
-function isTokenValid(username, token) {
-	// loading existing token
-	const data = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
-
-	// getting specific token for username
-	const encryptedToken = data[username];
-
-	// encryptedToken doesn't exist in config ?
-	if (encryptedToken === undefined) {
-		return false;
-	}
-
-	return bcrypt.compareSync(token, encryptedToken);
-}
-
-function removeToken(username) {
-	const tokenInfo = {};
-	tokenInfo[username] = undefined;
-	confMgmt.save(tokenInfo, confMgmt.CONF_FILES.TOKENS);
+	return uuidv4();
 }
 
 function setPassword(username, password, token) {
-	// is token valid ?
-	if (!isTokenValid(username, token)) {
+	// is token exists ?
+	const tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
+	if (tokens[username] !== token) {
 		throw 'Bad token';
 	}
 
-	// remove token
-	removeToken(username);
+	// removing token
+	delete tokens[username];
+	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
 
 	// set the password
 	const credentials = {};
@@ -137,8 +105,6 @@ function getUsersList() {
 }
 
 function deleteUser(username) {
-	removeToken(username);
-
 	const credentials = {};
 	credentials[username] = undefined;
 	confMgmt.save(credentials, confMgmt.CONF_FILES.PASSWORDS);

@@ -1,8 +1,10 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {NgForm} from "@angular/forms";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
+import jqxValidator = jqwidgets.jqxValidator;
+import {LoaderService} from "../../services/loader.service";
 
 
 @Component({
@@ -10,52 +12,57 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements AfterViewInit {
-  @ViewChild('loginWindow')
-  loginWindow: jqxWindowComponent;
+export class LoginComponent {
+  @ViewChild('validator') validator: jqxValidator;
+  @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
+  @ViewChild('loginButton') loginButton: jqxButtonComponent;
+  @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  @ViewChild('messageBox')
-  messageBox: ElementRef;
 
-  @ViewChild('loginButton')
-  loginButton: jqxButtonComponent;
+  username: string = '';
+  password: string = '';
+  isValidCredentials: boolean = false;
+  validationRules =
+    [
+      {
+        input: '#password', message: 'Bad credentials', action: 'null',
+        rule: (input: any, commit: any): any => {
+          return this.isValidCredentials;
+        }
+      }
+    ];
 
-  @ViewChild('cancelButton')
-  cancelButton: jqxButtonComponent;
-
-  constructor(private authService: AuthService) {
-  }
-
-  ngAfterViewInit() {
-    this.loginWindow.close();
+  constructor(private authService: AuthService, private loaderService: LoaderService) {
   }
 
   open() {
+    this.username = '';
+    this.password = '';
     this.loginWindow.open();
   }
 
-  onLogin(loginForm: NgForm) {
-    if (!loginForm.valid) {
-      return;
-    }
+  login(loginForm: NgForm) {
+    this.isValidCredentials = false;
 
-    const username = loginForm.form.controls['username'].value;
-    const password = loginForm.form.controls['password'].value;
+    this.loaderService.loader.open();
 
-    this.authService.login(username, password)
+    this.authService.login(this.username, this.password)
       .subscribe(
         response => {
-          this.setErrMsg('');
+          this.loaderService.loader.close();
+          this.isValidCredentials = true;
+          this.validator.validate(document.getElementById('loginForm'));
         },
         err => {
-          this.setErrMsg(err.statusText);
-          loginForm.form.patchValue({password: ''});
-        })
+          this.loaderService.loader.close();
+          this.isValidCredentials = false;
+          this.password = '';
+          this.validator.validate(document.getElementById('loginForm'));
+        });
   }
 
-  private setErrMsg(errMsg: string) {
-    this.messageBox.nativeElement.innerHTML = errMsg;
-    this.messageBox.nativeElement.title = errMsg;
+  onValidationSuccess() {
+    this.loginWindow.close();
   }
 
   initContent = () => {
@@ -63,7 +70,4 @@ export class LoginComponent implements AfterViewInit {
     this.cancelButton.createComponent();
   }
 
-  close() {
-    this.loginWindow.close()
-  }
 }

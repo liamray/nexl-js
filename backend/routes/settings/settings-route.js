@@ -86,6 +86,7 @@ router.post('/save', function (req, res, next) {
 		data[key] = val;
 	}
 
+	logger.log.level = data['log-level'];
 	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
 
 	res.send({});

@@ -18,6 +18,7 @@ import {jqxDropDownListComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_j
 import {jqxNumberInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnumberinput';
 import {jqxValidatorComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator';
 import {jqxCheckBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox';
+import {jqxPasswordInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -65,6 +66,7 @@ import {NexlSourcesService} from "../services/nexl-sources.service";
     jqxNumberInputComponent,
     jqxValidatorComponent,
     jqxCheckBoxComponent,
+    jqxPasswordInputComponent,
 
     HeaderComponent,
     NexlLogoComponent,

@@ -1,11 +1,27 @@
 const express = require('express');
 const router = express.Router();
 
+const util = require('util');
+
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
+router.post('/is-admin', function (req, res, next) {
+	const username = utils.resolveUsername(req);
+	logger.log.debug('Checking is a [%s] user has admin permissions', username);
+
+	// only admins permitted for this action
+	if (security.isAdmin(username)) {
+		logger.log.debug('The [%s] user has admin permissions', username);
+		res.send({});
+	} else {
+		const msg = util.format('The [%s] user doesn\'t have admin permissions', username);
+		logger.log.debug(msg);
+		utils.sendError(res, msg);
+	}
+});
 
 router.post('/load', function (req, res, next) {
 	const username = utils.resolveUsername(req);

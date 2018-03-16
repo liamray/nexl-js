@@ -74,13 +74,16 @@ function createNexlHomeDirIfNeeded() {
 function initNexlHomeDir() {
 	const nexlHomeDir = resolveNexlHomeDir();
 
+	logger.log.debug('Creating default configuration files if absent in [%s] nexl home dir', nexlHomeDir);
+
 	// if one of the following files exist, don't do anything
 	const confFiles = [CONF_FILES.TOKENS, CONF_FILES.PASSWORDS, CONF_FILES.ADMINS, CONF_FILES.PERMISSIONS];
 
-	// iterating and checking
+	// if one of the conf files exist, skipping initialization ( i.e. already initialized )
 	for (let item in confFiles) {
 		const confFile = path.join(nexlHomeDir, confFiles[item]);
 		if (fs.existsSync(confFile)) {
+			logger.log.debug('Found the [%s] file in [%s] nexl home dir. Default conf files will not be created', confFiles, nexlHomeDir);
 			return;
 		}
 	}
@@ -97,13 +100,16 @@ function initNexlHomeDir() {
 
 	// 2) generating admin token
 	const token = security.generateToken(utils.ADMIN_USERNAME);
-	const tokens = [token];
+	const tokens = {};
+	tokens[utils.ADMIN_USERNAME] = token;
 	save(tokens, CONF_FILES.TOKENS);
-	logger.log.info('Use the following token to register an [%s] user : [%s]', utils.ADMIN_USERNAME, token);
+	logger.log.info('IMPORTANT !!! Use the [%s] username and token from the [%s] file to register administrator account', utils.ADMIN_USERNAME, resolveFullPath(CONF_FILES.TOKENS));
 
 	// 3) adding admin to admins group
 	const admins = [utils.ADMIN_USERNAME];
 	save(admins, CONF_FILES.ADMINS);
+
+	logger.log.debug('Created the the following conf files with default settings : [%s]', confFiles.join(','));
 }
 
 
