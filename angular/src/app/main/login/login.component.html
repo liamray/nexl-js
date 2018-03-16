@@ -15,16 +15,14 @@
 
   <div style="overflow: hidden;" #windowContent>
 
-    <div #messageBox class="messageBox"></div>
-
     <jqxValidator #validator [rules]="validationRules"
                   [animationDuration]="0"
                   [hintType]="'label'"
                   (onValidationSuccess)="onValidationSuccess($event)"
     >
       <form id='loginForm' action="./">
-        <div class="block">
-          <label for="username">User name</label>
+        <div class="block" style="padding-top: 25px;">
+          <label>User name</label>
           <jqxInput
             id="username"
             name="username"
@@ -35,7 +33,7 @@
         </div>
 
         <div class="block">
-          <label for="password">Password</label>
+          <label>Password</label>
           <jqxPasswordInput
             id="password"
             name="password"

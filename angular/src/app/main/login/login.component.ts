@@ -5,6 +5,8 @@ import {NgForm} from "@angular/forms";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import jqxValidator = jqwidgets.jqxValidator;
 import {LoaderService} from "../../services/loader.service";
+import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
+import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 
 
 @Component({
@@ -15,12 +17,14 @@ import {LoaderService} from "../../services/loader.service";
 export class LoginComponent {
   @ViewChild('validator') validator: jqxValidator;
   @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
+  @ViewChild('usernameRef') usernameRef: jqxInputComponent;
+  @ViewChild('passwordRef') passwordRef: jqxPasswordInputComponent;
   @ViewChild('loginButton') loginButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
 
-  username: string = '';
-  password: string = '';
+  username = '';
+  password = '';
   isValidCredentials: boolean = false;
   validationRules =
     [
@@ -38,6 +42,9 @@ export class LoginComponent {
   open() {
     this.username = '';
     this.password = '';
+    // WTF BUG ???
+    this.usernameRef.val(this.username);
+    this.passwordRef.val(this.password);
     this.loginWindow.open();
   }
 
