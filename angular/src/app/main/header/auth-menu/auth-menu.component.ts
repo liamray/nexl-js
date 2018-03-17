@@ -19,7 +19,7 @@ export class AuthMenuComponent implements OnInit, AfterViewInit {
     this.authService.isLoggedIn().subscribe(
       (response) => {
         const username = response['body'];
-        document.getElementById('loggin-in-username').innerText = 'Hello, ' + username;
+        document.getElementById('logged-in-username').innerText = 'Hello, ' + username;
         this.isLoginVisible = false;
       },
       () => {
