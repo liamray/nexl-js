@@ -5,7 +5,7 @@ const confMgmt = require('./conf-mgmt');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
-const EXTERNAL_INCLUDES_PERMISSION = 'externalIncludes';
+const SALT_ROUNDS = 10;
 
 function isAdmin(user) {
 	const admins = confMgmt.load(confMgmt.CONF_FILES.ADMINS);
@@ -48,9 +48,7 @@ function hasWritePermission(user) {
 	return hasPermission(user, WRITE_PERMISSION);
 }
 
-const SALT_ROUNDS = 10;
-
-function generateToken(username) {
+function generateToken() {
 	return uuidv4();
 }
 

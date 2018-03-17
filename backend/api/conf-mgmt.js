@@ -99,7 +99,7 @@ function initNexlHomeDir() {
 	save(permission, CONF_FILES.PERMISSIONS);
 
 	// 2) generating admin token
-	const token = security.generateToken(utils.ADMIN_USERNAME);
+	const token = security.generateToken();
 	const tokens = {};
 	tokens[utils.ADMIN_USERNAME] = token;
 	save(tokens, CONF_FILES.TOKENS);

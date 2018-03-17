@@ -24,7 +24,7 @@ router.post('/avail-values', function (req, res, next) {
 });
 
 router.post('/load', function (req, res, next) {
-	const username = utils.resolveUsername(req);
+	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Loading settings for [%s] user', username);
 
 	// only admins permitted for this action
@@ -57,7 +57,7 @@ router.post('/load', function (req, res, next) {
 });
 
 router.post('/save', function (req, res, next) {
-	const username = utils.resolveUsername(req);
+	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Saving settings for [%s] user', username);
 
 	// only admins permitted for this action

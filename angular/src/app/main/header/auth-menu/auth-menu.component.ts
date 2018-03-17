@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: '.app-auth-menu',
@@ -7,26 +8,27 @@ import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
   styleUrls: ['./auth-menu.component.css']
 })
 export class AuthMenuComponent implements OnInit, AfterViewInit {
-  @ViewChild('authMenuRef')
-  myMenu: jqxMenuComponent;
+  @ViewChild('authMenuRef') myMenu: jqxMenuComponent;
 
-  constructor() {
+  isLoginVisible = true;
+
+  constructor(private authService: AuthService) {
   }
 
   ngOnInit() {
-
+    this.authService.isLoggedIn().subscribe(
+      (response) => {
+        const username = response['body'];
+        this.isLoginVisible = false;
+      },
+      () => {
+        this.isLoginVisible = true;
+      }
+    );
   }
 
   ngAfterViewInit(): void {
     this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
-  }
-
-  isLoginVisible() {
-    return true;
-  }
-
-  isLoginHidden() {
-    return false;
   }
 
 }

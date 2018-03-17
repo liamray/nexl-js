@@ -9,7 +9,7 @@ const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
 router.post('/is-admin', function (req, res, next) {
-	const username = utils.resolveUsername(req);
+	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Checking is a [%s] user has admin permissions', username);
 
 	// only admins permitted for this action
@@ -24,7 +24,7 @@ router.post('/is-admin', function (req, res, next) {
 });
 
 router.post('/load', function (req, res, next) {
-	const username = utils.resolveUsername(req);
+	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Loading permissions for [%s] user', username);
 
 	// only admins permitted for this action
@@ -41,7 +41,7 @@ router.post('/load', function (req, res, next) {
 });
 
 router.post('/save', function (req, res, next) {
-	const username = utils.resolveUsername(req);
+	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Saving permissions for [%s] user', username);
 
 	// only admins permitted for this action

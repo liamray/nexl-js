@@ -1,25 +1,37 @@
 <app-login #loginWindow></app-login>
 
-<div class="item" [style.display]="isLoginVisible()" title="OMG">
-  <jqxTooltip [position]="'bottom-left'" [content]="'Registers nexl internal user'">
-    <jqxButton [height]='32' [width]="94" title="Allows"
-               [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-               [imgSrc]='"./nexl/site/images/register.png"'>
-      Register
+<div class="item" [style.display]="isLoginVisible ? '' : 'none'">
+  <jqxTooltip [position]="'bottom-left'" [content]="'Register a new nexl user or reset password'">
+
+    <jqxButton [height]='32'
+               [width]='140'
+               [textImageRelation]='"imageBeforeText"'
+               [textPosition]='"left"'
+               [imgSrc]='"./nexl/site/images/register.png"'
+    >
+      Register/Reset
     </jqxButton>
+
   </jqxTooltip>
 </div>
 
-<div class="item" [style.display]="isLoginVisible()" title="OMG">
-  <jqxButton [height]='32' [width]="94" (click)="loginWindow.open()"
-             [textImageRelation]='"imageBeforeText"' [textPosition]='"center"'
-             [imgSrc]='"./nexl/site/images/login.png"'>
-    Login
-  </jqxButton>
+<div class="item" [style.display]="isLoginVisible ? '' : 'none'">
+  <jqxTooltip [position]="'bottom-left'" [content]="'nexl login'">
+
+    <jqxButton [width]='140'
+               [height]='32'
+               (click)='loginWindow.open()'
+               [textImageRelation]='"imageBeforeText"'
+               [textPosition]='"left"'
+               [imgSrc]='"./nexl/site/images/login.png"'
+    >
+      nexl login
+    </jqxButton>
+
+  </jqxTooltip>
 </div>
 
-
-<div class="item" [style.display]="isLoginHidden()">
+<div class="item" [style.display]="isLoginVisible ? 'none' : ''">
   <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
     <ul>
       <li id="menu-direction">

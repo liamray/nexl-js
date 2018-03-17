@@ -8,8 +8,8 @@ const security = require('../../api/security');
 const router = express.Router();
 
 router.post('/get-nexl-sources', function (req, res, next) {
-	var relativePath = req.body['relativePath'] || path.sep;
-	var username = utils.resolveUsername(req);
+	const relativePath = req.body['relativePath'] || path.sep;
+	const username = utils.getLoggedInUsername(req);
 
 	if (!security.hasReadPermission(username)) {
 		utils.sendError(res, 'You don\'t have a read permission');

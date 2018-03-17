@@ -2,25 +2,37 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const deepMerge = require('deepmerge');
+const jwt = require('jwt-simple');
+const uuidv4 = require('uuid/v4');
 
 const settings = require('./settings');
 const logger = require('./logger');
+
+// is a password to encrypt/decrypt tokens
+const SECRET = uuidv4();
 
 const UNAUTHORIZED_USERNAME = 'unauthorized';
 const AUTHORIZED_USERNAME = 'authorized';
 const ADMIN_USERNAME = 'admin';
 
+function encrypt(username) {
+	return jwt.encode(username, SECRET);
+}
+
 function generateRandomBytes(length) {
 	return crypto.randomBytes(length).toString('hex');
 }
 
-function resolveUsername(req) {
-	const credentials = req.session.credentials;
-	if (!credentials) {
+function getLoggedInUsername(req) {
+	const token = req.headers['token'] || '';
+	let username;
+	try {
+		username = jwt.decode(token, SECRET);
+	} catch (e) {
 		return UNAUTHORIZED_USERNAME;
 	}
 
-	return credentials.username;
+	return username;
 }
 
 function sendError(res, msg) {
@@ -74,9 +86,10 @@ module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
 module.exports.ADMIN_USERNAME = ADMIN_USERNAME;
 
 module.exports.generateRandomBytes = generateRandomBytes;
-module.exports.resolveUsername = resolveUsername;
+module.exports.getLoggedInUsername = getLoggedInUsername;
 module.exports.sendError = sendError;
 module.exports.initNexlSourcesDir = initNexlSourcesDir;
+module.exports.encrypt = encrypt;
 
 module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------
