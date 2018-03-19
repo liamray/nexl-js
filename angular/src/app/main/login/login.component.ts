@@ -48,7 +48,7 @@ export class LoginComponent {
     this.loginWindow.open();
   }
 
-  login(loginForm: NgForm) {
+  login() {
     this.isValidCredentials = false;
 
     this.loaderService.loader.open();
@@ -80,5 +80,17 @@ export class LoginComponent {
 
   onOpen() {
     this.usernameRef.focus();
+  }
+
+  onEnterPress(event) {
+    if (event.charCode !== 13) {
+      return;
+    }
+
+    if (this.username.length < 1 || this.password.length < 1) {
+      return;
+    }
+
+    this.login();
   }
 }

@@ -4,6 +4,7 @@ import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
 import {MessageService} from "../../../services/message.service";
+import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
@@ -11,6 +12,7 @@ import {MessageService} from "../../../services/message.service";
   styleUrls: ['./nexl-sources-explorer.component.css']
 })
 export class NexlSourcesExplorerComponent {
+  @ViewChild('expander') expander: jqxExpanderComponent;
   @ViewChild('tree') tree: jqxTreeComponent;
   @ViewChild('popupMenu') popupMenu: jqxMenuComponent;
 
@@ -30,6 +32,7 @@ export class NexlSourcesExplorerComponent {
 
       if (!this.hasReadPermission) {
         this.treeSource = [];
+        this.expander.disabled(true);
         return;
       }
 
@@ -40,6 +43,7 @@ export class NexlSourcesExplorerComponent {
   refreshTreeSource() {
     this.nexlSourcesService.getNexlSources().subscribe(
       (data: any) => {
+        this.expander.disabled(false);
         this.treeSource = data;
       },
       (err) => {

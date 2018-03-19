@@ -53,4 +53,10 @@ export class AuthService {
   getToken(): any {
     return localStorage.getItem(CREDENTIALS);
   }
+
+  logout() {
+    // todo : how to disable token permanently ?
+    localStorage.setItem(CREDENTIALS, null);
+    this.refreshStatus();
+  }
 }

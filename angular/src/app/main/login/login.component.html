@@ -30,6 +30,7 @@
             #usernameRef
             [(ngModel)]="username"
             [height]="25"
+            (keypress)="onEnterPress($event)"
           ></jqxInput>
         </div>
 
@@ -41,6 +42,7 @@
             #passwordRef
             [(ngModel)]="password"
             [height]="25"
+            (keypress)="onEnterPress($event)"
           ></jqxPasswordInput>
         </div>
 
