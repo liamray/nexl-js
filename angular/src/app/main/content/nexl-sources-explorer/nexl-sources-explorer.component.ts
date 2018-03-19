@@ -1,24 +1,43 @@
-import {Component, ViewChild, OnInit} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
+import {MessageService} from "../../../services/message.service";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
   templateUrl: './nexl-sources-explorer.component.html',
   styleUrls: ['./nexl-sources-explorer.component.css']
 })
-export class NexlSourcesExplorerComponent implements OnInit {
+export class NexlSourcesExplorerComponent {
   @ViewChild('tree') tree: jqxTreeComponent;
   @ViewChild('popupMenu') popupMenu: jqxMenuComponent;
 
+  hasReadPermission = false;
+  hasWritePermission = false;
   treeSource = [];
 
-  constructor(private nexlSourcesService: NexlSourcesService) {
+  constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(status => {
+      // nothing changed, just skip it
+      if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
+        return;
+      }
+
+      this.hasReadPermission = status.hasReadPermission;
+      this.hasWritePermission = status.hasWritePermission;
+
+      if (!this.hasReadPermission) {
+        this.treeSource = [];
+        return;
+      }
+
+      this.refreshTreeSource();
+    });
   }
 
-  ngOnInit() {
+  refreshTreeSource() {
     this.nexlSourcesService.getNexlSources().subscribe(
       (data: any) => {
         this.treeSource = data;
@@ -77,14 +96,14 @@ export class NexlSourcesExplorerComponent implements OnInit {
   }
 
   expand(event: any) {
-    var element: any = this.tree.getItem(event.args.element);
-    var value: any = element.value;
+    const element: any = this.tree.getItem(event.args.element);
+    const value: any = element.value;
     if (!value.mustLoadChildItems) {
       return;
     }
     value.mustLoadChildItems = false;
-    var $element = $(event.args.element);
-    var child = $element.find('ul:first').children()[0];
+    const $element = $(event.args.element);
+    const child = $element.find('ul:first').children()[0];
     this.tree.removeItem(child);
     this.nexlSourcesService.getNexlSources(value.relativePath).subscribe(
       (data: any) => {

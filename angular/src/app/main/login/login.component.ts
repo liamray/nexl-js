@@ -78,4 +78,7 @@ export class LoginComponent {
     this.cancelButton.createComponent();
   }
 
+  onOpen() {
+    this.usernameRef.focus();
+  }
 }

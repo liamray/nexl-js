@@ -1,4 +1,5 @@
 import {Component, ViewChild, AfterViewInit} from '@angular/core';
+import {MessageService} from "../../../services/message.service";
 
 @Component({
 	selector: '.app-main-menu',
@@ -8,7 +9,11 @@ import {Component, ViewChild, AfterViewInit} from '@angular/core';
 export class MainMenuComponent implements AfterViewInit {
   @ViewChild('mainMenuRef') mainMenu: any;
 
-	constructor() {
+  constructor(private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(status => {
+      this.mainMenu.disable('main-menu-permissions', !status.isAdmin);
+      this.mainMenu.disable('main-menu-settings', !status.isAdmin);
+    });
 	}
 
   ngAfterViewInit(): void {
