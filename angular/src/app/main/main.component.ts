@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {MessageService} from "../services/message.service";
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-main',
@@ -7,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(private authService: AuthService) {
   }
 
+  ngOnInit() {
+    this.authService.refreshStatus();
+  }
 }

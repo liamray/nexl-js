@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+.jqx-laoder {
+  z-index: 102 !important;
+}
+
+.jqx-loader-modal {
+  z-index: 101 !important;
+}
+
+.jqx-window {
+  z-index: 100 !important;
+}
+
+.jqx-window-modal {
+  z-index: 99 !important;
+}

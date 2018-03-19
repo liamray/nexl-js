@@ -70,6 +70,7 @@ export class LoginComponent {
 
   onValidationSuccess() {
     this.loginWindow.close();
+    this.authService.refreshStatus();
   }
 
   initContent = () => {

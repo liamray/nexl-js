@@ -5,13 +5,16 @@ const utils = require('../../api/utils');
 
 const router = express.Router();
 
-router.post('/is-logged-in', function (req, res) {
+router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
-	if (username === utils.UNAUTHORIZED_USERNAME) {
-		utils.sendError(res, 'Not logged in');
-	} else {
-		res.send(username);
-	}
+	const status = {
+		isLoggedIn: username !== utils.UNAUTHORIZED_USERNAME,
+		isAdmin: security.isAdmin(username),
+		hasReadPermission: security.hasReadPermission(username),
+		hasWritePermission: security.hasWritePermission(username),
+	};
+	status['username'] = username;
+	res.send(status);
 });
 
 router.post('/login', function (req, res) {

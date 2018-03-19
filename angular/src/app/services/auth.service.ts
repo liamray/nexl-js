@@ -2,22 +2,35 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
+import {MessageService} from "./message.service";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
-const IS_LOGGEN_IN_URL = UtilsService.prefixUrl('/auth/is-logged-in');
+const RESOLVE_STATUS = UtilsService.prefixUrl('/auth/resolve-status');
 const CREDENTIALS = 'nexl.credentials';
 
 @Injectable()
 export class AuthService {
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private messageService: MessageService) {
   }
 
-  isLoggedIn() {
+  resolveStatus() {
     const opts: any = {
       observe: 'response',
-      responseType: 'text'
+      responseType: 'json'
     };
-    return this.httpClient.post<any>(IS_LOGGEN_IN_URL, {}, opts);
+    return this.httpClient.post<any>(RESOLVE_STATUS, {}, opts);
+  }
+
+  refreshStatus() {
+    this.resolveStatus().subscribe(
+      (status: any) => {
+        this.messageService.sendMessage(status.body);
+      },
+      (err) => {
+        alert('Something went wrong !');
+        console.log(err);
+      }
+    );
   }
 
   login(username, password) {

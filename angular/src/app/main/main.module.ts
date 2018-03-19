@@ -46,6 +46,7 @@ import {PathComponent} from "./settings/path/path.component";
 import {HttpRequestService} from "../services/http.requests.service";
 import {AuthService} from "../services/auth.service";
 import {NexlSourcesService} from "../services/nexl-sources.service";
+import {MessageService} from "../services/message.service";
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import {NexlSourcesService} from "../services/nexl-sources.service";
     LoaderService,
     AuthService,
     NexlSourcesService,
-    HttpRequestService
+    HttpRequestService,
+    MessageService
   ],
 
   entryComponents: [],
