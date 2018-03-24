@@ -4,6 +4,7 @@ const path = require('path');
 const sources = require('./sources-route-impl');
 const utils = require('../../api/utils');
 const security = require('../../api/security');
+const logger = require('../../api/logger');
 
 const router = express.Router();
 
@@ -21,7 +22,8 @@ router.post('/get-nexl-sources', function (req, res, next) {
 			res.send(data);
 		}).catch(
 		function (err) {
-			utils.sendError(res, err);
+			logger.log.error('Internal server error', err.toString());
+			utils.sendError(res, 'Internal server error');
 		});
 });
 

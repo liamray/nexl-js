@@ -184,7 +184,7 @@ export class SettingsComponent {
 
     this.settingsWindow.close();
     this.loaderService.loader.open();
-    this.settings.notifications = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
+    this.settings['notifications'] = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
     this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.json(this.settings, '/settings/save').subscribe(

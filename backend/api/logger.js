@@ -1,7 +1,7 @@
 const winston = require('winston');
 const j79 = require('j79-utils');
 
-const settings = require('./settings');
+const confMgmt = require('./conf-mgmt');
 
 function logFormatter(options) {
 	return j79.rawNowISODate() + ' [' + options.level.toUpperCase() + '] ' + (options.message ? options.message : '');
@@ -17,23 +17,20 @@ function init() {
 	});
 
 	// loading log setting
-	const logFile = settings.get(settings.LOG_FILE_LOCATION);
-	const logRotateFileSize = settings.get(settings.LOG_ROTATE_FILE_SIZE);
-	const logRotateFilesCount = settings.get(settings.LOG_ROTATE_FILES_COUNT);
-	const logLevel = settings.get(settings.LOG_LEVEL);
+	const settings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
 
 	// adding file transport
 	winston.add(winston.transports.File, {
-		filename: logFile,
+		filename: settings[confMgmt.SETTINGS.LOG_FILE_LOCATION],
 		formatter: logFormatter,
 		json: false,
-		tailable: logRotateFileSize > 0,
-		maxsize: logRotateFileSize * 1024,
-		maxFiles: logRotateFilesCount
+		tailable: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
+		maxsize: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
+		maxFiles: settings[confMgmt.SETTINGS.LOG_ROTATE_FILES_COUNT]
 	});
 
 	// setting up log level
-	winston.level = logLevel;
+	winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
 
 	winston.debug('Log is set up');
 }

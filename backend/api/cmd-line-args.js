@@ -1,12 +1,6 @@
 const commandLineArgs = require('command-line-args');
 const util = require('util');
 const version = require('./../../package.json').version;
-const osHomeDir = require('os-homedir');
-const fs = require('fs');
-const path = require('path');
-const mkdirp = require('mkdirp');
-
-const DEFAULT_NEXL_HOME_DIR = '.nexl';
 
 let cmdLineOpts;
 
@@ -82,17 +76,8 @@ function handleArgs() {
 	}
 }
 
-function getNexlHomeDir() {
-	let nexlHome = cmdLineOpts['nexl-home'];
-	if (nexlHome === undefined) {
-		nexlHome = path.join(osHomeDir(), DEFAULT_NEXL_HOME_DIR);
-	}
-
-	return nexlHome;
-}
-
 handleArgs();
 
 // --------------------------------------------------------------------------------
-module.exports.NEXL_HOME_DIR = getNexlHomeDir();
+module.exports.NEXL_HOME_DIR = cmdLineOpts['nexl-home'];
 // --------------------------------------------------------------------------------

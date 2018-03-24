@@ -2,8 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const settings = require('../../api/settings');
-const security = require('../../api/security');
+const confMgmt = require('../../api/conf-mgmt');
 
 const CHILD_ITEM = [
 	{
@@ -29,16 +28,16 @@ function validateRelativePath(relativePath) {
 }
 
 function assembleItems(relativePath, nexlSourcesDir, items) {
-	var files = [];
-	var dirs = [];
+	let files = [];
+	let dirs = [];
 
 	items.forEach(function (name) {
-		var itemRelativePath = path.join(relativePath, name);
+		const itemRelativePath = path.join(relativePath, name);
 		validateRelativePath(itemRelativePath);
 
-		var fullPath = path.join(nexlSourcesDir, itemRelativePath);
+		const fullPath = path.join(nexlSourcesDir, itemRelativePath);
 
-		var item = {
+		const item = {
 			label: name,
 			value: {
 				relativePath: itemRelativePath
@@ -74,8 +73,8 @@ function getNexlSources(relativePath) {
 	return new Promise(function (resolve, reject) {
 		validateRelativePath(relativePath);
 
-		var nexlSourcesRootDir = settings.get(settings.NEXL_SOURCES_DIR);
-		var path2Scan = path.join(nexlSourcesRootDir, relativePath || '');
+		const nexlSourcesRootDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+		const path2Scan = path.join(nexlSourcesRootDir, relativePath || '');
 		validateRelativePath(path2Scan);
 
 		if (!fs.existsSync(path2Scan)) {

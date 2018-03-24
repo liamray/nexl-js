@@ -1,23 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-const util = require('util');
-const j79 = require('j79-utils');
-
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const cmdLineArgs = require('../../api/cmd-line-args');
-const settings = require('../../api/settings');
 const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
 
-const SETTINGS_2_LOAD = [settings.NEXL_SOURCES_DIR, settings.NEXL_SOURCES_PATH, settings.NEXL_SOURCES_ENCODING, settings.HTTP_TIMEOUT, settings.LDAP_URL, settings.HTTP_BINDING, settings.HTTP_PORT, settings.HTTPS_BINDING, settings.HTTPS_PORT, settings.SSL_CERT_LOCATION, settings.SSL_KEY_LOCATION, settings.LOG_FILE_LOCATION, settings.LOG_LEVEL, settings.LOG_ROTATE_FILE_SIZE, settings.LOG_ROTATE_FILES_COUNT, settings.NOTIFICATIONS];
-
 router.post('/avail-values', function (req, res, next) {
 	const data = {
 		logLevels: logger.getAvailLevels(),
-		encodings: settings.AVAILABLE_ENCODINGS
+		encodings: confMgmt.AVAILABLE_ENCODINGS
 	};
 
 	res.send(data);
@@ -35,21 +29,7 @@ router.post('/load', function (req, res, next) {
 	}
 
 	// loading all settings
-	let allSettings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
-	const data = {};
-
-	// building a data object where it's key set is a SETTINGS_2_LOAD and values are stored in allSettings
-	for (let index in SETTINGS_2_LOAD) {
-		const key = SETTINGS_2_LOAD[index];
-
-		let val = allSettings[key];
-		if (val === undefined) {
-			val = settings.resolveDefaultValue(key);
-		}
-
-		data[key] = val;
-	}
-
+	let settings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
 	// adding nexl home dir which is not apart of settings, but requires to display
 	data['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
 
@@ -67,27 +47,14 @@ router.post('/save', function (req, res, next) {
 		return;
 	}
 
-	// filtering and validating settings
-	const data = {};
-	for (let index in SETTINGS_2_LOAD) {
-		const key = SETTINGS_2_LOAD[index];
-
-		let val = req.body[key];
-		if (val === undefined) {
-			val = settings.resolveDefaultValue(key);
-		}
-
-		// validating
-		if (!settings.isValid(key, val)) {
-			utils.sendError(res, util.format('Unacceptable value for [%s] key', key));
-			return;
-		}
-
-		data[key] = val;
-	}
-
 	logger.log.level = data['log-level'];
-	confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
+	try {
+		confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
+	} catch (e) {
+		logger.log.error('Failed to save settings data. Reason : [%s]', e);
+		utils.sendError(res, 'Failed to update settings');
+		return;
+	}
 
 	res.send({});
 });

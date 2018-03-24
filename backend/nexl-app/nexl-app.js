@@ -8,7 +8,6 @@ const session = require('express-session');
 
 const confMgmt = require('../api/conf-mgmt');
 const utils = require('../api/utils');
-const settings = require('../api/settings');
 const logger = require('../api/logger');
 
 const expressionsRoute = require('../routes/expressions/expressions-route');
@@ -25,8 +24,9 @@ const reservedRoute = require('../routes/reserved/reserved-route');
 class NexlApp {
 	constructor() {
 		// resolving port from settings
-		this.httpBinding = settings.get(settings.HTTP_BINDING);
-		this.httpPort = settings.get(settings.HTTP_PORT);
+		this.settings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
+		this.httpBinding = this.settings[confMgmt.SETTINGS.HTTP_BINDING];
+		this.httpPort = this.settings[confMgmt.SETTINGS.HTTP_PORT];
 
 		// creating app
 		this.nexlApp = express();
@@ -76,12 +76,12 @@ class NexlApp {
 		switch (error.code) {
 			case 'EACCES':
 				logger.log.error('Cannot start server on [' + this.httpPort + '] port');
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_PORT);
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.NEXL_HOME_DIR, confMgmt.CONF_FILES.SETTINGS), this.settings[confMgmt.SETTINGS.HTTP_PORT]);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
 				logger.log.error('The [%s] port is already in use', this.httpPort);
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.resolveNexlHomeDir(), confMgmt.CONF_FILES.SETTINGS), settings.NEXL_HTTP_PORT);
+				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.NEXL_HOME_DIR, confMgmt.CONF_FILES.SETTINGS), this.settings[confMgmt.SETTINGS.HTTP_PORT]);
 				process.exit(1);
 				break;
 			default:

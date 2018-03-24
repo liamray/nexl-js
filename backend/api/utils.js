@@ -4,8 +4,9 @@ const fs = require('fs');
 const deepMerge = require('deepmerge');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
+const j79 = require('j79-utils');
 
-const settings = require('./settings');
+const confMgmt = require('./conf-mgmt');
 const logger = require('./logger');
 
 // is a password to encrypt/decrypt tokens
@@ -41,7 +42,7 @@ function sendError(res, msg) {
 }
 
 function initNexlSourcesDir() {
-	const nexlSourcesDir = settings.get(settings.NEXL_SOURCES_DIR);
+	const nexlSourcesDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
 
 	// is nexl sources dir exists ?
 	if (fs.existsSync(nexlSourcesDir)) {
