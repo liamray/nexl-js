@@ -270,7 +270,7 @@ function setupDefaultValues(data, fileName) {
 		return data;
 	}
 
-	const defValues = substDefValues(fileName);
+	const defValues = substDefValues(DEF_VALUES[fileName]);
 
 	// iterating over defValues
 	for (let key in defValues) {
