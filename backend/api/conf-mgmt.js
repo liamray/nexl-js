@@ -228,10 +228,6 @@ VALIDATION_SCHEMAS[CONF_FILES.PERMISSIONS] = {
 // --------------------------------------------------------------------------------
 // api
 function resolveFullPath(fileName) {
-	if (path.isAbsolute(fileName)) {
-		throw 'Absolute file name ???';
-	}
-
 	return path.join(NEXL_HOME_DIR, fileName);
 }
 
