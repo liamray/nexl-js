@@ -18,14 +18,6 @@ function objectSchemaValidation(data, objectSchema) {
 		return util.format('Wrong data structure. Expecting for object, but got a [%]', j79.getType(data));
 	}
 
-	if (Object.keys(data).length === 0 && objectSchema['*'] === undefined) {
-		return util.format('Wrong object fields count. Expecting for [%s] items count but got an object with no items.', Object.keys(objectSchema).length);
-	}
-
-	if (objectSchema['*'] === undefined && Object.keys(data).length !== Object.keys(objectSchema).length) {
-		return util.format('Wrong object fields count. Expecting for [%s] items count but got [%s] items', Object.keys(objectSchema).length, Object.keys(data).length);
-	}
-
 	for (let key in data) {
 		let schema = resolveSchema(key, objectSchema);
 		if (schema === undefined) {

@@ -12,7 +12,7 @@ export class PathService {
   path: any;
 
   getNexlSourcesPath() {
-    return this.path || {};
+    return this.path || [];
   }
 
   setNexlSourcesPath(path) {

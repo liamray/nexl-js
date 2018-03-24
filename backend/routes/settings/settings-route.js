@@ -47,6 +47,8 @@ router.post('/save', function (req, res, next) {
 		return;
 	}
 
+	const data = req.body;
+
 	logger.log.level = data['log-level'];
 	try {
 		confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
