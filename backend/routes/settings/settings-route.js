@@ -31,9 +31,9 @@ router.post('/load', function (req, res, next) {
 	// loading all settings
 	let settings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
 	// adding nexl home dir which is not apart of settings, but requires to display
-	data['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
+	settings['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
 
-	res.send(data);
+	res.send(settings);
 });
 
 router.post('/save', function (req, res, next) {
