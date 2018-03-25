@@ -9,27 +9,31 @@ import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_
 
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
-export class LoginComponent {
+export class RegisterComponent {
   @ViewChild('validator') validator: jqxValidator;
-  @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
+  @ViewChild('registerWindow') registerWindow: jqxWindowComponent;
   @ViewChild('usernameRef') usernameRef: jqxInputComponent;
+  @ViewChild('tokenRef') tokenRef: jqxPasswordInputComponent;
   @ViewChild('passwordRef') passwordRef: jqxPasswordInputComponent;
-  @ViewChild('loginButton') loginButton: jqxButtonComponent;
+  @ViewChild('confirmPasswordRef') confirmPasswordRef: jqxInputComponent;
+  @ViewChild('registerButton') registerButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   username = '';
+  token = '';
   password = '';
-  isValidCredentials: boolean = false;
+  confirmPassword = '';
+  isTokenValid: boolean = false;
   validationRules =
     [
       {
-        input: '#password', message: 'Bad credentials', action: 'null',
+        input: '#password', message: 'Bad token', action: 'null',
         rule: (input: any, commit: any): any => {
-          return this.isValidCredentials;
+          return this.isTokenValid;
         }
       }
     ];
@@ -39,15 +43,20 @@ export class LoginComponent {
 
   open() {
     this.username = '';
+    this.token = '';
     this.password = '';
+    this.confirmPassword = '';
+
     // WTF BUG ???
     this.usernameRef.val(this.username);
+    this.tokenRef.val(this.token);
     this.passwordRef.val(this.password);
-    this.loginWindow.open();
+    this.confirmPasswordRef.val(this.confirmPassword);
+    this.registerWindow.open();
   }
 
-  login() {
-    this.isValidCredentials = false;
+  register() {
+    this.isTokenValid = false;
 
     this.loaderService.loader.open();
 
@@ -55,24 +64,24 @@ export class LoginComponent {
       .subscribe(
         response => {
           this.loaderService.loader.close();
-          this.isValidCredentials = true;
-          this.validator.validate(document.getElementById('loginForm'));
+          this.isTokenValid = true;
+          this.validator.validate(document.getElementById('registerForm'));
         },
         err => {
           this.loaderService.loader.close();
-          this.isValidCredentials = false;
+          this.isTokenValid = false;
           this.password = '';
-          this.validator.validate(document.getElementById('loginForm'));
+          this.validator.validate(document.getElementById('registerForm'));
         });
   }
 
   onValidationSuccess() {
-    this.loginWindow.close();
+    this.registerWindow.close();
     this.authService.refreshStatus();
   }
 
   initContent = () => {
-    this.loginButton.createComponent();
+    this.registerButton.createComponent();
     this.cancelButton.createComponent();
   }
 
@@ -89,6 +98,6 @@ export class LoginComponent {
       return;
     }
 
-    this.login();
+    this.register();
   }
 }

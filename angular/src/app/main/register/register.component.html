@@ -1,0 +1,112 @@
+<jqxWindow #registerWindow
+           [autoOpen]="false"
+           [initContent]="initContent"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="390"
+           [height]="300"
+           (onOpen)="onOpen()"
+>
+
+  <div>
+    <img src="/nexl/site/images/register.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Register/Reset password</span>
+  </div>
+
+
+  <div style="overflow: hidden;" #windowContent>
+
+    <jqxValidator #validator [rules]="validationRules"
+                  [animationDuration]="0"
+                  [hintType]="'label'"
+                  (onValidationSuccess)="onValidationSuccess($event)"
+    >
+      <form id='registerForm' action="./">
+
+        <!--username-->
+        <div class="block" style="padding-top: 25px;">
+          <label>User name</label>
+          <jqxInput
+            id="username"
+            name="username"
+            #usernameRef
+            [(ngModel)]="username"
+            [height]="25"
+            (keypress)="onEnterPress($event)"
+          ></jqxInput>
+        </div>
+
+        <!--token-->
+        <div class="block">
+          <label>Token</label>
+          <jqxInput
+            id="token"
+            name="token"
+            #tokenRef
+            [(ngModel)]="token"
+            [height]="25"
+            (keypress)="onEnterPress($event)"
+          ></jqxInput>
+        </div>
+
+        <!--password-->
+        <div class="block">
+          <label>Password</label>
+          <jqxPasswordInput
+            id="password"
+            name="password"
+            #passwordRef
+            [(ngModel)]="password"
+            [height]="25"
+            (keypress)="onEnterPress($event)"
+          ></jqxPasswordInput>
+        </div>
+
+        <!--confirm password-->
+        <div class="block">
+          <label>Confirm password</label>
+          <jqxPasswordInput
+            id="confirmPassword"
+            name="confirmPassword"
+            #confirmPasswordRef
+            [(ngModel)]="confirmPassword"
+            [height]="25"
+            (keypress)="onEnterPress($event)"
+          ></jqxPasswordInput>
+        </div>
+
+        <div class="buttons">
+          <div class="button">
+            <jqxButton
+              [height]='32'
+              [width]="94"
+              [textImageRelation]='"imageBeforeText"'
+              [textPosition]='"center"'
+              [imgSrc]='"./nexl/site/images/register.png"'
+              [disabled]="username === '' || password === '' || token === '' || password !== confirmPassword"
+              [auto-create]="false"
+              (click)="register()"
+              #registerButton>
+              Register
+            </jqxButton>
+          </div>
+          <div class="button">
+            <jqxButton
+              [height]='32'
+              [width]="94"
+              [textImageRelation]='"imageBeforeText"'
+              [textPosition]='"center"'
+              [imgSrc]='"./nexl/site/images/close.png"'
+              [auto-create]="false"
+              (click)="registerWindow.close()"
+              #cancelButton>
+              Cancel
+            </jqxButton>
+          </div>
+
+        </div>
+      </form>
+    </jqxValidator>
+
+  </div>
+</jqxWindow>

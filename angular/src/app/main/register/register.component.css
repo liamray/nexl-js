@@ -1,0 +1,27 @@
+.block label {
+  display: inline-block;
+  width: 120px;
+  text-align: left;
+  margin: 5px 0 10px 30px;
+}
+
+.block input {
+  width: 190px;
+}
+
+.button {
+  float: right;
+  margin-left: 5px;
+}
+
+.buttons {
+  margin: 10px 30px 0 0;
+}
+
+.messageBox {
+  width: 300px;
+  height: 19px;
+  margin-left: 5px;
+  color: red;
+  overflow: hidden;
+}

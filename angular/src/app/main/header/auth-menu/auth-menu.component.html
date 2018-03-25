@@ -1,10 +1,12 @@
 <app-login #loginWindow></app-login>
+<app-register #registerWindow></app-register>
 
 <div class="item" [style.display]="isLoginVisible ? '' : 'none'">
   <jqxTooltip [position]="'bottom-left'" [content]="'Register a new nexl user or reset password'">
 
     <jqxButton [height]='32'
                [width]='140'
+               (click)='registerWindow.open()'
                [textImageRelation]='"imageBeforeText"'
                [textPosition]='"left"'
                [imgSrc]='"./nexl/site/images/register.png"'
