@@ -13,6 +13,7 @@ router.post('/get-nexl-sources', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 
 	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to get nexl sources', username);
 		utils.sendError(res, 'You don\'t have a read permission');
 		return;
 	}

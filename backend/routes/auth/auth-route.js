@@ -2,6 +2,7 @@ const express = require('express');
 
 const security = require('../../api/security');
 const utils = require('../../api/utils');
+const logger = require('../../api/logger');
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.post('/login', function (req, res) {
 
 	// if not authenticated, clear token and send error
 	if (!security.isPasswordValid(username, req.body.password)) {
+		logger.log.error('Login failed. Reason : bad credentials');
 		utils.sendError(res, 'Bad credentials');
 		return;
 	}

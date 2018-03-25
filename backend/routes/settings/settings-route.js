@@ -53,7 +53,7 @@ router.post('/save', function (req, res, next) {
 	try {
 		confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
 	} catch (e) {
-		logger.log.error('Failed to save settings data. Reason : [%s]', e);
+		logger.log.error('Failed to update data. Reason : [%s]', e);
 		utils.sendError(res, 'Failed to update settings');
 		return;
 	}

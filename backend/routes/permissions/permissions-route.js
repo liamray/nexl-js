@@ -40,8 +40,21 @@ router.post('/save', function (req, res, next) {
 	const admins = req.body.admins;
 	const assignPermissions = req.body.assignPermissions;
 
-	confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
-	confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
+	try {
+		confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
+	} catch (e) {
+		logger.log.error('Failed to update admins. Reason : [%s]', e);
+		utils.sendError(res, 'Failed to update admins');
+		return;
+	}
+
+	try {
+		confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
+	} catch (e) {
+		logger.log.error('Failed to update permissions. Reason : [%s]', e);
+		utils.sendError(res, 'Failed to update permissions');
+		return;
+	}
 
 	res.send({});
 });

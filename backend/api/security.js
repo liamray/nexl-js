@@ -64,15 +64,17 @@ function setPassword(username, password, token) {
 	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
 
 	// set the password
-	const credentials = {};
-	credentials[username] = bcrypt.hashSync(password, SALT_ROUNDS);
+	const passwords = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
+	passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
 
 	// saving
-	confMgmt.save(credentials, confMgmt.CONF_FILES.PASSWORDS);
+	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 }
 
 function changePassword(username, currentPassword, newPassword) {
-	if (!confMgmt.load(confMgmt.CONF_FILES.PASSWORDS)[username]) {
+	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
+
+	if (!passwords[username]) {
 		throw 'User doesn\'t exist';
 	}
 
@@ -81,11 +83,10 @@ function changePassword(username, currentPassword, newPassword) {
 	}
 
 	// set the password
-	const credentials = {};
-	credentials[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+	passwords[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
 
 	// saving
-	confMgmt.save(credentials, confMgmt.CONF_FILES.PASSWORDS);
+	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 }
 
 function isPasswordValid(username, password) {
@@ -103,9 +104,13 @@ function getUsersList() {
 }
 
 function deleteUser(username) {
-	const credentials = {};
-	credentials[username] = undefined;
-	confMgmt.save(credentials, confMgmt.CONF_FILES.PASSWORDS);
+	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
+	const index = passwords.indexOf(username);
+	if (index < 0) {
+		return;
+	}
+	passwords.splice(index, 1);
+	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 }
 
 
