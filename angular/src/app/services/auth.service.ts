@@ -5,6 +5,7 @@ import 'rxjs/add/operator/map';
 import {MessageService} from "./message.service";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
+const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
 const RESOLVE_STATUS = UtilsService.prefixUrl('/auth/resolve-status');
 const CREDENTIALS = 'nexl.credentials';
 
@@ -50,12 +51,27 @@ export class AuthService {
     });
   }
 
+  register(username, password, token) {
+    const params = {
+      username: username,
+      password: password,
+      token: token
+    };
+
+    const opts: any = {
+      observe: 'response',
+      responseType: 'text'
+    };
+
+    return this.httpClient.post<any>(REGISTER_URL, params, opts);
+  }
+
   getToken(): any {
     return localStorage.getItem(CREDENTIALS);
   }
 
   logout() {
-    // todo : how to disable token permanently ?
+    // todo : how to disable login token permanently ?
     localStorage.setItem(CREDENTIALS, null);
     this.refreshStatus();
   }

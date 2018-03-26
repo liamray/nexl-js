@@ -37,6 +37,23 @@ router.post('/login', function (req, res) {
 	res.end();
 });
 
+router.post('/register', function (req, res) {
+	const username = req.body.username;
+	const password = req.body.password;
+	const token = req.body.token;
+
+	try {
+		security.setPassword(username, password, token);
+	} catch (e) {
+		logger.log.error(e.toString());
+		utils.sendError(res, e.toString());
+		return;
+	}
+
+	res.send({});
+	res.end();
+});
+
 // --------------------------------------------------------------------------------
 module.exports = router;
 // --------------------------------------------------------------------------------

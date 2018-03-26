@@ -27,7 +27,7 @@ export class RegisterComponent {
   token = '';
   password = '';
   confirmPassword = '';
-  isTokenValid: boolean = false;
+  isTokenValid = false;
   validationRules =
     [
       {
@@ -60,7 +60,7 @@ export class RegisterComponent {
 
     this.loaderService.loader.open();
 
-    this.authService.login(this.username, this.password)
+    this.authService.register(this.username, this.password, this.token)
       .subscribe(
         response => {
           this.loaderService.loader.close();
@@ -71,13 +71,14 @@ export class RegisterComponent {
           this.loaderService.loader.close();
           this.isTokenValid = false;
           this.password = '';
+          this.confirmPassword = '';
           this.validator.validate(document.getElementById('registerForm'));
         });
   }
 
   onValidationSuccess() {
     this.registerWindow.close();
-    this.authService.refreshStatus();
+    alert('Success !!!');
   }
 
   initContent = () => {

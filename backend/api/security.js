@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
 const confMgmt = require('./conf-mgmt');
+const logger = require('./logger');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
@@ -52,23 +53,39 @@ function generateToken() {
 	return uuidv4();
 }
 
-function setPassword(username, password, token) {
-	// is token exists ?
-	const tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
-	if (tokens[username] !== token) {
-		throw 'Bad token';
-	}
-
+function setPasswordInner(username, password, tokens) {
 	// removing token
-	delete tokens[username];
 	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
 
 	// set the password
-	const passwords = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
+	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
 	passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
 
 	// saving
 	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
+}
+
+function setPassword(username, password, token) {
+	let tokens;
+	try {
+		tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
+	} catch (e) {
+		logger.log.error('Failed to load tokens. Reason : ', e);
+		throw e;
+	}
+
+	if (tokens[username] === undefined) {
+		throw 'Bad token';
+	}
+
+	delete tokens[username];
+
+	try {
+		setPasswordInner(username, password, tokens);
+	} catch (e) {
+		logger.log.error('Failed to update password. Reason : ', e);
+		throw e;
+	}
 }
 
 function changePassword(username, currentPassword, newPassword) {
