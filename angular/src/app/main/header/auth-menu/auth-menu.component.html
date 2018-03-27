@@ -38,7 +38,15 @@
     <ul>
       <li id="menu-direction">
         <span>Hello, {{ username }}</span>
-        <ul>
+        <ul style="width:160px;">
+          <li>
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/images/change-password.png'/><span>Change password</span>
+          </li>
+          <li id="menu-generate-token">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/images/token.png'/><span>Generate token</span>
+          </li>
           <li (click)="logout()">
             <img style='float: left; margin-right: 5px;'
                  src='./nexl/site/images/logout.png'/><span>Logout</span>

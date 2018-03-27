@@ -10,7 +10,7 @@ import {AuthService} from "../../../services/auth.service";
   styleUrls: ['./auth-menu.component.css']
 })
 export class AuthMenuComponent implements AfterViewInit {
-  @ViewChild('authMenuRef') myMenu: jqxMenuComponent;
+  @ViewChild('authMenuRef') authMenu: jqxMenuComponent;
 
   subscription: Subscription;
   isLoginVisible = true;
@@ -20,11 +20,12 @@ export class AuthMenuComponent implements AfterViewInit {
     this.subscription = this.messageService.getMessage().subscribe(status => {
       this.isLoginVisible = !status.isLoggedIn;
       this.username = status.username;
+      this.authMenu.disable('menu-generate-token', !status.isAdmin);
     });
   }
 
   ngAfterViewInit(): void {
-    this.myMenu.setItemOpenDirection('menu-direction', 'left', 'down');
+    this.authMenu.setItemOpenDirection('menu-direction', 'left', 'down');
   }
 
   logout() {
