@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
@@ -20,6 +20,7 @@ export class RegisterComponent {
   @ViewChild('tokenRef') tokenRef: jqxPasswordInputComponent;
   @ViewChild('passwordRef') passwordRef: jqxPasswordInputComponent;
   @ViewChild('confirmPasswordRef') confirmPasswordRef: jqxInputComponent;
+  @ViewChild('messageBox') messageBox: ElementRef;
   @ViewChild('registerButton') registerButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
@@ -27,21 +28,25 @@ export class RegisterComponent {
   token = '';
   password = '';
   confirmPassword = '';
-  isTokenValid = false;
   validationRules =
-    [
-      {
-        input: '#password', message: 'Bad token', action: 'null',
-        rule: (input: any, commit: any): any => {
-          return this.isTokenValid;
-        }
-      }
-    ];
+    [];
 
   constructor(private authService: AuthService, private loaderService: LoaderService) {
   }
 
+  displayErrorMessage(msg?) {
+    if (msg === undefined) {
+      this.messageBox.nativeElement.style.display = 'none';
+      return;
+    }
+
+    this.messageBox.nativeElement.innerText = msg;
+    this.messageBox.nativeElement.style.display = 'block';
+  }
+
   open() {
+    this.displayErrorMessage();
+
     this.username = '';
     this.token = '';
     this.password = '';
@@ -56,29 +61,21 @@ export class RegisterComponent {
   }
 
   register() {
-    this.isTokenValid = false;
-
     this.loaderService.loader.open();
 
     this.authService.register(this.username, this.password, this.token)
       .subscribe(
         response => {
           this.loaderService.loader.close();
-          this.isTokenValid = true;
-          this.validator.validate(document.getElementById('registerForm'));
+          this.registerWindow.close();
+          alert('Success !!!');
         },
         err => {
           this.loaderService.loader.close();
-          this.isTokenValid = false;
           this.password = '';
           this.confirmPassword = '';
-          this.validator.validate(document.getElementById('registerForm'));
+          this.displayErrorMessage(err.statusText);
         });
-  }
-
-  onValidationSuccess() {
-    this.registerWindow.close();
-    alert('Success !!!');
   }
 
   initContent = () => {
@@ -90,15 +87,12 @@ export class RegisterComponent {
     this.usernameRef.focus();
   }
 
-  onEnterPress(event) {
-    if (event.charCode !== 13) {
+  onKeyPress(event) {
+    this.displayErrorMessage();
+
+    if (event.charCode === 13 && this.username.length > 0 && this.password.length > 0 && this.password === this.confirmPassword) {
+      this.register();
       return;
     }
-
-    if (this.username.length < 1 || this.password.length < 1) {
-      return;
-    }
-
-    this.register();
   }
 }
