@@ -6,6 +6,22 @@ const logger = require('../../api/logger');
 
 const router = express.Router();
 
+router.post('/generate-token', function (req, res) {
+	const username = utils.getLoggedInUsername(req);
+	logger.log.debug('Generating token for [%s] user', username);
+
+	// only admins permitted for this action
+	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to generate token', username);
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	res.send({
+		token: security.generateTokenAndSave(req.body.username)
+	});
+});
+
 router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	const status = {

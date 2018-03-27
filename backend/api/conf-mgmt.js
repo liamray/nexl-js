@@ -359,10 +359,7 @@ function initNexlHomeDir() {
 	// creating tokens file is not exists
 	if (!isConfFileExists(CONF_FILES.TOKENS)) {
 		logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-		const token = security.generateToken();
-		const tokens = {};
-		tokens[utils.ADMIN_USERNAME] = token;
-		save(tokens, CONF_FILES.TOKENS);
+		security.generateTokenAndSave(utils.ADMIN_USERNAME);
 		logger.log.info('------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
 	}
 

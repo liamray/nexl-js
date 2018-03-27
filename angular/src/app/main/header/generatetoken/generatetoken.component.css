@@ -1,8 +1,9 @@
-.button {
-  float: right;
-  margin-left: 5px;
+.item {
+  float: left;
+  margin: 5px;
 }
 
-.buttons {
-  margin: 10px 0 0 0;
+.okButton {
+  float: right;
+  margin-right: 13px;
 }

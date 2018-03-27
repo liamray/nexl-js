@@ -49,8 +49,12 @@ function hasWritePermission(user) {
 	return hasPermission(user, WRITE_PERMISSION);
 }
 
-function generateToken() {
-	return uuidv4();
+function generateTokenAndSave(username) {
+	const token = uuidv4();
+	const tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
+	tokens[username] = token;
+	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
+	return token;
 }
 
 function setPasswordInner(username, password, tokens) {
@@ -136,7 +140,7 @@ module.exports.isAdmin = isAdmin;
 module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
 
-module.exports.generateToken = generateToken;
+module.exports.generateTokenAndSave = generateTokenAndSave;
 module.exports.setPassword = setPassword;
 module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
