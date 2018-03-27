@@ -7,18 +7,25 @@ const logger = require('../../api/logger');
 const router = express.Router();
 
 router.post('/generate-token', function (req, res) {
-	const username = utils.getLoggedInUsername(req);
-	logger.log.debug('Generating token for [%s] user', username);
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug('Generating token for [%s] user', loggedInUsername);
 
 	// only admins permitted for this action
-	if (!security.isAdmin(username)) {
-		logger.log.error('The [%s] user doesn\'t have admin permissions to generate token', username);
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to generate token', loggedInUsername);
 		utils.sendError(res, 'admin permissions required');
 		return;
 	}
 
+	const username = req.body.username;
+	if (username.length < 1) {
+		logger.log.error('Username cannot be empty');
+		utils.sendError(res, 'Username cannot be empty');
+		return;
+	}
+
 	res.send({
-		token: security.generateTokenAndSave(req.body.username)
+		token: security.generateTokenAndSave(username)
 	});
 });
 
@@ -57,6 +64,12 @@ router.post('/register', function (req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	const token = req.body.token;
+
+	if (password.length < 1) {
+		logger.log.error('Password cannot be empty');
+		utils.sendError(res, 'Password cannot be empty');
+		return;
+	}
 
 	try {
 		security.setPassword(username, password, token);
