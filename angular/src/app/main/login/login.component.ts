@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
@@ -18,26 +18,31 @@ export class LoginComponent {
   @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
   @ViewChild('usernameRef') usernameRef: jqxInputComponent;
   @ViewChild('passwordRef') passwordRef: jqxPasswordInputComponent;
+  @ViewChild('messageBox') messageBox: ElementRef;
   @ViewChild('loginButton') loginButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   username = '';
   password = '';
-  isValidCredentials: boolean = false;
   validationRules =
-    [
-      {
-        input: '#password', message: 'Bad credentials', action: 'null',
-        rule: (input: any, commit: any): any => {
-          return this.isValidCredentials;
-        }
-      }
-    ];
+    [];
 
   constructor(private authService: AuthService, private loaderService: LoaderService) {
   }
 
+  displayErrorMessage(msg?) {
+    if (msg === undefined) {
+      this.messageBox.nativeElement.style.display = 'none';
+      return;
+    }
+
+    this.messageBox.nativeElement.innerText = msg;
+    this.messageBox.nativeElement.style.display = 'block';
+  }
+
   open() {
+    this.displayErrorMessage();
+
     this.username = '';
     this.password = '';
     // WTF BUG ???
@@ -47,28 +52,20 @@ export class LoginComponent {
   }
 
   login() {
-    this.isValidCredentials = false;
-
     this.loaderService.loader.open();
 
     this.authService.login(this.username, this.password)
       .subscribe(
         response => {
           this.loaderService.loader.close();
-          this.isValidCredentials = true;
-          this.validator.validate(document.getElementById('loginForm'));
+          this.loginWindow.close();
+          this.authService.refreshStatus();
         },
         err => {
           this.loaderService.loader.close();
-          this.isValidCredentials = false;
           this.password = '';
-          this.validator.validate(document.getElementById('loginForm'));
+          this.displayErrorMessage(err.statusText);
         });
-  }
-
-  onValidationSuccess() {
-    this.loginWindow.close();
-    this.authService.refreshStatus();
   }
 
   initContent = () => {
@@ -80,15 +77,10 @@ export class LoginComponent {
     this.usernameRef.focus();
   }
 
-  onEnterPress(event) {
-    if (event.charCode !== 13) {
+  onKeyPress(event) {
+    if (event.charCode === 13 && this.username.length > 0 && this.password.length > 0) {
+      this.login();
       return;
     }
-
-    if (this.username.length < 1 || this.password.length < 1) {
-      return;
-    }
-
-    this.login();
   }
 }

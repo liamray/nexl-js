@@ -19,7 +19,6 @@
     <jqxValidator #validator [rules]="validationRules"
                   [animationDuration]="0"
                   [hintType]="'label'"
-                  (onValidationSuccess)="onValidationSuccess($event)"
     >
       <form id='loginForm' action="./">
         <div class="block" style="padding-top: 25px;">
@@ -30,7 +29,7 @@
             #usernameRef
             [(ngModel)]="username"
             [height]="25"
-            (keypress)="onEnterPress($event)"
+            (keypress)="onKeyPress($event)"
           ></jqxInput>
         </div>
 
@@ -42,9 +41,11 @@
             #passwordRef
             [(ngModel)]="password"
             [height]="25"
-            (keypress)="onEnterPress($event)"
+            (keypress)="onKeyPress($event)"
           ></jqxPasswordInput>
         </div>
+
+        <span #messageBox class="jqx-validator-error-label"></span>
 
         <div class="buttons">
           <div class="button">
