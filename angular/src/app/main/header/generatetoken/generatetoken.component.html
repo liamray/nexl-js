@@ -1,0 +1,31 @@
+<jqxWindow #generateTokenWindow
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="400"
+           [height]="300"
+           [initContent]="initContent"
+>
+
+  <div>
+    <img src="/nexl/site/images/token.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Generate token</span>
+  </div>
+
+  <div style="overflow: hidden;" #windowContent>
+
+    <div class="button">
+      <jqxButton [height]='32'
+                 [width]="94"
+                 [textImageRelation]='"imageBeforeText"'
+                 [auto-create]="false"
+                 [textPosition]='"center"'
+                 (click)="generateTokenWindow.close()"
+                 [imgSrc]='"./nexl/site/images/ok.png"'
+                 #okButton>
+        Ok
+      </jqxButton>
+    </div>
+
+  </div>
+</jqxWindow>
