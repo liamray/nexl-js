@@ -20,7 +20,6 @@ import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
       useClass: AuthHttpInterceptor,
       multi: true
     }
-
   ],
 
   bootstrap: [AppComponent]

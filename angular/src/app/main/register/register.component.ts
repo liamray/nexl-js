@@ -90,7 +90,7 @@ export class RegisterComponent {
   onKeyPress(event) {
     this.displayErrorMessage();
 
-    if (event.charCode === 13 && this.username.length > 0 && this.password.length > 0 && this.password === this.confirmPassword) {
+    if (event.keyCode === 13 && this.username.length > 0 && this.password.length > 0 && this.password === this.confirmPassword) {
       this.register();
       return;
     }

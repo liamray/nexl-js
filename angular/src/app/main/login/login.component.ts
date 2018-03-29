@@ -78,7 +78,7 @@ export class LoginComponent {
   }
 
   onKeyPress(event) {
-    if (event.charCode === 13 && this.username.length > 0 && this.password.length > 0) {
+    if (event.keyCode === 13 && this.username.length > 0 && this.password.length > 0) {
       this.login();
       return;
     }
