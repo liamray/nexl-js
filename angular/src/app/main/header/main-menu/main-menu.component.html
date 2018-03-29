@@ -3,61 +3,88 @@
 
 <jqxMenu #mainMenuRef [width]="350" [height]="30" [showTopLevelArrows]="true">
   <ul>
-    <li>File
-      <ul>
-        <li id="main-menu-new-dir">
-          <img/> <a href="#">New directory</a>
+    <!-- ------------------------------------------------------------------------->
+    <!--File menu-->
+    <li>
+      <span>File</span>
+      <ul style="width:160px;">
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/new-dir.png'/><span>New directory</span>
         </li>
-        <li id="main-menu-new-file">
-          <img/> <a href="#">New file</a>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/new-file.png'/><span>New file</span>
         </li>
-        <li id="main-menu-save">
-          <img/> <a href="#">Save</a>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/save.png'/><span>Save</span>
         </li>
-        <li id="main-menu-refresh">
-          <img/> <a href="#">Refresh all</a></li>
-        <li id="main-menu-close">
-          <img/> <a href="#">Close</a>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/reload.png'/><span>Refresh all</span>
         </li>
-        <li id="main-menu-close-all">
-          <img/><a href="#">Close all</a>
+        <li>
+          <span>Close</span>
         </li>
+        <li>
+          <span>Close all</span>
+        </li>
+      </ul>
+    </li>
 
-      </ul>
-    </li>
-    <li>View
-      <ul>
-        <li id="main-menu-permissions" (click)="permissionsWindow.open()">
-          <img/> <a href="#">Permissions</a>
+    <!-- ------------------------------------------------------------------------->
+    <!--View menu-->
+    <li>
+      <span>View</span>
+      <ul style="width:160px;">
+        <li (click)="permissionsWindow.open()" id="main-menu-permissions">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/permissions.png'/><span>Permissions</span>
         </li>
-        <li id="main-menu-settings" (click)="settingsWindow.open()">
-          <img/> <a href="#">Settings</a>
-        </li>
-      </ul>
-    </li>
-    <li>Expression
-      <ul>
-        <li id="main-menu-args">
-          <img/> <a id="menu-view-args" href="#">Arguments</a>
-        </li>
-        <li id="main-menu-eval">
-          <img/> <a href="#">Evaluate ( F9 )</a>
-        </li>
-        <li id="main-menu-wizard">
-          <img/> <a href="#">Wizard</a>
+        <li (click)="permissionsWindow.open()" id="main-menu-settings">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/settings.png'/><span>Settings</span>
         </li>
       </ul>
     </li>
-    <li>Help
-      <ul>
-        <li id="main-menu-examples">
-          <img/> <a href="#">Examples</a>
+
+    <!-- ------------------------------------------------------------------------->
+    <!--Expression menu-->
+    <li>
+      <span>Expression</span>
+      <ul style="width:160px;">
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/args.png'/><span>Arguments</span>
         </li>
-        <li id="main-menu-tour">
-          <img/> <a href="#">Quick tour</a>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/eval.png'/><span>Evaluate ( F9 )</span>
         </li>
-        <li id="main-menu-about">
-          <img/> <a href="#">About</a>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/assemble.png'/><span>Wizard</span>
+        </li>
+      </ul>
+    </li>
+
+    <!-- ------------------------------------------------------------------------->
+    <!--Help menu-->
+    <li>
+      <span>Help</span>
+      <ul style="width:160px;">
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/example.png'/><span>Examples</span>
+        </li>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/tour.png'/><span>Quick tour</span>
+        </li>
+        <li>
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/about.png'/><span>About</span>
         </li>
       </ul>
     </li>
