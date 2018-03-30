@@ -7,11 +7,25 @@ import {MessageService} from "./message.service";
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
 const RESOLVE_STATUS = UtilsService.prefixUrl('/auth/resolve-status');
+const CHANGE_PASSWORD = UtilsService.prefixUrl('/auth/change-password');
 const CREDENTIALS = 'nexl.credentials';
 
 @Injectable()
 export class AuthService {
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
+  }
+
+  changePassword(oldPassword, newPassword) {
+    const params = {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    };
+
+    const opts: any = {
+      observe: 'response',
+      responseType: 'json'
+    };
+    return this.httpClient.post<any>(CHANGE_PASSWORD, params, opts);
   }
 
   resolveStatus() {

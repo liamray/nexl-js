@@ -49,6 +49,7 @@ import {NexlSourcesService} from "../services/nexl-sources.service";
 import {MessageService} from "../services/message.service";
 import {RegisterComponent} from "./register/register.component";
 import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.component";
+import {ChangePasswordComponent} from "./header/changepassword/changepassword.component";
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.compo
     MainMenuComponent,
     AuthMenuComponent,
     GenerateTokenComponent,
+    ChangePasswordComponent,
     NexlSourcesExplorerComponent,
     NexlSourcesEditorComponent,
     NexlExpressionsTesterComponent,

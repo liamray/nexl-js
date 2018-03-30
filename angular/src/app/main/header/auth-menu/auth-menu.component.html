@@ -1,6 +1,7 @@
 <app-login #loginWindow></app-login>
 <app-register #registerWindow></app-register>
 <app-generate-token #generateTokenWindow></app-generate-token>
+<app-change-password #changePasswordWindow></app-change-password>
 
 <div class="item" [style.display]="isLoginVisible ? '' : 'none'">
   <jqxTooltip [position]="'bottom-left'" [content]="'Register a new nexl user or reset password'">
@@ -40,7 +41,7 @@
       <li id="menu-direction">
         <span>Hello, {{ username }}</span>
         <ul style="width:160px;">
-          <li>
+          <li (click)="changePasswordWindow.open()">
             <img style='float: left; margin-right: 5px;'
                  src='./nexl/site/images/change-password.png'/><span>Change password</span>
           </li>

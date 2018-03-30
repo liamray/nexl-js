@@ -6,6 +6,27 @@ const logger = require('../../api/logger');
 
 const router = express.Router();
 
+router.post('/change-password', function (req, res) {
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug('Changing password for [%s] user', loggedInUsername);
+
+	if (loggedInUsername === utils.UNAUTHORIZED_USERNAME) {
+		logger.log.error('You must be logged in to change your password');
+		utils.sendError(res, 'Not logged in');
+		return;
+	}
+
+	try {
+		security.changePassword(loggedInUsername, req.body.oldPassword, req.body.newPassword);
+	} catch (e) {
+		logger.log.error('Failed to change a password. Reason : ', e.toString());
+		utils.sendError(res, e.toString());
+		return;
+	}
+
+	res.send({});
+});
+
 router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Generating token for [%s] user', loggedInUsername);
