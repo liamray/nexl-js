@@ -28,7 +28,7 @@ import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 
 import {ContentComponent} from './content/content.component';
 import {NexlSourcesExplorerComponent} from './content/nexl-sources-explorer/nexl-sources-explorer.component';
-import {NexlSourcesEditorComponent} from './content/nexl-source-editor/nexl-sources-editor.component';
+import {NexlSourcesEditorComponent} from './content/nexl-sources-editor/nexl-sources-editor.component';
 import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {MainComponent} from "./main.component";

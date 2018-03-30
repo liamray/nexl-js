@@ -15,9 +15,9 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private messageService: MessageService) {
   }
 
-  changePassword(oldPassword, newPassword) {
+  changePassword(currentPassword, newPassword) {
     const params = {
-      oldPassword: oldPassword,
+      currentPassword: currentPassword,
       newPassword: newPassword
     };
 

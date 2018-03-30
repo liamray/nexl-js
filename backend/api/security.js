@@ -100,7 +100,7 @@ function changePassword(username, currentPassword, newPassword) {
 	}
 
 	if (!isPasswordValid(username, currentPassword)) {
-		throw 'Bad current password';
+		throw 'Wrong current password';
 	}
 
 	// set the password

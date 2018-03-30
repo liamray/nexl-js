@@ -2,7 +2,6 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import jqxValidator = jqwidgets.jqxValidator;
 import {LoaderService} from "../../../services/loader.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
@@ -15,7 +14,7 @@ import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_
 })
 export class ChangePasswordComponent {
   @ViewChild('changePasswordWindow') changePasswordWindow: jqxWindowComponent;
-  @ViewChild('oldPasswordRef') oldPasswordRef: jqxPasswordInputComponent;
+  @ViewChild('currentPasswordRef') currentPasswordRef: jqxPasswordInputComponent;
   @ViewChild('newPasswordRef') newPasswordRef: jqxPasswordInputComponent;
   @ViewChild('confirmPasswordRef') confirmPasswordRef: jqxInputComponent;
   @ViewChild('messageBox') messageBox: ElementRef;
@@ -23,7 +22,7 @@ export class ChangePasswordComponent {
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   width = 205;
-  oldPassword = '';
+  currentPassword = '';
   newPassword = '';
   confirmPassword = '';
 
@@ -43,12 +42,12 @@ export class ChangePasswordComponent {
   open() {
     this.displayErrorMessage();
 
-    this.oldPassword = '';
+    this.currentPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';
 
     // WTF BUG ???
-    this.oldPasswordRef.val(this.newPassword);
+    this.currentPasswordRef.val(this.newPassword);
     this.newPasswordRef.val(this.newPassword);
     this.confirmPasswordRef.val(this.confirmPassword);
     this.changePasswordWindow.open();
@@ -57,7 +56,7 @@ export class ChangePasswordComponent {
   changePassword() {
     this.loaderService.loader.open();
 
-    this.authService.changePassword(this.oldPassword, this.newPassword)
+    this.authService.changePassword(this.currentPassword, this.newPassword)
       .subscribe(
         response => {
           this.loaderService.loader.close();
@@ -66,7 +65,7 @@ export class ChangePasswordComponent {
         },
         err => {
           this.loaderService.loader.close();
-          this.oldPassword = '';
+          this.currentPassword = '';
           this.newPassword = '';
           this.confirmPassword = '';
           this.displayErrorMessage(err.statusText);
@@ -81,7 +80,7 @@ export class ChangePasswordComponent {
   onKeyPress(event) {
     this.displayErrorMessage();
 
-    if (event.keyCode === 13 && this.oldPassword.length > 0 && this.newPassword.length > 0 && this.newPassword === this.confirmPassword) {
+    if (event.keyCode === 13 && this.currentPassword.length > 0 && this.newPassword.length > 0 && this.newPassword === this.confirmPassword) {
       this.changePassword();
       return;
     }

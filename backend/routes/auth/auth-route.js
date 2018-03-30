@@ -17,7 +17,7 @@ router.post('/change-password', function (req, res) {
 	}
 
 	try {
-		security.changePassword(loggedInUsername, req.body.oldPassword, req.body.newPassword);
+		security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword);
 	} catch (e) {
 		logger.log.error('Failed to change a password. Reason : ', e.toString());
 		utils.sendError(res, e.toString());
