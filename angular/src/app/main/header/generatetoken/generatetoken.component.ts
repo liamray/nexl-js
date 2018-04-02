@@ -36,7 +36,7 @@ export class GenerateTokenComponent {
     this.loaderService.loader.open();
 
     // generating token
-    this.http.json({username: this.username}, '/auth/generate-token').subscribe(
+    this.http.post({username: this.username}, '/auth/generate-token', 'json').subscribe(
       (data: any) => {
         this.loaderService.loader.close();
         this.token = data.body.token;

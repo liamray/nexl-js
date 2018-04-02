@@ -119,7 +119,7 @@ export class SettingsComponent {
 
   openInner() {
     // loading data
-    this.http.json({}, '/settings/load').subscribe(
+    this.http.post({}, '/settings/load', 'json').subscribe(
       (data: any) => {
         this.settings = data.body;
         this.loaderService.loader.close();
@@ -148,7 +148,7 @@ export class SettingsComponent {
     }
 
     // loading available values from server
-    this.http.json({}, '/settings/avail-values').subscribe(
+    this.http.post({}, '/settings/avail-values', 'json').subscribe(
       (data: any) => {
         this.encodings = data.body.encodings;
         this.logLevels = data.body.logLevels;
@@ -187,7 +187,7 @@ export class SettingsComponent {
     this.settings['notifications'] = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
     this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
-    this.http.json(this.settings, '/settings/save').subscribe(
+    this.http.post(this.settings, '/settings/save', 'json').subscribe(
       val => {
         this.loaderService.loader.close();
       },

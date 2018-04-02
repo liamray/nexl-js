@@ -69,6 +69,11 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 	return [].concat(dirs).concat(files);
 }
 
+function getSourceContent(relativePath) {
+	const nexlSourcesRootDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+	return fs.readFileSync(path.join(nexlSourcesRootDir, relativePath), 'utf-8');
+}
+
 function getNexlSources(relativePath) {
 	return new Promise(function (resolve, reject) {
 		validateRelativePath(relativePath);
@@ -95,4 +100,5 @@ function getNexlSources(relativePath) {
 
 // --------------------------------------------------------------------------------
 module.exports.getNexlSources = getNexlSources;
+module.exports.getSourceContent = getSourceContent;
 // --------------------------------------------------------------------------------

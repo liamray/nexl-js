@@ -35,7 +35,7 @@ export class PermissionsComponent implements AfterViewInit {
     this.loaderService.loader.open();
 
     // loading data
-    this.http.json({}, '/permissions/load').subscribe(
+    this.http.post({}, '/permissions/load', 'json').subscribe(
       (data: any) => {
         this.permissions = data.body;
         this.loaderService.loader.close();
@@ -57,7 +57,7 @@ export class PermissionsComponent implements AfterViewInit {
     this.permissions.admins = this.admins.get();
     this.permissions.assignPermissions = this.assignpermissions.get();
 
-    this.http.json(this.permissions, '/permissions/save').subscribe(
+    this.http.post(this.permissions, '/permissions/save', 'json').subscribe(
       val => {
         this.loaderService.loader.close();
       },

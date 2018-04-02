@@ -8,14 +8,13 @@ export class HttpRequestService {
   constructor(private httpClient: HttpClient) {
   }
 
-  json(data, url) {
+  post(data, url, responseType) {
     const opts: any = {
       observe: 'response',
-      responseType: 'json',
+      responseType: responseType,
       body: data
     };
 
     return this.httpClient.post<any>(UtilsService.prefixUrl(url), data, opts);
   }
-
 }

@@ -23,7 +23,9 @@
         "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css",
         "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.dark.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "nexl/ace/ace.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

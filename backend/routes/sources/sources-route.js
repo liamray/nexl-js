@@ -8,6 +8,19 @@ const logger = require('../../api/logger');
 
 const router = express.Router();
 
+router.post('/get-source-content', function (req, res, next) {
+	const relativePath = req.body['relativePath'] || path.sep;
+	const username = utils.getLoggedInUsername(req);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to get nexl source', username);
+		utils.sendError(res, 'You don\'t have a read permission');
+		return;
+	}
+
+	res.send(sources.getSourceContent(relativePath));
+});
+
 router.post('/get-nexl-sources', function (req, res, next) {
 	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
