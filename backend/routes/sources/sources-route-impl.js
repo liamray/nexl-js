@@ -1,4 +1,5 @@
 const fs = require('fs');
+const fsx = require('../../api/fsx');
 const path = require('path');
 const util = require('util');
 
@@ -25,6 +26,17 @@ function validateRelativePath(relativePath) {
 	if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
 		throw 'Unacceptable path';
 	}
+}
+
+function validateRelativePathPromised(relativePath) {
+	return new Promise((resolve, reject) => {
+		if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
+			reject('Unacceptable path');
+			return;
+		}
+
+		resolve();
+	});
 }
 
 function assembleItems(relativePath, nexlSourcesDir, items) {
@@ -70,8 +82,18 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 }
 
 function getSourceContent(relativePath) {
-	const nexlSourcesRootDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-	return fs.readFileSync(path.join(nexlSourcesRootDir, relativePath), 'utf-8');
+	return validateRelativePathPromised(relativePath).then(
+		() => {
+			return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
+				(settings) => {
+					const nexlSourcesRootDir = settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+					const fullPath = path.join(nexlSourcesRootDir, relativePath);
+					const encoding = settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+					return fsx.readFile(fullPath, {encoding: encoding});
+				}
+			);
+		}
+	);
 }
 
 function getNexlSources(relativePath) {

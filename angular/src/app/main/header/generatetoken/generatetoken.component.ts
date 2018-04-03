@@ -29,6 +29,8 @@ export class GenerateTokenComponent {
 
   onOpen() {
     this.usernameRef.focus();
+    this.usernameRef.val('');
+    this.token = '';
   }
 
   generateToken() {

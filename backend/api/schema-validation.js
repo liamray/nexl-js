@@ -15,7 +15,7 @@ function resolveSchema(key, objectSchema) {
 
 function objectSchemaValidation(data, objectSchema) {
 	if (!j79.isObject(data)) {
-		return util.format('Wrong data structure. Expecting for object, but got a [%]', j79.getType(data));
+		return util.format('Wrong data structure. Expecting for object, but got a %s', j79.getType(data));
 	}
 
 	for (let key in data) {

@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const fsx = require('./fsx');
 const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
@@ -331,6 +332,114 @@ function save(data, fileName) {
 	throw message;
 }
 
+
+function loadAsync(fileName) {
+	logger.log.debug('Loading config from [%s] file', fileName);
+
+	return new Promise((resolve, reject) => {
+		let fullPath;
+		try {
+			fullPath = resolveFullPath(fileName);
+		} catch (e) {
+			logger.log.error('Failed to resolve full path for [%s] file', fileName);
+			reject('FS API error');
+			return;
+		}
+
+		// is file exists ?
+		fsx.exists(fullPath).then(
+			(isExists) => {
+				// is file doesn't exists, loading defaults
+				if (!isExists) {
+					logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
+					resolve(substDefValues(DEF_VALUES[fileName]));
+					return;
+				}
+
+				// loading from file
+				fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
+					(fileBody) => {
+						// JSONing. The JSON must be an object which contains config version and the data itself
+						let conf;
+						try {
+							conf = JSON.parse(fileBody);
+						} catch (e) {
+							logger.log.error('The [%s] config file is damaged or broken. Reason : [%s]', fullPath, e.toString());
+							reject('Config file is damaged or broken');
+							return;
+						}
+
+						const version = conf['version'];
+						const data = conf['data'];
+
+						logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
+
+						// setting up default values
+						resolve(setupDefaultValues(data, fileName));
+					}
+				).catch(
+					(err) => {
+						reject(err);
+					}
+				);
+			}
+		).catch(
+			(err) => {
+				reject(err);
+			}
+		);
+	});
+}
+
+function saveAsync(data, fileName) {
+	logger.log.debug('Saving config to [%s] file', fileName);
+
+	return new Promise((resolve, reject) => {
+		let fullPath;
+		try {
+			fullPath = resolveFullPath(fileName);
+		} catch (e) {
+			logger.log.error('Failed to resolve full path for [%s] file', fileName);
+			reject('FS API error');
+			return;
+		}
+
+		// validating
+		const schema = VALIDATION_SCHEMAS[fileName];
+		const validationResult = schemaValidation(data, schema);
+		if (validationResult !== undefined) {
+			const msg = util.format('Data validation error while saving config file. Reason : [%s]', validationResult);
+			logger.log.error(msg);
+			reject(msg);
+			return;
+		}
+
+		// preparing for save
+		let conf = {
+			version: version,
+			data: data
+		};
+		try {
+			conf = JSON.stringify(conf, null, 2);
+		} catch (e) {
+			logger.log.error();
+			reject();
+			return;
+		}
+
+		// saving...
+		fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8}).then(() => {
+			resolve()
+		}).catch(
+			(err) => {
+				logger.log.error('Failed to save the [%s] config file. Reason : [%s]', fullPath, err.toString());
+				reject('Failed to save config file');
+			}
+		);
+	});
+}
+
+
 function isConfFileExists(fileName) {
 	const fullPath = resolveFullPath(fileName);
 	return fs.existsSync(fullPath);
@@ -389,6 +498,8 @@ module.exports.SETTINGS = SETTINGS;
 
 module.exports.load = load;
 module.exports.save = save;
+module.exports.loadAsync = loadAsync;
+module.exports.saveAsync = saveAsync;
 
 module.exports.NEXL_HOME_DIR = NEXL_HOME_DIR;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
