@@ -58,6 +58,7 @@ function initNexlSourcesDir() {
 	logger.log.debug('The [%s] nexl sources directory doesn\'t exist. Creating...', nexlSourcesDir);
 	fs.mkdirSync(nexlSourcesDir);
 
+	// todo : move the following code to the function ( and expose this feature to the web service : View -> Examples )
 	// adding examples
 	logger.log.debug('Adding examples.js files to nexl sources dir');
 	const examplesSrc = '../backend/resources/examples.js';

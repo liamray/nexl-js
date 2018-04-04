@@ -7,10 +7,10 @@ function exists(fullPath) {
 		fs.stat(fullPath, (err, stats) => {
 			if (err) {
 				logger.log.debug('The [%s] file doesn\'t exist', fullPath);
-				reject();
+				resolve(false);
 			} else {
 				logger.log.debug('The [%s] file exists', fullPath);
-				resolve();
+				resolve(true);
 			}
 		})
 	});

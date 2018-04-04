@@ -232,6 +232,15 @@ function resolveFullPath(fileName) {
 	return path.join(NEXL_HOME_DIR, fileName);
 }
 
+function resolveFullPathPromised(fileName) {
+	try {
+		return Promise.resolve(path.join(NEXL_HOME_DIR, fileName))
+	} catch (e) {
+		logger.log.error('Failed to join path. nexl home dir is [%s], file name is [%s]. Reason : [%s]', NEXL_HOME_DIR, fileName, utils.formatErr(e));
+		return Promise.reject('FS API error');
+	}
+}
+
 function substDefValues(defValue) {
 	if (j79.isPrimitive(defValue)) {
 		return defValue;
@@ -332,56 +341,38 @@ function save(data, fileName) {
 	throw message;
 }
 
+function loadAsyncInner(fullPath, fileName) {
+	return fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then((fileBody) => {
+		// JSONing. The JSON must be an object which contains config version and the data itself
+		let conf;
+		try {
+			conf = JSON.parse(fileBody);
+		} catch (e) {
+			logger.log.error('The [%s] config file is damaged or broken. Reason : [%s]', fullPath, e.toString());
+			return Promise.reject('Config file is damaged or broken');
+		}
+
+		const version = conf['version'];
+		const data = conf['data'];
+
+		logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
+
+		// setting up default values
+		return Promise.resolve(setupDefaultValues(data, fileName));
+	});
+}
 
 function loadAsync(fileName) {
 	logger.log.debug('Loading config from [%s] file', fileName);
 
-	return new Promise((resolve, reject) => {
-		let fullPath;
-		try {
-			fullPath = resolveFullPath(fileName);
-		} catch (e) {
-			logger.log.error('Failed to resolve full path for [%s] file', fileName);
-			reject('FS API error');
-			return;
-		}
-
-		fsx.exists(fullPath).then(
-			() => {
-				// loading from file
-				fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
-					(fileBody) => {
-						// JSONing. The JSON must be an object which contains config version and the data itself
-						let conf;
-						try {
-							conf = JSON.parse(fileBody);
-						} catch (e) {
-							logger.log.error('The [%s] config file is damaged or broken. Reason : [%s]', fullPath, e.toString());
-							reject('Config file is damaged or broken');
-							return;
-						}
-
-						const version = conf['version'];
-						const data = conf['data'];
-
-						logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
-
-						// setting up default values
-						resolve(setupDefaultValues(data, fileName));
-					}
-				).catch(
-					(err) => {
-						reject(err);
-					}
-				);
-			}
-		).catch(
-			() => {
+	return resolveFullPathPromised(fileName).then((fullPath) => {
+		return fsx.exists(fullPath).then((isExists) => {
+			return isExists ? loadAsyncInner(fullPath, fileName) : new Promise((resolve, reject) => {
 				logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
-				resolve(substDefValues(DEF_VALUES[fileName]));
-			}
-		);
-	});
+				resolve(substDefValues(DEF_VALUES[fileName]))
+			})
+		});
+	})
 }
 
 function saveAsync(data, fileName) {
