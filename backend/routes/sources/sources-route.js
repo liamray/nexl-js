@@ -22,8 +22,8 @@ router.post('/get-source-content', function (req, res, next) {
 		data => res.send(data)
 	).catch(
 		(err) => {
-			logger.log.error('Failed to get nexl source file content for [%s] file. Reason : [%s]', relativePath, err.toString());
-			utils.sendError(res, err.toString());
+			logger.log.error('Failed to get nexl source file content for [%s] file. Reason : [%s]', relativePath, err);
+			utils.sendError(res, err);
 		}
 	);
 });
@@ -39,12 +39,11 @@ router.post('/get-nexl-sources', function (req, res, next) {
 	}
 
 	sources.getNexlSources(relativePath).then(
-		function (data) {
-			res.send(data);
-		}).catch(
-		function (err) {
-			logger.log.error('Internal server error', err.toString());
-			utils.sendError(res, 'Internal server error');
+		data => res.send(data)
+	).catch(
+		(err) => {
+			logger.log.error('Failed to resolve nexl sources. Reason : [%s]', err);
+			utils.sendError(res, err);
 		});
 });
 

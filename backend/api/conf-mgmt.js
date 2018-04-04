@@ -346,16 +346,8 @@ function loadAsync(fileName) {
 			return;
 		}
 
-		// is file exists ?
 		fsx.exists(fullPath).then(
-			(isExists) => {
-				// is file doesn't exists, loading defaults
-				if (!isExists) {
-					logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
-					resolve(substDefValues(DEF_VALUES[fileName]));
-					return;
-				}
-
+			() => {
 				// loading from file
 				fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
 					(fileBody) => {
@@ -384,8 +376,9 @@ function loadAsync(fileName) {
 				);
 			}
 		).catch(
-			(err) => {
-				reject(err);
+			() => {
+				logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
+				resolve(substDefValues(DEF_VALUES[fileName]));
 			}
 		);
 	});

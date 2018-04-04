@@ -1,9 +1,11 @@
 const fs = require('fs');
 const fsx = require('../../api/fsx');
+const logger = require('../../api/logger');
 const path = require('path');
 const util = require('util');
 
 const confMgmt = require('../../api/conf-mgmt');
+const INVLID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
 
 const CHILD_ITEM = [
 	{
@@ -36,6 +38,41 @@ function validateRelativePathPromised(relativePath) {
 		}
 
 		resolve();
+	});
+}
+
+function resolveFullPath(relativePath) {
+	return new Promise((resolve, reject) => {
+		if (relativePath.search(INVLID_PATH_PATTERN) > -1) {
+			logger.log.error('The [%s] path is unacceptable', relativePath);
+			reject('Unacceptable path');
+			return;
+		}
+
+		// loading nexl source dir
+		confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
+			(settings) => {
+				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
+				if (fullPath.search(INVLID_PATH_PATTERN) > -1) {
+					logger.log.error('The [%s] path is unacceptable', fullPath);
+					reject('Unacceptable path');
+					return;
+				}
+
+				resolve({
+					fullPath: fullPath,
+					settings: settings
+				});
+			}
+		).catch(
+			err => reject(err)
+		);
+	});
+}
+
+function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
+	return new Promise((resolve, reject) => {
+
 	});
 }
 
@@ -97,27 +134,15 @@ function getSourceContent(relativePath) {
 }
 
 function getNexlSources(relativePath) {
-	return new Promise(function (resolve, reject) {
-		validateRelativePath(relativePath);
-
-		const nexlSourcesRootDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-		const path2Scan = path.join(nexlSourcesRootDir, relativePath || '');
-		validateRelativePath(path2Scan);
-
-		if (!fs.existsSync(path2Scan)) {
-			throw util.format('The [%s] directory doesn\'t exist', relativePath);
-		}
-
-		fs.readdir(path2Scan, function (err, items) {
-			if (err) {
-				reject(err);
-				return;
-			}
-
-			items = assembleItems(relativePath, nexlSourcesRootDir, items);
-			resolve(items);
+	return resolveFullPath(relativePath).then(
+		(stuff) => {
+			return fsx.readdir(stuff.fullPath).then(
+				(items) => {
+					items = assembleItems(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items);
+					return Promise.resolve(items);
+				}
+			)
 		});
-	});
 }
 
 // --------------------------------------------------------------------------------

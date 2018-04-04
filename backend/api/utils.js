@@ -81,6 +81,10 @@ function deepMergeAndPeel(obj1, obj2) {
 	});
 }
 
+function formatErr(err) {
+	return err.toString() + '\n' + JSON.stringify(err, null, 2);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
 module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
@@ -91,6 +95,8 @@ module.exports.getLoggedInUsername = getLoggedInUsername;
 module.exports.sendError = sendError;
 module.exports.initNexlSourcesDir = initNexlSourcesDir;
 module.exports.encrypt = encrypt;
+
+module.exports.formatErr = formatErr;
 
 module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------
