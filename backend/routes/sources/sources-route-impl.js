@@ -1,11 +1,18 @@
 const fs = require('fs');
-const fsx = require('../../api/fsx');
-const logger = require('../../api/logger');
 const path = require('path');
 const util = require('util');
 
+const fsx = require('../../api/fsx');
+const logger = require('../../api/logger');
 const confMgmt = require('../../api/conf-mgmt');
-const INVLID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
+const utils = require('../../api/utils');
+
+const INVALID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
+
+function isPathValid(relativePath) {
+	return relativePath.search(INVALID_PATH_PATTERN) < 0;
+}
+
 
 const CHILD_ITEM = [
 	{
@@ -24,14 +31,8 @@ function sortFilesFunc(a, b) {
 	return 0;
 }
 
-function validateRelativePath(relativePath) {
-	if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
-		throw 'Unacceptable path';
-	}
-}
-
 function resolveFullPath(relativePath) {
-	if (relativePath.search(INVLID_PATH_PATTERN) > -1) {
+	if (!isPathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
 	}
@@ -40,7 +41,7 @@ function resolveFullPath(relativePath) {
 		.then(
 			(settings) => {
 				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
-				if (fullPath.search(INVLID_PATH_PATTERN) > -1) {
+				if (!isPathValid(fullPath)) {
 					logger.log.error('The [%s] path is unacceptable', fullPath);
 					return Promise.reject('Unacceptable path');
 				}
@@ -53,52 +54,73 @@ function resolveFullPath(relativePath) {
 		);
 }
 
-function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
-	return new Promise((resolve, reject) => {
-
-	});
+function makeDirItem(item, relativePath) {
+	return {
+		label: item,
+		items: CHILD_ITEM.slice(),
+		value: {
+			relativePath: relativePath,
+			mustLoadChildItems: true,
+			isDir: true
+		}
+	}
 }
 
-function assembleItems(relativePath, nexlSourcesDir, items) {
-	let files = [];
-	let dirs = [];
+function makeFileItem(item, relativePath) {
+	return {
+		label: item,
+		value: {
+			relativePath: relativePath,
+			mustLoadChildItems: false,
+			isDir: false
+		}
+	}
+}
 
-	items.forEach(function (name) {
-		const itemRelativePath = path.join(relativePath, name);
-		validateRelativePath(itemRelativePath);
+function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
+	return Promise.resolve().then(() => {
+			let files = [];
+			let dirs = [];
+			const promises = [];
 
-		const fullPath = path.join(nexlSourcesDir, itemRelativePath);
+			// gathering promises
+			for (let index in items) {
+				let item = items[index];
 
-		const item = {
-			label: name,
-			value: {
-				relativePath: itemRelativePath
+				const itemRelativePath = path.join(relativePath, item);
+				if (!isPathValid(itemRelativePath)) {
+					logger.log.error('The [%s] path is unacceptable', relativePath);
+					return Promise.reject('Unacceptable path');
+				}
+
+				const fullPath = path.join(nexlSourcesDir, itemRelativePath);
+				const promise = fsx.stat(fullPath).then(
+					(stats) => {
+						if (stats.isDirectory()) {
+							dirs.push(makeDirItem(item, itemRelativePath));
+						}
+
+						if (stats.isFile()) {
+							dirs.push(makeFileItem(item, itemRelativePath));
+						}
+
+						return Promise.resolve();
+					}
+				);
+
+				promises.push(promise);
 			}
-		};
 
-		// is directory ?
-		if (fs.statSync(fullPath).isDirectory()) {
-			item.value.mustLoadChildItems = true;
-			item.value.isDir = true;
-			item.items = CHILD_ITEM.slice();
-			dirs.push(item);
-			return;
+			// executing all promises
+			return Promise.all(promises).then(
+				() => {
+					files = files.sort(sortFilesFunc);
+					dirs = dirs.sort(sortFilesFunc);
+
+					return Promise.resolve([].concat(dirs).concat(files));
+				});
 		}
-
-		// is file ?
-		if (fs.statSync(fullPath).isFile()) {
-			item.value.mustLoadChildItems = false;
-			item.value.isDir = false;
-			files.push(item);
-			return;
-		}
-	});
-
-	// sorting files and dirs
-	files = files.sort(sortFilesFunc);
-	dirs = dirs.sort(sortFilesFunc);
-
-	return [].concat(dirs).concat(files);
+	);
 }
 
 function getSourceContent(relativePath) {
@@ -116,12 +138,9 @@ function getNexlSources(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
 			return fsx.readdir(stuff.fullPath).then(
-				(items) => {
-					items = assembleItems(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items);
-					return Promise.resolve(items);
-				}
-			)
-		});
+				(items) => assembleItemsPromised(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items));
+		}
+	);
 }
 
 // --------------------------------------------------------------------------------
