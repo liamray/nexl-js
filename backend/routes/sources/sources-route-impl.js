@@ -30,17 +30,6 @@ function validateRelativePath(relativePath) {
 	}
 }
 
-function validateRelativePathPromised(relativePath) {
-	return new Promise((resolve, reject) => {
-		if (relativePath.search('((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)') > -1) {
-			reject('Unacceptable path');
-			return;
-		}
-
-		resolve();
-	});
-}
-
 function resolveFullPath(relativePath) {
 	return new Promise((resolve, reject) => {
 		if (relativePath.search(INVLID_PATH_PATTERN) > -1) {
@@ -119,16 +108,12 @@ function assembleItems(relativePath, nexlSourcesDir, items) {
 }
 
 function getSourceContent(relativePath) {
-	return validateRelativePathPromised(relativePath).then(
-		() => {
-			return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
-				(settings) => {
-					const nexlSourcesRootDir = settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-					const fullPath = path.join(nexlSourcesRootDir, relativePath);
-					const encoding = settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
-					return fsx.readFile(fullPath, {encoding: encoding});
-				}
-			);
+	return resolveFullPath(relativePath).then(
+		(stuff) => {
+			const nexlSourcesRootDir = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+			const fullPath = path.join(nexlSourcesRootDir, relativePath);
+			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+			return fsx.readFile(stuff.fullPath, {encoding: encoding});
 		}
 	);
 }
