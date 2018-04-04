@@ -39,7 +39,7 @@ function resolveFullPath(relativePath) {
 		}
 
 		// loading nexl source dir
-		confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
+		return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
 			(settings) => {
 				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
 				if (fullPath.search(INVLID_PATH_PATTERN) > -1) {
@@ -53,8 +53,6 @@ function resolveFullPath(relativePath) {
 					settings: settings
 				});
 			}
-		).catch(
-			err => reject(err)
 		);
 	});
 }

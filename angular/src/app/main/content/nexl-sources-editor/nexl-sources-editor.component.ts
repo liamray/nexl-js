@@ -26,7 +26,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         ace.edit(newId);
       },
       (err) => {
-        alert(err.toString());
+        alert(err.statusText);
       }
     );
 
