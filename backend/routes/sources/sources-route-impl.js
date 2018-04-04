@@ -31,30 +31,26 @@ function validateRelativePath(relativePath) {
 }
 
 function resolveFullPath(relativePath) {
-	return new Promise((resolve, reject) => {
-		if (relativePath.search(INVLID_PATH_PATTERN) > -1) {
-			logger.log.error('The [%s] path is unacceptable', relativePath);
-			reject('Unacceptable path');
-			return;
-		}
+	if (relativePath.search(INVLID_PATH_PATTERN) > -1) {
+		logger.log.error('The [%s] path is unacceptable', relativePath);
+		return Promise.reject('Unacceptable path');
+	}
 
-		// loading nexl source dir
-		return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
+	return Promise.resolve(confMgmt.CONF_FILES.SETTINGS).then(confMgmt.loadAsync)
+		.then(
 			(settings) => {
 				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
 				if (fullPath.search(INVLID_PATH_PATTERN) > -1) {
 					logger.log.error('The [%s] path is unacceptable', fullPath);
-					reject('Unacceptable path');
-					return;
+					return Promise.reject('Unacceptable path');
 				}
 
-				resolve({
+				return Promise.resolve({
 					fullPath: fullPath,
 					settings: settings
 				});
 			}
 		);
-	});
 }
 
 function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
