@@ -361,8 +361,24 @@ function loadAsyncInner(fullPath, fileName) {
 	});
 }
 
+function isConfFileDeclared(fileName) {
+	for (let key in CONF_FILES) {
+		if (CONF_FILES[key] === fileName) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 function loadAsync(fileName) {
 	logger.log.debug('Loading config from [%s] file', fileName);
+
+	if (!isConfFileDeclared(fileName)) {
+		logger.log.error('The [%s] file is undeclared and cannot be loaded');
+		return Promise.reject('Undeclared configuration file cannot be loaded');
+	}
 
 	return resolveFullPathPromised(fileName).then((fullPath) => {
 		return fsx.exists(fullPath).then((isExists) => {
@@ -376,6 +392,12 @@ function loadAsync(fileName) {
 
 function saveAsync(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
+
+	if (!isConfFileDeclared(fileName)) {
+		logger.log.error('The [%s] file is undeclared and cannot be saved');
+		return Promise.reject('Undeclared configuration file cannot be saved');
+	}
+
 
 	return new Promise((resolve, reject) => {
 		let fullPath;
