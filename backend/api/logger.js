@@ -7,7 +7,7 @@ function logFormatter(options) {
 	return j79.rawNowISODate() + ' [' + options.level.toUpperCase() + '] ' + (options.message ? options.message : '');
 }
 
-function init() {
+function initInner() {
 	// removing existing console transport
 	winston.remove(winston.transports.Console);
 
@@ -33,6 +33,13 @@ function init() {
 	winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
 
 	winston.debug('Log is set up');
+}
+
+function init() {
+	return new Promise((resolve, reject) => {
+		initInner();
+		resolve();
+	});
 }
 
 function isLogLevel(level) {

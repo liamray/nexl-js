@@ -41,32 +41,6 @@ function sendError(res, msg) {
 	res.status(500).end();
 }
 
-function initNexlSourcesDir() {
-	const nexlSourcesDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-
-	// is nexl sources dir exists ?
-	if (fs.existsSync(nexlSourcesDir)) {
-		if (fs.lstatSync(nexlSourcesDir).isDirectory()) {
-			logger.log.debug('The [%s] nexl sources directory exists', nexlSourcesDir);
-		} else {
-			logger.log.warn('The [%s] nexl sources directory points to a file !', nexlSourcesDir);
-		}
-		return;
-	}
-
-	// creating nexl sources dir
-	logger.log.debug('The [%s] nexl sources directory doesn\'t exist. Creating...', nexlSourcesDir);
-	fs.mkdirSync(nexlSourcesDir);
-
-	// todo : move the following code to the function ( and expose this feature to the web service : View -> Examples )
-	// adding examples
-	logger.log.debug('Adding examples.js files to nexl sources dir');
-	const examplesSrc = '../backend/resources/examples.js';
-	const examplesDest = path.join(nexlSourcesDir, 'examples.js');
-	const examples = fs.readFileSync(examplesSrc, 'UTF-8');
-	fs.writeFileSync(examplesDest, examples, 'UTF-8');
-}
-
 function deepMergeAndPeel(obj1, obj2) {
 	// iterating over obj1 and deleting fields which not present in obj2
 	for (let key in obj1) {
@@ -94,7 +68,6 @@ module.exports.ADMIN_USERNAME = ADMIN_USERNAME;
 module.exports.generateRandomBytes = generateRandomBytes;
 module.exports.getLoggedInUsername = getLoggedInUsername;
 module.exports.sendError = sendError;
-module.exports.initNexlSourcesDir = initNexlSourcesDir;
 module.exports.encrypt = encrypt;
 
 module.exports.formatErr = formatErr;

@@ -8,6 +8,7 @@ const session = require('express-session');
 
 const confMgmt = require('../api/conf-mgmt');
 const utils = require('../api/utils');
+const nexlDirs = require('../api/nexl-dirs');
 const logger = require('../api/logger');
 
 const expressionsRoute = require('../routes/expressions/expressions-route');
@@ -112,20 +113,19 @@ class NexlApp {
 	}
 
 	start() {
+		// initial log level and it will be overridden in logger.init() method
+		logger.log.level = 'info';
+
 		// creating nexl home dir if doesn't exist
-		confMgmt.createNexlHomeDirIfNeeded();
+		nexlDirs.createNexlHomeDirectoryIfNeeded().then(logger.init).then(nexlDirs.initNexlHomeDir).then(nexlDirs.initNexlSourcesDir).then(() => {
+			// interceptors
+			this.applyInterceptors();
 
-		// initializing logger
-		logger.init();
-
-		// initializing nexl directories if needed
-		confMgmt.initNexlHomeDir();
-		utils.initNexlSourcesDir();
-
-		// interceptors
-		this.applyInterceptors();
-
-		this.startNexlServer();
+			this.startNexlServer();
+		}).catch((err) => {
+			console.log(err);
+			process.exit(1);
+		});
 	}
 }
 

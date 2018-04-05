@@ -1,6 +1,32 @@
 const fs = require('fs');
+const path = require('path');
 const logger = require('./logger');
 const utils = require('./utils');
+
+function join() {
+	const args = Array.prototype.slice.call(arguments);
+	try {
+		return Promise.resolve(path.join.apply(null, args));
+	} catch (e) {
+		logger.log.error('Failed to join path elements. Reason : [%s]', utils.formatErr(e));
+		return Promise.reject('Failed to join path elements');
+	}
+}
+
+function mkdir(fullPath) {
+	return new Promise((resolve, reject) => {
+		fs.mkdir(fullPath, (err) => {
+			if (err) {
+				logger.log.error('Failed to create a [%s] directory. Reason : [%s]', fullPath, utils.formatErr(err));
+				reject('Failed to create directory');
+				return;
+			}
+
+			logger.log.debug('The [%s] directory has been created', fullPath);
+			resolve();
+		});
+	});
+}
 
 function exists(fullPath) {
 	return new Promise((resolve, reject) => {
@@ -25,6 +51,7 @@ function readFile(fullPath, opts) {
 				return;
 			}
 
+			logger.log.debug('The [%s] file has been read', fullPath);
 			resolve(data);
 		});
 	});
@@ -39,6 +66,7 @@ function writeFile(fullPath, data, opts) {
 				return;
 			}
 
+			logger.log.debug('Data has been written to the [%s] file', fullPath);
 			resolve();
 		});
 	});
@@ -53,6 +81,7 @@ function stat(fullPath) {
 				return;
 			}
 
+			logger.log.debug('Stat for [%s] has been resolved', fullPath);
 			resolve(stats);
 		})
 	});
@@ -64,15 +93,19 @@ function readdir(fullPath) {
 			if (err) {
 				logger.log.error('Failed to read directory items in [%s] path. Reason : [%s]', fullPath, utils.formatErr(err));
 				reject('Failed to read items list from directory');
-			} else {
-				resolve(items);
+				return;
 			}
+
+			logger.log.debug('The [%s] directory content has been read', fullPath);
+			resolve(items);
 		});
 	});
 }
 
 
 // --------------------------------------------------------------------------------
+module.exports.join = join;
+module.exports.mkdir = mkdir;
 module.exports.exists = exists;
 module.exports.readFile = readFile;
 module.exports.writeFile = writeFile;

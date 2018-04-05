@@ -8,7 +8,6 @@ const version = require('./../../package.json').version;
 
 const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
-const security = require('./security');
 const logger = require('./logger');
 const schemaValidation = require('./schema-validation');
 
@@ -423,59 +422,6 @@ function saveAsync(data, fileName) {
 	});
 }
 
-
-function isConfFileExists(fileName) {
-	const fullPath = resolveFullPath(fileName);
-	return fs.existsSync(fullPath);
-}
-
-function createNexlHomeDirIfNeeded() {
-	// do not use logger in this function because it's not initialized yet !
-	const nexlHomeDir = NEXL_HOME_DIR;
-
-	// is nexl home dir exists ?
-	if (!fs.existsSync(nexlHomeDir)) {
-		console.log('Creating [%s] nexl home directory', nexlHomeDir);
-		fs.mkdirSync(nexlHomeDir);
-		return;
-	}
-
-	// is nexl home dir is a real dir ?
-	if (!fs.lstatSync(nexlHomeDir).isDirectory()) {
-		throw util.format('The [%s] nexl home directory points to existing file. Recreate it as a directory or use another nexl home directory in the following way :\nnexl --nexl-home=/path/to/nexl/home/directory', nexlHomeDir);
-	}
-}
-
-function initNexlHomeDir() {
-	logger.log.debug('Creating default configuration files if absent in [%s] nexl home dir', NEXL_HOME_DIR);
-
-	// creating tokens file is not exists
-	if (!isConfFileExists(CONF_FILES.TOKENS)) {
-		logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-		security.generateTokenAndSave(utils.ADMIN_USERNAME);
-		logger.log.info('------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-	}
-
-	// creating admins file if not exists
-	if (!isConfFileExists(CONF_FILES.ADMINS)) {
-		logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-		const admins = [utils.ADMIN_USERNAME];
-		save(admins, CONF_FILES.ADMINS);
-	}
-
-	// creating permissions file if not exists
-	if (!isConfFileExists(CONF_FILES.PERMISSIONS)) {
-		logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.UNAUTHORIZED_USERNAME);
-		const permission = {};
-		permission[utils.UNAUTHORIZED_USERNAME] = {
-			read: true,
-			write: true
-		};
-		save(permission, CONF_FILES.PERMISSIONS);
-	}
-}
-
-
 // --------------------------------------------------------------------------------
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
@@ -487,6 +433,4 @@ module.exports.saveAsync = saveAsync;
 
 module.exports.NEXL_HOME_DIR = NEXL_HOME_DIR;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
-module.exports.createNexlHomeDirIfNeeded = createNexlHomeDirIfNeeded;
-module.exports.initNexlHomeDir = initNexlHomeDir;
 // --------------------------------------------------------------------------------
