@@ -423,6 +423,8 @@ function saveAsync(data, fileName) {
 }
 
 // --------------------------------------------------------------------------------
+module.exports.ENCODING_UTF8 = ENCODING_UTF8;
+
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
 

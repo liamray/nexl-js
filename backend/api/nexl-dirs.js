@@ -77,37 +77,42 @@ function createNexlHomeDirectoryIfNeeded() {
 	});
 }
 
-
-function initNexlSourcesDirInner() {
-	const nexlSourcesDir = confMgmt.load(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-
-	// is nexl sources dir exists ?
-	if (fs.existsSync(nexlSourcesDir)) {
-		if (fs.lstatSync(nexlSourcesDir).isDirectory()) {
-			logger.log.debug('The [%s] nexl sources directory exists', nexlSourcesDir);
-		} else {
-			logger.log.warn('The [%s] nexl sources directory points to a file !', nexlSourcesDir);
+function getNexlSourcesDir() {
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
+		(settings) => {
+			return Promise.resolve(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]);
 		}
-		return;
-	}
+	);
+}
 
-	// creating nexl sources dir
-	logger.log.debug('The [%s] nexl sources directory doesn\'t exist. Creating...', nexlSourcesDir);
-	fs.mkdirSync(nexlSourcesDir);
-
-	// todo : move the following code to the function ( and expose this feature to the web service : View -> Examples )
-	// adding examples
-	logger.log.debug('Adding examples.js files to nexl sources dir');
+function createExamplesFiles(nexlSourcesDir) {
+	logger.log.debug('Adding examples.js files to the [%s] nexl sources dir', nexlSourcesDir);
 	const examplesSrc = '../backend/resources/examples.js';
 	const examplesDest = path.join(nexlSourcesDir, 'examples.js');
-	const examples = fs.readFileSync(examplesSrc, 'UTF-8');
-	fs.writeFileSync(examplesDest, examples, 'UTF-8');
+
+	return fsx.readFile(examplesSrc, {encoding: confMgmt.ENCODING_UTF8}).then((fileBody) => {
+		return fsx.writeFile(examplesDest, fileBody, {encoding: confMgmt.ENCODING_UTF8});
+	});
 }
 
 function initNexlSourcesDir() {
-	return new Promise((resolve, reject) => {
-		initNexlSourcesDirInner();
-		resolve();
+	return getNexlSourcesDir().then((nexlSourcesDir) => {
+		return fsx.exists(nexlSourcesDir).then((isExists) => {
+			// nexl sources dir exists
+			if (isExists) {
+				return fsx.stat(nexlSourcesDir).then((stat) => {
+					if (stat.isDirectory()) {
+						logger.log.debug('The [%s] nexl sources directory exists', nexlSourcesDir);
+					} else {
+						logger.log.error('The [%s] nexl sources directory doesn\'t point to a directory ! ( it points to the file or something else )', nexlSourcesDir);
+					}
+					return Promise.resolve();
+				});
+			}
+
+			// nexl sources dir does't exist
+			return fsx.mkdir(nexlSourcesDir).then(() => Promise.resolve(nexlSourcesDir)).then(createExamplesFiles);
+		});
 	});
 }
 
