@@ -1,12 +1,10 @@
-const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
 const confMgmt = require('./conf-mgmt');
-const logger = require('./logger');
+const bcrypt = require('./bcrypt-wrapper');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
-const SALT_ROUNDS = 10;
 
 function isAdmin(user) {
 	return confMgmt.loadAsync(confMgmt.CONF_FILES.ADMINS).then((admins) => {
@@ -59,8 +57,10 @@ function generateTokenAndSave(username) {
 function resetPasswordInner(username, password, tokens) {
 	// removing token
 	return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(confMgmt.CONF_FILES.PASSWORDS)).then((passwords) => {
-		passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
-		return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+		return bcrypt.hash(password).then((hash) => {
+			passwords[username] = hash;
+			return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+		});
 	});
 }
 
@@ -87,10 +87,10 @@ function changePassword(username, currentPassword, newPassword) {
 			}
 
 			// set the password
-			passwords[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
-
-			// saving
-			return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+			return bcrypt.hash(newPassword).then((hash) => {
+				passwords[username] = hash;
+				return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+			});
 		});
 	});
 }
@@ -102,7 +102,7 @@ function isPasswordValid(username, password) {
 			return Promise.resolve(false);
 		}
 
-		return Promise.resolve(bcrypt.compareSync(password, encryptedPassword));
+		return bcrypt.compare(password, encryptedPassword);
 	});
 }
 

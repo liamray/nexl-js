@@ -4,7 +4,6 @@ const fs = require('fs');
 const deepMerge = require('deepmerge');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
-const j79 = require('j79-utils');
 
 const confMgmt = require('./conf-mgmt');
 const logger = require('./logger');
