@@ -318,28 +318,6 @@ function load(fileName) {
 	return setupDefaultValues(data, fileName);
 }
 
-function save(data, fileName) {
-	const fullPath = resolveFullPath(fileName);
-	logger.log.debug('Saving data into the [%s] file', fullPath);
-
-	// validating
-	const schema = VALIDATION_SCHEMAS[fileName];
-	const validationResult = schemaValidation(data, schema);
-
-	if (validationResult === undefined) {
-		const conf = {
-			version: version,
-			data: data
-		};
-		fs.writeFileSync(fullPath, JSON.stringify(conf, null, 2), ENCODING_UTF8);
-		return;
-	}
-
-	const message = util.format('Data validation error. Reason : %s', validationResult);
-	logger.log.error(message);
-	throw message;
-}
-
 function loadAsyncInner(fullPath, fileName) {
 	return fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then((fileBody) => {
 		// JSONing. The JSON must be an object which contains config version and the data itself
@@ -398,50 +376,26 @@ function saveAsync(data, fileName) {
 		return Promise.reject('Undeclared configuration file cannot be saved');
 	}
 
-
-	return new Promise((resolve, reject) => {
-		let fullPath;
-		try {
-			fullPath = resolveFullPath(fileName);
-		} catch (e) {
-			logger.log.error('Failed to resolve full path for [%s] file', fileName);
-			reject('FS API error');
-			return;
-		}
-
-		// validating
+	return resolveFullPathPromised(fileName).then((fullPath) => {
 		const schema = VALIDATION_SCHEMAS[fileName];
-		const validationResult = schemaValidation(data, schema);
-		if (validationResult !== undefined) {
-			const msg = util.format('Data validation error while saving config file. Reason : [%s]', validationResult);
-			logger.log.error(msg);
-			reject(msg);
-			return;
-		}
+		return schemaValidation(data, schema).then(() => {
+			let conf = {
+				version: version,
+				data: data
+			};
 
-		// preparing for save
-		let conf = {
-			version: version,
-			data: data
-		};
-		try {
-			conf = JSON.stringify(conf, null, 2);
-		} catch (e) {
-			logger.log.error();
-			reject();
-			return;
-		}
-
-		// saving...
-		fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8}).then(() => {
-			resolve()
-		}).catch(
-			(err) => {
-				logger.log.error('Failed to save the [%s] config file. Reason : [%s]', fullPath, err.toString());
-				reject('Failed to save config file');
+			try {
+				conf = JSON.stringify(conf, null, 2);
+			} catch (e) {
+				logger.log.error('Failed to stringify object while saving the [%s] file. Reason : [%s]', fullPath, utils.formatErr(e));
+				return Promise.reject('Bad data format');
 			}
-		);
+
+			// saving...
+			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
+		});
 	});
+
 }
 
 // --------------------------------------------------------------------------------
@@ -451,7 +405,6 @@ module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
 
 module.exports.load = load;
-module.exports.save = save;
 module.exports.loadAsync = loadAsync;
 module.exports.saveAsync = saveAsync;
 

@@ -52,19 +52,15 @@ function generateTokenAndSave(username) {
 	const token = uuidv4();
 	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
 		tokens[username] = token;
-		confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
-		return Promise.resolve(token);
+		return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(token));
 	});
 }
 
 function resetPasswordInner(username, password, tokens) {
 	// removing token
-	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
-
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+	return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(confMgmt.CONF_FILES.PASSWORDS)).then((passwords) => {
 		passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
-		confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
-		return Promise.resolve();
+		return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
 	});
 }
 
@@ -94,9 +90,7 @@ function changePassword(username, currentPassword, newPassword) {
 			passwords[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
 
 			// saving
-			confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
-
-			return Promise.resolve();
+			return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
 		});
 	});
 }

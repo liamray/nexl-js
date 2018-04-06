@@ -45,10 +45,9 @@ router.post('/save', function (req, res, next) {
 
 		const admins = req.body.admins;
 		const assignPermissions = req.body.assignPermissions;
-		confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
-		confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
-
-		res.send({});
+		return confMgmt.saveAsync(admins, confMgmt.CONF_FILES.ADMINS).then(() => {
+			return confMgmt.saveAsync(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => res.send({}));
+		});
 	}).catch((err) => {
 		logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);
 		utils.sendError(res, err);

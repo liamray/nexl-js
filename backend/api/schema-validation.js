@@ -1,7 +1,9 @@
 const j79 = require('j79-utils');
 const util = require('util');
+const logger = require('./logger');
 
 // todo : add log
+// todo : improve
 
 function resolveSchema(key, objectSchema) {
 	// any key
@@ -64,7 +66,20 @@ function schemaValidation(data, schema) {
 	throw 'API error : wrong schema';
 }
 
+function schemaValidationPromised(data, schema) {
+	try {
+		const validationMsg = schemaValidation(data, schema);
+		if (validationMsg === undefined) {
+			return Promise.resolve();
+		} else {
+			logger.log.error('Data validation failed. Reason : [%s]', validationMsg);
+			return Promise.reject(validationMsg);
+		}
+	} catch (e) {
+		return Promise.reject(e);
+	}
+}
 
 // --------------------------------------------------------------------------------
-module.exports = schemaValidation;
+module.exports = schemaValidationPromised;
 // --------------------------------------------------------------------------------

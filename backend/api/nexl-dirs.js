@@ -33,8 +33,7 @@ function initNexlHomeDir() {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confMgmt.CONF_FILES.ADMINS, confMgmt.NEXL_HOME_DIR, utils.ADMIN_USERNAME);
 				const admins = [utils.ADMIN_USERNAME];
-				// return statement for async saveAsync() version
-				confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
+				return confMgmt.saveAsync(admins, confMgmt.CONF_FILES.ADMINS);
 			}
 		}
 	));
@@ -49,7 +48,7 @@ function initNexlHomeDir() {
 					read: true,
 					write: true
 				};
-				confMgmt.save(permission, confMgmt.CONF_FILES.PERMISSIONS);
+				return confMgmt.saveAsync(permission, confMgmt.CONF_FILES.PERMISSIONS);
 			}
 		}
 	));

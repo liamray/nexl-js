@@ -49,9 +49,7 @@ router.post('/save', function (req, res, next) {
 
 		const data = req.body;
 		logger.log.level = data['log-level'];
-		// return here statement for Async version !!!
-		confMgmt.save(data, confMgmt.CONF_FILES.SETTINGS);
-		res.send({});
+		return confMgmt.saveAsync(data, confMgmt.CONF_FILES.SETTINGS).then(() => res.send({}));
 	}).catch((err) => {
 		logger.log.error('Failed to save settings. Reason : [%s]', err);
 		utils.sendError(res, err);
