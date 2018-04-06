@@ -30,9 +30,9 @@ function printHelp() {
 
 	let maxLen = 0;
 	// discovering length of longest option
-	for (let item in CMD_LINE_OPTS_DEF) {
+	for (let index in CMD_LINE_OPTS_DEF) {
 		// length
-		const item = CMD_LINE_OPTS_DEF[item];
+		const item = CMD_LINE_OPTS_DEF[index];
 		maxLen = Math.max(maxLen, item.name.length);
 	}
 
@@ -58,9 +58,10 @@ function handleArgs() {
 	try {
 		cmdLineOpts = commandLineArgs(CMD_LINE_OPTS_DEF);
 	} catch (e) {
-		console.log('Wrong command line options');
+		console.log('Bad command line opt(s)');
+		console.log(e.message);
 		printHelp();
-		throw e;
+		process.exit(1);
 	}
 
 	// is print version ?
