@@ -1,7 +1,7 @@
 const uuidv4 = require('uuid/v4');
 
 const confMgmt = require('./conf-mgmt');
-const bcrypt = require('./bcrypt-wrapper');
+const bcrypt = require('./bcryptx');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
