@@ -10,75 +10,87 @@ router.post('/change-password', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Changing password for [%s] user', loggedInUsername);
 
-	if (loggedInUsername === utils.UNAUTHORIZED_USERNAME) {
-		logger.log.error('You must be logged in to change your password');
-		utils.sendError(res, 'Not logged in');
-		return;
-	}
+	Promise.resolve().then(() => {
+		if (loggedInUsername === utils.UNAUTHORIZED_USERNAME) {
+			logger.log.error('You must be logged in to change your password');
+			return Promise.reject('Not logged in');
+		}
 
-	try {
-		security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword);
-	} catch (e) {
-		logger.log.error('Failed to change a password. Reason : ', e.toString());
-		utils.sendError(res, e.toString());
-		return;
-	}
+		return security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword).then(() => {
+			logger.log.debug('Password has been changed for [%s] user', loggedInUsername);
+			res.send({});
+		});
+	}).catch(
+		(err) => {
+			logger.log.error('Failed to change password for [%s] user. Reason : [%s]', loggedInUsername, err);
+			utils.sendError(res, err);
+		}
+	);
 
-	res.send({});
+
 });
 
 router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Generating token for [%s] user', loggedInUsername);
 
-	// only admins permitted for this action
-	if (!security.isAdmin(loggedInUsername)) {
-		logger.log.error('The [%s] user doesn\'t have admin permissions to generate token', loggedInUsername);
-		utils.sendError(res, 'admin permissions required');
-		return;
-	}
+	security.isAdmin(loggedInUsername).then((isAdmin) => {
+		if (!isAdmin) {
+			logger.log.error('Cannot generate new token. admin permissions required');
+			return Promise.reject('admin permissions required');
+		}
 
-	const username = req.body.username;
-	if (username.length < 1) {
-		logger.log.error('Username cannot be empty');
-		utils.sendError(res, 'Username cannot be empty');
-		return;
-	}
+		const username = req.body.username;
+		if (username.length < 1) {
+			logger.log.error('Cannot generate new token. Username cannot be empty');
+			return Promise.reject('Username cannot be empty');
+		}
 
-	res.send({
-		token: security.generateTokenAndSave(username)
+		return security.generateTokenAndSave(username).then((token) => {
+			res.send({
+				token: token
+			});
+		});
+
+	}).catch((err) => {
+		logger.log.error('Failed to generate a new token. Reason : [%s]', err);
+		utils.sendError(res, err);
 	});
+
 });
 
 router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
-	const status = {
-		isLoggedIn: username !== utils.UNAUTHORIZED_USERNAME,
-		isAdmin: security.isAdmin(username),
-		hasReadPermission: security.hasReadPermission(username),
-		hasWritePermission: security.hasWritePermission(username),
-	};
-	status['username'] = username;
-	res.send(status);
+	security.status(username).then((status) => {
+		status['isLoggedIn'] = username !== utils.UNAUTHORIZED_USERNAME;
+		status['username'] = username;
+		res.send(status);
+	}).catch((err) => {
+		logger.log.error('Failed to resolve a status for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
 });
 
 router.post('/login', function (req, res) {
 	const username = req.body.username;
 
-	// if not authenticated, clear token and send error
-	if (!security.isPasswordValid(username, req.body.password)) {
-		logger.log.error('Login failed. Reason : bad credentials');
-		utils.sendError(res, 'Bad credentials');
-		return;
-	}
+	security.isPasswordValid(username, req.body.password).then((isValid) => {
+		if (!isValid) {
+			logger.log.error('Bad credentials for login attempt');
+			return Promise.reject('Bad credentials');
+		}
 
-	// encoding
-	const token = utils.encrypt(username);
+		// encoding
+		const token = utils.encrypt(username);
 
-	// send it back to the client
-	res.send(token);
+		// send it back to the client
+		res.send(token);
+		res.end();
 
-	res.end();
+	}).catch((err) => {
+		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
 });
 
 router.post('/register', function (req, res) {
@@ -86,22 +98,20 @@ router.post('/register', function (req, res) {
 	const password = req.body.password;
 	const token = req.body.token;
 
-	if (password.length < 1) {
-		logger.log.error('Password cannot be empty');
-		utils.sendError(res, 'Password cannot be empty');
-		return;
-	}
+	Promise.resolve().then(() => {
+		if (password.length < 1) {
+			logger.log.error('Password cannot be empty');
+			return Promise.reject('Password cannot be empty');
+		}
 
-	try {
-		security.setPassword(username, password, token);
-	} catch (e) {
-		logger.log.error(e.toString());
-		utils.sendError(res, e.toString());
-		return;
-	}
-
-	res.send({});
-	res.end();
+		return security.resetPassword(username, password, token).then(() => {
+			logger.log.debug('Password was reset for [%s] user', username);
+			res.send({});
+		})
+	}).catch((err) => {
+		logger.log.error('Failed to register a [%s] user. Reason : [%s]', err);
+		utils.sendError(res, err);
+	});
 });
 
 // --------------------------------------------------------------------------------

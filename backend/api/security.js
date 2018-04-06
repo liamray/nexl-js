@@ -9,141 +9,121 @@ const WRITE_PERMISSION = 'write';
 const SALT_ROUNDS = 10;
 
 function isAdmin(user) {
-	const admins = confMgmt.load(confMgmt.CONF_FILES.ADMINS);
-	return admins && admins.indexOf(user) >= 0;
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.ADMINS).then((admins) => {
+		return Promise.resolve(admins.indexOf(user) >= 0);
+	});
 }
 
-function hasPermission(user, permissionType, resource) {
-	if (isAdmin(user)) {
-		return true;
-	}
-
-	const entities = [user];
-
-	// loading permissions matrix
-	const permissions = confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS);
-
-	// iterating over permissions and checking
-	let result = false;
-	for (let entity in permissions) {
-		// is user or group present in permission matrix ?
-		if (entities.indexOf(entity) < 0) {
-			continue;
+// type is a permission type ( for example 'read' | 'write' )
+// value is the expected value to check
+function hasPermission(user, type, value) {
+	return isAdmin(user).then((isAdmin) => {
+		if (isAdmin) {
+			return Promise.resolve(true);
 		}
 
-		const permission = permissions[entity];
-		const permissionValue = permission[permissionType];
-		if (permissionValue !== undefined) {
-			result = result || permissionValue;
-		}
-	}
-
-	return result;
+		return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+			return Promise.resolve(permissions[user] && permissions[user][type] === value);
+		});
+	});
 }
 
 function hasReadPermission(user) {
-	return hasPermission(user, READ_PERMISSION);
+	return hasPermission(user, READ_PERMISSION, true);
 }
 
 function hasWritePermission(user) {
-	return hasPermission(user, WRITE_PERMISSION);
+	return hasPermission(user, WRITE_PERMISSION, true);
+}
+
+function status(user) {
+	return isAdmin(user).then((isAdmin) => {
+		return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+			return Promise.resolve({
+				isAdmin: isAdmin,
+				hasReadPermission: permissions[user] && permissions[user][READ_PERMISSION] === true,
+				hasWritePermission: permissions[user] && permissions[user][WRITE_PERMISSION] === true
+			});
+		});
+	});
 }
 
 function generateTokenAndSave(username) {
 	const token = uuidv4();
-	const tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
-	tokens[username] = token;
-	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
-	return token;
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
+		tokens[username] = token;
+		confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
+		return Promise.resolve(token);
+	});
 }
 
-function setPasswordInner(username, password, tokens) {
+function resetPasswordInner(username, password, tokens) {
 	// removing token
 	confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS);
 
-	// set the password
-	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
-	passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
-
-	// saving
-	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+		passwords[username] = bcrypt.hashSync(password, SALT_ROUNDS);
+		confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
+		return Promise.resolve();
+	});
 }
 
-function setPassword(username, password, token) {
-	let tokens;
-	try {
-		tokens = confMgmt.load(confMgmt.CONF_FILES.TOKENS);
-	} catch (e) {
-		logger.log.error('Failed to load tokens. Reason : ', e);
-		throw e;
-	}
+function resetPassword(username, password, token) {
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
+		if (tokens[username] === undefined) {
+			return Promise.reject('Bad token');
+		}
 
-	if (tokens[username] === undefined) {
-		throw 'Bad token';
-	}
-
-	delete tokens[username];
-
-	try {
-		setPasswordInner(username, password, tokens);
-	} catch (e) {
-		logger.log.error('Failed to update password. Reason : ', e);
-		throw e;
-	}
+		delete tokens[username];
+		return resetPasswordInner(username, password, tokens);
+	});
 }
 
 function changePassword(username, currentPassword, newPassword) {
-	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+		if (!passwords[username]) {
+			return Promise.reject('User doesn\'t exist');
+		}
 
-	if (!passwords[username]) {
-		throw 'User doesn\'t exist';
-	}
+		return isPasswordValid(username, currentPassword).then((isValid) => {
+			if (!isValid) {
+				return Promise.reject('Wrong current password');
+			}
 
-	if (!isPasswordValid(username, currentPassword)) {
-		throw 'Wrong current password';
-	}
+			// set the password
+			passwords[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
 
-	// set the password
-	passwords[username] = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+			// saving
+			confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 
-	// saving
-	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
+			return Promise.resolve();
+		});
+	});
 }
 
 function isPasswordValid(username, password) {
-	const encryptedPassword = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS)[username];
-	if (encryptedPassword === undefined) {
-		return false;
-	}
+	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+		const encryptedPassword = passwords[username];
+		if (encryptedPassword === undefined) {
+			return Promise.resolve(false);
+		}
 
-	return bcrypt.compareSync(password, encryptedPassword);
+		return Promise.resolve(bcrypt.compareSync(password, encryptedPassword));
+	});
 }
 
-function getUsersList() {
-	const users = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
-	return Object.keys(users);
-}
+function resolveStatus() {
 
-function deleteUser(username) {
-	const passwords = confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
-	const index = passwords.indexOf(username);
-	if (index < 0) {
-		return;
-	}
-	passwords.splice(index, 1);
-	confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 }
-
 
 // --------------------------------------------------------------------------------
 module.exports.isAdmin = isAdmin;
 module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
+module.exports.status = status;
 
 module.exports.generateTokenAndSave = generateTokenAndSave;
-module.exports.setPassword = setPassword;
+module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
-module.exports.getUsersList = getUsersList;
-module.exports.deleteUser = deleteUser;
 // --------------------------------------------------------------------------------

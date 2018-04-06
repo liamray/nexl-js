@@ -21,8 +21,8 @@ function initNexlHomeDir() {
 		(isExists) => {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', confMgmt.CONF_FILES.TOKENS, confMgmt.NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-				security.generateTokenAndSave(utils.ADMIN_USERNAME);
 				logger.log.info('------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account', confMgmt.CONF_FILES.TOKENS, confMgmt.NEXL_HOME_DIR, utils.ADMIN_USERNAME);
+				return security.generateTokenAndSave(utils.ADMIN_USERNAME);
 			}
 		}
 	));
@@ -33,6 +33,7 @@ function initNexlHomeDir() {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confMgmt.CONF_FILES.ADMINS, confMgmt.NEXL_HOME_DIR, utils.ADMIN_USERNAME);
 				const admins = [utils.ADMIN_USERNAME];
+				// return statement for async saveAsync() version
 				confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
 			}
 		}

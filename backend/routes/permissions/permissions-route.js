@@ -13,16 +13,23 @@ router.post('/load', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Loading permissions for [%s] user', username);
 
-	// only admins permitted for this action
-	if (!security.isAdmin(username)) {
-		logger.log.error('The [%s] user doesn\'t have admin permissions to read permissions', username);
-		utils.sendError(res, 'admin permissions required');
-		return;
-	}
+	security.isAdmin(username).then((isAdmin) => {
+		if (!isAdmin) {
+			logger.log.error('Cannot load permissions because the [%s] user doesn\'t have admin permissions', username);
+			return Promise.reject('admin permissions required');
+		}
 
-	res.send({
-		admins: confMgmt.load(confMgmt.CONF_FILES.ADMINS),
-		assignPermissions: confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS)
+		return confMgmt.loadAsync(confMgmt.CONF_FILES.ADMINS).then((admins) => {
+			return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+				res.send({
+					admins: admins,
+					assignPermissions: permissions
+				});
+			});
+		});
+	}).catch((err) => {
+		logger.log.error('Failed to load permissions for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
 	});
 });
 
@@ -30,33 +37,22 @@ router.post('/save', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Saving permissions for [%s] user', username);
 
-	// only admins permitted for this action
-	if (!security.isAdmin(username)) {
-		logger.log.error('The [%s] user doesn\'t have admin permissions to save permissions', username);
-		utils.sendError(res, 'admin permissions required');
-		return;
-	}
+	security.isAdmin(username).then((isAdmin) => {
+		if (!isAdmin) {
+			logger.log.error('Cannot save permissions because the [%s] user doesn\'t have admin permissions', username);
+			return Promise.reject('admin permissions required');
+		}
 
-	const admins = req.body.admins;
-	const assignPermissions = req.body.assignPermissions;
-
-	try {
+		const admins = req.body.admins;
+		const assignPermissions = req.body.assignPermissions;
 		confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
-	} catch (e) {
-		logger.log.error('Failed to update admins. Reason : [%s]', e);
-		utils.sendError(res, 'Failed to update admins');
-		return;
-	}
-
-	try {
 		confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS);
-	} catch (e) {
-		logger.log.error('Failed to update permissions. Reason : [%s]', e);
-		utils.sendError(res, 'Failed to update permissions');
-		return;
-	}
 
-	res.send({});
+		res.send({});
+	}).catch((err) => {
+		logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
 });
 
 // --------------------------------------------------------------------------------
