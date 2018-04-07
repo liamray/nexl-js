@@ -227,10 +227,6 @@ VALIDATION_SCHEMAS[CONF_FILES.PERMISSIONS] = {
 
 // --------------------------------------------------------------------------------
 // api
-function resolveFullPath(fileName) {
-	return path.join(NEXL_HOME_DIR, fileName);
-}
-
 function resolveFullPathPromised(fileName) {
 	try {
 		return Promise.resolve(path.join(NEXL_HOME_DIR, fileName))
@@ -291,31 +287,6 @@ function setupDefaultValues(data, fileName) {
 	}
 
 	return data;
-}
-
-function load(fileName) {
-	const fullPath = resolveFullPath(fileName);
-	logger.log.debug('Loading data from the [%s] file', fullPath);
-
-	// file doesn't exist ?
-	if (!fs.existsSync(fullPath)) {
-		logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
-		return substDefValues(DEF_VALUES[fileName]);
-	}
-
-
-	// loading from file
-	let conf = fs.readFileSync(fullPath, ENCODING_UTF8);
-	// JSONing. The JSON must be an object which contains config version and the data itself
-	conf = JSON.parse(conf);
-
-	const version = conf['version'];
-	const data = conf['data'];
-
-	logger.log.debug('Data is loaded, config version is [%s]', version);
-
-	// setting up default values
-	return setupDefaultValues(data, fileName);
 }
 
 function loadAsyncInner(fullPath, fileName) {
@@ -404,7 +375,6 @@ module.exports.ENCODING_UTF8 = ENCODING_UTF8;
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
 
-module.exports.load = load;
 module.exports.loadAsync = loadAsync;
 module.exports.saveAsync = saveAsync;
 

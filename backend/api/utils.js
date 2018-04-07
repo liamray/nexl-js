@@ -59,6 +59,14 @@ function formatErr(err) {
 	return err.toString() + '\n' + JSON.stringify(err, null, 2);
 }
 
+function isNotEmptyStr(str) {
+	return str !== undefined && str !== null && str.length > 0;
+}
+
+function isEmptyStr(str) {
+	return str === undefined || str === null || str.length < 1;
+}
+
 // --------------------------------------------------------------------------------
 module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
 module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
@@ -70,6 +78,8 @@ module.exports.sendError = sendError;
 module.exports.encrypt = encrypt;
 
 module.exports.formatErr = formatErr;
+module.exports.isNotEmptyStr = isNotEmptyStr;
+module.exports.isEmptyStr = isEmptyStr;
 
 module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------

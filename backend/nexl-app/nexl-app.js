@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -24,11 +25,6 @@ const reservedRoute = require('../routes/reserved/reserved-route');
 
 class NexlApp {
 	constructor() {
-		// resolving port from settings
-		this.settings = confMgmt.load(confMgmt.CONF_FILES.SETTINGS);
-		this.httpBinding = this.settings[confMgmt.SETTINGS.HTTP_BINDING];
-		this.httpPort = this.settings[confMgmt.SETTINGS.HTTP_PORT];
-
 		// creating app
 		this.nexlApp = express();
 	}
@@ -68,48 +64,109 @@ class NexlApp {
 		this.nexlApp.use(errorHandlerInterceptor);
 	};
 
-	onError(error) {
+	httpError(error) {
 		if (error.syscall !== 'listen') {
-			throw error;
+			logger.log.error('Cannot start HTTP listener. Reason : [%s]', utils.formatErr(error));
+			process.exit(1);
 		}
 
-		// handle specific listen errors with friendly messages
+		// handling specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				logger.log.error('Cannot start server on [' + this.httpPort + '] port');
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.NEXL_HOME_DIR, confMgmt.CONF_FILES.SETTINGS), this.settings[confMgmt.SETTINGS.HTTP_PORT]);
+				logger.log.error('Cannot start HTTP server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpBinding, this.httpPort, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR, confMgmt.SETTINGS.HTTP_BINDING, confMgmt.SETTINGS.HTTP_PORT);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				logger.log.error('The [%s] port is already in use', this.httpPort);
-				logger.log.error('Edit the [%s] file and change the [%s] property', path.join(confMgmt.NEXL_HOME_DIR, confMgmt.CONF_FILES.SETTINGS), this.settings[confMgmt.SETTINGS.HTTP_PORT]);
+				logger.log.error('The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpPort, this.httpBinding, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR, confMgmt.SETTINGS.HTTP_BINDING, confMgmt.SETTINGS.HTTP_PORT);
 				process.exit(1);
 				break;
 			default:
-				throw error;
+				logger.log.error('HTTP server error. Reason : [%s]', utils.formatErr(error));
+				process.exit(1);
 		}
 	};
 
-	onListen() {
-		logger.log.info('nexl is up and listening on [%s:%s]', this.nexlServer.address().address, this.nexlServer.address().port);
+	httpListen() {
+		logger.log.info('nexl HTTP server is up and listening on [%s:%s]', this.httpServer.address().address, this.httpServer.address().port);
 	};
 
-	startNexlServer() {
+	startHTTP(settings) {
+		this.httpBinding = settings[confMgmt.SETTINGS.HTTP_BINDING];
+		this.httpPort = settings[confMgmt.SETTINGS.HTTP_PORT];
+
 		// creating http server
-		this.nexlServer = http.createServer(this.nexlApp);
+		this.httpServer = http.createServer(this.nexlApp);
 
 		// error event handler
-		this.nexlServer.on('error', (error) => {
-			this.onError(error);
+		this.httpServer.on('error', (error) => {
+			this.httpError(error);
 		});
 
 		// listening handler
-		this.nexlServer.on('listening', () => {
-			this.onListen();
+		this.httpServer.on('listening', () => {
+			this.httpListen();
 		});
 
 		// starting http server
-		this.nexlServer.listen(this.httpPort, this.httpBinding);
+		this.httpServer.listen(this.httpPort, this.httpBinding);
+	}
+
+	startHTTPSInner(settings) {
+		const credentials = {
+			key: fs.readFileSync(keyFile),
+			cert: fs.readFileSync(certFile)
+		};
+
+
+		// creating http server
+		this.httpsServer = https.createServer(this.nexlApp);
+
+		// error event handler
+		this.httpServer.on('error', (error) => {
+			this.httpError(error);
+		});
+
+		// listening handler
+		this.httpServer.on('listening', () => {
+			this.httpListen();
+		});
+
+		// starting http server
+		this.httpServer.listen(this.httpPort, this.httpBinding);
+	}
+
+	startHTTPS(settings) {
+		this.httspBinding = settings[confMgmt.SETTINGS.HTTPS_BINDING];
+		this.httpsPort = settings[confMgmt.SETTINGS.HTTPS_PORT];
+		this.sslCert = settings[confMgmt.SETTINGS.SSL_CERT_LOCATION];
+		this.sslKey = settings[confMgmt.SETTINGS.SSL_KEY_LOCATION];
+
+		if (utils.isEmptyStr(this.httspBinding) && utils.isEmptyStr(this.httpsPort) && utils.isEmptyStr(this.sslCert) && utils.isEmptyStr(this.sslKey)) {
+			logger.log.error('HTTPS listener will not be started. To start HTTPS listener provide the following settings : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR);
+			return;
+		}
+
+		if (utils.isNotEmptyStr(this.httspBinding) && utils.isNotEmptyStr(this.httpsPort) && utils.isNotEmptyStr(this.sslCert) && utils.isNotEmptyStr(this.sslKey)) {
+			this.startHTTPSInner();
+			return;
+		}
+
+		logger.log.error('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR);
+	}
+
+	startNexlServer() {
+		confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
+			this.startHTTP(settings);
+			this.startHTTPS(settings);
+		});
+	}
+
+	stopNexlServer() {
+		return new Promise((resolve, reject) => {
+			this.httpServer.close(() => {
+				resolve();
+			});
+		});
 	}
 
 	start() {
@@ -118,9 +175,7 @@ class NexlApp {
 
 		// creating nexl home dir if doesn't exist
 		nexlDirs.createNexlHomeDirectoryIfNeeded().then(logger.init).then(nexlDirs.initNexlHomeDir).then(nexlDirs.initNexlSourcesDir).then(() => {
-			// interceptors
 			this.applyInterceptors();
-
 			this.startNexlServer();
 		}).catch((err) => {
 			console.log(err);
