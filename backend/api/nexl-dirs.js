@@ -53,6 +53,19 @@ function initNexlHomeDir() {
 		}
 	));
 
+	// creating settings file with defaults if not exists
+	promises.push(isConfFileExists(confMgmt.CONF_FILES.SETTINGS).then(
+		(isExists) => {
+			if (isExists) {
+				return Promise.resolve();
+			}
+
+			return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
+				return confMgmt.saveAsync(settings, confMgmt.CONF_FILES.SETTINGS);
+			});
+		}
+	));
+
 	return Promise.all(promises);
 }
 
