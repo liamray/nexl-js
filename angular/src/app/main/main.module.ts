@@ -19,6 +19,7 @@ import {jqxNumberInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jq
 import {jqxValidatorComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator';
 import {jqxCheckBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox';
 import {jqxPasswordInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput';
+import {jqxNotificationComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification';
 
 
 import {HeaderComponent} from './header/header.component';
@@ -50,6 +51,7 @@ import {MessageService} from "../services/message.service";
 import {RegisterComponent} from "./register/register.component";
 import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.component";
 import {ChangePasswordComponent} from "./header/changepassword/changepassword.component";
+import {NotificationComponent} from './notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +73,7 @@ import {ChangePasswordComponent} from "./header/changepassword/changepassword.co
     jqxValidatorComponent,
     jqxCheckBoxComponent,
     jqxPasswordInputComponent,
+    jqxNotificationComponent,
 
     HeaderComponent,
     NexlLogoComponent,
@@ -92,7 +95,8 @@ import {ChangePasswordComponent} from "./header/changepassword/changepassword.co
     SettingsComponent,
     SplashscreenComponent,
     PathComponent,
-    RegisterComponent
+    RegisterComponent,
+    NotificationComponent
   ],
 
   imports: [

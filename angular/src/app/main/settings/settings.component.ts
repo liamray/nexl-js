@@ -1,12 +1,12 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
-import jqxValidator = jqwidgets.jqxValidator;
 import {UtilsService} from "../../services/utils.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {LoaderService} from "../../services/loader.service";
 import {HttpRequestService} from "../../services/http.requests.service";
+import jqxValidator = jqwidgets.jqxValidator;
 
 export class PathService {
   path: any;
@@ -188,8 +188,9 @@ export class SettingsComponent {
     this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
-      val => {
+      () => {
         this.loaderService.loader.close();
+        this.loaderService.notification.open('Updated settings');
       },
       err => {
         this.loaderService.loader.close();
