@@ -39,8 +39,8 @@ function status(user) {
 		return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
 			return Promise.resolve({
 				isAdmin: isAdmin,
-				hasReadPermission: permissions[user] && permissions[user][READ_PERMISSION] === true,
-				hasWritePermission: permissions[user] && permissions[user][WRITE_PERMISSION] === true
+				hasReadPermission: isAdmin || ( permissions[user] && permissions[user][READ_PERMISSION] === true ),
+				hasWritePermission: isAdmin || ( permissions[user] && permissions[user][WRITE_PERMISSION] === true )
 			});
 		});
 	});
