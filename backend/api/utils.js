@@ -60,11 +60,11 @@ function formatErr(err) {
 }
 
 function isNotEmptyStr(str) {
-	return str !== undefined && str !== null && str.length > 0;
+	return str !== undefined && str !== null && str.toString().length > 0;
 }
 
 function isEmptyStr(str) {
-	return str === undefined || str === null || str.length < 1;
+	return str === undefined || str === null || str.toString().length < 1;
 }
 
 // --------------------------------------------------------------------------------
