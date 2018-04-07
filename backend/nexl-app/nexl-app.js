@@ -122,12 +122,6 @@ class NexlApp {
 		this.httpBinding = settings[confMgmt.SETTINGS.HTTP_BINDING];
 		this.httpPort = settings[confMgmt.SETTINGS.HTTP_PORT];
 
-		if (utils.isEmptyStr(this.httpBinding) && utils.isEmptyStr(this.httpPort)) {
-			this.httpServer = undefined;
-			logger.log.info('The [%s] and [%s] settings are not provided in [%s] file located in [%s] directory. Not starting HTTP listener', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR);
-			return;
-		}
-
 		// creating http server
 		try {
 			this.httpServer = http.createServer(this.nexlApp);
