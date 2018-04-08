@@ -2,10 +2,10 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import jqxValidator = jqwidgets.jqxValidator;
-import {LoaderService} from "../../services/loader.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
+import jqxValidator = jqwidgets.jqxValidator;
 
 
 @Component({
@@ -31,7 +31,7 @@ export class RegisterComponent {
   validationRules =
     [];
 
-  constructor(private authService: AuthService, private loaderService: LoaderService) {
+  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
   }
 
   displayErrorMessage(msg?) {
@@ -61,17 +61,17 @@ export class RegisterComponent {
   }
 
   register() {
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     this.authService.register(this.username, this.password, this.token)
       .subscribe(
         response => {
-          this.loaderService.loader.close();
+          this.globalComponentsService.loader.close();
           this.registerWindow.close();
           alert('Success !!!');
         },
         err => {
-          this.loaderService.loader.close();
+          this.globalComponentsService.loader.close();
           this.password = '';
           this.confirmPassword = '';
           this.displayErrorMessage(err.statusText);

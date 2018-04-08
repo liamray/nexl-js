@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {AdminsComponent} from "./admins/admins.component";
 import {AssignPermissionsComponent} from "./assignpermissions/assignpermissions.component";
-import {LoaderService} from "../../services/loader.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {HttpRequestService} from "../../services/http.requests.service";
@@ -23,7 +23,7 @@ export class PermissionsComponent implements AfterViewInit {
 
   permissions: any;
 
-  constructor(private loaderService: LoaderService, private http: HttpRequestService) {
+  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
   }
 
   ngAfterViewInit() {
@@ -32,19 +32,19 @@ export class PermissionsComponent implements AfterViewInit {
 
   open() {
     // opening indicator
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     // loading data
     this.http.post({}, '/permissions/load', 'json').subscribe(
       (data: any) => {
         this.permissions = data.body;
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         this.admins.set(this.permissions.admins);
         this.assignpermissions.set(this.permissions.assignPermissions);
         this.permissionsWindow.open();
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       });
@@ -52,17 +52,17 @@ export class PermissionsComponent implements AfterViewInit {
 
   save() {
     this.permissionsWindow.close();
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     this.permissions.admins = this.admins.get();
     this.permissions.assignPermissions = this.assignpermissions.get();
 
     this.http.post(this.permissions, '/permissions/save', 'json').subscribe(
       val => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       });

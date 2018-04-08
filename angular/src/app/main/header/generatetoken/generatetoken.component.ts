@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import {LoaderService} from "../../../services/loader.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {HttpRequestService} from "../../../services/http.requests.service";
@@ -20,7 +20,7 @@ export class GenerateTokenComponent {
   token = '';
   username = '';
 
-  constructor(private loaderService: LoaderService, private http: HttpRequestService) {
+  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
   }
 
   open() {
@@ -35,16 +35,16 @@ export class GenerateTokenComponent {
 
   generateToken() {
     // opening indicator
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     // generating token
     this.http.post({username: this.username}, '/auth/generate-token', 'json').subscribe(
       (data: any) => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         this.token = data.body.token;
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       });

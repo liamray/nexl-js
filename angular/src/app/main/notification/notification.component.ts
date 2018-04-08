@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxNotificationComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification";
-import {LoaderService} from "../../services/loader.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 
 @Component({
   selector: 'app-notification',
@@ -10,11 +10,11 @@ import {LoaderService} from "../../services/loader.service";
 export class NotificationComponent implements OnInit {
   @ViewChild("msgNotification") msgNotification: jqxNotificationComponent;
 
-  constructor(private loaderService: LoaderService) {
+  constructor(private globalComponentsService: GlobalComponentsService) {
   }
 
   ngOnInit() {
-    this.loaderService.notification = this;
+    this.globalComponentsService.notification = this;
   }
 
   open(text: string) {

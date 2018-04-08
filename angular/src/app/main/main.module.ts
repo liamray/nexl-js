@@ -40,7 +40,7 @@ import {PermissionsComponent} from './permissions/permissions.component';
 import {AdminsComponent} from './permissions/admins/admins.component';
 import {AssignPermissionsComponent} from './permissions/assignpermissions/assignpermissions.component';
 import {LoaderComponent} from './loader/loader.component';
-import {LoaderService} from "../services/loader.service";
+import {GlobalComponentsService} from "../services/global-components.service";
 import {SettingsComponent} from './settings/settings.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
 import {PathComponent} from "./settings/path/path.component";
@@ -106,7 +106,7 @@ import {NotificationComponent} from './notification/notification.component';
   ],
 
   providers: [
-    LoaderService,
+    GlobalComponentsService,
     AuthService,
     NexlSourcesService,
     HttpRequestService,

@@ -1,6 +1,6 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxLoaderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxloader";
-import {LoaderService} from "../../services/loader.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 
 @Component({
   selector: 'app-loader',
@@ -11,10 +11,10 @@ export class LoaderComponent implements AfterViewInit {
   @ViewChild('loader')
   loader: jqxLoaderComponent;
 
-  constructor(private loaderService: LoaderService) {
+  constructor(private globalComponentsService: GlobalComponentsService) {
   }
 
   ngAfterViewInit() {
-    this.loaderService.loader = this.loader;
+    this.globalComponentsService.loader = this.loader;
   }
 }

@@ -2,7 +2,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
 import {AuthService} from "../../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import {LoaderService} from "../../../services/loader.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 
@@ -25,8 +25,9 @@ export class ChangePasswordComponent {
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
+  validationRules = [];
 
-  constructor(private authService: AuthService, private loaderService: LoaderService) {
+  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
   }
 
   displayErrorMessage(msg?) {
@@ -54,17 +55,17 @@ export class ChangePasswordComponent {
   }
 
   changePassword() {
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     this.authService.changePassword(this.currentPassword, this.newPassword)
       .subscribe(
         response => {
-          this.loaderService.loader.close();
+          this.globalComponentsService.loader.close();
           this.changePasswordWindow.close();
           alert('Success !!!');
         },
         err => {
-          this.loaderService.loader.close();
+          this.globalComponentsService.loader.close();
           this.currentPassword = '';
           this.newPassword = '';
           this.confirmPassword = '';

@@ -4,7 +4,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {UtilsService} from "../../services/utils.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
-import {LoaderService} from "../../services/loader.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
 
@@ -114,7 +114,7 @@ export class SettingsComponent {
       }
     ];
 
-  constructor(private http: HttpRequestService, private loaderService: LoaderService, private settingsService: PathService) {
+  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private settingsService: PathService) {
   }
 
   openInner() {
@@ -122,7 +122,7 @@ export class SettingsComponent {
     this.http.post({}, '/settings/load', 'json').subscribe(
       (data: any) => {
         this.settings = data.body;
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings['log-level']);
         this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
         UtilsService.arr2DS(this.settings.notifications || [], this.notificationsSource);
@@ -131,7 +131,7 @@ export class SettingsComponent {
         this.settingsWindow.open();
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       });
@@ -140,7 +140,7 @@ export class SettingsComponent {
 
   open() {
     // opening indicator
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
 
     if (this.encodings.length > 0 && this.logLevels.length > 0) {
       this.openInner();
@@ -155,7 +155,7 @@ export class SettingsComponent {
         this.openInner();
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       }
@@ -183,17 +183,17 @@ export class SettingsComponent {
     }
 
     this.settingsWindow.close();
-    this.loaderService.loader.open();
+    this.globalComponentsService.loader.open();
     this.settings['notifications'] = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
     this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
       () => {
-        this.loaderService.loader.close();
-        this.loaderService.notification.open('Updated settings');
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.open('Updated settings');
       },
       err => {
-        this.loaderService.loader.close();
+        this.globalComponentsService.loader.close();
         alert('Something went wrong !');
         console.log(err);
       });
