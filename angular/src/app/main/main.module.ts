@@ -39,7 +39,7 @@ import {FormsModule} from "@angular/forms";
 import {PermissionsComponent} from './permissions/permissions.component';
 import {AdminsComponent} from './permissions/admins/admins.component';
 import {AssignPermissionsComponent} from './permissions/assignpermissions/assignpermissions.component';
-import {LoaderComponent} from './loader/loader.component';
+import {LoaderComponent} from './globalcomponents/loader/loader.component';
 import {GlobalComponentsService} from "../services/global-components.service";
 import {SettingsComponent} from './settings/settings.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
@@ -51,7 +51,7 @@ import {MessageService} from "../services/message.service";
 import {RegisterComponent} from "./register/register.component";
 import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.component";
 import {ChangePasswordComponent} from "./header/changepassword/changepassword.component";
-import {NotificationComponent} from './notification/notification.component';
+import {NotificationComponent} from './globalcomponents/notification/notification.component';
 
 @NgModule({
   declarations: [

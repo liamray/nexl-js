@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxNotificationComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification";
-import {GlobalComponentsService} from "../../services/global-components.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 
 @Component({
   selector: 'app-notification',
