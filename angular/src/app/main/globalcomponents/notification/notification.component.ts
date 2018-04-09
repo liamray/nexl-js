@@ -17,8 +17,12 @@ export class NotificationComponent implements OnInit {
     this.globalComponentsService.notification = this;
   }
 
-  open(text: string) {
+  open(text: string, theme: string) {
+    this.msgNotification.theme(theme);
+    this.msgNotification.refresh();
     document.getElementById('notification-text').innerText = text;
-    this.msgNotification.open();
+    setTimeout(() => {
+      this.msgNotification.open();
+    }, 1000);
   }
 }

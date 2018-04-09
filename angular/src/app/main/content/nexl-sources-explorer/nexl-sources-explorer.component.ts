@@ -3,7 +3,7 @@ import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
-import {MessageService} from "../../../services/message.service";
+import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 
 @Component({
@@ -21,7 +21,13 @@ export class NexlSourcesExplorerComponent {
   treeSource = [];
 
   constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService) {
-    this.messageService.getMessage().subscribe(status => {
+    this.messageService.getMessage().subscribe(message => {
+      if (message.type !== MESSAGE_TYPE.AUTH_CHANGED) {
+        return;
+      }
+
+      const status = message.data;
+
       // nothing changed, just skip it
       if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
         return;

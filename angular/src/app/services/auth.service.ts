@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
-import {MessageService} from "./message.service";
+import {MESSAGE_TYPE, MessageService} from "./message.service";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
@@ -39,7 +39,10 @@ export class AuthService {
   refreshStatus() {
     this.resolveStatus().subscribe(
       (status: any) => {
-        this.messageService.sendMessage(status.body);
+        this.messageService.sendMessage({
+          type: MESSAGE_TYPE.AUTH_CHANGED,
+          data: status.body
+        });
       },
       (err) => {
         alert('Something went wrong !');
