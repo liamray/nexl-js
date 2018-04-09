@@ -5,6 +5,7 @@ import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
@@ -20,7 +21,7 @@ export class NexlSourcesExplorerComponent {
   hasWritePermission = false;
   treeSource = [];
 
-  constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService) {
+  constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
     this.messageService.getMessage().subscribe(message => {
       if (message.type !== MESSAGE_TYPE.AUTH_CHANGED) {
         return;
@@ -53,7 +54,8 @@ export class NexlSourcesExplorerComponent {
         this.treeSource = data;
       },
       (err) => {
-        alert(err.statusText);
+        this.globalComponentsService.notification.openError('Failed to get nexl sources list\nReason : ' + err.statusText);
+        console.log(err);
       }
     );
   }
@@ -120,7 +122,8 @@ export class NexlSourcesExplorerComponent {
         this.tree.addTo(data, event.args.element);
       },
       (err) => {
-        alert(err.statusText);
+        this.globalComponentsService.notification.openError('Failed to read directory content\nReason\n' + err.statusText);
+        console.log(err);
       }
     );
   }

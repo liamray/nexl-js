@@ -45,7 +45,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to load permissions list\nReason : ' + err.statusText);
         console.log(err);
       });
   }
@@ -63,7 +63,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to save permissions list. Reason\n' + err.statusText);
         console.log(err);
       });
   }

@@ -132,7 +132,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to load settings\nReason : ' + err.statusText);
         console.log(err);
       });
 
@@ -156,7 +156,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to load settings\nReason : ' + err.statusText);
         console.log(err);
       }
     );
@@ -190,11 +190,11 @@ export class SettingsComponent {
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
       () => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.open('Updated settings', 'info');
+        this.globalComponentsService.notification.openInfo('Updated settings');
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to save settings\nReason : ' + err.statusText);
         console.log(err);
       });
   }

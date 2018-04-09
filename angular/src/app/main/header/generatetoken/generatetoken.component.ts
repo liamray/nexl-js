@@ -45,7 +45,7 @@ export class GenerateTokenComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to generate new token\nReason : ' + err.statusText);
         console.log(err);
       });
   }

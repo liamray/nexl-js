@@ -62,7 +62,7 @@ export class ChangePasswordComponent {
         response => {
           this.globalComponentsService.loader.close();
           this.changePasswordWindow.close();
-          alert('Success !!!');
+          this.globalComponentsService.notification.openInfo('Password changed');
         },
         err => {
           this.globalComponentsService.loader.close();

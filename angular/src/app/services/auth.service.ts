@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 import {MESSAGE_TYPE, MessageService} from "./message.service";
+import {GlobalComponentsService} from "./global-components.service";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
@@ -12,7 +13,7 @@ const CREDENTIALS = 'nexl.credentials';
 
 @Injectable()
 export class AuthService {
-  constructor(private httpClient: HttpClient, private messageService: MessageService) {
+  constructor(private httpClient: HttpClient, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
   }
 
   changePassword(currentPassword, newPassword) {
@@ -45,7 +46,7 @@ export class AuthService {
         });
       },
       (err) => {
-        alert('Something went wrong !');
+        this.globalComponentsService.notification.openError('Failed to update authentication status\nReason : ' + err.statusText);
         console.log(err);
       }
     );

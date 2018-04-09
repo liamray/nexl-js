@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxTabsComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtabs";
 import {HttpRequestService} from "../../../services/http.requests.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -12,7 +13,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   id = 0;
 
-  constructor(private http: HttpRequestService) {
+  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
   }
 
   ngAfterViewInit(): void {
@@ -26,7 +27,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         ace.edit(newId);
       },
       (err) => {
-        alert(err.statusText);
+        this.globalComponentsService.notification.openError('Failed to read nexl source content\nReason : ' + err.statusText);
+        console.log(err);
       }
     );
 

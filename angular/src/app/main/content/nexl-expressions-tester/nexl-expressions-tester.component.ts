@@ -7,14 +7,11 @@ import {Component} from '@angular/core';
 })
 export class NexlExpressionsTesterComponent {
 	eval() {
-		alert(1);
 	}
 
 	assemble() {
-		alert(2);
 	}
 
 	args() {
-		alert(3);
 	}
 }
