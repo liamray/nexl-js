@@ -104,7 +104,15 @@ export class NexlSourcesExplorerComponent {
   };
 
   select(event: any) {
-    console.log(event);
+    let args = event.args;
+    let item: any = this.tree.getItem(args.element);
+    if (item.value.isDir === true) {
+      return;
+    }
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.OPEN_FILE,
+      data: item.value.relativePath
+    });
   }
 
   expand(event: any) {
@@ -113,6 +121,7 @@ export class NexlSourcesExplorerComponent {
     if (!value.mustLoadChildItems) {
       return;
     }
+
     value.mustLoadChildItems = false;
     const $element = $(event.args.element);
     const child = $element.find('ul:first').children()[0];

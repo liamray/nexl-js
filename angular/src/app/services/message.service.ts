@@ -4,7 +4,8 @@ import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
   AUTH_CHANGED,
-  OPEN_FILE
+  OPEN_FILE,
+  CLOSE_ALL_FILES
 }
 
 @Injectable()
