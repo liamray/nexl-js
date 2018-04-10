@@ -3,6 +3,7 @@ import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {Subscription} from 'rxjs/Subscription';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {AuthService} from "../../../services/auth.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 
 @Component({
   selector: '.app-auth-menu',
@@ -16,7 +17,7 @@ export class AuthMenuComponent implements AfterViewInit {
   isLoginVisible = true;
   username = '';
 
-  constructor(private messageService: MessageService, private authService: AuthService) {
+  constructor(private messageService: MessageService, private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.type === MESSAGE_TYPE.AUTH_CHANGED) {
         const status = message.data;
@@ -33,5 +34,6 @@ export class AuthMenuComponent implements AfterViewInit {
 
   logout() {
     this.authService.logout();
+    this.globalComponentsService.notification.openInfo('Logged out');
   }
 }

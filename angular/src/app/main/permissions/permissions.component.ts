@@ -60,6 +60,7 @@ export class PermissionsComponent implements AfterViewInit {
     this.http.post(this.permissions, '/permissions/save', 'json').subscribe(
       val => {
         this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openInfo('Updated permissions');
       },
       err => {
         this.globalComponentsService.loader.close();

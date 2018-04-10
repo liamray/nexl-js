@@ -68,7 +68,7 @@ export class RegisterComponent {
         response => {
           this.globalComponentsService.loader.close();
           this.registerWindow.close();
-          this.globalComponentsService.notification.openError('User registered');
+          this.globalComponentsService.notification.openInfo('User registered');
         },
         err => {
           this.globalComponentsService.loader.close();

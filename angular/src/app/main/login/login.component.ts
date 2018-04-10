@@ -58,6 +58,7 @@ export class LoginComponent {
       .subscribe(
         response => {
           this.globalComponentsService.loader.close();
+          this.globalComponentsService.notification.openInfo('Logged in as [' + this.username + ']');
           this.loginWindow.close();
           this.authService.refreshStatus();
         },

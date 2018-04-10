@@ -44,10 +44,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   resolveTab(relativePath: string) {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      const titleItem = this.nexlSourcesTabs.getTitleAt(index);
       const contentItem = this.nexlSourcesTabs.getContentAt(index);
-      console.log('The title is : ', titleItem);
-      console.log('The content is : ', contentItem);
+      console.log('content item is :');
+      console.log(contentItem);
     }
     return -1;
   }
@@ -64,7 +63,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.http.post({relativePath: relativePath}, '/sources/get-source-content', 'text').subscribe(
       (content: any) => {
         const tabItem = this.newTabItem(relativePath);
-        console.log(tabItem);
         this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" style="width:100%; height:100%;">' + content.body + '</div>');
         ace.edit(tabItem.contentId);
         this.globalComponentsService.loader.close();
