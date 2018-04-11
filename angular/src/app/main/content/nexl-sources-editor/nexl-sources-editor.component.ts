@@ -37,7 +37,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     return {
       contentId: contentId,
-      title: '<span relative-path="' + relativePath + '" content-id="' + contentId + '">' + title + '<img src="/nexl/site/images/close.png"></span>',
+      title: title,
       isJSFile: relativePath.search(/(\.js)$/i) >= 0
     };
   }
@@ -64,7 +64,18 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       (content: any) => {
         const tabItem = this.newTabItem(relativePath);
         this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" style="width:100%; height:100%;">' + content.body + '</div>');
-        ace.edit(tabItem.contentId);
+
+        ace.config.set('basePath', 'nexl/site/ace');
+        const aceEditor = ace.edit(tabItem.contentId);
+        aceEditor.setOptions({
+          fontSize: "10pt"
+        });
+        aceEditor.setTheme("ace/theme/xcode");
+        aceEditor.getSession().setMode("ace/mode/javascript");
+        aceEditor.$blockScrolling = Infinity;
+        aceEditor.on("change", () => {
+        });
+
         this.globalComponentsService.loader.close();
       },
       (err) => {
