@@ -42,17 +42,18 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     };
   }
 
-  resolveTab(relativePath: string) {
+  resolveTabNrByRelativePath(relativePath: string) {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       const contentItem = this.nexlSourcesTabs.getContentAt(index);
-      console.log('content item is :');
-      console.log(contentItem);
+      if (contentItem.firstElementChild.getAttribute('relative-path') === relativePath) {
+        return index;
+      }
     }
     return -1;
   }
 
   openFile(relativePath: string) {
-    const tab = this.resolveTab(relativePath);
+    const tab = this.resolveTabNrByRelativePath(relativePath);
     if (tab >= 0) {
       this.nexlSourcesTabs.val(tab + '');
       return;
@@ -63,7 +64,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.http.post({relativePath: relativePath}, '/sources/get-source-content', 'text').subscribe(
       (content: any) => {
         const tabItem = this.newTabItem(relativePath);
-        this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" style="width:100%; height:100%;">' + content.body + '</div>');
+        this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" style="width:100%; height:100%;" relative-path="' + relativePath + '">' + content.body + '</div>');
 
         ace.config.set('basePath', 'nexl/site/ace');
         const aceEditor = ace.edit(tabItem.contentId);
