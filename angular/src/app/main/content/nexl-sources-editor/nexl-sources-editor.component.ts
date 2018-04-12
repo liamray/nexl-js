@@ -3,6 +3,7 @@ import {jqxTabsComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtabs";
 import {HttpRequestService} from "../../../services/http.requests.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
+import * as $ from 'jquery';
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -13,6 +14,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   @ViewChild('nexlSourcesTabs') nexlSourcesTabs: jqxTabsComponent;
 
   id = 0;
+  tabItems = {};
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
@@ -33,13 +35,20 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   newTabItem(relativePath: string) {
     const title = relativePath.replace(/.*[/\\]/, '');
-    const contentId = 'tabs-content-' + this.id++;
+    this.id++;
+    const contentId = 'tabs-content-' + this.id;
+    const titleId = 'tabs-title-' + this.id;
 
-    return {
+    let tabItem = {
       contentId: contentId,
-      title: title,
+      titleId: titleId,
+      title: '<span id="' + titleId + '">' + title + '<span style="color: red;" title="Content changed"></span></span>',
       isJSFile: relativePath.search(/(\.js)$/i) >= 0
     };
+
+    this.tabItems[relativePath] = tabItem;
+
+    return tabItem;
   }
 
   resolveTabNrByRelativePath(relativePath: string) {
@@ -50,6 +59,17 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       }
     }
     return -1;
+  }
+
+  resolveRelativePathByTabNr(tabNr: number) {
+    const tab = this.nexlSourcesTabs.getContentAt(tabNr);
+    return tab.firstElementChild.getAttribute('relative-path');
+  }
+
+  unchangeTab(tabNr: number) {
+    const relativePath = this.resolveRelativePathByTabNr(tabNr);
+    this.tabItems[relativePath]['changed'] = false;
+    $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text('');
   }
 
   openFile(relativePath: string) {
@@ -75,6 +95,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         aceEditor.getSession().setMode("ace/mode/javascript");
         aceEditor.$blockScrolling = Infinity;
         aceEditor.on("change", () => {
+          if (this.tabItems[relativePath]['changed'] === true) {
+            return;
+          }
+
+          this.tabItems[relativePath]['changed'] = true;
+          $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text(' *');
         });
 
         this.globalComponentsService.loader.close();
