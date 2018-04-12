@@ -8,7 +8,8 @@ import {GlobalComponentsService} from "../../../services/global-components.servi
   styleUrls: ['./notification.component.css']
 })
 export class NotificationComponent implements OnInit {
-  @ViewChild("msgNotification") msgNotification: jqxNotificationComponent;
+  @ViewChild("infoNotification") infoNotification: jqxNotificationComponent;
+  @ViewChild("errorNotification") errorNotification: jqxNotificationComponent;
 
   constructor(private globalComponentsService: GlobalComponentsService) {
   }
@@ -17,17 +18,13 @@ export class NotificationComponent implements OnInit {
     this.globalComponentsService.notification = this;
   }
 
-  open(text: string, template: string) {
-    this.msgNotification.template(template);
-    document.getElementById('notification-text').innerText = text;
-    this.msgNotification.open();
-  }
-
   openInfo(text: string) {
-    this.open(text, 'info');
+    document.getElementById('info-notification-text').innerText = text;
+    this.infoNotification.open();
   }
 
   openError(text: string) {
-    this.open(text, 'error');
+    document.getElementById('error-notification-text').innerText = text;
+    this.errorNotification.open();
   }
 }

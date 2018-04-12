@@ -1,4 +1,4 @@
-<jqxNotification #msgNotification
+<jqxNotification #infoNotification
                  [position]="'bottom-right'"
                  [opacity]="0.9"
                  [autoOpen]="false"
@@ -6,8 +6,22 @@
                  [closeOnClick]="true"
                  [animationOpenDelay]="800"
                  [autoCloseDelay]="60000"
+                 [template]="'info'"
 >
-  <div id="notification-text">
-    hello
+  <div id="info-notification-text">
+  </div>
+</jqxNotification>
+
+<jqxNotification #errorNotification
+                 [position]="'bottom-right'"
+                 [opacity]="0.9"
+                 [autoOpen]="false"
+                 [autoClose]="true"
+                 [closeOnClick]="true"
+                 [animationOpenDelay]="800"
+                 [autoCloseDelay]="60000"
+                 [template]="'error'"
+>
+  <div id="error-notification-text">
   </div>
 </jqxNotification>
