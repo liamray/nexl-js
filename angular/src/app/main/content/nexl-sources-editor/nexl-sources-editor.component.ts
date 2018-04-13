@@ -90,12 +90,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       if (this.tabItems[tabItem.relativePath]['changed'] === true) {
         if (!confirm('Save changes ?')) {
           return;
-
         }
       }
+
+      tabItem['ace'].destroy();
       this.nexlSourcesTabs.removeAt(this.resolveTabNrByRelativePath(tabItem.relativePath));
-      // todo : ace -> destroy
-      // todo : this.tabItems -> remove the item
+      delete this.tabItems[tabItem.relativePath];
     });
 
     ace.config.set('basePath', 'nexl/site/ace');
