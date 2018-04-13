@@ -26,6 +26,14 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     if (message.type === MESSAGE_TYPE.OPEN_FILE) {
       this.openFile(message.data);
     }
+
+    if (message.type === MESSAGE_TYPE.CONTENT_AREA_RESIZED) {
+      setTimeout(() => {
+        for (let relativePath in this.tabItems) {
+          this.tabItems[relativePath]['ace'].resize();
+        }
+      }, 200)
+    }
   }
 
   ngAfterViewInit(): void {
@@ -40,9 +48,11 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const titleId = 'tabs-title-' + this.id;
 
     let tabItem = {
+      relativePath: relativePath,
       contentId: contentId,
       titleId: titleId,
-      title: '<span id="' + titleId + '">' + title + '<span style="color: red;" title="Content changed"></span></span>',
+      // title: '<span id="' + titleId + '"><span style="color: red;" title="Content changed"></span>' + title + '</span>',
+      title: '<span id="' + titleId + '"><span style="color: red;" title="Content changed"></span>' + title + '<a href="#"> x</a></span>',
       isJSFile: relativePath.search(/(\.js)$/i) >= 0
     };
 
@@ -72,6 +82,45 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text('');
   }
 
+  openFileInner(relativePath: string, content: any) {
+    const tabItem = this.newTabItem(relativePath);
+    this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" relative-path="' + relativePath + '">' + content.body + '</div>');
+
+    $('#' + tabItem.titleId + ' > a').click(() => {
+      if (this.tabItems[tabItem.relativePath]['changed'] === true) {
+        if (!confirm('Save changes ?')) {
+          return;
+
+        }
+      }
+      this.nexlSourcesTabs.removeAt(this.resolveTabNrByRelativePath(tabItem.relativePath));
+      // todo : ace -> destroy
+      // todo : this.tabItems -> remove the item
+    });
+
+    ace.config.set('basePath', 'nexl/site/ace');
+    const aceEditor = ace.edit(tabItem.contentId);
+    tabItem['ace'] = aceEditor;
+    aceEditor.setOptions({
+      fontSize: "10pt",
+      autoScrollEditorIntoView: true,
+      theme: "ace/theme/xcode",
+      mode: "ace/mode/javascript"
+    });
+    aceEditor.$blockScrolling = Infinity;
+    aceEditor.resize();
+    aceEditor.on("change", () => {
+      if (this.tabItems[relativePath]['changed'] === true) {
+        return;
+      }
+
+      this.tabItems[relativePath]['changed'] = true;
+      $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text('* ');
+    });
+
+    this.globalComponentsService.loader.close();
+  }
+
   openFile(relativePath: string) {
     const tab = this.resolveTabNrByRelativePath(relativePath);
     if (tab >= 0) {
@@ -83,27 +132,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     this.http.post({relativePath: relativePath}, '/sources/get-source-content', 'text').subscribe(
       (content: any) => {
-        const tabItem = this.newTabItem(relativePath);
-        this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" style="width:100%; height:100%;" relative-path="' + relativePath + '">' + content.body + '</div>');
-
-        ace.config.set('basePath', 'nexl/site/ace');
-        const aceEditor = ace.edit(tabItem.contentId);
-        aceEditor.setOptions({
-          fontSize: "10pt"
-        });
-        aceEditor.setTheme("ace/theme/xcode");
-        aceEditor.getSession().setMode("ace/mode/javascript");
-        aceEditor.$blockScrolling = Infinity;
-        aceEditor.on("change", () => {
-          if (this.tabItems[relativePath]['changed'] === true) {
-            return;
-          }
-
-          this.tabItems[relativePath]['changed'] = true;
-          $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text(' *');
-        });
-
-        this.globalComponentsService.loader.close();
+        this.openFileInner(relativePath, content);
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -111,14 +140,5 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         console.log(err);
       }
     );
-  }
-
-  onRemove(event: any) {
-    /*
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        return false;
-    */
   }
 }

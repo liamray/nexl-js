@@ -13,3 +13,9 @@
 .jqx-window-modal {
   z-index: 99 !important;
 }
+
+.ace_editor {
+  margin: auto;
+  height: 100%;
+  width: 100%;
+}
