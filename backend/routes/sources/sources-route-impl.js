@@ -139,6 +139,7 @@ function getNexlSources(relativePath) {
 		(stuff) => {
 			return fsx.exists(stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]).then((isExists) => {
 				if (!isExists) {
+					logger.log.error('The [%s] nexl source dir doesn\'t exist', stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]);
 					return Promise.reject('nexl sources dir doesn\'t exist !');
 				} else {
 					return fsx.readdir(stuff.fullPath).then(
