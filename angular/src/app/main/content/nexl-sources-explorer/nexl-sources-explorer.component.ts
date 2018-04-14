@@ -55,7 +55,7 @@ export class NexlSourcesExplorerComponent {
         this.treeSource = data;
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to get nexl sources list\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to resolve nexl sources list\nReason : ' + err.statusText);
         console.log(err);
       }
     );
