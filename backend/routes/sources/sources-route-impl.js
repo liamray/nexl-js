@@ -137,8 +137,14 @@ function getSourceContent(relativePath) {
 function getNexlSources(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			return fsx.readdir(stuff.fullPath).then(
-				(items) => assembleItemsPromised(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items));
+			return fsx.exists(stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]).then((isExists) => {
+				if (!isExists) {
+					return Promise.reject('nexl sources dir doesn\'t exist !');
+				} else {
+					return fsx.readdir(stuff.fullPath).then(
+						(items) => assembleItemsPromised(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items));
+				}
+			});
 		}
 	);
 }
