@@ -24,28 +24,32 @@ export class NexlSourcesExplorerComponent {
 
   constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
     this.messageService.getMessage().subscribe(message => {
-      if (message.type !== MESSAGE_TYPE.AUTH_CHANGED) {
-        return;
-      }
-
-      const status = message.data;
-
-      // nothing changed, just skip it
-      if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
-        return;
-      }
-
-      this.hasReadPermission = status.hasReadPermission;
-      this.hasWritePermission = status.hasWritePermission;
-
-      if (!this.hasReadPermission) {
-        this.treeSource = [];
-        this.expander.disabled(true);
-        return;
-      }
-
-      this.refreshTreeSource();
+      this.handleMessages(message);
     });
+  }
+
+  handleMessages(message) {
+    if (message.type !== MESSAGE_TYPE.AUTH_CHANGED) {
+      return;
+    }
+
+    const status = message.data;
+
+    // nothing changed, just skip it
+    if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
+      return;
+    }
+
+    this.hasReadPermission = status.hasReadPermission;
+    this.hasWritePermission = status.hasWritePermission;
+
+    if (!this.hasReadPermission) {
+      this.treeSource = [];
+      this.expander.disabled(true);
+      return;
+    }
+
+    this.refreshTreeSource();
   }
 
   refreshTreeSource() {
