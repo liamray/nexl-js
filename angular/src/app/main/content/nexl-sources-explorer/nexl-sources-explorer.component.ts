@@ -20,6 +20,7 @@ export class NexlSourcesExplorerComponent {
   hasReadPermission = false;
   hasWritePermission = false;
   treeSource = [];
+  rightClickSelectedElement: any;
 
   constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
     this.messageService.getMessage().subscribe(message => {
@@ -60,13 +61,23 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
-  private openPopup(event) {
-    this.tree.selectItem(event.target);
+  select(event: any) {
+    let element = event.args.element;
 
-    let scrollTop = window.scrollY;
-    let scrollLeft = window.scrollX;
-    this.popupMenu.open(event.clientX + 5 + scrollLeft, event.clientY + 5 + scrollTop);
-    return false;
+    // element points to div on right click and points to li on left click ( a kind of hack )
+    if (element.tagName.toLowerCase() === 'div') {
+      this.rightClickSelectedElement = element.parentElement;
+      return;
+    }
+
+    let item: any = this.tree.getItem(element);
+    if (item.value.isDir === true) {
+      return;
+    }
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.OPEN_FILE,
+      data: item.value.relativePath
+    });
   }
 
   init(): void {
@@ -103,16 +114,13 @@ export class NexlSourcesExplorerComponent {
     }
   };
 
-  select(event: any) {
-    let args = event.args;
-    let item: any = this.tree.getItem(args.element);
-    if (item.value.isDir === true) {
-      return;
-    }
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.OPEN_FILE,
-      data: item.value.relativePath
-    });
+  private openPopup(event) {
+    this.tree.selectItem(event.target);
+
+    let scrollTop = window.scrollY || 0;
+    let scrollLeft = window.scrollX || 0;
+    this.popupMenu.open(event.clientX + 5 + scrollLeft, event.clientY + 5 + scrollTop);
+    return false;
   }
 
   expand(event: any) {
