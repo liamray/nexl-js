@@ -46,7 +46,7 @@ export class AuthService {
         });
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to update authentication status\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to resolve server status\nReason : ' + err.statusText);
         console.log(err);
       }
     );

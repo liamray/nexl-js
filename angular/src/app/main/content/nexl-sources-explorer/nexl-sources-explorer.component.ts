@@ -65,66 +65,80 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
-  select(event: any) {
-    let element = event.args.element;
-
-    // element points to div on right click and points to li on left click ( a kind of hack )
-    if (element.tagName.toLowerCase() === 'div') {
-      this.rightClickSelectedElement = element.parentElement;
-      return;
+  static isRightClick(event) {
+    if (!event) {
+      event = window.event
     }
 
-    let item: any = this.tree.getItem(element);
-    if (item.value.isDir === true) {
-      return;
+    if (event.which) {
+      return event.which == 3;
     }
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.OPEN_FILE,
-      data: item.value.relativePath
-    });
+    if (event.button) {
+      return event.button == 2
+    }
+
+    return false;
   }
 
   init(): void {
-    document.addEventListener('contextmenu', event => {
-      event.preventDefault();
-
-      // is to close a popup ?
-      if (!(<HTMLElement>event.target).classList.contains('jqx-tree-item')) {
-        this.popupMenu.close();
-        return;
-      }
-
-      return this.openPopup(event);
+    $(document).on('contextmenu', function (e) {
+      return $(e.target).parents('.jqx-tree').length <= 0;
     });
 
+    const id = this.tree.elementRef.nativeElement.firstElementChild.id;
+    $('#' + id).on('mousedown', (event) => {
+      const target = $(event.target).parents('li:first')[0];
+
+      // click on empty area
+      if (target === undefined) {
+        this.tree.host.jqxTree("val", undefined);
+      }
+
+      if (NexlSourcesExplorerComponent.isRightClick(event)) {
+        this.handleRightClick(target);
+      } else {
+        this.handleLeftClick(target);
+      }
+
+      return false;
+    });
   }
 
-  onPopup(event: any): void {
-    let item = event.args.innerText;
-    let selectedItem = null;
-    switch (item) {
-      case "Add Item":
-        selectedItem = this.tree.getSelectedItem();
-        if (selectedItem != null) {
-          this.tree.addTo({label: 'Item'}, selectedItem.element);
-        }
-        break;
-      case "Remove Item":
-        selectedItem = this.tree.getSelectedItem();
-        if (selectedItem != null) {
-          this.tree.removeItem(selectedItem.element);
-        }
-        break;
-    }
-  };
-
   private openPopup(event) {
-    this.tree.selectItem(event.target);
-
     let scrollTop = window.scrollY || 0;
     let scrollLeft = window.scrollX || 0;
     this.popupMenu.open(event.clientX + 5 + scrollLeft, event.clientY + 5 + scrollTop);
     return false;
+  }
+
+  private handleRightClick(target: any) {
+    // is right click on empty area ?
+    if (target === undefined) {
+      this.rightClickSelectedElement = undefined;
+      this.openPopup(event);
+    } else {
+      this.tree.selectItem(target);
+      this.rightClickSelectedElement = target;
+      this.openPopup(event);
+    }
+  }
+
+  private handleLeftClick(target: any) {
+    this.popupMenu.close();
+
+    if (target === undefined) {
+      return;
+    }
+
+    let item: any = this.tree.getItem(target);
+    if (item.value.isDir === true) {
+      return;
+    }
+
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.OPEN_FILE,
+      data: item.value.relativePath
+    });
   }
 
   expand(event: any) {
