@@ -101,7 +101,7 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 						}
 
 						if (stats.isFile()) {
-							dirs.push(makeFileItem(item, itemRelativePath));
+							files.push(makeFileItem(item, itemRelativePath));
 						}
 
 						return Promise.resolve();

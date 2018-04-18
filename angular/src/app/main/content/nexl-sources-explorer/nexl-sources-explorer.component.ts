@@ -184,12 +184,15 @@ export class NexlSourcesExplorerComponent {
       }
 
       const relativePath = this.getRightClickDirPath() + '/' + value;
+      this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
         () => {
+          this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openSuccess('Created new directory');
         },
         (err) => {
+          this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openError('Failed to create a new directory.\nReason : ' + err.statusText);
         }
       );
@@ -224,17 +227,22 @@ export class NexlSourcesExplorerComponent {
     }
 
     const targetItem = this.rightClickSelectedElement.value.relativePath.replace(/.*[\\/]/, '');
+    const itemType = this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
 
-    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ?', (isConfirmed) => {
+    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ' + itemType + ' ?', (isConfirmed) => {
       if (isConfirmed !== true) {
         return;
       }
 
+      this.globalComponentsService.loader.open();
       this.nexlSourcesService.deleteItem(this.rightClickSelectedElement.value.relativePath).subscribe(
         () => {
+          this.tree.removeItem(this.rightClickSelectedElement);
+          this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openSuccess('Deleted');
         },
         (err) => {
+          this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
         }
       );
