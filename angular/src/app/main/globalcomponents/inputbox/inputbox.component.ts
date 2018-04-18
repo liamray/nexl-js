@@ -50,4 +50,11 @@ export class InputboxComponent implements OnInit {
     this.window.title(title);
     this.window.open();
   }
+
+  onKeyPress(event) {
+    if (event.keyCode === 13) {
+      this.isValueSet = true;
+      this.window.close();
+    }
+  }
 }

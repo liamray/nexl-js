@@ -111,16 +111,19 @@ export class NexlSourcesExplorerComponent {
     return false;
   }
 
-  private handleRightClick(target: any) {
-    // is right click on empty area ?
-    if (target === undefined) {
-      this.rightClickSelectedElement = undefined;
-      this.openPopup(event);
-    } else {
-      this.tree.selectItem(target);
-      this.rightClickSelectedElement = target;
-      this.openPopup(event);
+  getRightClickDirPath() {
+    if (this.rightClickSelectedElement === undefined) {
+      return '';
     }
+
+    const item = this.rightClickSelectedElement.value;
+
+    if (item.isDir === true) {
+      return item.relativePath;
+    }
+
+    // removing last path element
+    return item.relativePath.replace(/([/\\][^\\/]*)$/, '');
   }
 
   private handleLeftClick(target: any) {
@@ -165,8 +168,39 @@ export class NexlSourcesExplorerComponent {
   }
 
   newDir() {
-    this.globalComponentsService.inputBox.open('New directory creation', 'Directory name', '', (value: string) => {
+    this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (value: string) => {
+      if (value === undefined) {
+        return;
+      }
+
+      const relativePath = this.getRightClickDirPath() + '/' + value;
+
+      this.nexlSourcesService.makeDir(relativePath).subscribe(
+        () => {
+          this.globalComponentsService.notification.openSuccess('Created new directory');
+        },
+        (err) => {
+          this.globalComponentsService.notification.openError('Failed to create a new directory.\nReason : ' + err.statusText);
+        }
+      );
+    });
+  }
+
+  newFile() {
+    this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (value: string) => {
       console.log('value is [%s]', value);
     });
+  }
+
+  private handleRightClick(target: any) {
+    // is right click on empty area ?
+    if (target === undefined) {
+      this.rightClickSelectedElement = undefined;
+      this.openPopup(event);
+    } else {
+      this.tree.selectItem(target);
+      this.rightClickSelectedElement = this.tree.getItem(target);
+      this.openPopup(event);
+    }
   }
 }

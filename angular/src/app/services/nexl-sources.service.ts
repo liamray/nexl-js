@@ -1,9 +1,10 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
 const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/get-nexl-sources');
+const MAKE_DIR = UtilsService.prefixUrl('/sources/make-dir');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
@@ -29,6 +30,13 @@ export class NexlSourcesService {
         return data;
       }
     );
+  }
 
+  makeDir(relativePath: string) {
+    const params = {
+      relativePath: relativePath
+    };
+
+    return this.httpClient.post<any>(MAKE_DIR, params);
   }
 }

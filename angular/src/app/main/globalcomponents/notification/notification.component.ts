@@ -10,12 +10,18 @@ import {GlobalComponentsService} from "../../../services/global-components.servi
 export class NotificationComponent implements OnInit {
   @ViewChild("infoNotification") infoNotification: jqxNotificationComponent;
   @ViewChild("errorNotification") errorNotification: jqxNotificationComponent;
+  @ViewChild("successNotification") successNotification: jqxNotificationComponent;
 
   constructor(private globalComponentsService: GlobalComponentsService) {
   }
 
   ngOnInit() {
     this.globalComponentsService.notification = this;
+  }
+
+  openSuccess(text: string) {
+    document.getElementById('success-notification-text').innerText = text;
+    this.successNotification.open();
   }
 
   openInfo(text: string) {

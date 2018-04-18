@@ -150,7 +150,15 @@ function getNexlSources(relativePath) {
 	);
 }
 
+function mkdir(relativePath) {
+	return resolveFullPath(relativePath).then(
+		(stuff) => {
+			return fsx.mkdir(stuff.fullPath);
+		});
+}
+
 // --------------------------------------------------------------------------------
 module.exports.getNexlSources = getNexlSources;
 module.exports.getSourceContent = getSourceContent;
+module.exports.mkdir = mkdir;
 // --------------------------------------------------------------------------------

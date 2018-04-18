@@ -190,7 +190,7 @@ export class SettingsComponent {
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
       () => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openInfo('Updated settings');
+        this.globalComponentsService.notification.openSuccess('Updated settings');
       },
       err => {
         this.globalComponentsService.loader.close();
