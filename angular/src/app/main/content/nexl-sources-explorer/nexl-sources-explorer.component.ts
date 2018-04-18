@@ -80,6 +80,7 @@ export class NexlSourcesExplorerComponent {
     return false;
   }
 
+
   init(): void {
     $(document).on('contextmenu', function (e) {
       return $(e.target).parents('.jqx-tree').length <= 0;
@@ -102,6 +103,15 @@ export class NexlSourcesExplorerComponent {
 
       return false;
     });
+  }
+
+
+  renameItem() {
+    if (this.rightClickSelectedElement === undefined) {
+      return;
+    }
+
+    const targetItem = this.rightClickSelectedElement.value.relativePath.replace(/.*[\\/]/, '');
   }
 
   private openPopup(event) {
@@ -192,6 +202,22 @@ export class NexlSourcesExplorerComponent {
     });
   }
 
+  private handleRightClick(target: any) {
+    // is right click on empty area ?
+    if (target === undefined) {
+      this.popupMenu.disable('popup-delete-item', true);
+      this.popupMenu.disable('popup-rename-item', true);
+      this.rightClickSelectedElement = undefined;
+      this.openPopup(event);
+    } else {
+      this.popupMenu.disable('popup-delete-item', false);
+      this.popupMenu.disable('popup-rename-item', false);
+      this.tree.selectItem(target);
+      this.rightClickSelectedElement = this.tree.getItem(target);
+      this.openPopup(event);
+    }
+  }
+
   deleteItem() {
     if (this.rightClickSelectedElement === undefined) {
       return;
@@ -213,19 +239,5 @@ export class NexlSourcesExplorerComponent {
         }
       );
     });
-  }
-
-  private handleRightClick(target: any) {
-    // is right click on empty area ?
-    if (target === undefined) {
-      this.popupMenu.disable('popup-delete-item', true);
-      this.rightClickSelectedElement = undefined;
-      this.openPopup(event);
-    } else {
-      this.popupMenu.disable('popup-delete-item', false);
-      this.tree.selectItem(target);
-      this.rightClickSelectedElement = this.tree.getItem(target);
-      this.openPopup(event);
-    }
   }
 }

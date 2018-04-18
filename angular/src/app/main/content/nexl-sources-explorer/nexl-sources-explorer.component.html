@@ -19,7 +19,7 @@
       (onExpand)="expand($event)"
     ></jqxTree>
 
-    <jqxMenu #popupMenu [width]="120" [height]="84" [autoOpenPopup]="false"
+    <jqxMenu #popupMenu [width]="120" [height]="112" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
         <li (click)="newDir()">
@@ -29,6 +29,10 @@
         <li (click)="newFile()">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/new-file.png'/><span>New File</span>
+        </li>
+        <li (click)="renameItem()" id="popup-rename-item">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/rename.png'/><span>Rename</span>
         </li>
         <li (click)="deleteItem()" id="popup-delete-item">
           <img style='float: left; margin-right: 5px;'
