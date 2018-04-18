@@ -157,8 +157,16 @@ function mkdir(relativePath) {
 		});
 }
 
+function deleteItem(relativePath) {
+	return resolveFullPath(relativePath).then(
+		(stuff) => {
+			return fsx.deleteItem(stuff.fullPath);
+		});
+}
+
 // --------------------------------------------------------------------------------
 module.exports.getNexlSources = getNexlSources;
 module.exports.getSourceContent = getSourceContent;
 module.exports.mkdir = mkdir;
+module.exports.deleteItem = deleteItem;
 // --------------------------------------------------------------------------------

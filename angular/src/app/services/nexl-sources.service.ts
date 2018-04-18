@@ -5,6 +5,7 @@ import 'rxjs/Rx';
 
 const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/get-nexl-sources');
 const MAKE_DIR = UtilsService.prefixUrl('/sources/make-dir');
+const DELETE_ITEM = UtilsService.prefixUrl('/sources/delete-item');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
@@ -38,5 +39,13 @@ export class NexlSourcesService {
     };
 
     return this.httpClient.post<any>(MAKE_DIR, params);
+  }
+
+  deleteItem(relativePath: string) {
+    const params = {
+      relativePath: relativePath
+    };
+
+    return this.httpClient.post<any>(DELETE_ITEM, params);
   }
 }

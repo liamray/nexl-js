@@ -1,5 +1,7 @@
 const fs = require('fs');
+const fsextra = require('fs-extra');
 const path = require('path');
+const rimraf = require('rimraf');
 const logger = require('./logger');
 const utils = require('./utils');
 
@@ -102,6 +104,17 @@ function readdir(fullPath) {
 	});
 }
 
+function deleteItem(fullPath) {
+	return fsextra.remove(fullPath)
+		.then(() => {
+			logger.log.debug('Deleted [%s] item', fullPath);
+			return Promise.resolve();
+		})
+		.catch(err => {
+			logger.log.err('Failed to delete the [%s] item. Reason : [%s]', utils.formatErr(err));
+			return Promise.reject('Failed to delete item');
+		});
+}
 
 // --------------------------------------------------------------------------------
 module.exports.join = join;
@@ -111,4 +124,5 @@ module.exports.readFile = readFile;
 module.exports.writeFile = writeFile;
 module.exports.stat = stat;
 module.exports.readdir = readdir;
+module.exports.deleteItem = deleteItem;
 // --------------------------------------------------------------------------------

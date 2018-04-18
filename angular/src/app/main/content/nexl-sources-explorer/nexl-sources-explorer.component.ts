@@ -192,12 +192,37 @@ export class NexlSourcesExplorerComponent {
     });
   }
 
+  deleteItem() {
+    if (this.rightClickSelectedElement === undefined) {
+      return;
+    }
+
+    const targetItem = this.rightClickSelectedElement.value.relativePath.replace(/.*[\\/]/, '');
+
+    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ?', (isConfirmed) => {
+      if (isConfirmed !== true) {
+        return;
+      }
+
+      this.nexlSourcesService.deleteItem(this.rightClickSelectedElement.value.relativePath).subscribe(
+        () => {
+          this.globalComponentsService.notification.openSuccess('Deleted');
+        },
+        (err) => {
+          this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err.statusText);
+        }
+      );
+    });
+  }
+
   private handleRightClick(target: any) {
     // is right click on empty area ?
     if (target === undefined) {
+      this.popupMenu.disable('popup-delete-item', true);
       this.rightClickSelectedElement = undefined;
       this.openPopup(event);
     } else {
+      this.popupMenu.disable('popup-delete-item', false);
       this.tree.selectItem(target);
       this.rightClickSelectedElement = this.tree.getItem(target);
       this.openPopup(event);

@@ -9,7 +9,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
   templateUrl: './inputbox.component.html',
   styleUrls: ['./inputbox.component.css']
 })
-export class InputboxComponent implements OnInit {
+export class InputBoxComponent implements OnInit {
   @ViewChild('window') window: jqxWindowComponent;
   @ViewChild('input') input: jqxInputComponent;
   @ViewChild('okButton') okButton: jqxButtonComponent;
@@ -18,10 +18,6 @@ export class InputboxComponent implements OnInit {
   label: string;
   callback: (value: string) => void;
   isValueSet: boolean;
-  initContent = () => {
-    this.okButton.createComponent();
-    this.cancelButton.createComponent();
-  }
 
   constructor(private globalComponentsService: GlobalComponentsService) {
   }
@@ -57,4 +53,9 @@ export class InputboxComponent implements OnInit {
       this.window.close();
     }
   }
+
+  initContent = () => {
+    this.okButton.createComponent();
+    this.cancelButton.createComponent();
+  };
 }

@@ -10,6 +10,31 @@ const fsx = require('../../api/fsx');
 
 const router = express.Router();
 
+router.post('/delete-item', function (req, res, next) {
+	let relativePath = req.body['relativePath'];
+
+	// validating ( must not empty string )
+	if (!j79.isString(relativePath) || relativePath.length < 1) {
+		logger.log.error('Invalid relativePath');
+		utils.sendError(res, 'Invalid relativePath');
+		return;
+	}
+
+	const username = utils.getLoggedInUsername(req);
+
+	security.hasWritePermission(username).then((hasPermission) => {
+		if (!hasPermission) {
+			logger.log.error('The [%s] user doesn\'t have write permissions to delete items', username);
+			return Promise.reject('No write permissions');
+		}
+
+		return sources.deleteItem(relativePath).then(() => res.send({}));
+	}).catch((err) => {
+		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
+});
+
 router.post('/make-dir', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
 
