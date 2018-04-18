@@ -52,6 +52,7 @@ import {RegisterComponent} from "./register/register.component";
 import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.component";
 import {ChangePasswordComponent} from "./header/changepassword/changepassword.component";
 import {NotificationComponent} from './globalcomponents/notification/notification.component';
+import {InputboxComponent} from './globalcomponents/inputbox/inputbox.component';
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import {NotificationComponent} from './globalcomponents/notification/notificatio
     SplashscreenComponent,
     PathComponent,
     RegisterComponent,
-    NotificationComponent
+    NotificationComponent,
+    InputboxComponent
   ],
 
   imports: [

@@ -19,10 +19,10 @@
       (onExpand)="expand($event)"
     ></jqxTree>
 
-    <jqxMenu #popupMenu (onItemclick)="onPopup($event)" [width]="120" [height]="84" [autoOpenPopup]="false"
+    <jqxMenu #popupMenu [width]="120" [height]="84" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
-        <li>
+        <li (click)="newDir()">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/new-dir.png'/><span>New Dir</span>
         </li>

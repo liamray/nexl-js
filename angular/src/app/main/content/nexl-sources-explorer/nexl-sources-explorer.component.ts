@@ -163,4 +163,10 @@ export class NexlSourcesExplorerComponent {
       }
     );
   }
+
+  newDir() {
+    this.globalComponentsService.inputBox.open('New directory creation', 'Directory name', '', (value: string) => {
+      console.log('value is [%s]', value);
+    });
+  }
 }
