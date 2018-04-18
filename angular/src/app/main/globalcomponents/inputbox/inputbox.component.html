@@ -27,6 +27,7 @@
                    [textPosition]='"center"'
                    (click)="isValueSet = true ; window.close();"
                    [auto-create]="false"
+                   [disabled]="input.val().length < 1"
                    [imgSrc]='"./nexl/site/images/ok.png"'
                    #okButton
         >

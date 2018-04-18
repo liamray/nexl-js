@@ -112,7 +112,7 @@ function deleteItem(fullPath) {
 		})
 		.catch(err => {
 			logger.log.error('Failed to delete the [%s] item. Reason : [%s]', utils.formatErr(err));
-			return Promise.reject('Failed to delete item');
+			return Promise.reject('FS error');
 		});
 }
 

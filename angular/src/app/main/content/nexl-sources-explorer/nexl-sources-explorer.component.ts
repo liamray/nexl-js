@@ -235,7 +235,7 @@ export class NexlSourcesExplorerComponent {
           this.globalComponentsService.notification.openSuccess('Deleted');
         },
         (err) => {
-          this.globalComponentsService.notification.openError('Failed to delete an item');
+          this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
         }
       );
     });

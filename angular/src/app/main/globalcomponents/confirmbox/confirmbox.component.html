@@ -18,12 +18,11 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="isConfirmed = true ; window.close();"
+                   (click)="window.close()"
+                   [imgSrc]='"./nexl/site/images/close.png"'
                    [auto-create]="false"
-                   [imgSrc]='"./nexl/site/images/ok.png"'
-                   #okButton
-        >
-          Ok
+                   #cancelButton>
+          No
         </jqxButton>
       </div>
       <div class="button">
@@ -31,14 +30,14 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="window.close()"
-                   [imgSrc]='"./nexl/site/images/close.png"'
+                   (click)="isConfirmed = true ; window.close();"
                    [auto-create]="false"
-                   #cancelButton>
-          Cancel
+                   [imgSrc]='"./nexl/site/images/ok.png"'
+                   #okButton
+        >
+          Yes
         </jqxButton>
       </div>
-
     </div>
 
   </div>

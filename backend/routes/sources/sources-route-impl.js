@@ -153,7 +153,13 @@ function getNexlSources(relativePath) {
 function mkdir(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			return fsx.mkdir(stuff.fullPath);
+			return fsx.exists(stuff.fullPath).then((isExists) => {
+				if (isExists) {
+					return Promise.reject('Directory or file already exists');
+				}
+
+				return fsx.mkdir(stuff.fullPath);
+			});
 		});
 }
 
