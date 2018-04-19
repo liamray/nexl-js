@@ -112,6 +112,8 @@ export class NexlSourcesExplorerComponent {
     }
 
     const targetItem = this.rightClickSelectedElement.label;
+    this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (value: string) => {
+    });
   }
 
   private openPopup(event) {
@@ -255,15 +257,18 @@ export class NexlSourcesExplorerComponent {
     }
   }
 
+  itemType() {
+    return this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
+  }
+
   deleteItem() {
     if (this.rightClickSelectedElement === undefined) {
       return;
     }
 
     const targetItem = this.rightClickSelectedElement.label;
-    const itemType = this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
 
-    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ' + itemType + ' ?', (isConfirmed) => {
+    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ' + this.itemType() + ' ?', (isConfirmed) => {
       if (isConfirmed !== true) {
         return;
       }

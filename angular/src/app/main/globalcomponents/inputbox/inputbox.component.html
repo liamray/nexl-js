@@ -4,7 +4,7 @@
            [resizable]="false"
            [width]="320"
            (onClose)="onClose()"
-           [height]="120"
+           [height]="125"
            [initContent]="initContent"
            (onOpen)="onOpen()"
 >
@@ -12,6 +12,7 @@
   <div class="container">
     <label>{{ label }}</label>
     <jqxInput
+      style="margin-top: 4px;"
       [width]="'100%'"
       [height]="25"
       (keypress)="onKeyPress($event)"
