@@ -1,11 +1,11 @@
 import {Component, ViewChild} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
-import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import * as $ from 'jquery';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {GlobalComponentsService} from "../../../services/global-components.service";
+import {NexlSourcesService} from "../../../services/nexl-sources.service";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
@@ -111,7 +111,7 @@ export class NexlSourcesExplorerComponent {
       return;
     }
 
-    const targetItem = this.rightClickSelectedElement.value.relativePath.replace(/.*[\\/]/, '');
+    const targetItem = this.rightClickSelectedElement.label;
   }
 
   private openPopup(event) {
@@ -177,6 +177,42 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
+  insertDirItem(relativePath: string, label: string) {
+    // item still not expanded
+    if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
+      return;
+    }
+
+    // loading child items
+    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
+    let lastItem: any = this.rightClickSelectedElement;
+
+    // iterating over children and searching for place to insert a new item
+    for (let index in childItems) {
+      let item = childItems[index];
+
+      // is file ? skip
+      if (item.value.isDir !== true) {
+        break;
+      }
+
+      // comparing dir names
+      if (item.label.toLowerCase() > label.toLowerCase()) {
+        break;
+      }
+
+      // saving last item
+      lastItem = item;
+    }
+
+    if (lastItem === undefined) {
+      lastItem = childItems.length > 0 ? childItems[0] : lastItem;
+      this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, label), lastItem);
+    } else {
+      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, label), lastItem);
+    }
+  }
+
   newDir() {
     this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (value: string) => {
       if (value === undefined) {
@@ -188,6 +224,7 @@ export class NexlSourcesExplorerComponent {
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
         () => {
+          this.insertDirItem(relativePath, value);
           this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openSuccess('Created new directory');
         },
@@ -226,7 +263,7 @@ export class NexlSourcesExplorerComponent {
       return;
     }
 
-    const targetItem = this.rightClickSelectedElement.value.relativePath.replace(/.*[\\/]/, '');
+    const targetItem = this.rightClickSelectedElement.label;
     const itemType = this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
 
     this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ' + itemType + ' ?', (isConfirmed) => {
@@ -247,5 +284,25 @@ export class NexlSourcesExplorerComponent {
         }
       );
     });
+  }
+
+  getFirstLevelChildren(item) {
+    const result = [];
+
+    let sameLevelId;
+    if (item === undefined) {
+      sameLevelId = null;
+    } else {
+      sameLevelId = item.value.isDir ? item.id : item.parentId;
+    }
+
+    const allItems: any[] = this.tree.getItems();
+    for (let i in allItems) {
+      const parentElementId = allItems[i].parentElement === null ? null : allItems[i].parentElement.id;
+      if (parentElementId === sameLevelId) {
+        result.push(allItems[i]);
+      }
+    }
+    return result;
   }
 }

@@ -15,9 +15,31 @@ export class NexlSourcesService {
   constructor(private httpClient: HttpClient) {
   }
 
-  substIcons(json: any) {
+  static substIcon(item) {
+    item.icon = item.value.isDir ? DIR_ICON : FILE_ICON;
+  }
+
+  static makeEmptyDirItem(relativePath: string, label: string) {
+    return {
+      label: label,
+      icon: DIR_ICON,
+      items: [
+        {
+          label: "Loading...",
+          disabled: true
+        }
+      ],
+      value: {
+        relativePath: relativePath,
+        mustLoadChildItems: true,
+        isDir: true
+      }
+    };
+  }
+
+  static substIcons(json: any) {
     json.forEach((item) => {
-      item.icon = item.value.isDir ? DIR_ICON : FILE_ICON;
+      NexlSourcesService.substIcon(item);
     });
   }
 
@@ -27,7 +49,7 @@ export class NexlSourcesService {
     };
     return this.httpClient.post<any>(GET_NEXL_SOURCES_URL, params).map(
       (data) => {
-        this.substIcons(data);
+        NexlSourcesService.substIcons(data);
         return data;
       }
     );
