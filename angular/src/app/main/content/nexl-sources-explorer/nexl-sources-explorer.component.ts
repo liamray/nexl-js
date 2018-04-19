@@ -194,7 +194,7 @@ export class NexlSourcesExplorerComponent {
 
     let index = 0;
     while (index < childItems.length) {
-      if (label < childItems[index].label || childItems[index].value.isDir !== true) {
+      if (label.toLocaleLowerCase() < childItems[index].label.toLocaleLowerCase() || childItems[index].value.isDir !== true) {
         break;
       }
       index++;
@@ -287,10 +287,18 @@ export class NexlSourcesExplorerComponent {
     const result = [];
 
     let sameLevelId;
+
     if (item === undefined) {
       sameLevelId = null;
-    } else {
-      sameLevelId = item.value.isDir ? item.id : item.parentId;
+    }
+
+    if (item !== undefined) {
+      if (item.value.isDir === true) {
+        sameLevelId = item.id;
+      } else {
+        // files don't have inner items, so applying parent's id
+        sameLevelId = item.parentElement === null ? null : item.parentElement.id;
+      }
     }
 
     const allItems: any[] = this.tree.getItems();
