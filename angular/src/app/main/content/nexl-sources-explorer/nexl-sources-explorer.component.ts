@@ -185,32 +185,29 @@ export class NexlSourcesExplorerComponent {
 
     // loading child items
     const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
-    let lastItem: any = this.rightClickSelectedElement;
 
-    // iterating over children and searching for place to insert a new item
-    for (let index in childItems) {
-      let item = childItems[index];
-
-      // is file ? skip
-      if (item.value.isDir !== true) {
-        break;
-      }
-
-      // comparing dir names
-      if (item.label.toLowerCase() > label.toLowerCase()) {
-        break;
-      }
-
-      // saving last item
-      lastItem = item;
+    // sub dir is empty
+    if (childItems.length < 1) {
+      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(relativePath, label), this.rightClickSelectedElement);
+      return;
     }
 
-    if (lastItem === undefined) {
-      lastItem = childItems.length > 0 ? childItems[0] : lastItem;
-      this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, label), lastItem);
-    } else {
-      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, label), lastItem);
+    let index = 0;
+    while (index < childItems.length) {
+      if (label < childItems[index].label || childItems[index].value.isDir !== true) {
+        break;
+      }
+      index++;
     }
+
+    // add last
+    if (index >= childItems.length) {
+      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, label), childItems[childItems.length - 1]);
+      return;
+    }
+
+    // add others
+    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, label), childItems[index]);
   }
 
   newDir() {

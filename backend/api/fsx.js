@@ -20,7 +20,7 @@ function mkdir(fullPath) {
 		fs.mkdir(fullPath, (err) => {
 			if (err) {
 				logger.log.error('Failed to create a [%s] directory. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Failed to create directory');
+				reject('Internal FS error');
 				return;
 			}
 
@@ -49,7 +49,7 @@ function readFile(fullPath, opts) {
 		fs.readFile(fullPath, opts, (err, data) => {
 			if (err) {
 				logger.log.error('Failed to read file content for [%s] file. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Failed to read file');
+				reject('Internal FS error');
 				return;
 			}
 
@@ -64,7 +64,7 @@ function writeFile(fullPath, data, opts) {
 		fs.writeFile(fullPath, data, opts, (err) => {
 			if (err) {
 				logger.log.error('Failed to write file content for [%s] file. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Failed to write file');
+				reject('Internal FS error');
 				return;
 			}
 
@@ -94,7 +94,7 @@ function readdir(fullPath) {
 		fs.readdir(fullPath, (err, items) => {
 			if (err) {
 				logger.log.error('Failed to read directory items in [%s] path. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Failed to read items list from directory');
+				reject('Internal FS error');
 				return;
 			}
 
@@ -112,7 +112,7 @@ function deleteItem(fullPath) {
 		})
 		.catch(err => {
 			logger.log.error('Failed to delete the [%s] item. Reason : [%s]', utils.formatErr(err));
-			return Promise.reject('FS error');
+			return Promise.reject('Internal FS error');
 		});
 }
 
