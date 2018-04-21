@@ -152,7 +152,10 @@ export class NexlSourcesExplorerComponent {
 
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.OPEN_FILE,
-      data: item.value.relativePath
+      data: {
+        relativePath: item.value.relativePath,
+        label: item.label
+      }
     });
   }
 

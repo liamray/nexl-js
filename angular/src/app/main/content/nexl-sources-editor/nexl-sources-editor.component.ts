@@ -5,6 +5,13 @@ import {GlobalComponentsService} from "../../../services/global-components.servi
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import * as $ from 'jquery';
 
+const TAB_CONTENT = 'tabs-content-';
+const TITLE_ID = 'tabs-title-';
+const TITLE_TOOLTIP = 'tabs-title-tooltip-';
+const TITLE_TEXT = 'tabs-title-text-';
+const TITLE_MODIFICATION_ICON = 'tabs-title-modification-icon-';
+const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
+
 @Component({
   selector: '.app-nexl-sources-editor',
   templateUrl: './nexl-sources-editor.component.html',
@@ -13,8 +20,8 @@ import * as $ from 'jquery';
 export class NexlSourcesEditorComponent implements AfterViewInit {
   @ViewChild('nexlSourcesTabs') nexlSourcesTabs: jqxTabsComponent;
 
-  id = 0;
-  tabItems = {};
+  idSeqNr = 0;
+  hasWritePermission = false;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
@@ -22,117 +29,80 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
   }
 
-  handleMessages(message) {
-    if (message.type === MESSAGE_TYPE.OPEN_FILE) {
-      this.openFile(message.data);
-    }
-
-    if (message.type === MESSAGE_TYPE.CONTENT_AREA_RESIZED) {
-      setTimeout(() => {
-        for (let relativePath in this.tabItems) {
-          this.tabItems[relativePath]['ace'].resize();
-        }
-      }, 200)
-    }
-  }
-
   ngAfterViewInit(): void {
     this.nexlSourcesTabs.scrollPosition('both');
     this.nexlSourcesTabs.removeFirst();
   }
 
-  newTabItem(relativePath: string) {
-    const title = relativePath.replace(/.*[/\\]/, '');
-    this.id++;
-    const contentId = 'tabs-content-' + this.id;
-    const titleId = 'tabs-title-' + this.id;
-
-    let tabItem = {
-      relativePath: relativePath,
-      contentId: contentId,
-      titleId: titleId,
-      // title: '<span id="' + titleId + '"><span style="color: red;" title="Content changed"></span>' + title + '</span>',
-      title: '<span id="' + titleId + '"><span style="color: red;" title="Content changed"></span>' + title + '<a href="#"> x</a></span>',
-      isJSFile: relativePath.search(/(\.js)$/i) >= 0
-    };
-
-    this.tabItems[relativePath] = tabItem;
-
-    return tabItem;
-  }
-
-  resolveTabNrByRelativePath(relativePath: string) {
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      const contentItem = this.nexlSourcesTabs.getContentAt(index);
-      if (contentItem.firstElementChild.getAttribute('relative-path') === relativePath) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  resolveRelativePathByTabNr(tabNr: number) {
-    const tab = this.nexlSourcesTabs.getContentAt(tabNr);
-    return tab.firstElementChild.getAttribute('relative-path');
-  }
-
-  unchangeTab(tabNr: number) {
-    const relativePath = this.resolveRelativePathByTabNr(tabNr);
-    this.tabItems[relativePath]['changed'] = false;
-    $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text('');
-  }
-
-  openFileInner(relativePath: string, content: any) {
-    const tabItem = this.newTabItem(relativePath);
-    this.nexlSourcesTabs.addLast(tabItem.title, '<div id="' + tabItem.contentId + '" relative-path="' + relativePath + '">' + content.body + '</div>');
-
-    $('#' + tabItem.titleId + ' > a').click(() => {
-      if (this.tabItems[tabItem.relativePath]['changed'] === true) {
-        if (!confirm('Save changes ?')) {
-          return;
-        }
-      }
-
-      tabItem['ace'].destroy();
-      this.nexlSourcesTabs.removeAt(this.resolveTabNrByRelativePath(tabItem.relativePath));
-      delete this.tabItems[tabItem.relativePath];
-    });
-
-    ace.config.set('basePath', 'nexl/site/ace');
-    const aceEditor = ace.edit(tabItem.contentId);
-    tabItem['ace'] = aceEditor;
-    aceEditor.setOptions({
-      fontSize: "10pt",
-      autoScrollEditorIntoView: true,
-      theme: "ace/theme/xcode",
-      mode: "ace/mode/javascript"
-    });
-    aceEditor.$blockScrolling = Infinity;
-    aceEditor.resize();
-    aceEditor.on("change", () => {
-      if (this.tabItems[relativePath]['changed'] === true) {
+  handleMessages(message) {
+    switch (message.type) {
+      case MESSAGE_TYPE.AUTH_CHANGED: {
+        this.updateTabsPermissions(message.data);
         return;
       }
 
-      this.tabItems[relativePath]['changed'] = true;
-      $('#' + this.tabItems[relativePath]['titleId'] + ' > span').text('* ');
-    });
+      case MESSAGE_TYPE.OPEN_FILE: {
+        this.openFile(message.data);
+        return;
+      }
 
-    this.globalComponentsService.loader.close();
+      case MESSAGE_TYPE.CONTENT_AREA_RESIZED: {
+        this.resizeAce();
+        return;
+      }
+    }
   }
 
-  openFile(relativePath: string) {
-    const tab = this.resolveTabNrByRelativePath(relativePath);
-    if (tab >= 0) {
-      this.nexlSourcesTabs.val(tab + '');
+  updateTabsPermissions(data: any) {
+    if (data.hasWritePermission === this.hasWritePermission) {
+      return;
+    }
+
+    // updating opened tabs
+    this.hasWritePermission = data.hasWritePermission;
+  }
+
+  resizeAce() {
+    setTimeout(() => {
+      // iterating over tabs
+      for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+        const id = this.resolveTabAttr(index, 'id');
+        ace.edit(id).resize();
+      }
+    }, 200);
+  }
+
+  resolveTabAttr(tabNr: number, attrName: string) {
+    return this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.getAttribute(attrName);
+  }
+
+  resolveTabByRelativePath(relativePath: string): number {
+    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      const path = this.resolveTabAttr(index, 'relative-path');
+      if (path === relativePath) {
+        return index;
+      }
+    }
+
+    return -1;
+  }
+
+  openFile(data: any) {
+    // is tab already opened ?
+    const openedTabIndex = this.resolveTabByRelativePath(data.relativePath);
+    if (openedTabIndex >= 0) {
+      this.nexlSourcesTabs.val(openedTabIndex + '');
       return;
     }
 
     this.globalComponentsService.loader.open();
 
-    this.http.post({relativePath: relativePath}, '/sources/get-source-content', 'text').subscribe(
+    // loading file content by relativePath
+    this.http.post({relativePath: data.relativePath}, '/sources/get-source-content', 'text').subscribe(
       (content: any) => {
-        this.openFileInner(relativePath, content);
+        data.body = content.body;
+        this.openFileInner(data);
+        this.globalComponentsService.loader.close();
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -141,4 +111,64 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       }
     );
   }
+
+  getId4(prefix: string) {
+    return prefix + this.idSeqNr;
+  }
+
+  makeTitle(data: any) {
+    const modified = '<span style="color:red;display: none;" id="' + this.getId4(TITLE_MODIFICATION_ICON) + '">* </span>';
+    const theTitle = '<span style="position:relative; top: -2px;" id="' + this.getId4(TITLE_TEXT) + '">' + data.label + '</span>';
+    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="/nexl/site/images/close-tab.png" id="' + this.getId4(TITLE_CLOSE_ICON) + '"/>';
+    return '<span id="' + this.getId4(TITLE_ID) + '">' + modified + theTitle + closeIcon + '</span>';
+  }
+
+  makeBody(data: any) {
+    const attrs = {
+      id: this.getId4(TAB_CONTENT),
+      idSeqNr: this.idSeqNr,
+      'relative-path': data.relativePath
+    };
+
+    let attrsArray = [];
+    for (let key in attrs) {
+      attrsArray.push(key + '="' + attrs[key] + '"');
+    }
+
+    return '<div ' + attrsArray.join(' ') + '>' + data.body + '</div>';
+  }
+
+  bindTitle(data: any) {
+    // binding close action
+    $('#' + this.getId4(TITLE_CLOSE_ICON)).click(() => {
+      alert(data.relativePath);
+    });
+
+    // binding tooltip action
+    jqwidgets.createInstance($('#' + this.getId4(TITLE_ID)), 'jqxTooltip', {
+      content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.getId4(TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
+      position: 'mouse',
+      closeOnClick: true,
+      autoHide: true,
+      autoHideDelay: 99999,
+      animationShowDelay: 400,
+      trigger: 'hover',
+      height: '40px'
+    });
+
+    $('#' + this.getId4(TITLE_TOOLTIP)).click(() => {
+      alert(data.relativePath);
+    });
+  }
+
+  openFileInner(data: any) {
+    this.idSeqNr++;
+
+    const title = this.makeTitle(data);
+    const body = this.makeBody(data);
+    this.nexlSourcesTabs.addLast(title, body);
+
+    this.bindTitle(data);
+  }
+
 }
