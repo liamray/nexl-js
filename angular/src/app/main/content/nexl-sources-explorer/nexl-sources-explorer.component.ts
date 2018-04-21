@@ -42,13 +42,20 @@ export class NexlSourcesExplorerComponent {
     }
   }
 
+  expandItemWrapper(item: any) {
+    while (item.parentElement !== null) {
+      this.tree.expandItem(item);
+      item = item.parentElement;
+    }
+  }
+
   selectItemInTree(relativePath: string) {
     // iterating over all tree items
     const allItems: any[] = this.tree.getItems();
     for (let index in allItems) {
       let item = allItems[index];
       if (item.value !== null && item.value.relativePath === relativePath) {
-        this.tree.expandItem(item);
+        this.expandItemWrapper(item);
         this.tree.selectItem(item);
         return;
       }
