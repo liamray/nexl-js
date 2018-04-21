@@ -281,7 +281,7 @@ export class NexlSourcesExplorerComponent {
         () => {
           this.tree.removeItem(this.rightClickSelectedElement);
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openSuccess('Deleted');
+          this.globalComponentsService.notification.openSuccess('Deleted ' + this.itemType());
         },
         (err) => {
           this.globalComponentsService.loader.close();

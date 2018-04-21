@@ -150,14 +150,19 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // binding close action
     $('#' + this.getId4(TITLE_CLOSE_ICON)).click((event) => {
       const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
-      let relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+
+      const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
+      if (isChanged) {
+        alert('Document was changed !');
+      }
+
+      const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
       // destroying tooltip
       jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
       // destroying ace
       const aceEditor = ace.edit(TAB_CONTENT + idSeqNr).destroy();
       // removing tab
       this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
-      // todo : confirm on close if changed
     });
 
     // binding tooltip action
@@ -211,5 +216,4 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.bindTitle(data);
     this.bindBody(data);
   }
-
 }
