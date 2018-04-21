@@ -188,7 +188,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
 
     $('#' + this.getId4(TITLE_TOOLTIP)).click(() => {
-      alert(data.relativePath);
+      this.messageService.sendMessage({
+        type: MESSAGE_TYPE.SELECT_ITEM_IN_TREE,
+        data: data.relativePath
+      });
     });
   }
 

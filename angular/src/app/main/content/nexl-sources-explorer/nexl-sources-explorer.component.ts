@@ -29,12 +29,33 @@ export class NexlSourcesExplorerComponent {
   }
 
   handleMessages(message) {
-    if (message.type !== MESSAGE_TYPE.AUTH_CHANGED) {
-      return;
+    switch (message.type) {
+      case MESSAGE_TYPE.AUTH_CHANGED: {
+        this.authChanged(message.data);
+        return;
+      }
+
+      case MESSAGE_TYPE.SELECT_ITEM_IN_TREE: {
+        this.selectItemInTree(message.data);
+        return;
+      }
     }
+  }
 
-    const status = message.data;
+  selectItemInTree(relativePath: string) {
+    // iterating over all tree items
+    const allItems: any[] = this.tree.getItems();
+    for (let index in allItems) {
+      let item = allItems[index];
+      if (item.value !== null && item.value.relativePath === relativePath) {
+        this.tree.expandItem(item);
+        this.tree.selectItem(item);
+        return;
+      }
+    }
+  }
 
+  authChanged(status: any) {
     // nothing changed, just skip it
     if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
       return;
