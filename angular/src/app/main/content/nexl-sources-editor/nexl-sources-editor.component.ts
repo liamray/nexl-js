@@ -29,9 +29,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.nexlSourcesTabs.scrollPosition('both');
-    this.nexlSourcesTabs.removeFirst();
+  static obj2Array(obj: any) {
+    let result = [];
+    for (let key in obj) {
+      result.push(key + '="' + obj[key] + '"');
+    }
+    return result.join(' ');
   }
 
   handleMessages(message) {
@@ -116,32 +119,45 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return prefix + this.idSeqNr;
   }
 
+  ngAfterViewInit(): void {
+    this.nexlSourcesTabs.scrollPosition('both');
+    this.nexlSourcesTabs.removeFirst();
+    ace.config.set('basePath', 'nexl/site/ace');
+  }
+
   makeTitle(data: any) {
-    const modified = '<span style="color:red;display: none;" id="' + this.getId4(TITLE_MODIFICATION_ICON) + '">* </span>';
+    const modified = '<span style="color:red;display: none;" id="' + this.getId4(TITLE_MODIFICATION_ICON) + '">*&nbsp;</span>';
     const theTitle = '<span style="position:relative; top: -2px;" id="' + this.getId4(TITLE_TEXT) + '">' + data.label + '</span>';
     const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="/nexl/site/images/close-tab.png" id="' + this.getId4(TITLE_CLOSE_ICON) + '"/>';
-    return '<span id="' + this.getId4(TITLE_ID) + '">' + modified + theTitle + closeIcon + '</span>';
+    const attrs = {
+      id: this.getId4(TITLE_ID),
+      'id-seq-nr': this.idSeqNr
+    };
+    return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
     const attrs = {
       id: this.getId4(TAB_CONTENT),
-      idSeqNr: this.idSeqNr,
+      'is-seq-nr': this.idSeqNr,
       'relative-path': data.relativePath
     };
 
-    let attrsArray = [];
-    for (let key in attrs) {
-      attrsArray.push(key + '="' + attrs[key] + '"');
-    }
-
-    return '<div ' + attrsArray.join(' ') + '>' + data.body + '</div>';
+    return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
   bindTitle(data: any) {
     // binding close action
-    $('#' + this.getId4(TITLE_CLOSE_ICON)).click(() => {
-      alert(data.relativePath);
+    $('#' + this.getId4(TITLE_CLOSE_ICON)).click((event) => {
+      const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
+      let relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+      // destroying tooltip
+      jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
+      // destroying ace
+      const aceEditor = ace.edit(TAB_CONTENT + idSeqNr).destroy();
+      // removing tab
+      this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
+      // todo : confirm on close if changed
     });
 
     // binding tooltip action
@@ -161,6 +177,30 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
   }
 
+  bindBody(data: any) {
+    const aceEditor = ace.edit(this.getId4(TAB_CONTENT));
+
+    aceEditor.setOptions({
+      fontSize: "10pt",
+      autoScrollEditorIntoView: true,
+      theme: "ace/theme/xcode",
+      mode: "ace/mode/javascript"
+    });
+
+    aceEditor.$blockScrolling = Infinity;
+    aceEditor.resize();
+
+    aceEditor.on("change", (event) => {
+      if ($('#' + this.getId4(TITLE_ID)).attr('is-changed') === 'true') {
+        return;
+      }
+
+      $('#' + this.getId4(TITLE_MODIFICATION_ICON)).css('display', 'inline-block');
+      $('#' + this.getId4(TITLE_ID)).attr('is-changed', 'true');
+    });
+
+  }
+
   openFileInner(data: any) {
     this.idSeqNr++;
 
@@ -169,6 +209,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.nexlSourcesTabs.addLast(title, body);
 
     this.bindTitle(data);
+    this.bindBody(data);
   }
 
 }
