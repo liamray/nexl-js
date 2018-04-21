@@ -2,7 +2,7 @@
            [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
-           [width]="320"
+           [width]="420"
            (onClose)="onClose()"
            [height]="100"
            [initContent]="initContent"
@@ -10,7 +10,14 @@
 >
 
   <div class="container">
-    <label>{{ label }}</label>
+    <div style="text-align: center;">{{ label }}</div>
+
+    <jqxCheckBox
+      style="margin-left: 10px; margin-top: 15px;"
+      #checkBox
+    >
+      {{ checkBoxText }}
+    </jqxCheckBox>
 
     <div class="buttons">
       <div class="button">

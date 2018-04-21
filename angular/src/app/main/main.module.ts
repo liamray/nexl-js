@@ -54,6 +54,7 @@ import {ChangePasswordComponent} from "./header/changepassword/changepassword.co
 import {NotificationComponent} from './globalcomponents/notification/notification.component';
 import {InputBoxComponent} from './globalcomponents/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./globalcomponents/confirmbox/confirmbox.component";
+import {LocalStorageService} from "../services/localstorage.service";
 
 @NgModule({
   declarations: [
@@ -114,7 +115,8 @@ import {ConfirmBoxComponent} from "./globalcomponents/confirmbox/confirmbox.comp
     AuthService,
     NexlSourcesService,
     HttpRequestService,
-    MessageService
+    MessageService,
+    LocalStorageService
   ],
 
   entryComponents: [],

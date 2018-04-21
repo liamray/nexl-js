@@ -264,6 +264,21 @@ export class NexlSourcesExplorerComponent {
     return this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
   }
 
+  deleteItemInner() {
+    this.globalComponentsService.loader.open();
+    this.nexlSourcesService.deleteItem(this.rightClickSelectedElement.value.relativePath).subscribe(
+      () => {
+        this.tree.removeItem(this.rightClickSelectedElement);
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openSuccess('Deleted ' + this.itemType());
+      },
+      (err) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
+      }
+    );
+  }
+
   deleteItem() {
     if (this.rightClickSelectedElement === undefined) {
       return;
@@ -271,24 +286,19 @@ export class NexlSourcesExplorerComponent {
 
     const targetItem = this.rightClickSelectedElement.label;
 
-    this.globalComponentsService.confirmBox.open('Confirm delete', 'Are you sure to delete the [' + targetItem + '] ' + this.itemType() + ' ?', (isConfirmed) => {
-      if (isConfirmed !== true) {
-        return;
-      }
-
-      this.globalComponentsService.loader.open();
-      this.nexlSourcesService.deleteItem(this.rightClickSelectedElement.value.relativePath).subscribe(
-        () => {
-          this.tree.removeItem(this.rightClickSelectedElement);
-          this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openSuccess('Deleted ' + this.itemType());
-        },
-        (err) => {
-          this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
+    let opts = {
+      title: 'Confirm delete',
+      label: 'Are you sure to delete the [' + targetItem + '] ' + this.itemType() + ' ?',
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed !== true) {
+          return;
         }
-      );
-    });
+
+        this.deleteItemInner();
+      },
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
   }
 
   getFirstLevelChildren(item) {

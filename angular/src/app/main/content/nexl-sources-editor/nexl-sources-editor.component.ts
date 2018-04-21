@@ -146,23 +146,32 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
+  closeTabInner(idSeqNr: number) {
+    const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+    // destroying tooltip
+    jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
+    // destroying ace
+    const aceEditor = ace.edit(TAB_CONTENT + idSeqNr).destroy();
+    // removing tab
+    this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
+  }
+
+  closeTab(event: any) {
+    const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
+
+    const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
+    if (!isChanged) {
+      this.closeTabInner(idSeqNr);
+      return;
+    }
+
+    alert('Unsaved data !');
+  }
+
   bindTitle(data: any) {
     // binding close action
     $('#' + this.getId4(TITLE_CLOSE_ICON)).click((event) => {
-      const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
-
-      const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
-      if (isChanged) {
-        alert('Document was changed !');
-      }
-
-      const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
-      // destroying tooltip
-      jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
-      // destroying ace
-      const aceEditor = ace.edit(TAB_CONTENT + idSeqNr).destroy();
-      // removing tab
-      this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
+      this.closeTab(event);
     });
 
     // binding tooltip action
@@ -173,6 +182,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       autoHide: true,
       autoHideDelay: 99999,
       animationShowDelay: 400,
+      showDelay: 600,
       trigger: 'hover',
       height: '40px'
     });

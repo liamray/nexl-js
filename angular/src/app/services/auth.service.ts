@@ -4,12 +4,12 @@ import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 import {MESSAGE_TYPE, MessageService} from "./message.service";
 import {GlobalComponentsService} from "./global-components.service";
+import {CREDENTIALS, LocalStorageService} from "./localstorage.service";
 
 const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
 const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
 const RESOLVE_STATUS = UtilsService.prefixUrl('/auth/resolve-status');
 const CHANGE_PASSWORD = UtilsService.prefixUrl('/auth/change-password');
-const CREDENTIALS = 'nexl.credentials';
 
 @Injectable()
 export class AuthService {
@@ -64,7 +64,7 @@ export class AuthService {
     };
 
     return this.httpClient.post<any>(LOGIN_URL, params, opts).map(response => {
-      localStorage.setItem(CREDENTIALS, response['body']);
+      LocalStorageService.storeRaw(CREDENTIALS, response['body']);
       return response;
     });
   }
@@ -85,12 +85,12 @@ export class AuthService {
   }
 
   getToken(): any {
-    return localStorage.getItem(CREDENTIALS);
+    return LocalStorageService.loadRaw(CREDENTIALS);
   }
 
   logout() {
     // todo : how to disable login token permanently ?
-    localStorage.setItem(CREDENTIALS, null);
+    LocalStorageService.storeRaw(CREDENTIALS, null);
     this.refreshStatus();
   }
 }
