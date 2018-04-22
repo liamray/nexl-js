@@ -39,7 +39,23 @@ export class NexlSourcesExplorerComponent {
         this.selectItemInTree(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
+        this.tabContentChanged(message.data);
+        return;
+      }
     }
+  }
+
+  tabContentChanged(relativePath: string) {
+    const item = this.findItemByRelativePath(relativePath);
+    if (item === undefined) {
+      return;
+    }
+
+    item.value.isChanged = true;
+    item.label = item.value.label + '<span style="color: red">&nbsp;*</span>';
+    this.tree.updateItem(item, item);
   }
 
   expandItemWrapper(item: any) {
@@ -49,17 +65,25 @@ export class NexlSourcesExplorerComponent {
     }
   }
 
-  selectItemInTree(relativePath: string) {
+  findItemByRelativePath(relativePath: string) {
     // iterating over all tree items
     const allItems: any[] = this.tree.getItems();
     for (let index in allItems) {
       let item = allItems[index];
       if (item.value !== null && item.value.relativePath === relativePath) {
-        this.expandItemWrapper(item);
-        this.tree.selectItem(item);
-        return;
+        return item;
       }
     }
+  }
+
+  selectItemInTree(relativePath: string) {
+    const item = this.findItemByRelativePath(relativePath);
+    if (item === undefined) {
+      return;
+    }
+
+    this.expandItemWrapper(item);
+    this.tree.selectItem(item);
   }
 
   authChanged(status: any) {
@@ -139,7 +163,7 @@ export class NexlSourcesExplorerComponent {
       return;
     }
 
-    const targetItem = this.rightClickSelectedElement.label;
+    const targetItem = this.rightClickSelectedElement.value.label;
     this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (value: string) => {
     });
   }
@@ -166,25 +190,37 @@ export class NexlSourcesExplorerComponent {
     return item.relativePath.replace(/([/\\][^\\/]*)$/, '');
   }
 
-  private handleLeftClick(target: any) {
-    this.popupMenu.close();
-
-    if (target === undefined) {
+  insertDirItem(relativePath: string, newDirName: string) {
+    // item still not expanded
+    if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
       return;
     }
 
-    let item: any = this.tree.getItem(target);
-    if (item.value.isDir === true) {
+    // loading child items
+    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
+
+    // sub dir is empty
+    if (childItems.length < 1) {
+      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), this.rightClickSelectedElement);
       return;
     }
 
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.OPEN_FILE,
-      data: {
-        relativePath: item.value.relativePath,
-        label: item.label
+    let index = 0;
+    while (index < childItems.length) {
+      if (newDirName.toLocaleLowerCase() < childItems[index].value.label.toLocaleLowerCase() || childItems[index].value.isDir !== true) {
+        break;
       }
-    });
+      index++;
+    }
+
+    // add last
+    if (index >= childItems.length) {
+      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), childItems[childItems.length - 1]);
+      return;
+    }
+
+    // add others
+    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), childItems[index]);
   }
 
   expand(event: any) {
@@ -210,51 +246,18 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
-  insertDirItem(relativePath: string, label: string) {
-    // item still not expanded
-    if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
-      return;
-    }
-
-    // loading child items
-    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
-
-    // sub dir is empty
-    if (childItems.length < 1) {
-      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(relativePath, label), this.rightClickSelectedElement);
-      return;
-    }
-
-    let index = 0;
-    while (index < childItems.length) {
-      if (label.toLocaleLowerCase() < childItems[index].label.toLocaleLowerCase() || childItems[index].value.isDir !== true) {
-        break;
-      }
-      index++;
-    }
-
-    // add last
-    if (index >= childItems.length) {
-      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, label), childItems[childItems.length - 1]);
-      return;
-    }
-
-    // add others
-    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, label), childItems[index]);
-  }
-
   newDir() {
-    this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (value: string) => {
-      if (value === undefined) {
+    this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (newDirName: string) => {
+      if (newDirName === undefined) {
         return;
       }
 
-      const relativePath = this.getRightClickDirPath() + '/' + value;
+      const relativePath = this.getRightClickDirPath() + '/' + newDirName;
       this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
         () => {
-          this.insertDirItem(relativePath, value);
+          this.insertDirItem(relativePath, newDirName);
           this.globalComponentsService.loader.close();
           this.globalComponentsService.notification.openSuccess('Created new directory');
         },
@@ -264,6 +267,22 @@ export class NexlSourcesExplorerComponent {
         }
       );
     });
+  }
+
+  deleteItemInnerInner(targetItem: any) {
+    this.globalComponentsService.loader.open();
+    this.nexlSourcesService.deleteItem(targetItem.value.relativePath).subscribe(
+      () => {
+        this.tree.removeItem(targetItem);
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openSuccess('Deleted [' + this.itemType() + ']');
+        // todo : send message to tabs
+      },
+      (err) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
+      }
+    );
   }
 
   newFile() {
@@ -292,19 +311,42 @@ export class NexlSourcesExplorerComponent {
     return this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
   }
 
-  deleteItemInner() {
-    this.globalComponentsService.loader.open();
-    this.nexlSourcesService.deleteItem(this.rightClickSelectedElement.value.relativePath).subscribe(
-      () => {
-        this.tree.removeItem(this.rightClickSelectedElement);
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openSuccess('Deleted ' + this.itemType());
-      },
-      (err) => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
+  hasChanges(targetItem: any) {
+    if (targetItem.value.isDir !== true) {
+      return targetItem.value.isChanged === true;
+    }
+
+    const items = this.getSubItems(targetItem);
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index];
+      if (item.value !== null && item.value.isChanged === true) {
+        return true;
       }
-    );
+    }
+
+    return false;
+  }
+
+  deleteItemInner(targetItem: any) {
+    if (!this.hasChanges(targetItem)) {
+      this.deleteItemInnerInner(targetItem);
+      return;
+    }
+
+    // confirmation about unsaved data
+    const opts = {
+      title: 'Confirm delete',
+      label: 'Item you are trying to delete contains unsaved data. Delete anyway ?',
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed !== true) {
+          return;
+        }
+
+        this.deleteItemInnerInner(targetItem);
+      },
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
   }
 
   deleteItem() {
@@ -312,21 +354,26 @@ export class NexlSourcesExplorerComponent {
       return;
     }
 
-    const targetItem = this.rightClickSelectedElement.label;
+    const targetItem = this.rightClickSelectedElement;
 
-    let opts = {
+    const opts = {
       title: 'Confirm delete',
-      label: 'Are you sure to delete the [' + targetItem + '] ' + this.itemType() + ' ?',
+      label: 'Are you sure to delete the [' + targetItem.value.label + '] ' + this.itemType() + ' ?',
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {
           return;
         }
 
-        this.deleteItemInner();
+        this.deleteItemInner(targetItem);
       },
     };
 
     this.globalComponentsService.confirmBox.open(opts);
+  }
+
+  getSubItems(item) {
+    const result = [];
+    return result;
   }
 
   getFirstLevelChildren(item) {
@@ -355,5 +402,26 @@ export class NexlSourcesExplorerComponent {
       }
     }
     return result;
+  }
+
+  private handleLeftClick(target: any) {
+    this.popupMenu.close();
+
+    if (target === undefined) {
+      return;
+    }
+
+    let item: any = this.tree.getItem(target);
+    if (item.value.isDir === true) {
+      return;
+    }
+
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.OPEN_FILE,
+      data: {
+        relativePath: item.value.relativePath,
+        label: item.value.label
+      }
+    });
   }
 }

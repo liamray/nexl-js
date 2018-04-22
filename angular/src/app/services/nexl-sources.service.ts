@@ -19,9 +19,9 @@ export class NexlSourcesService {
     item.icon = item.value.isDir ? DIR_ICON : FILE_ICON;
   }
 
-  static makeEmptyDirItem(relativePath: string, label: string) {
+  static makeEmptyDirItem(relativePath: string, newDirName: string) {
     return {
-      label: label,
+      label: newDirName,
       icon: DIR_ICON,
       items: [
         {
@@ -31,6 +31,7 @@ export class NexlSourcesService {
       ],
       value: {
         relativePath: relativePath,
+        label: newDirName,
         mustLoadChildItems: true,
         isDir: true
       }

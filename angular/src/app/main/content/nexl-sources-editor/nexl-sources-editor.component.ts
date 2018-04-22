@@ -115,8 +115,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     );
   }
 
-  getId4(prefix: string) {
-    return prefix + this.idSeqNr;
+  makeId(data: any, prefix: string) {
+    return prefix + data.idSeqNr;
   }
 
   ngAfterViewInit(): void {
@@ -126,20 +126,20 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   makeTitle(data: any) {
-    const modified = '<span style="color:red;display: none;" id="' + this.getId4(TITLE_MODIFICATION_ICON) + '">*&nbsp;</span>';
-    const theTitle = '<span style="position:relative; top: -2px;" id="' + this.getId4(TITLE_TEXT) + '">' + data.label + '</span>';
-    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="/nexl/site/images/close-tab.png" id="' + this.getId4(TITLE_CLOSE_ICON) + '"/>';
+    const modified = '<span style="color:red;display: none;" id="' + this.makeId(data, TITLE_MODIFICATION_ICON) + '">*&nbsp;</span>';
+    const theTitle = '<span style="position:relative; top: -2px;" id="' + this.makeId(data, TITLE_TEXT) + '">' + data.label + '</span>';
+    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="/nexl/site/images/close-tab.png" id="' + this.makeId(data, TITLE_CLOSE_ICON) + '"/>';
     const attrs = {
-      id: this.getId4(TITLE_ID),
-      'id-seq-nr': this.idSeqNr
+      id: this.makeId(data, TITLE_ID),
+      'id-seq-nr': data.idSeqNr
     };
     return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
     const attrs = {
-      id: this.getId4(TAB_CONTENT),
-      'is-seq-nr': this.idSeqNr,
+      id: this.makeId(data, TAB_CONTENT),
+      'is-seq-nr': data.idSeqNr,
       'relative-path': data.relativePath
     };
 
@@ -170,13 +170,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   bindTitle(data: any) {
     // binding close action
-    $('#' + this.getId4(TITLE_CLOSE_ICON)).click((event) => {
+    $('#' + this.makeId(data, TITLE_CLOSE_ICON)).click((event) => {
       this.closeTab(event);
     });
 
     // binding tooltip
-    jqwidgets.createInstance($('#' + this.getId4(TITLE_ID)), 'jqxTooltip', {
-      content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.getId4(TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
+    jqwidgets.createInstance($('#' + this.makeId(data, TITLE_ID)), 'jqxTooltip', {
+      content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.makeId(data, TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
       position: 'mouse',
       closeOnClick: true,
       autoHide: true,
@@ -188,7 +188,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
 
     // binding click on tool tip
-    $('#' + this.getId4(TITLE_TOOLTIP)).click(() => {
+    $('#' + this.makeId(data, TITLE_TOOLTIP)).click(() => {
       this.messageService.sendMessage({
         type: MESSAGE_TYPE.SELECT_ITEM_IN_TREE,
         data: data.relativePath
@@ -197,7 +197,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   bindBody(data: any) {
-    const aceEditor = ace.edit(this.getId4(TAB_CONTENT));
+    const aceEditor = ace.edit(this.makeId(data, TAB_CONTENT));
 
     aceEditor.setOptions({
       fontSize: "10pt",
@@ -210,18 +210,25 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     aceEditor.resize();
 
     aceEditor.on("change", (event) => {
-      if ($('#' + this.getId4(TITLE_ID)).attr('is-changed') === 'true') {
+      if ($('#' + this.makeId(data, TITLE_ID)).attr('is-changed') === 'true') {
         return;
       }
 
-      $('#' + this.getId4(TITLE_MODIFICATION_ICON)).css('display', 'inline-block');
-      $('#' + this.getId4(TITLE_ID)).attr('is-changed', 'true');
+      $('#' + this.makeId(data, TITLE_MODIFICATION_ICON)).css('display', 'inline-block');
+      $('#' + this.makeId(data, TITLE_ID)).attr('is-changed', 'true');
+
+      // sending message to tree
+      this.messageService.sendMessage({
+        type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
+        data: data.relativePath
+      });
     });
 
   }
 
   openFileInner(data: any) {
     this.idSeqNr++;
+    data.idSeqNr = this.idSeqNr;
 
     const title = this.makeTitle(data);
     const body = this.makeBody(data);

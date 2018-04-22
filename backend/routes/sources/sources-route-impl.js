@@ -60,6 +60,7 @@ function makeDirItem(item, relativePath) {
 		items: CHILD_ITEM.slice(),
 		value: {
 			relativePath: relativePath,
+			label: item,
 			mustLoadChildItems: true,
 			isDir: true
 		}
@@ -71,6 +72,7 @@ function makeFileItem(item, relativePath) {
 		label: item,
 		value: {
 			relativePath: relativePath,
+			label: item,
 			mustLoadChildItems: false,
 			isDir: false
 		}
