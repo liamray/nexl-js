@@ -174,7 +174,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       this.closeTab(event);
     });
 
-    // binding tooltip action
+    // binding tooltip
     jqwidgets.createInstance($('#' + this.getId4(TITLE_ID)), 'jqxTooltip', {
       content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.getId4(TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
       position: 'mouse',
@@ -187,6 +187,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       height: '40px'
     });
 
+    // binding click on tool tip
     $('#' + this.getId4(TITLE_TOOLTIP)).click(() => {
       this.messageService.sendMessage({
         type: MESSAGE_TYPE.SELECT_ITEM_IN_TREE,
