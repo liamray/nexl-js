@@ -311,15 +311,39 @@ export class NexlSourcesExplorerComponent {
     return this.rightClickSelectedElement.value.isDir === true ? 'directory' : 'file';
   }
 
+  hasParent(item: any, targetItem: any) {
+    while (item !== null) {
+      if (item.parentElement !== null && item.parentElement.id === targetItem.id) {
+        return true;
+      }
+
+      item = this.tree.getItem(item.parentElement);
+    }
+
+    return false;
+  }
+
   hasChanges(targetItem: any) {
     if (targetItem.value.isDir !== true) {
       return targetItem.value.isChanged === true;
     }
 
-    const items = this.getSubItems(targetItem);
-    for (let index = 0; index < items.length; index++) {
-      const item = items[index];
-      if (item.value !== null && item.value.isChanged === true) {
+    const allItems: any[] = this.tree.getItems();
+    for (let index in allItems) {
+      let item = allItems[index];
+
+      // skip directories
+      if (item.value === null || item.value.isDir === true) {
+        continue;
+      }
+
+      // skip file if not changed
+      if (item.value.isChanged !== true) {
+        continue;
+      }
+
+      // file changed, but is the [item] file is a child of [targetItem] ?
+      if (this.hasParent(item, targetItem)) {
         return true;
       }
     }
@@ -369,11 +393,6 @@ export class NexlSourcesExplorerComponent {
     };
 
     this.globalComponentsService.confirmBox.open(opts);
-  }
-
-  getSubItems(item) {
-    const result = [];
-    return result;
   }
 
   getFirstLevelChildren(item) {
