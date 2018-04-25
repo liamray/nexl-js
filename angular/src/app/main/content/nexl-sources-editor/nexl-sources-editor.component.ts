@@ -79,22 +79,31 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.getAttribute(attrName);
   }
 
-  resolveTabByRelativePath(relativePath: string): number {
+  resolveTabInfoByRelativePath(relativePath: string): any {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       const path = this.resolveTabAttr(index, 'relative-path');
       if (path === relativePath) {
-        return index;
+        return {
+          id: this.resolveTabAttr(index, 'id'),
+          index: index,
+          relativePath: path,
+          idSeqNr: this.resolveTabAttr(index, 'id-seq-nr')
+        };
       }
     }
+  }
 
-    return -1;
+  resolveTabByRelativePath(relativePath: string): number {
+    const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
+    return tabInfo === undefined ? -1 : tabInfo.index;
   }
 
   openFile(data: any) {
     // is tab already opened ?
-    const openedTabIndex = this.resolveTabByRelativePath(data.relativePath);
-    if (openedTabIndex >= 0) {
-      this.nexlSourcesTabs.val(openedTabIndex + '');
+    const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
+    if (tabInfo !== undefined && tabInfo.index >= 0) {
+      this.nexlSourcesTabs.val(tabInfo.index + '');
+      ace.edit(this.makeId(tabInfo, TAB_CONTENT)).focus();
       return;
     }
 
@@ -139,7 +148,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   makeBody(data: any) {
     const attrs = {
       id: this.makeId(data, TAB_CONTENT),
-      'is-seq-nr': data.idSeqNr,
+      'id-seq-nr': data.idSeqNr,
       'relative-path': data.relativePath
     };
 
@@ -224,6 +233,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       });
     });
 
+    aceEditor.focus();
   }
 
   openFileInner(data: any) {
