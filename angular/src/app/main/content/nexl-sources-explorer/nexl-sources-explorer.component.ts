@@ -105,7 +105,7 @@ export class NexlSourcesExplorerComponent {
   }
 
   refreshTreeSource() {
-    this.nexlSourcesService.getNexlSources().subscribe(
+    this.nexlSourcesService.listNexlSources().subscribe(
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
@@ -233,7 +233,7 @@ export class NexlSourcesExplorerComponent {
     value.mustLoadChildItems = false;
     const $element = $(event.args.element);
     const child = $element.find('ul:first').children()[0];
-    this.nexlSourcesService.getNexlSources(value.relativePath).subscribe(
+    this.nexlSourcesService.listNexlSources(value.relativePath).subscribe(
       (data: any) => {
         this.tree.removeItem(child);
         this.tree.addTo(data, event.args.element);

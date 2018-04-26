@@ -145,7 +145,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.globalComponentsService.loader.open();
 
     // loading file content by relativePath
-    this.http.post({relativePath: data.relativePath}, '/sources/get-source-content', 'text').subscribe(
+    this.http.post({relativePath: data.relativePath}, '/sources/load-nexl-source', 'text').subscribe(
       (content: any) => {
         data.body = content.body;
         this.openFileInner(data);

@@ -125,18 +125,27 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 	);
 }
 
-function getSourceContent(relativePath) {
+function loadNexlSource(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
 			const nexlSourcesRootDir = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
-			const fullPath = path.join(nexlSourcesRootDir, relativePath);
 			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
 			return fsx.readFile(stuff.fullPath, {encoding: encoding});
 		}
 	);
 }
 
-function getNexlSources(relativePath) {
+function saveNexlSource(relativePath, content) {
+	return resolveFullPath(relativePath).then(
+		(stuff) => {
+			const nexlSourcesRootDir = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+			return fsx.writeFile(stuff.fullPath, content, {encoding: encoding});
+		}
+	);
+}
+
+function listNexlSources(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
 			return fsx.exists(stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]).then((isExists) => {
@@ -173,8 +182,9 @@ function deleteItem(relativePath) {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.getNexlSources = getNexlSources;
-module.exports.getSourceContent = getSourceContent;
+module.exports.listNexlSources = listNexlSources;
+module.exports.loadNexlSource = loadNexlSource;
+module.exports.saveNexlSource = saveNexlSource;
 module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 // --------------------------------------------------------------------------------

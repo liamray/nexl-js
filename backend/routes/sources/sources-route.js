@@ -10,6 +10,9 @@ const fsx = require('../../api/fsx');
 
 const router = express.Router();
 
+//////////////////////////////////////////////////////////////////////////////
+// delete-item
+//////////////////////////////////////////////////////////////////////////////
 router.post('/delete-item', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
 
@@ -35,6 +38,9 @@ router.post('/delete-item', function (req, res, next) {
 	});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// make-dir
+//////////////////////////////////////////////////////////////////////////////
 router.post('/make-dir', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
 
@@ -60,24 +66,10 @@ router.post('/make-dir', function (req, res, next) {
 	});
 });
 
-router.post('/get-source-content', function (req, res, next) {
-	const relativePath = req.body['relativePath'] || path.sep;
-	const username = utils.getLoggedInUsername(req);
-
-	security.hasReadPermission(username).then((hasPermission) => {
-		if (!hasPermission) {
-			logger.log.error('The [%s] user doesn\'t have read permissions to get nexl source content', username);
-			return Promise.reject('No read permissions');
-		}
-
-		return sources.getSourceContent(relativePath).then(data => res.send(data));
-	}).catch((err) => {
-		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
-		utils.sendError(res, err);
-	});
-});
-
-router.post('/get-nexl-sources', function (req, res, next) {
+//////////////////////////////////////////////////////////////////////////////
+// list-nexl-source
+//////////////////////////////////////////////////////////////////////////////
+router.post('/list-nexl-sources', function (req, res, next) {
 	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
 
@@ -87,9 +79,58 @@ router.post('/get-nexl-sources', function (req, res, next) {
 			return Promise.reject('No read permissions');
 		}
 
-		return sources.getNexlSources(relativePath).then(data => res.send(data));
+		return sources.listNexlSources(relativePath).then(data => res.send(data));
 	}).catch((err) => {
 		logger.log.error('Failed to list nexl sources for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// load-nexl-source
+//////////////////////////////////////////////////////////////////////////////
+router.post('/load-nexl-source', function (req, res, next) {
+	const relativePath = req.body['relativePath'] || path.sep;
+	const username = utils.getLoggedInUsername(req);
+
+	security.hasReadPermission(username).then((hasPermission) => {
+		if (!hasPermission) {
+			logger.log.error('The [%s] user doesn\'t have read permissions to load nexl source', username);
+			return Promise.reject('No read permissions');
+		}
+
+		return sources.loadNexlSource(relativePath).then(data => res.send(data));
+	}).catch((err) => {
+		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		utils.sendError(res, err);
+	});
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// save-nexl-source
+//////////////////////////////////////////////////////////////////////////////
+router.post('/save-nexl-source', function (req, res, next) {
+	let relativePath = req.body['relativePath'];
+	let content = req.body['content'];
+
+	// validating ( must not empty string )
+	if (!j79.isString(relativePath) || relativePath.length < 1) {
+		logger.log.error('Invalid relativePath');
+		utils.sendError(res, 'Invalid relativePath');
+		return;
+	}
+
+	const username = utils.getLoggedInUsername(req);
+
+	security.hasWritePermission(username).then((hasPermission) => {
+		if (!hasPermission) {
+			logger.log.error('The [%s] user doesn\'t have write permissions to save nexl source items', username);
+			return Promise.reject('No write permissions');
+		}
+
+		return sources.saveNexlSource(relativePath, data).then(() => res.send({}));
+	}).catch((err) => {
+		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
 		utils.sendError(res, err);
 	});
 });

@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
-const GET_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/get-nexl-sources');
+const LIST_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/list-nexl-sources');
 const MAKE_DIR = UtilsService.prefixUrl('/sources/make-dir');
 const DELETE_ITEM = UtilsService.prefixUrl('/sources/delete-item');
 
@@ -44,11 +44,11 @@ export class NexlSourcesService {
     });
   }
 
-  getNexlSources(relativePath?: string) {
+  listNexlSources(relativePath?: string) {
     const params = {
       relativePath: relativePath || '/'
     };
-    return this.httpClient.post<any>(GET_NEXL_SOURCES_URL, params).map(
+    return this.httpClient.post<any>(LIST_NEXL_SOURCES_URL, params).map(
       (data) => {
         NexlSourcesService.substIcons(data);
         return data;
