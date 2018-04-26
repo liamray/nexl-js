@@ -53,6 +53,42 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.resizeAce();
         return;
       }
+
+      case MESSAGE_TYPE.CLOSE_DELETED_TABS: {
+        this.closeDeletedTabs(message.data);
+        return;
+      }
+    }
+  }
+
+  closeDeletedTabs4Dir(relativePath: string) {
+    // adding slash to the end
+    relativePath += relativePath[0];
+
+    const tabsLength = this.nexlSourcesTabs.length();
+    for (let index = tabsLength - 1; index >= 0; index--) {
+      if (this.resolveTabAttr(index, 'relative-path').indexOf(relativePath) === 0) {
+        const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+        this.closeTabInner(idSeqNr);
+      }
+    }
+  }
+
+  closeDeletedTabs4File(relativePath: string) {
+    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      if (this.resolveTabAttr(index, 'relative-path') === relativePath) {
+        const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+        this.closeTabInner(idSeqNr);
+        return;
+      }
+    }
+  }
+
+  closeDeletedTabs(data: any) {
+    if (data.isDir === true) {
+      this.closeDeletedTabs4Dir(data.relativePath);
+    } else {
+      this.closeDeletedTabs4File(data.relativePath);
     }
   }
 
@@ -103,7 +139,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
     if (tabInfo !== undefined && tabInfo.index >= 0) {
       this.nexlSourcesTabs.val(tabInfo.index + '');
-      ace.edit(this.makeId(tabInfo, TAB_CONTENT)).focus();
       return;
     }
 
@@ -232,8 +267,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         data: data.relativePath
       });
     });
-
-    aceEditor.focus();
   }
 
   openFileInner(data: any) {
@@ -246,5 +279,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     this.bindTitle(data);
     this.bindBody(data);
+  }
+
+  onTabSelect(event: any) {
+    const idSeqNr = this.resolveTabAttr(event.args.item, 'id-seq-nr');
+    ace.edit(TAB_CONTENT + idSeqNr).focus();
   }
 }

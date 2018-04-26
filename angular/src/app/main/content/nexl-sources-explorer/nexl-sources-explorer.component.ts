@@ -269,14 +269,22 @@ export class NexlSourcesExplorerComponent {
     });
   }
 
+  closeDeletedTabs(itemValue: any) {
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.CLOSE_DELETED_TABS,
+      data: itemValue
+    });
+
+  }
+
   deleteItemInnerInner(targetItem: any) {
     this.globalComponentsService.loader.open();
     this.nexlSourcesService.deleteItem(targetItem.value.relativePath).subscribe(
       () => {
         this.tree.removeItem(targetItem);
+        this.closeDeletedTabs(targetItem.value);
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Deleted [' + this.itemType() + ']');
-        // todo : send message to tabs
       },
       (err) => {
         this.globalComponentsService.loader.close();
