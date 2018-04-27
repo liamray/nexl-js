@@ -262,6 +262,23 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
+  saveNexlSource() {
+    if (this.rightClickSelectedElement === undefined) {
+      return;
+    }
+
+    if (this.rightClickSelectedElement.value !== null && this.rightClickSelectedElement.value.isDir === true) {
+      return;
+    }
+
+    const relativePath = this.rightClickSelectedElement.value.relativePath;
+
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.SAVE_NEXL_SOURCE,
+      relativePath: relativePath
+    });
+  }
+
   newDir() {
     this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (newDirName: string) => {
       if (newDirName === undefined) {

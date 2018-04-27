@@ -24,7 +24,7 @@ export class MainMenuComponent implements AfterViewInit {
     this.mainMenu.disable('main-menu-settings', true);
   }
 
-  saveTab() {
+  saveNexlSource() {
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.SAVE_NEXL_SOURCE
     });
