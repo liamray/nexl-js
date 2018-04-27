@@ -460,7 +460,7 @@ export class NexlSourcesExplorerComponent {
     }
 
     this.messageService.sendMessage({
-      type: MESSAGE_TYPE.OPEN_FILE,
+      type: MESSAGE_TYPE.LOAD_NEXL_SOURCE,
       data: {
         relativePath: item.value.relativePath,
         label: item.value.label

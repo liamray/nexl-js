@@ -44,8 +44,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.OPEN_FILE: {
-        this.openFile(message.data);
+      case MESSAGE_TYPE.LOAD_NEXL_SOURCE: {
+        this.loadNexlSource(message.data);
         return;
       }
 
@@ -190,7 +190,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return tabInfo === undefined ? -1 : tabInfo.index;
   }
 
-  openFile(data: any) {
+  loadNexlSource(data: any) {
     // is tab already opened ?
     const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
     if (tabInfo !== undefined && tabInfo.index >= 0) {
@@ -204,7 +204,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.http.post({relativePath: data.relativePath}, '/sources/load-nexl-source', 'text').subscribe(
       (content: any) => {
         data.body = content.body;
-        this.openFileInner(data);
+        this.loadNexlSourceInner(data);
         this.globalComponentsService.loader.close();
       },
       (err) => {
@@ -328,13 +328,14 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
   }
 
-  openFileInner(data: any) {
+  loadNexlSourceInner(data: any) {
     this.idSeqNr++;
     data.idSeqNr = this.idSeqNr;
 
     const title = this.makeTitle(data);
     const body = this.makeBody(data);
     this.nexlSourcesTabs.addLast(title, body);
+    this.sendTabsCountMsg();
 
     this.bindTitle(data);
     this.bindBody(data);
@@ -343,5 +344,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   onTabSelect(event: any) {
     const idSeqNr = this.resolveTabAttr(event.args.item, 'id-seq-nr');
     ace.edit(TAB_CONTENT + idSeqNr).focus();
+  }
+
+  sendTabsCountMsg() {
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.TABS_COUNT_CHANGED,
+      data: this.nexlSourcesTabs.length()
+    });
   }
 }
