@@ -47,14 +47,20 @@ export class NexlSourcesExplorerComponent {
     }
   }
 
-  tabContentChanged(relativePath: string) {
-    const item = this.findItemByRelativePath(relativePath);
+  tabContentChanged(data: any) {
+    const item = this.findItemByRelativePath(data.relativePath);
     if (item === undefined) {
       return;
     }
 
-    item.value.isChanged = true;
-    item.label = item.value.label + '<span style="color: red">&nbsp;*</span>';
+    item.value.isChanged = data.isChanged;
+
+    if (item.value.isChanged) {
+      item.label = item.value.label + '<span style="color: red">&nbsp;*</span>';
+    } else {
+      item.label = item.value.label;
+    }
+
     this.tree.updateItem(item, item);
   }
 
@@ -86,14 +92,8 @@ export class NexlSourcesExplorerComponent {
     this.tree.selectItem(item);
   }
 
-  authChanged(status: any) {
-    // nothing changed, just skip it
-    if (status.hasReadPermission === this.hasReadPermission && status.hasWritePermission === this.hasWritePermission) {
-      return;
-    }
-
+  readPermissionChanged(status: any) {
     this.hasReadPermission = status.hasReadPermission;
-    this.hasWritePermission = status.hasWritePermission;
 
     if (!this.hasReadPermission) {
       this.treeSource = [];
@@ -102,6 +102,22 @@ export class NexlSourcesExplorerComponent {
     }
 
     this.refreshTreeSource();
+  }
+
+  writePermissionChanged(status: any) {
+    this.hasWritePermission = status.hasWritePermission;
+  }
+
+  authChanged(status: any) {
+    if (status.hasReadPermission !== this.hasReadPermission) {
+      this.readPermissionChanged(status);
+      return;
+    }
+
+    if (status.hasWritePermission !== this.hasWritePermission) {
+      this.writePermissionChanged(status);
+      return;
+    }
   }
 
   refreshTreeSource() {

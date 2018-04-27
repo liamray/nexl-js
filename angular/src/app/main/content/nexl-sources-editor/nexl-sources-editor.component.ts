@@ -58,7 +58,63 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.closeDeletedTabs(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.SAVE_NEXL_SOURCE: {
+        this.saveNexlSource(message.data);
+      }
     }
+  }
+
+  markFileAsUnchanged(tabInfo: any) {
+    $('#' + TITLE_MODIFICATION_ICON + tabInfo.idSeqNr).css('display', 'none');
+    $('#' + TITLE_ID + tabInfo.idSeqNr).attr('is-changed', 'false');
+
+    // sending message to tree
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
+      data: {
+        isChanged: false,
+        relativePath: tabInfo.relativePath
+      }
+    });
+
+  }
+
+  saveNexlSource(data: string) {
+    // show save confirmation if needed
+    // then call saveNexlSourceInner
+    this.saveNexlSourceInner(data);
+  }
+
+  saveNexlSourceInner(data: string) {
+    let relativePath = data;
+
+    if (relativePath === undefined) {
+      const tabNr = this.nexlSourcesTabs.val();
+      if (tabNr < 0) {
+        return;
+      }
+
+      relativePath = this.resolveTabAttr(tabNr, 'relative-path');
+    }
+
+    const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
+    const content = ace.edit(TAB_CONTENT + tabInfo.idSeqNr).getValue();
+
+    this.globalComponentsService.loader.open();
+
+    this.http.post({relativePath: relativePath, content: content}, '/sources/save-nexl-source', 'text').subscribe(
+      (content: any) => {
+        this.globalComponentsService.notification.openSuccess('File saved !');
+        this.globalComponentsService.loader.close();
+        this.markFileAsUnchanged(tabInfo);
+      },
+      (err) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openError('Failed to save nexl source\nReason : ' + err.statusText);
+        console.log(err);
+      }
+    );
   }
 
   closeDeletedTabs4Dir(relativePath: string) {
@@ -195,7 +251,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // destroying tooltip
     jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
     // destroying ace
-    const aceEditor = ace.edit(TAB_CONTENT + idSeqNr).destroy();
+    ace.edit(TAB_CONTENT + idSeqNr).destroy();
     // removing tab
     this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
   }
@@ -264,7 +320,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       // sending message to tree
       this.messageService.sendMessage({
         type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
-        data: data.relativePath
+        data: {
+          isChanged: true,
+          relativePath: data.relativePath
+        }
       });
     });
   }

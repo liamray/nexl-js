@@ -128,7 +128,7 @@ router.post('/save-nexl-source', function (req, res, next) {
 			return Promise.reject('No write permissions');
 		}
 
-		return sources.saveNexlSource(relativePath, data).then(() => res.send({}));
+		return sources.saveNexlSource(relativePath, content).then(() => res.send({}));
 	}).catch((err) => {
 		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
 		utils.sendError(res, err);

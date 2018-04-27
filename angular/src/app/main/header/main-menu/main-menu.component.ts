@@ -23,4 +23,10 @@ export class MainMenuComponent implements AfterViewInit {
     this.mainMenu.disable('main-menu-permissions', true);
     this.mainMenu.disable('main-menu-settings', true);
   }
+
+  saveTab() {
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.SAVE_NEXL_SOURCE
+    });
+  }
 }
