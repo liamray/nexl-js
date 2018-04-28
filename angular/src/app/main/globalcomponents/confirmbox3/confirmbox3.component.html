@@ -1,0 +1,59 @@
+<jqxWindow #window
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="500"
+           [height]="100"
+           (onClose)="onClose()"
+           [height]="100"
+           [initContent]="initContent"
+           (onOpen)="onOpen()"
+>
+
+  <div class="container">
+    <div style="text-align: center;">{{ label }}</div>
+
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="onCancel()"
+                   [imgSrc]='"./nexl/site/images/close.png"'
+                   [auto-create]="false"
+                   #cancelButton>
+          Cancel
+        </jqxButton>
+      </div>
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="onNo()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/no.png"'
+                   #noButton
+        >
+          No
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="onYes()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/ok.png"'
+                   #yesButton
+        >
+          Yes
+        </jqxButton>
+      </div>
+    </div>
+
+  </div>
+</jqxWindow>

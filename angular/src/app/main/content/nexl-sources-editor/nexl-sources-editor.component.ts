@@ -4,6 +4,7 @@ import {HttpRequestService} from "../../../services/http.requests.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import * as $ from 'jquery';
+import {CONFIRMATION_BOX_OPTS} from "../../globalcomponents/confirmbox3/confirmbox3.component";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -80,15 +81,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   }
 
-  saveNexlSource(data: string) {
+  saveNexlSource(relativePath: string) {
     // show save confirmation if needed
     // then call saveNexlSourceInner
-    this.saveNexlSourceInner(data);
+    this.saveNexlSourceInner(relativePath);
   }
 
-  saveNexlSourceInner(data: string) {
-    let relativePath = data;
-
+  saveNexlSourceInner(relativePath: string, callback?: (boolean) => void) {
     if (relativePath === undefined) {
       const tabNr = this.nexlSourcesTabs.val();
       if (tabNr < 0) {
@@ -108,11 +107,17 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.globalComponentsService.notification.openSuccess('File saved !');
         this.globalComponentsService.loader.close();
         this.markFileAsUnchanged(tabInfo);
+        if (callback !== undefined) {
+          callback(true);
+        }
       },
       (err) => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openError('Failed to save nexl source\nReason : ' + err.statusText);
         console.log(err);
+        if (callback !== undefined) {
+          callback(false);
+        }
       }
     );
   }
@@ -258,6 +263,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeTab(event: any) {
     const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
+    const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
 
     const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
     if (!isChanged) {
@@ -265,7 +271,29 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       return;
     }
 
-    alert('Unsaved data !');
+    const opts = {
+      label: 'Do you want to save the changes ?',
+      title: 'Tab close confirmation',
+      callback: (confirmation: CONFIRMATION_BOX_OPTS) => {
+        if (confirmation === CONFIRMATION_BOX_OPTS.CANCEL) {
+          return;
+        }
+        if (confirmation === CONFIRMATION_BOX_OPTS.NO) {
+          const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
+          this.markFileAsUnchanged(tabInfo);
+          this.closeTabInner(idSeqNr);
+          return;
+        }
+
+        this.saveNexlSourceInner(relativePath, (isOk: boolean) => {
+          if (isOk === true) {
+            this.closeTabInner(idSeqNr);
+          }
+        });
+      }
+    };
+
+    this.globalComponentsService.confirmBox3.open(opts);
   }
 
   bindTitle(data: any) {
