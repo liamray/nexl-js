@@ -1,4 +1,4 @@
-export const SAVE_FILE_CONFIRM = 'nexl.confirmations.save';
+export const SAVE_NEXL_SOURCE_CONFIRM = 'nexl.confirmations.save-nexl-source';
 export const CREDENTIALS = 'nexl.credentials';
 
 export class LocalStorageService {

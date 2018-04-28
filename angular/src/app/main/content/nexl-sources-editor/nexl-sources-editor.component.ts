@@ -5,6 +5,7 @@ import {GlobalComponentsService} from "../../../services/global-components.servi
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import * as $ from 'jquery';
 import {CONFIRMATION_BOX_OPTS} from "../../globalcomponents/confirmbox3/confirmbox3.component";
+import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../../services/localstorage.service";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -82,9 +83,25 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   saveNexlSource(relativePath: string) {
-    // show save confirmation if needed
-    // then call saveNexlSourceInner
-    this.saveNexlSourceInner(relativePath);
+    if (LocalStorageService.loadRaw(SAVE_NEXL_SOURCE_CONFIRM) === false.toString()) {
+      this.saveNexlSourceInner(relativePath);
+      return;
+    }
+
+    // confirming...
+    const opts = {
+      title: 'Confirm save',
+      label: 'Please note you can evaluate nexl expression without saving a file. Are you sure you want to save a file ?',
+      checkBoxText: 'Don\'t show it again',
+      callback: (callbackData: any) => {
+        LocalStorageService.storeRaw(SAVE_NEXL_SOURCE_CONFIRM, !callbackData.checkBoxVal);
+        if (callbackData.isConfirmed === true) {
+          this.saveNexlSourceInner(relativePath);
+        }
+      },
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
   }
 
   saveNexlSourceInner(relativePath: string, callback?: (boolean) => void) {

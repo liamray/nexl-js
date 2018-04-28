@@ -51,10 +51,10 @@ export class ConfirmBoxComponent implements OnInit {
     this.window.title(opts.title);
 
     if (opts.checkBoxText !== undefined) {
-      this.window.height(130);
+      this.window.height(150);
       this.checkBox.elementRef.nativeElement.style.display = 'block';
     } else {
-      this.window.height(100);
+      this.window.height(120);
       this.checkBox.elementRef.nativeElement.style.display = 'none';
     }
 
