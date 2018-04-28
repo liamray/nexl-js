@@ -289,28 +289,18 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
 
     const opts = {
-      label: 'Do you want to save the changes ?',
-      title: 'Tab close confirmation',
-      callback: (confirmation: CONFIRMATION_BOX_OPTS) => {
-        if (confirmation === CONFIRMATION_BOX_OPTS.CANCEL) {
-          return;
-        }
-        if (confirmation === CONFIRMATION_BOX_OPTS.NO) {
+      label: 'The [' + relativePath + '] file contains unsaved data. Are you sure you want to close it and lose all changes ?',
+      title: 'File close confirmation',
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed === true) {
           const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
           this.markFileAsUnchanged(tabInfo);
           this.closeTabInner(idSeqNr);
-          return;
         }
-
-        this.saveNexlSourceInner(relativePath, (isOk: boolean) => {
-          if (isOk === true) {
-            this.closeTabInner(idSeqNr);
-          }
-        });
       }
     };
 
-    this.globalComponentsService.confirmBox3.open(opts);
+    this.globalComponentsService.confirmBox.open(opts);
   }
 
   bindTitle(data: any) {

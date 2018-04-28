@@ -55,7 +55,6 @@ import {NotificationComponent} from './globalcomponents/notification/notificatio
 import {InputBoxComponent} from './globalcomponents/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./globalcomponents/confirmbox/confirmbox.component";
 import {LocalStorageService} from "../services/localstorage.service";
-import {ConfirmBox3Component} from "./globalcomponents/confirmbox3/confirmbox3.component";
 
 @NgModule({
   declarations: [
@@ -102,8 +101,7 @@ import {ConfirmBox3Component} from "./globalcomponents/confirmbox3/confirmbox3.c
     RegisterComponent,
     NotificationComponent,
     InputBoxComponent,
-    ConfirmBoxComponent,
-    ConfirmBox3Component
+    ConfirmBoxComponent
   ],
 
   imports: [
