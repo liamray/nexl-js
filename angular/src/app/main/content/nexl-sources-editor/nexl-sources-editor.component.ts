@@ -74,7 +74,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   closeAllTabs() {
-    let promise = Promise.resolve();
+    let promise: any = Promise.resolve();
 
     for (let tabNr = this.nexlSourcesTabs.length() - 1; tabNr >= 0; tabNr--) {
       const idSeqNr = this.resolveTabAttr(tabNr, 'id-seq-nr');
