@@ -63,10 +63,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.SAVE_NEXL_SOURCE: {
         this.saveNexlSource(message.data);
+        return;
       }
 
       case MESSAGE_TYPE.CLOSE_ALL_TABS: {
         this.closeAllTabs();
+        return;
       }
     }
   }
