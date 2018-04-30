@@ -64,8 +64,22 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       case MESSAGE_TYPE.SAVE_NEXL_SOURCE: {
         this.saveNexlSource(message.data);
       }
+
+      case MESSAGE_TYPE.CLOSE_ALL_TABS: {
+        this.closeAllTabs();
+      }
     }
   }
+
+  closeAllTabs() {
+    let promise = Promise.resolve();
+
+    for (let tabNr = this.nexlSourcesTabs.length() - 1; tabNr >= 0; tabNr--) {
+      const idSeqNr = this.resolveTabAttr(tabNr, 'id-seq-nr');
+      promise = promise.then(() => this.closeTabInner(idSeqNr));
+    }
+  }
+
 
   markFileAsUnchanged(tabInfo: any) {
     $('#' + TITLE_MODIFICATION_ICON + tabInfo.idSeqNr).css('display', 'none');
@@ -147,7 +161,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     for (let index = tabsLength - 1; index >= 0; index--) {
       if (this.resolveTabAttr(index, 'relative-path').indexOf(relativePath) === 0) {
         const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
-        this.closeTabInner(idSeqNr);
+        this.closeTabInnerInner(idSeqNr);
       }
     }
   }
@@ -156,7 +170,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       if (this.resolveTabAttr(index, 'relative-path') === relativePath) {
         const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
-        this.closeTabInner(idSeqNr);
+        this.closeTabInnerInner(idSeqNr);
         return;
       }
     }
@@ -268,7 +282,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
-  closeTabInner(idSeqNr: number) {
+  closeTabInnerInner(idSeqNr: number) {
     const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
     // destroying tooltip
     jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
@@ -280,27 +294,36 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeTab(event: any) {
     const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
-    const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+    this.closeTabInner(idSeqNr).then();
+  }
 
-    const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
-    if (!isChanged) {
-      this.closeTabInner(idSeqNr);
-      return;
-    }
+  closeTabInner(idSeqNr: number) {
+    return new Promise((resolve, reject) => {
+      const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
 
-    const opts = {
-      label: 'The [' + relativePath + '] file contains unsaved data. Are you sure you want to close it and lose all changes ?',
-      title: 'File close confirmation',
-      callback: (callbackData: any) => {
-        if (callbackData.isConfirmed === true) {
-          const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
-          this.markFileAsUnchanged(tabInfo);
-          this.closeTabInner(idSeqNr);
-        }
+      const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
+      if (!isChanged) {
+        this.closeTabInnerInner(idSeqNr);
+        resolve();
+        return;
       }
-    };
 
-    this.globalComponentsService.confirmBox.open(opts);
+      const opts = {
+        label: 'The [' + relativePath + '] file contains unsaved data. Are you sure you want to close it and lose all changes ?',
+        title: 'File close confirmation',
+        callback: (callbackData: any) => {
+          if (callbackData.isConfirmed === true) {
+            const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
+            this.markFileAsUnchanged(tabInfo);
+            this.closeTabInnerInner(idSeqNr);
+          }
+
+          resolve();
+        }
+      };
+
+      this.globalComponentsService.confirmBox.open(opts);
+    });
   }
 
   bindTitle(data: any) {

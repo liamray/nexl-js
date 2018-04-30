@@ -51,4 +51,10 @@ export class MainMenuComponent implements AfterViewInit {
       type: MESSAGE_TYPE.SAVE_NEXL_SOURCE
     });
   }
+
+  closeAllTabs() {
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.CLOSE_ALL_TABS
+    });
+  }
 }
