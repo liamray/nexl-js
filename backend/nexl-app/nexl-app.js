@@ -198,17 +198,17 @@ class NexlApp {
 	}
 
 	startHTTPS(settings) {
-		this.httspBinding = settings[confMgmt.SETTINGS.HTTPS_BINDING];
+		this.httpsBinding = settings[confMgmt.SETTINGS.HTTPS_BINDING];
 		this.httpsPort = settings[confMgmt.SETTINGS.HTTPS_PORT];
 		this.sslCert = settings[confMgmt.SETTINGS.SSL_CERT_LOCATION];
 		this.sslKey = settings[confMgmt.SETTINGS.SSL_KEY_LOCATION];
 
-		if (utils.isEmptyStr(this.httspBinding) && utils.isEmptyStr(this.httpsPort) && utils.isEmptyStr(this.sslCert) && utils.isEmptyStr(this.sslKey)) {
+		if (utils.isEmptyStr(this.httpsBinding) && utils.isEmptyStr(this.httpsPort) && utils.isEmptyStr(this.sslCert) && utils.isEmptyStr(this.sslKey)) {
 			logger.log.error('HTTPS listener will not be started. To start HTTPS listener provide the following settings : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.NEXL_HOME_DIR);
 			return;
 		}
 
-		if (utils.isNotEmptyStr(this.httspBinding) && utils.isNotEmptyStr(this.httpsPort) && utils.isNotEmptyStr(this.sslCert) && utils.isNotEmptyStr(this.sslKey)) {
+		if (utils.isNotEmptyStr(this.httpsBinding) && utils.isNotEmptyStr(this.httpsPort) && utils.isNotEmptyStr(this.sslCert) && utils.isNotEmptyStr(this.sslKey)) {
 			this.startHTTPSInner();
 			return;
 		}
