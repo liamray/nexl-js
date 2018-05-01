@@ -276,7 +276,7 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
-      const relativePath = this.getRightClickDirPath() + NexlSourcesService.getSlash() + newDirName;
+      const relativePath = this.getRightClickDirPath() + NexlSourcesService.SLASH + newDirName;
       this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
@@ -317,21 +317,21 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
-  insertFileItem(relativePath: string, newFileName: string) {
-    let item = NexlSourcesService.makeNewFileItem(relativePath, newFileName);
+  insertFileItem(item) {
     this.insertFileItemInner(item);
 
-    const allItems = this.tree.getItems();
-
     // searching for new added item in tree
+    const allItems = this.tree.getItems();
     allItems.forEach((treeItem: any) => {
       if (treeItem.value !== null && treeItem.value.relativePath === item.value.relativePath) {
         // expanding
         this.expandItemWrapper(treeItem);
         // selecting
         this.tree.selectItem(treeItem);
+        // marking as changed
+        this.tabContentChanged(item.value);
+
         // opening a new tab
-        // ...
         return;
       }
     });
@@ -382,17 +382,21 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
-      const relativePath = this.getRightClickDirPath() + NexlSourcesService.getSlash() + newFileName;
+      let item = NexlSourcesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+      if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
+        this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] is already exists');
+        return;
+      }
 
       // is item still not expanded ?
       if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
         this.expandInner(this.rightClickSelectedElement.element, () => {
-          this.insertFileItem(relativePath, newFileName);
+          this.insertFileItem(item);
         });
         return;
       }
 
-      this.insertFileItem(relativePath, newFileName);
+      this.insertFileItem(item);
     });
   }
 

@@ -79,7 +79,12 @@ router.post('/list-nexl-sources', function (req, res, next) {
 			return Promise.reject('No read permissions');
 		}
 
-		return sources.listNexlSources(relativePath).then(data => res.send(data));
+		return sources.listNexlSources(relativePath).then(data => {
+			res.send({
+				items: data,
+				slash: path.sep
+			});
+		});
 	}).catch((err) => {
 		logger.log.error('Failed to list nexl sources for [%s] user. Reason : [%s]', username, err);
 		utils.sendError(res, err);
