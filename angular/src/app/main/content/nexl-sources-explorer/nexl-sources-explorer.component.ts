@@ -134,12 +134,10 @@ export class NexlSourcesExplorerComponent {
   authChanged(status: any) {
     if (status.hasReadPermission !== this.hasReadPermission) {
       this.readPermissionChanged(status);
-      return;
     }
 
     if (status.hasWritePermission !== this.hasWritePermission) {
       this.writePermissionChanged(status);
-      return;
     }
   }
 
@@ -294,6 +292,11 @@ export class NexlSourcesExplorerComponent {
   }
 
   newDir() {
+    if ( this.hasWritePermission !== true ) {
+      this.globalComponentsService.notification.openError('No write permissions to create a directory');
+      return;
+    }
+
     this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (newDirName: string) => {
       if (newDirName === undefined) {
         return;
@@ -413,6 +416,11 @@ export class NexlSourcesExplorerComponent {
 
 
   newFile() {
+    if ( this.hasWritePermission !== true ) {
+      this.globalComponentsService.notification.openError('No write permissions to create a file');
+      return;
+    }
+
     this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (newFileName: string) => {
       if (newFileName === undefined || newFileName.length < 1) {
         return;
