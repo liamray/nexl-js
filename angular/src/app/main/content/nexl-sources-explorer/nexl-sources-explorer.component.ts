@@ -45,6 +45,18 @@ export class NexlSourcesExplorerComponent {
         this.tabContentChanged(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.REMOVE_FILE_FROM_TREE: {
+        this.removeFileFromTree(message.data);
+        return;
+      }
+    }
+  }
+
+  removeFileFromTree(relativePath: string) {
+    let item = this.findItemByRelativePath(relativePath);
+    if (item !== undefined) {
+      this.tree.removeItem(item);
     }
   }
 
@@ -328,7 +340,7 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
-  insertFileItem(item) {
+  insertFileItem(item, text?: string) {
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
       this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] is already exists');
       return;
@@ -348,6 +360,14 @@ export class NexlSourcesExplorerComponent {
         this.tabContentChanged(item.value);
 
         // opening a new tab
+        this.messageService.sendMessage({
+          type: MESSAGE_TYPE.CREATE_NEXL_SOURCE,
+          data: {
+            relativePath: item.value.relativePath,
+            label: item.value.label,
+            body: text === undefined ? '' : text
+          }
+        });
         return;
       }
     });

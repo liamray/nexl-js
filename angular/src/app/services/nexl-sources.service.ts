@@ -27,7 +27,6 @@ export class NexlSourcesService {
         relativePath: relativePath + UtilsService.SERVER_INFO.SLASH + newFileName,
         label: newFileName,
         isDir: false,
-        newUnsavedFile: true,
         isChanged: true
       }
     };

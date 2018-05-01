@@ -4,7 +4,6 @@ import {HttpRequestService} from "../../../services/http.requests.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import * as $ from 'jquery';
-import {CONFIRMATION_BOX_OPTS} from "../../globalcomponents/confirmbox3/confirmbox3.component";
 import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../../services/localstorage.service";
 
 const TAB_CONTENT = 'tabs-content-';
@@ -13,6 +12,8 @@ const TITLE_TOOLTIP = 'tabs-title-tooltip-';
 const TITLE_TEXT = 'tabs-title-text-';
 const TITLE_MODIFICATION_ICON = 'tabs-title-modification-icon-';
 const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
+const ATTR_IS_NEW_FILE = 'is-new-file';
+
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -70,7 +71,18 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.closeAllTabs();
         return;
       }
+
+      case MESSAGE_TYPE.CREATE_NEXL_SOURCE: {
+        this.createNexlSource(message.data);
+        return;
+      }
     }
+  }
+
+  createNexlSource(data) {
+    const nexlSource = this.loadNexlSourceInner(data);
+    this.changeFileStatus(nexlSource, true);
+    $('#' + TITLE_ID + nexlSource.idSeqNr).attr(ATTR_IS_NEW_FILE, true);
   }
 
   closeAllTabs() {
@@ -82,20 +94,18 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
   }
 
-
-  markFileAsUnchanged(tabInfo: any) {
-    $('#' + TITLE_MODIFICATION_ICON + tabInfo.idSeqNr).css('display', 'none');
-    $('#' + TITLE_ID + tabInfo.idSeqNr).attr('is-changed', 'false');
+  changeFileStatus(tabInfo: any, isChanged: boolean) {
+    $('#' + TITLE_MODIFICATION_ICON + tabInfo.idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
+    $('#' + TITLE_ID + tabInfo.idSeqNr).attr('is-changed', isChanged);
 
     // sending message to tree
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
       data: {
-        isChanged: false,
+        isChanged: isChanged,
         relativePath: tabInfo.relativePath
       }
     });
-
   }
 
   saveNexlSource(relativePath: string) {
@@ -139,7 +149,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       (content: any) => {
         this.globalComponentsService.notification.openSuccess('File saved !');
         this.globalComponentsService.loader.close();
-        this.markFileAsUnchanged(tabInfo);
+        this.changeFileStatus(tabInfo, false);
+        $('#' + TITLE_ID + tabInfo.idSeqNr).attr(ATTR_IS_NEW_FILE, false);
         if (callback !== undefined) {
           callback(true);
         }
@@ -286,6 +297,16 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeTabInnerInner(idSeqNr: number) {
     const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+
+    // ATTR_IS_NEW_FILE means is the file was created but hasn't ever saved. In this case it must be removed from the tree
+    const isNewFile = $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE);
+    if (isNewFile === true.toString()) {
+      this.messageService.sendMessage({
+        type: MESSAGE_TYPE.REMOVE_FILE_FROM_TREE,
+        data: relativePath
+      });
+    }
+
     // destroying tooltip
     jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
     // destroying ace
@@ -316,7 +337,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         callback: (callbackData: any) => {
           if (callbackData.isConfirmed === true) {
             const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
-            this.markFileAsUnchanged(tabInfo);
+            this.changeFileStatus(tabInfo, false);
             this.closeTabInnerInner(idSeqNr);
           }
 
@@ -370,21 +391,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     aceEditor.resize();
 
     aceEditor.on("change", (event) => {
-      if ($('#' + this.makeId(data, TITLE_ID)).attr('is-changed') === 'true') {
-        return;
-      }
-
-      $('#' + this.makeId(data, TITLE_MODIFICATION_ICON)).css('display', 'inline-block');
-      $('#' + this.makeId(data, TITLE_ID)).attr('is-changed', 'true');
-
-      // sending message to tree
-      this.messageService.sendMessage({
-        type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
-        data: {
-          isChanged: true,
-          relativePath: data.relativePath
-        }
-      });
+      this.changeFileStatus(data, true);
     });
   }
 
@@ -399,6 +406,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     this.bindTitle(data);
     this.bindBody(data);
+
+    return data;
   }
 
   onTabSelect(event: any) {
