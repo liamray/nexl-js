@@ -1,6 +1,8 @@
 import {environment} from '../../environments/environment';
 
 export class UtilsService {
+  static SERVER_INFO: any;
+
   static prefixUrl(url: string) {
     return environment.nexlRootUrl + url;
   }
@@ -24,5 +26,9 @@ export class UtilsService {
     }
 
     return result;
+  }
+
+  static isWindows() {
+    return UtilsService.SERVER_INFO.OS.toLocaleLowerCase().indexOf('win') >= 0;
   }
 }

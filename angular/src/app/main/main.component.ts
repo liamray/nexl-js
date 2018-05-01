@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../services/auth.service";
 import * as $ from 'jquery';
 import {MESSAGE_TYPE, MessageService} from "../services/message.service";
+import {HttpRequestService} from "../services/http.requests.service";
+import {GlobalComponentsService} from "../services/global-components.service";
+import {UtilsService} from "../services/utils.service";
 
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';
@@ -13,7 +16,7 @@ export const F9 = 'F9';
 })
 export class MainComponent implements OnInit {
 
-  constructor(private authService: AuthService, private messageService: MessageService) {
+  constructor(private authService: AuthService, private messageService: MessageService, private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
   }
 
   discoverKeyCombination(event) {
@@ -51,7 +54,17 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.refreshStatus();
-    this.interceptHotKeys();
+    // loading server info
+    this.http.post({}, '/general/info', 'json').subscribe(
+      (info: any) => {
+        UtilsService.SERVER_INFO = info.body;
+        this.authService.refreshStatus();
+        this.interceptHotKeys();
+      },
+      (err) => {
+        this.globalComponentsService.notification.openError('Failed to load data from server.\nReason : ' + err);
+      }
+    );
+
   }
 }

@@ -6,6 +6,7 @@ import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {NexlSourcesService} from "../../../services/nexl-sources.service";
+import {UtilsService} from "../../../services/utils.service";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
@@ -74,9 +75,19 @@ export class NexlSourcesExplorerComponent {
   findItemByRelativePath(relativePath: string) {
     // iterating over all tree items
     const allItems: any[] = this.tree.getItems();
+
+    let isWin = UtilsService.isWindows();
+    if (isWin) {
+      relativePath = relativePath.toLocaleLowerCase();
+    }
+
     for (let index in allItems) {
       let item = allItems[index];
-      if (item.value !== null && item.value.relativePath === relativePath) {
+      if (item.value === null) {
+        continue;
+      }
+      const itemRelativePath = isWin ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
+      if (itemRelativePath === relativePath) {
         return item;
       }
     }
@@ -276,7 +287,7 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
-      const relativePath = this.getRightClickDirPath() + NexlSourcesService.SLASH + newDirName;
+      const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
       this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
@@ -318,6 +329,11 @@ export class NexlSourcesExplorerComponent {
   }
 
   insertFileItem(item) {
+    if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
+      this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] is already exists');
+      return;
+    }
+
     this.insertFileItemInner(item);
 
     // searching for new added item in tree
@@ -383,10 +399,6 @@ export class NexlSourcesExplorerComponent {
       }
 
       let item = NexlSourcesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
-      if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-        this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] is already exists');
-        return;
-      }
 
       // is item still not expanded ?
       if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
