@@ -15,8 +15,25 @@ export class NexlSourcesService {
   constructor(private httpClient: HttpClient) {
   }
 
+  static getSlash() {
+    return '/';
+  }
+
   static substIcon(item) {
     item.icon = item.value.isDir ? DIR_ICON : FILE_ICON;
+  }
+
+  static makeNewFileItem(relativePath: string, newFileName: string) {
+    return {
+      label: newFileName,
+      icon: FILE_ICON,
+      value: {
+        relativePath: relativePath + NexlSourcesService.getSlash() + newFileName,
+        label: newFileName,
+        isDir: false,
+        newUnsavedFile: true
+      }
+    };
   }
 
   static makeEmptyDirItem(relativePath: string, newDirName: string) {
@@ -46,7 +63,7 @@ export class NexlSourcesService {
 
   listNexlSources(relativePath?: string) {
     const params = {
-      relativePath: relativePath || '/'
+      relativePath: relativePath || NexlSourcesService.getSlash()
     };
     return this.httpClient.post<any>(LIST_NEXL_SOURCES_URL, params).map(
       (data) => {

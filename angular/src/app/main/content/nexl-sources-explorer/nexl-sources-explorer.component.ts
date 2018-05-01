@@ -240,19 +240,27 @@ export class NexlSourcesExplorerComponent {
   }
 
   expand(event: any) {
-    const element: any = this.tree.getItem(event.args.element);
+    let item = event.args.element;
+    this.expandInner(item);
+  }
+
+  expandInner(item: any, callback?: () => void) {
+    const element: any = this.tree.getItem(item);
     const value: any = element.value;
     if (!value.mustLoadChildItems) {
       return;
     }
 
     value.mustLoadChildItems = false;
-    const $element = $(event.args.element);
+    const $element = $(item);
     const child = $element.find('ul:first').children()[0];
     this.nexlSourcesService.listNexlSources(value.relativePath).subscribe(
       (data: any) => {
         this.tree.removeItem(child);
-        this.tree.addTo(data, event.args.element);
+        this.tree.addTo(data, item);
+        if (callback) {
+          callback();
+        }
       },
       (err) => {
         this.tree.removeItem(child);
@@ -268,7 +276,7 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
-      const relativePath = this.getRightClickDirPath() + '/' + newDirName;
+      const relativePath = this.getRightClickDirPath() + NexlSourcesService.getSlash() + newDirName;
       this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
@@ -309,9 +317,82 @@ export class NexlSourcesExplorerComponent {
     );
   }
 
+  insertFileItem(relativePath: string, newFileName: string) {
+    let item = NexlSourcesService.makeNewFileItem(relativePath, newFileName);
+    this.insertFileItemInner(item);
+
+    const allItems = this.tree.getItems();
+
+    // searching for new added item in tree
+    allItems.forEach((treeItem: any) => {
+      if (treeItem.value !== null && treeItem.value.relativePath === item.value.relativePath) {
+        // expanding
+        this.expandItemWrapper(treeItem);
+        // selecting
+        this.tree.selectItem(treeItem);
+        // opening a new tab
+        // ...
+        return;
+      }
+    });
+  }
+
+  insertFileItemInner(item: any) {
+    if (this.rightClickSelectedElement !== undefined) {
+      this.expandItemWrapper(this.rightClickSelectedElement.element);
+    }
+
+    // loading child items
+    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
+
+    // sub dir is empty
+    if (childItems.length < 1) {
+      this.tree.addTo(item, this.rightClickSelectedElement);
+      return;
+    }
+
+    let index = 0;
+    // skipping all directories
+    while (index < childItems.length && childItems[index].value.isDir === true) {
+      index++;
+    }
+
+    // searching for place to add a file item
+    while (index < childItems.length) {
+      if (item.value.label.toLocaleLowerCase() < childItems[index].value.label.toLocaleLowerCase()) {
+        break;
+      }
+      index++;
+    }
+
+    // add last
+    if (index >= childItems.length) {
+      this.tree.addAfter(item, childItems[childItems.length - 1]);
+      return;
+    }
+
+    // add others
+    this.tree.addBefore(item, childItems[index]);
+  }
+
+
   newFile() {
-    this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (value: string) => {
-      console.log('value is [%s]', value);
+    this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (newFileName: string) => {
+      if (newFileName === undefined || newFileName.length < 1) {
+        return;
+      }
+
+      const relativePath = this.getRightClickDirPath() + NexlSourcesService.getSlash() + newFileName;
+
+      // is item still not expanded ?
+      if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
+        this.expandInner(this.rightClickSelectedElement.element, () => {
+          this.insertFileItem(relativePath, newFileName);
+        });
+        return;
+      }
+
+      this.insertFileItem(relativePath, newFileName);
     });
   }
 
