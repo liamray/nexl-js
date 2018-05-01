@@ -303,6 +303,12 @@ export class NexlSourcesExplorerComponent {
       }
 
       const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
+
+      if (this.findItemByRelativePath(relativePath) !== undefined) {
+        this.globalComponentsService.notification.openError('The [' + relativePath + '] item is already exists');
+        return;
+      }
+
       this.globalComponentsService.loader.open();
 
       this.nexlSourcesService.makeDir(relativePath).subscribe(
@@ -345,7 +351,7 @@ export class NexlSourcesExplorerComponent {
 
   insertFileItem(item, text?: string) {
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] is already exists');
+      this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] item is already exists');
       return;
     }
 
