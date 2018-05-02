@@ -57,4 +57,10 @@ export class MainMenuComponent implements AfterViewInit {
       type: MESSAGE_TYPE.CLOSE_ALL_TABS
     });
   }
+
+  createExamplesFile() {
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.CREATE_EXAMPLES_FILE
+    });
+  }
 }

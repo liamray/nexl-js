@@ -7,6 +7,7 @@ import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxex
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {NexlSourcesService} from "../../../services/nexl-sources.service";
 import {UtilsService} from "../../../services/utils.service";
+import {EXAMPLES_FILE_NAME, EXAMPLES_JS} from "./examples.js";
 
 @Component({
   selector: '.app-nexl-sources-explorer',
@@ -50,7 +51,21 @@ export class NexlSourcesExplorerComponent {
         this.removeFileFromTree(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.CREATE_EXAMPLES_FILE: {
+        this.createExamplesFile();
+        return;
+      }
     }
+  }
+
+  createExamplesFile() {
+    if (this.hasWritePermission !== true) {
+      this.globalComponentsService.notification.openError('No write permissions to create a [' + EXAMPLES_FILE_NAME + '] file');
+      return;
+    }
+    let item = NexlSourcesService.makeNewFileItem('', EXAMPLES_FILE_NAME);
+    this.insertFileItem(item, EXAMPLES_JS);
   }
 
   removeFileFromTree(relativePath: string) {
@@ -292,7 +307,7 @@ export class NexlSourcesExplorerComponent {
   }
 
   newDir() {
-    if ( this.hasWritePermission !== true ) {
+    if (this.hasWritePermission !== true) {
       this.globalComponentsService.notification.openError('No write permissions to create a directory');
       return;
     }
@@ -344,7 +359,7 @@ export class NexlSourcesExplorerComponent {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err);
+        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err.statusText);
       }
     );
   }
@@ -422,7 +437,7 @@ export class NexlSourcesExplorerComponent {
 
 
   newFile() {
-    if ( this.hasWritePermission !== true ) {
+    if (this.hasWritePermission !== true) {
       this.globalComponentsService.notification.openError('No write permissions to create a file');
       return;
     }
