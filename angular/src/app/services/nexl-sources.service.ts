@@ -84,4 +84,12 @@ export class NexlSourcesService {
 
     return this.httpClient.post<any>(DELETE_ITEM, params);
   }
+
+  rename(relativePath: string, newRelativePath: string) {
+    const params = {
+      relativePath: relativePath
+    };
+
+    return this.httpClient.post<any>('???', params);
+  }
 }

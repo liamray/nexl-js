@@ -31,4 +31,16 @@ export class UtilsService {
   static isWindows() {
     return UtilsService.SERVER_INFO.OS.toLocaleLowerCase().indexOf('win') >= 0;
   }
+
+  static isFileNameValid(value: string) {
+    if (value.length < 1 || value.indexOf('/') >= 0) {
+      return false;
+    }
+
+    if (!UtilsService.isWindows()) {
+      return true;
+    }
+
+    return value.match(/<>:"\/\\|\?\*/) === null && value.match(/^[\s.]+$/) === null;
+  }
 }

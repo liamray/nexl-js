@@ -43,7 +43,7 @@ export class NexlSourcesExplorerComponent {
       }
 
       case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
-        this.tabContentChanged(message.data);
+        this.updateItem(message.data);
         return;
       }
 
@@ -75,19 +75,18 @@ export class NexlSourcesExplorerComponent {
     }
   }
 
-  tabContentChanged(data: any) {
+  makeItemLabel(value: any) {
+    return value.isChanged ? value.label + '<span style="color: red">&nbsp;*</span>' : value.label;
+  }
+
+  updateItem(data: any) {
     const item = this.findItemByRelativePath(data.relativePath);
     if (item === undefined) {
       return;
     }
 
     item.value.isChanged = data.isChanged;
-
-    if (item.value.isChanged) {
-      item.label = item.value.label + '<span style="color: red">&nbsp;*</span>';
-    } else {
-      item.label = item.value.label;
-    }
+    item.label = this.makeItemLabel(item.value);
 
     this.tree.updateItem(item, item);
   }
@@ -211,12 +210,34 @@ export class NexlSourcesExplorerComponent {
 
 
   renameItem() {
-    if (this.rightClickSelectedElement === undefined) {
+    if (this.rightClickSelectedElement === undefined || this.rightClickSelectedElement.value === null) {
       return;
     }
 
     const targetItem = this.rightClickSelectedElement.value.label;
     this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (value: string) => {
+
+      if (!UtilsService.isFileNameValid(value)) {
+        this.globalComponentsService.notification.openError('The [' + value + '] file name contains forbidden characters');
+        return;
+      }
+
+      const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.label.length - 3) + value;
+      this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, newRelativePath).subscribe(
+        (data) => {
+          // send message to tabs to rename relative path
+          // rename relative path for all items in tree
+          const item = this.findItemByRelativePath(this.rightClickSelectedElement.value.relativePath);
+          item.value.label = value;
+          item.label = this.makeItemLabel(item.value);
+          item.value.relativePath = newRelativePath;
+          this.tree.updateItem(item, item);
+        },
+        (err) => {
+          this.globalComponentsService.notification.openError('Failed to rename item\nReason\n' + err.statusText);
+          console.log(err);
+        }
+      );
     });
   }
 
@@ -317,6 +338,11 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
+      if (!UtilsService.isFileNameValid(newDirName)) {
+        this.globalComponentsService.notification.openError('The [' + newDirName + '] directory name contains forbidden characters');
+        return;
+      }
+
       const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
 
       if (this.findItemByRelativePath(relativePath) !== undefined) {
@@ -334,7 +360,7 @@ export class NexlSourcesExplorerComponent {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openError('Failed to create a new directory.\nReason : ' + err.statusText);
+          this.globalComponentsService.notification.openError('Failed to create a new directory\nReason : ' + err.statusText);
         }
       );
     });
@@ -359,7 +385,7 @@ export class NexlSourcesExplorerComponent {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to delete an item.\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to delete an item\nReason : ' + err.statusText);
       }
     );
   }
@@ -381,7 +407,7 @@ export class NexlSourcesExplorerComponent {
         // selecting
         this.tree.selectItem(treeItem);
         // marking as changed
-        this.tabContentChanged(item.value);
+        this.updateItem(item.value);
 
         // opening a new tab
         this.messageService.sendMessage({
@@ -443,7 +469,12 @@ export class NexlSourcesExplorerComponent {
     }
 
     this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (newFileName: string) => {
-      if (newFileName === undefined || newFileName.length < 1) {
+      if (newFileName === undefined) {
+        return;
+      }
+
+      if (!UtilsService.isFileNameValid(newFileName)) {
+        this.globalComponentsService.notification.openError('The [' + newFileName + '] file name contains forbidden characters');
         return;
       }
 
