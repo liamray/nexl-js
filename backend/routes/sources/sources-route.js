@@ -11,9 +11,45 @@ const fsx = require('../../api/fsx');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
+// rename-item
+//////////////////////////////////////////////////////////////////////////////
+router.post('/rename', function (req, res, next) {
+	let relativePath = req.body['relativePath'];
+	let newRelativePath = req.body['newRelativePath'];
+
+	// validating ( must not empty string )
+	if (!j79.isString(relativePath) || relativePath.length < 1) {
+		logger.log.error('Invalid relativePath');
+		utils.sendError(res, 'Invalid relativePath');
+		return;
+	}
+
+	// validating ( must not empty string )
+	if (!j79.isString(newRelativePath) || newRelativePath.length < 1) {
+		logger.log.error('Invalid newRelativePath');
+		utils.sendError(res, 'Invalid newRelativePath');
+		return;
+	}
+
+	const username = utils.getLoggedInUsername(req);
+
+	security.hasWritePermission(username).then((hasPermission) => {
+		if (!hasPermission) {
+			logger.log.error('The [%s] user doesn\'t have write permissions to rename items', username);
+			return Promise.reject('No write permissions');
+		}
+
+		return sources.rename(relativePath, newRelativePath).then(() => res.send({}));
+	}).catch((err) => {
+		logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, err);
+		utils.sendError(res, err);
+	});
+});
+
+//////////////////////////////////////////////////////////////////////////////
 // delete-item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/delete-item', function (req, res, next) {
+router.post('/delete', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
 
 	// validating ( must not empty string )
@@ -33,7 +69,7 @@ router.post('/delete-item', function (req, res, next) {
 
 		return sources.deleteItem(relativePath).then(() => res.send({}));
 	}).catch((err) => {
-		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, err);
 		utils.sendError(res, err);
 	});
 });
@@ -61,7 +97,7 @@ router.post('/make-dir', function (req, res, next) {
 
 		return sources.mkdir(relativePath).then(() => res.send({}));
 	}).catch((err) => {
-		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, err);
 		utils.sendError(res, err);
 	});
 });
@@ -101,7 +137,7 @@ router.post('/load-nexl-source', function (req, res, next) {
 
 		return sources.loadNexlSource(relativePath).then(data => res.send(data));
 	}).catch((err) => {
-		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to load a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
 		utils.sendError(res, err);
 	});
 });
@@ -130,7 +166,7 @@ router.post('/save-nexl-source', function (req, res, next) {
 
 		return sources.saveNexlSource(relativePath, content).then(() => res.send({}));
 	}).catch((err) => {
-		logger.log.error('Failed to get nexl source content for [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to save a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
 		utils.sendError(res, err);
 	});
 });

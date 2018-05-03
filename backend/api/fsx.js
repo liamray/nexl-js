@@ -116,6 +116,22 @@ function deleteItem(fullPath) {
 		});
 }
 
+function rename(oldName, newName) {
+	return new Promise(
+		(resolve, reject) => {
+			fs.rename(oldName, newName, (err) => {
+				if (err) {
+					logger.log.error('Failed to rename a [%s] item to [%s]. Reason : [%s]', oldName, newName, utils.formatErr(err));
+					reject('Failed to rename item');
+					return;
+				}
+
+				logger.log.debug('The [%s] item renamed to [%s]', oldName, newName);
+				resolve();
+			});
+		});
+}
+
 // --------------------------------------------------------------------------------
 module.exports.join = join;
 module.exports.mkdir = mkdir;
@@ -125,4 +141,5 @@ module.exports.writeFile = writeFile;
 module.exports.stat = stat;
 module.exports.readdir = readdir;
 module.exports.deleteItem = deleteItem;
+module.exports.rename = rename;
 // --------------------------------------------------------------------------------

@@ -208,6 +208,15 @@ export class NexlSourcesExplorerComponent {
     });
   }
 
+  renameInner(newName: string, newRelativePath: string) {
+    // send message to tabs to rename relative path
+    // rename relative path for all items in tree
+    const item = this.findItemByRelativePath(this.rightClickSelectedElement.value.relativePath);
+    item.value.label = newName;
+    item.label = this.makeItemLabel(item.value);
+    item.value.relativePath = newRelativePath;
+    this.tree.updateItem(item, item);
+  }
 
   renameItem() {
     if (this.rightClickSelectedElement === undefined || this.rightClickSelectedElement.value === null) {
@@ -222,16 +231,10 @@ export class NexlSourcesExplorerComponent {
         return;
       }
 
-      const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.label.length - 3) + value;
+      const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.relativePath.length - this.rightClickSelectedElement.value.label.length) + value;
       this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, newRelativePath).subscribe(
-        (data) => {
-          // send message to tabs to rename relative path
-          // rename relative path for all items in tree
-          const item = this.findItemByRelativePath(this.rightClickSelectedElement.value.relativePath);
-          item.value.label = value;
-          item.label = this.makeItemLabel(item.value);
-          item.value.relativePath = newRelativePath;
-          this.tree.updateItem(item, item);
+        () => {
+          this.renameInner(value, newRelativePath);
         },
         (err) => {
           this.globalComponentsService.notification.openError('Failed to rename item\nReason\n' + err.statusText);

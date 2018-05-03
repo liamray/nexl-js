@@ -5,7 +5,8 @@ import 'rxjs/Rx';
 
 const LIST_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/list-nexl-sources');
 const MAKE_DIR = UtilsService.prefixUrl('/sources/make-dir');
-const DELETE_ITEM = UtilsService.prefixUrl('/sources/delete-item');
+const DELETE_ITEM = UtilsService.prefixUrl('/sources/delete');
+const RENAME_ITEM = UtilsService.prefixUrl('/sources/rename');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
@@ -87,9 +88,10 @@ export class NexlSourcesService {
 
   rename(relativePath: string, newRelativePath: string) {
     const params = {
-      relativePath: relativePath
+      relativePath: relativePath,
+      newRelativePath: newRelativePath
     };
 
-    return this.httpClient.post<any>('???', params);
+    return this.httpClient.post<any>(RENAME_ITEM, params);
   }
 }

@@ -181,10 +181,23 @@ function deleteItem(relativePath) {
 		});
 }
 
+function rename(relativePath, newRelativePath) {
+	return resolveFullPath(relativePath).then(
+		(relativePathStuff) => {
+			return resolveFullPath(newRelativePath).then(
+				(newRelativePathStuff) => {
+					return fsx.rename(relativePathStuff.fullPath, newRelativePathStuff.fullPath);
+				}
+			);
+		}
+	);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.listNexlSources = listNexlSources;
 module.exports.loadNexlSource = loadNexlSource;
 module.exports.saveNexlSource = saveNexlSource;
 module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
+module.exports.rename = rename;
 // --------------------------------------------------------------------------------
