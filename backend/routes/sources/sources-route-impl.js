@@ -182,11 +182,21 @@ function deleteItem(relativePath) {
 }
 
 function rename(relativePath, newRelativePath) {
-	return resolveFullPath(relativePath).then(
-		(relativePathStuff) => {
-			return resolveFullPath(newRelativePath).then(
-				(newRelativePathStuff) => {
-					return fsx.rename(relativePathStuff.fullPath, newRelativePathStuff.fullPath);
+	return resolveFullPath(newRelativePath).then(
+		(newRelativePathStuff) => {
+			return fsx.exists(newRelativePathStuff.fullPath).then(
+				(isExists) => {
+					if (isExists) {
+						logger.log.error('Cannot rename a [%s] to [%s] because the [%s] already exists', relativePath, newRelativePath, newRelativePath);
+						return Promise.reject('Item with the same name already exists');
+					}
+
+					return resolveFullPath(relativePath).then(
+						(relativePathStuff) => {
+							return fsx.rename(relativePathStuff.fullPath, newRelativePathStuff.fullPath);
+						}
+					);
+
 				}
 			);
 		}
