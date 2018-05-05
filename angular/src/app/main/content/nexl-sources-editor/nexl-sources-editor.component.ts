@@ -95,6 +95,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       tabsRelativePath = UtilsService.IS_WIN ? tabsRelativePath.toLocaleLowerCase() : tabsRelativePath;
 
       if (tabsRelativePath === oldRelativePath) {
+        $('#' + TAB_CONTENT).attr('relative-path', data.newRelativePath);
         this.setTabAttr(index, 'relative-path', data.newRelativePath);
         $('#' + TITLE_TEXT + idSeqNr).text(data.newLabel);
         $('#' + TITLE_TOOLTIP + idSeqNr).text(data.newRelativePath);
@@ -105,7 +106,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   createNexlSource(data) {
     const nexlSource = this.loadNexlSourceInner(data);
-    this.changeFileStatus(nexlSource, true);
+    this.changeFileStatus(nexlSource.idSeqNr, true);
     $('#' + TITLE_ID + nexlSource.idSeqNr).attr(ATTR_IS_NEW_FILE, true);
   }
 
@@ -118,16 +119,16 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
   }
 
-  changeFileStatus(tabInfo: any, isChanged: boolean) {
-    $('#' + TITLE_MODIFICATION_ICON + tabInfo.idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
-    $('#' + TITLE_ID + tabInfo.idSeqNr).attr('is-changed', isChanged);
+  changeFileStatus(idSeqNr: any, isChanged: boolean) {
+    $('#' + TITLE_MODIFICATION_ICON + idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
+    $('#' + TITLE_ID + idSeqNr).attr('is-changed', isChanged);
 
     // sending message to tree
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
       data: {
         isChanged: isChanged,
-        relativePath: tabInfo.relativePath
+        relativePath: $('#' + TAB_CONTENT + idSeqNr).attr('relative-path')
       }
     });
   }
@@ -173,7 +174,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       (content: any) => {
         this.globalComponentsService.notification.openSuccess('File saved !');
         this.globalComponentsService.loader.close();
-        this.changeFileStatus(tabInfo, false);
+        this.changeFileStatus(tabInfo.idSeqNr, false);
         $('#' + TITLE_ID + tabInfo.idSeqNr).attr(ATTR_IS_NEW_FILE, false);
         if (callback !== undefined) {
           callback(true);
@@ -378,7 +379,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         callback: (callbackData: any) => {
           if (callbackData.isConfirmed === true) {
             const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
-            this.changeFileStatus(tabInfo, false);
+            this.changeFileStatus(tabInfo.idSeqNr, false);
             this.closeTabInnerInner(idSeqNr);
           }
 
@@ -432,7 +433,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     aceEditor.resize();
 
     aceEditor.on("change", (event) => {
-      this.changeFileStatus(data, true);
+      this.changeFileStatus(data.idSeqNr, true);
     });
   }
 

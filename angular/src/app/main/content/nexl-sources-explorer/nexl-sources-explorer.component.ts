@@ -81,7 +81,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return value.label;
     }
 
-    return value.isChanged ? value.label + '<span style="color: red">&nbsp;*</span>' : value.label;
+    return value.isChanged === true ? value.label + '<span style="color: red">&nbsp;*</span>' : value.label;
   }
 
   updateItem(data: any) {
