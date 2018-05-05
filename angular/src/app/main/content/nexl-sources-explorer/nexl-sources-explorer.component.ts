@@ -261,6 +261,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     // rename relative path for all items in tree
     this.itemMoved(data);
+
+    this.globalComponentsService.loader.close();
   }
 
   renameItem() {
@@ -289,6 +291,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       data.relativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
       data.newRelativePath = data.relativePathWithoutLabel + data.newLabel;
 
+      this.globalComponentsService.loader.open();
+
       // different care for new created FILES ( directories not included )
       // here we don't really need to physically rename file because it still doesn't exist in FS
       if (this.rightClickSelectedElement.value.isDir !== true && this.rightClickSelectedElement.value.isNewFile === true) {
@@ -302,6 +306,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.notification.openError('Failed to rename item\nReason\n' + err.statusText);
+          this.globalComponentsService.loader.close();
           console.log(err);
         }
       );
