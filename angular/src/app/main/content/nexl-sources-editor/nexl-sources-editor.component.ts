@@ -94,6 +94,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       let idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
       tabsRelativePath = UtilsService.IS_WIN ? tabsRelativePath.toLocaleLowerCase() : tabsRelativePath;
 
+      // the item is exact the which was renamed
       if (tabsRelativePath === oldRelativePath) {
         $('#' + TAB_CONTENT).attr('relative-path', data.newRelativePath);
         this.setTabAttr(index, 'relative-path', data.newRelativePath);
@@ -101,6 +102,14 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         $('#' + TITLE_TOOLTIP + idSeqNr).text(data.newRelativePath);
         continue;
       }
+
+      if (tabsRelativePath.indexOf(oldRelativePath) === 0) {
+        const relativePath = data.newRelativePath + tabsRelativePath.substr(oldRelativePath.length);
+        $('#' + TAB_CONTENT).attr('relative-path', relativePath);
+        this.setTabAttr(index, 'relative-path', relativePath);
+        $('#' + TITLE_TOOLTIP + idSeqNr).text(relativePath);
+      }
+
     }
   }
 

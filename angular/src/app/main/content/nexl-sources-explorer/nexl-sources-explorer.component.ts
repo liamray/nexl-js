@@ -263,6 +263,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.itemMoved(data);
 
     this.globalComponentsService.loader.close();
+    this.globalComponentsService.notification.openSuccess('Item renamed');
   }
 
   renameItem() {
