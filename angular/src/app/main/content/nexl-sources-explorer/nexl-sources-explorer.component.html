@@ -16,7 +16,8 @@
       width="100%"
       height="100%"
       [source]="treeSource"
-      (onExpand)="expand($event)"
+      (onExpand)="onExpand($event)"
+      [auto-create]="false"
     ></jqxTree>
 
     <jqxMenu #popupMenu [width]="120" [height]="112" [autoOpenPopup]="false"

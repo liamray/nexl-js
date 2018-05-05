@@ -1,4 +1,4 @@
-import {Component, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ViewChild} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import * as $ from 'jquery';
@@ -14,7 +14,8 @@ import {EXAMPLES_FILE_NAME, EXAMPLES_JS} from "./examples.js";
   templateUrl: './nexl-sources-explorer.component.html',
   styleUrls: ['./nexl-sources-explorer.component.css']
 })
-export class NexlSourcesExplorerComponent {
+export class NexlSourcesExplorerComponent implements AfterViewInit {
+
   @ViewChild('expander') expander: jqxExpanderComponent;
   @ViewChild('tree') tree: jqxTreeComponent;
   @ViewChild('popupMenu') popupMenu: jqxMenuComponent;
@@ -209,13 +210,22 @@ export class NexlSourcesExplorerComponent {
   }
 
   renameInner(newName: string, newRelativePath: string) {
-    // send message to tabs to rename relative path
-    // rename relative path for all items in tree
     const item = this.findItemByRelativePath(this.rightClickSelectedElement.value.relativePath);
     item.value.label = newName;
     item.label = this.makeItemLabel(item.value);
     item.value.relativePath = newRelativePath;
     this.tree.updateItem(item, item);
+
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.ITEM_MOVED,
+      data: {
+        oldRelativePath: this.rightClickSelectedElement.value.relativePath,
+        newRelativePath: newRelativePath,
+        newName: newName
+      }
+    });
+    // send message to tabs to rename relative path
+    // rename relative path for all items in tree
   }
 
   renameItem() {
@@ -232,6 +242,13 @@ export class NexlSourcesExplorerComponent {
       }
 
       const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.relativePath.length - this.rightClickSelectedElement.value.label.length) + value;
+
+      // different care for new created FILES ( directories not included )
+      // here we don't really need to rename a file with a /rest service because file doesn't exist
+      if (this.rightClickSelectedElement.value.isNewFile === true) {
+
+      }
+
       this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, newRelativePath).subscribe(
         () => {
           this.renameInner(value, newRelativePath);
@@ -299,7 +316,7 @@ export class NexlSourcesExplorerComponent {
     this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), childItems[index]);
   }
 
-  expand(event: any) {
+  onExpand(event: any) {
     let item = event.args.element;
     this.expandInner(item);
   }
@@ -645,6 +662,17 @@ export class NexlSourcesExplorerComponent {
         relativePath: item.value.relativePath,
         label: item.value.label
       }
+    });
+  }
+
+
+  onDragEnd(item, dropItem, args, dropPosition, tree) {
+    return false;
+  }
+
+  ngAfterViewInit(): void {
+    this.tree.createComponent({
+      dragEnd: this.onDragEnd
     });
   }
 }
