@@ -218,15 +218,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     */
   }
 
-  renameInner(newName: string, newRelativePath: string) {
-    const data: any = {
-      oldRelativePath: this.rightClickSelectedElement.value.relativePath,
-      oldLabel: this.rightClickSelectedElement.value.label,
-      newRelativePath: newRelativePath,
-      newLabel: newName
-    };
-
-    data.oldRelativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
+  renameInner(data: any) {
+    console.log(data);
 
     // send message to tabs to rename relative the item
     this.messageService.sendMessage({
@@ -244,25 +237,31 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     const targetItem = this.rightClickSelectedElement.value.label;
-    this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (value: string) => {
+    this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (newLabel: string) => {
 
-      if (!UtilsService.isFileNameValid(value)) {
-        this.globalComponentsService.notification.openError('The [' + value + '] file name contains forbidden characters');
+      if (!UtilsService.isFileNameValid(newLabel)) {
+        this.globalComponentsService.notification.openError('The [' + newLabel + '] file name contains forbidden characters');
         return;
       }
 
-      const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.relativePath.length - this.rightClickSelectedElement.value.label.length) + value;
+      const data: any = {
+        oldRelativePath: this.rightClickSelectedElement.value.relativePath,
+        oldLabel: this.rightClickSelectedElement.value.label,
+        newLabel: newLabel
+      };
+      data.relativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
+      data.newRelativePath = data.relativePathWithoutLabel + data.newLabel;
 
       // different care for new created FILES ( directories not included )
       // here we don't really need to physically rename file because it still doesn't exist in FS
       if (this.rightClickSelectedElement.value.isDir !== true && this.rightClickSelectedElement.value.isNewFile === true) {
-        this.renameInner(value, newRelativePath);
+        this.renameInner(data);
         return;
       }
 
-      this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, newRelativePath).subscribe(
+      this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, data.newRelativePath).subscribe(
         () => {
-          this.renameInner(value, newRelativePath);
+          this.renameInner(data);
         },
         (err) => {
           this.globalComponentsService.notification.openError('Failed to rename item\nReason\n' + err.statusText);
