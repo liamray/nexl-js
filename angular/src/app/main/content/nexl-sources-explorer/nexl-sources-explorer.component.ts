@@ -77,6 +77,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   makeItemLabel(value: any) {
+    if (value.isDir === true) {
+      return value.label;
+    }
+
     return value.isChanged ? value.label + '<span style="color: red">&nbsp;*</span>' : value.label;
   }
 
@@ -210,12 +214,44 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   itemMoved(data: any) {
-    /*
-        item.value.label = newName;
+    let oldRelativePath = data.oldRelativePath;
+    let isWin = UtilsService.isWindows();
+    if (isWin) {
+      oldRelativePath = oldRelativePath.toLocaleLowerCase();
+    }
+
+    const allItems: any[] = this.tree.getItems();
+
+    for (let index in allItems) {
+      let item = allItems[index];
+
+      if (item.value === null) {
+        continue;
+      }
+
+      let itemRelativePath = isWin ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
+
+      // is it the item which was renamed ?
+      if (itemRelativePath === oldRelativePath) {
+        item.value.label = data.newLabel;
+        item.value.relativePath = data.newRelativePath;
         item.label = this.makeItemLabel(item.value);
-        item.value.relativePath = newRelativePath;
         this.tree.updateItem(item, item);
-    */
+
+        if (data.isDir !== true) {
+          return;
+        } else {
+          continue;
+        }
+      }
+
+      // is subdir ?
+      if (itemRelativePath.indexOf(oldRelativePath) === 0) {
+        item.value.relativePath = data.newRelativePath + item.value.relativePath.substr(data.oldRelativePath.length);
+        item.label = this.makeItemLabel(item.value);
+        this.tree.updateItem(item, item);
+      }
+    }
   }
 
   renameInner(data: any) {
@@ -247,7 +283,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       const data: any = {
         oldRelativePath: this.rightClickSelectedElement.value.relativePath,
         oldLabel: this.rightClickSelectedElement.value.label,
-        newLabel: newLabel
+        newLabel: newLabel,
+        isDir: this.rightClickSelectedElement.value.isDir
       };
       data.relativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
       data.newRelativePath = data.relativePathWithoutLabel + data.newLabel;
