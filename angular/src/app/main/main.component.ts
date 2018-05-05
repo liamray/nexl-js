@@ -57,7 +57,7 @@ export class MainComponent implements OnInit {
     // loading server info
     this.http.post({}, '/general/info', 'json').subscribe(
       (info: any) => {
-        UtilsService.SERVER_INFO = info.body;
+        UtilsService.setServerInfo(info.body);
         this.authService.refreshStatus();
         this.interceptHotKeys();
       },

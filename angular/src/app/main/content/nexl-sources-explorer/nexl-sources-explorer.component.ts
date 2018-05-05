@@ -107,8 +107,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     // iterating over all tree items
     const allItems: any[] = this.tree.getItems();
 
-    let isWin = UtilsService.isWindows();
-    if (isWin) {
+    if (UtilsService.IS_WIN) {
       relativePath = relativePath.toLocaleLowerCase();
     }
 
@@ -117,7 +116,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       if (item.value === null) {
         continue;
       }
-      const itemRelativePath = isWin ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
+      const itemRelativePath = UtilsService.IS_WIN ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
       if (itemRelativePath === relativePath) {
         return item;
       }
@@ -215,8 +214,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   itemMoved(data: any) {
     let oldRelativePath = data.oldRelativePath;
-    let isWin = UtilsService.isWindows();
-    if (isWin) {
+    if (UtilsService.IS_WIN) {
       oldRelativePath = oldRelativePath.toLocaleLowerCase();
     }
 
@@ -229,7 +227,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         continue;
       }
 
-      let itemRelativePath = isWin ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
+      let itemRelativePath = UtilsService.IS_WIN ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
 
       // is it the item which was renamed ?
       if (itemRelativePath === oldRelativePath) {
@@ -255,8 +253,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   renameInner(data: any) {
-    console.log(data);
-
     // send message to tabs to rename relative the item
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.ITEM_MOVED,
@@ -274,6 +270,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     const targetItem = this.rightClickSelectedElement.value.label;
     this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (newLabel: string) => {
+
+      if (newLabel === undefined) {
+        return;
+      }
 
       if (!UtilsService.isFileNameValid(newLabel)) {
         this.globalComponentsService.notification.openError('The [' + newLabel + '] file name contains forbidden characters');

@@ -5,6 +5,7 @@ import {GlobalComponentsService} from "../../../services/global-components.servi
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import * as $ from 'jquery';
 import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../../services/localstorage.service";
+import {UtilsService} from "../../../services/utils.service";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -75,6 +76,29 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       case MESSAGE_TYPE.CREATE_NEXL_SOURCE: {
         this.createNexlSource(message.data);
         return;
+      }
+
+      case MESSAGE_TYPE.ITEM_MOVED: {
+        this.itemMoved(message.data);
+        return;
+      }
+    }
+  }
+
+  itemMoved(data) {
+    let oldRelativePath = data.oldRelativePath;
+    oldRelativePath = UtilsService.IS_WIN ? oldRelativePath.toLocaleLowerCase() : oldRelativePath;
+
+    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
+      let idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+      tabsRelativePath = UtilsService.IS_WIN ? tabsRelativePath.toLocaleLowerCase() : tabsRelativePath;
+
+      if (tabsRelativePath === oldRelativePath) {
+        this.setTabAttr(index, 'relative-path', data.newRelativePath);
+        $('#' + TITLE_TEXT + idSeqNr).text(data.newLabel);
+        $('#' + TITLE_TOOLTIP + idSeqNr).text(data.newRelativePath);
+        continue;
       }
     }
   }
@@ -168,11 +192,16 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeDeletedTabs4Dir(relativePath: string) {
     // adding slash to the end
-    relativePath += relativePath[0];
+    relativePath = relativePath + UtilsService.SERVER_INFO.SLASH;
+
+    relativePath = UtilsService.IS_WIN ? relativePath.toLocaleLowerCase() : relativePath;
 
     const tabsLength = this.nexlSourcesTabs.length();
     for (let index = tabsLength - 1; index >= 0; index--) {
-      if (this.resolveTabAttr(index, 'relative-path').indexOf(relativePath) === 0) {
+      let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
+      tabsRelativePath = UtilsService.IS_WIN ? tabsRelativePath.toLocaleLowerCase() : tabsRelativePath;
+
+      if (tabsRelativePath.indexOf(relativePath) === 0) {
         const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
         this.closeTabInnerInner(idSeqNr);
       }
@@ -180,8 +209,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   closeDeletedTabs4File(relativePath: string) {
+    relativePath = UtilsService.IS_WIN ? relativePath.toLocaleLowerCase() : relativePath;
+
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      if (this.resolveTabAttr(index, 'relative-path') === relativePath) {
+      let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
+      tabsRelativePath = UtilsService.IS_WIN ? tabsRelativePath.toLocaleLowerCase() : tabsRelativePath;
+
+      if (tabsRelativePath === relativePath) {
         const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
         this.closeTabInnerInner(idSeqNr);
         return;
@@ -220,9 +254,16 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.getAttribute(attrName);
   }
 
+  setTabAttr(tabNr: number, attrName: string, attrValue: string) {
+    this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.setAttribute(attrName, attrValue);
+  }
+
   resolveTabInfoByRelativePath(relativePath: string): any {
+    relativePath = UtilsService.IS_WIN ? relativePath.toLocaleLowerCase() : relativePath;
+
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      const path = this.resolveTabAttr(index, 'relative-path');
+      let path = this.resolveTabAttr(index, 'relative-path');
+      path = UtilsService.IS_WIN ? path.toLocaleLowerCase() : path;
       if (path === relativePath) {
         return {
           id: this.resolveTabAttr(index, 'id'),
@@ -372,7 +413,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     $('#' + this.makeId(data, TITLE_TOOLTIP)).click(() => {
       this.messageService.sendMessage({
         type: MESSAGE_TYPE.SELECT_ITEM_IN_TREE,
-        data: data.relativePath
+        data: $('#' + TITLE_TOOLTIP + data.idSeqNr).text()
       });
     });
   }

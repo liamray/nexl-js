@@ -2,6 +2,7 @@ import {environment} from '../../environments/environment';
 
 export class UtilsService {
   static SERVER_INFO: any;
+  static IS_WIN: boolean;
 
   static prefixUrl(url: string) {
     return environment.nexlRootUrl + url;
@@ -28,19 +29,20 @@ export class UtilsService {
     return result;
   }
 
-  static isWindows() {
-    return UtilsService.SERVER_INFO.OS.toLocaleLowerCase().indexOf('win') >= 0;
-  }
-
   static isFileNameValid(value: string) {
     if (value.length < 1 || value.indexOf('/') >= 0) {
       return false;
     }
 
-    if (!UtilsService.isWindows()) {
+    if (!UtilsService.IS_WIN) {
       return true;
     }
 
     return value.match(/<>:"\/\\|\?\*/) === null && value.match(/^[\s.]+$/) === null;
+  }
+
+  static setServerInfo(serverInfo: any) {
+    UtilsService.SERVER_INFO = serverInfo;
+    UtilsService.IS_WIN = UtilsService.SERVER_INFO.OS.toLocaleLowerCase().indexOf('win') >= 0
   }
 }
