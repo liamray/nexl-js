@@ -23,4 +23,6 @@ nestedObjs = {
         model: 'Mustang',
         year: 1969
     }
-};`;
+};
+
+nexl.defaultExpression = 'This is a default nexl expression for this file. It converts a person object to XML\\n\\n\${person~X}';`;

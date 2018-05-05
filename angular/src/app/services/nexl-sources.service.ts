@@ -28,7 +28,8 @@ export class NexlSourcesService {
         relativePath: relativePath + UtilsService.SERVER_INFO.SLASH + newFileName,
         label: newFileName,
         isDir: false,
-        isChanged: true
+        isChanged: true,
+        isNewFile: true
       }
     };
   }

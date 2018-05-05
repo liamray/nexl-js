@@ -209,23 +209,33 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
-  renameInner(newName: string, newRelativePath: string) {
-    const item = this.findItemByRelativePath(this.rightClickSelectedElement.value.relativePath);
-    item.value.label = newName;
-    item.label = this.makeItemLabel(item.value);
-    item.value.relativePath = newRelativePath;
-    this.tree.updateItem(item, item);
+  itemMoved(data: any) {
+    /*
+        item.value.label = newName;
+        item.label = this.makeItemLabel(item.value);
+        item.value.relativePath = newRelativePath;
+        this.tree.updateItem(item, item);
+    */
+  }
 
+  renameInner(newName: string, newRelativePath: string) {
+    const data: any = {
+      oldRelativePath: this.rightClickSelectedElement.value.relativePath,
+      oldLabel: this.rightClickSelectedElement.value.label,
+      newRelativePath: newRelativePath,
+      newLabel: newName
+    };
+
+    data.oldRelativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
+
+    // send message to tabs to rename relative the item
     this.messageService.sendMessage({
       type: MESSAGE_TYPE.ITEM_MOVED,
-      data: {
-        oldRelativePath: this.rightClickSelectedElement.value.relativePath,
-        newRelativePath: newRelativePath,
-        newName: newName
-      }
+      data: data
     });
-    // send message to tabs to rename relative path
+
     // rename relative path for all items in tree
+    this.itemMoved(data);
   }
 
   renameItem() {
@@ -244,9 +254,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       const newRelativePath = this.rightClickSelectedElement.value.relativePath.substr(0, this.rightClickSelectedElement.value.relativePath.length - this.rightClickSelectedElement.value.label.length) + value;
 
       // different care for new created FILES ( directories not included )
-      // here we don't really need to rename a file with a /rest service because file doesn't exist
-      if (this.rightClickSelectedElement.value.isNewFile === true) {
-
+      // here we don't really need to physically rename file because it still doesn't exist in FS
+      if (this.rightClickSelectedElement.value.isDir !== true && this.rightClickSelectedElement.value.isNewFile === true) {
+        this.renameInner(value, newRelativePath);
+        return;
       }
 
       this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, newRelativePath).subscribe(
