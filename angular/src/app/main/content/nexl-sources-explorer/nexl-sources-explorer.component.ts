@@ -718,10 +718,13 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
+  onDragEnd: any = (item, dropItem, args, dropPosition, tree): boolean => {
+    if (dropPosition === 'inside' && dropItem.value.isDir !== true) {
+      alert("You can't move into file");
+    }
 
-  onDragEnd(item, dropItem, args, dropPosition, tree) {
     return false;
-  }
+  };
 
   ngAfterViewInit(): void {
     this.tree.createComponent({
