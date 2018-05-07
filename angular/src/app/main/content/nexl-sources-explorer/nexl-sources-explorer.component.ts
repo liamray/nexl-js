@@ -739,11 +739,13 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
     const targetPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
 
-    if (targetPath === undefined) {
+    // are item and dropItem on same directory level ?
+    if (targetPath === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
       return false;
     }
 
-    if (targetPath === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
+    // is item is a part of dropItem ?
+    if (targetPath.indexOf(item.value.relativePath) === 0) {
       return false;
     }
 
