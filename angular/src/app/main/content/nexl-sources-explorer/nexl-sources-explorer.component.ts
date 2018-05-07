@@ -289,7 +289,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         newLabel: newLabel,
         isDir: this.rightClickSelectedElement.value.isDir
       };
-      data.relativePathWithoutLabel = data.oldRelativePath.substr(0, data.oldRelativePath.length - data.oldLabel.length);
+      data.relativePathWithoutLabel = UtilsService.resolvePathOnly(data.oldLabel, data.oldRelativePath);
       data.newRelativePath = data.relativePathWithoutLabel + data.newLabel;
 
       this.globalComponentsService.loader.open();
@@ -718,10 +718,46 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
-  onDragEnd: any = (item, dropItem, args, dropPosition, tree): boolean => {
-    if (dropPosition === 'inside' && dropItem.value.isDir !== true) {
-      alert("You can't move into file");
+  moveInner(item: any, dropItem: any, args: any, dropPosition: string) {
+    console.log(item.value.relativePath);
+    console.log(dropItem.value.relativePath);
+    console.log(dropPosition);
+  }
+
+  resolveTargetPathForDragAndDrop(dropItem: any, dropPosition: string) {
+    if (dropPosition === 'inside') {
+      return dropItem.value.isDir === true ? dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH : UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
     }
+
+    if (dropPosition !== 'before' && dropPosition !== 'after') {
+      throw 'Unknown drop position [' + dropPosition + ']';
+    }
+
+    return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
+  }
+
+  onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
+    const targetPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
+
+    if (targetPath === undefined) {
+      return false;
+    }
+
+    if (targetPath === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
+      return false;
+    }
+
+    const opts = {
+      title: 'Confirm item move',
+      label: 'Are you sure you want to move a [' + item.value.relativePath + '] to [' + targetPath + '] ?',
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed === true) {
+          this.moveInner(item, dropItem, args, dropPosition);
+        }
+      }
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
 
     return false;
   };

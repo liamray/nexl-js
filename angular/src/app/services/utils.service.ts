@@ -45,4 +45,8 @@ export class UtilsService {
     UtilsService.SERVER_INFO = serverInfo;
     UtilsService.IS_WIN = UtilsService.SERVER_INFO.OS.toLocaleLowerCase().indexOf('win') >= 0
   }
+
+  static resolvePathOnly(label: string, relativePath: string) {
+    return relativePath.substr(0, relativePath.length - label.length)
+  }
 }
