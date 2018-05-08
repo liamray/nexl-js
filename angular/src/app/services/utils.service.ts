@@ -47,6 +47,6 @@ export class UtilsService {
   }
 
   static resolvePathOnly(label: string, relativePath: string) {
-    return relativePath.substr(0, relativePath.length - label.length)
+    return relativePath.substr(0, relativePath.length - label.length - 1)
   }
 }

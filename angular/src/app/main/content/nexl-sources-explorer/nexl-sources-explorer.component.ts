@@ -96,7 +96,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.tree.updateItem(item, item);
   }
 
-  expandItemWrapper(item: any) {
+  expandItem(item: any) {
     while (item.parentElement !== null) {
       this.tree.expandItem(item);
       item = item.parentElement;
@@ -129,7 +129,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.expandItemWrapper(item);
+    this.expandItem(item);
     this.tree.selectItem(item);
   }
 
@@ -290,7 +290,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         isDir: this.rightClickSelectedElement.value.isDir
       };
       data.relativePathWithoutLabel = UtilsService.resolvePathOnly(data.oldLabel, data.oldRelativePath);
-      data.newRelativePath = data.relativePathWithoutLabel + data.newLabel;
+      data.newRelativePath = data.relativePathWithoutLabel + UtilsService.SERVER_INFO.SLASH + data.newLabel;
 
       this.globalComponentsService.loader.open();
 
@@ -371,13 +371,16 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   onExpand(event: any) {
     let item = event.args.element;
-    this.expandInner(item);
+    this.loadChildItems(item);
   }
 
-  expandInner(item: any, callback?: () => void) {
+  loadChildItems(item: any, callback?: () => void) {
     const element: any = this.tree.getItem(item);
     const value: any = element.value;
     if (!value.mustLoadChildItems) {
+      if (callback) {
+        callback();
+      }
       return;
     }
 
@@ -476,7 +479,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     allItems.forEach((treeItem: any) => {
       if (treeItem.value !== null && treeItem.value.relativePath === item.value.relativePath) {
         // expanding
-        this.expandItemWrapper(treeItem);
+        this.expandItem(treeItem);
         // selecting
         this.tree.selectItem(treeItem);
         // marking as changed
@@ -498,7 +501,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   insertFileItemInner(item: any) {
     if (this.rightClickSelectedElement !== undefined) {
-      this.expandItemWrapper(this.rightClickSelectedElement.element);
+      this.expandItem(this.rightClickSelectedElement.element);
     }
 
     // loading child items
@@ -555,7 +558,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
       // is item still not expanded ?
       if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
-        this.expandInner(this.rightClickSelectedElement.element, () => {
+        this.loadChildItems(this.rightClickSelectedElement.element, () => {
           this.insertFileItem(item);
         });
         return;
@@ -718,15 +721,37 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
-  moveInner(item: any, dropItem: any, args: any, dropPosition: string) {
-    console.log(item.value.relativePath);
-    console.log(dropItem.value.relativePath);
-    console.log(dropPosition);
+  moveInnerInner() {
+    this.globalComponentsService.notification.openInfo('Moving...');
+  }
+
+  moveInner(item: any, targetPathOnly: any) {
+    console.log(targetPathOnly);
+    const targetDirItem = this.findItemByRelativePath(targetPathOnly);
+    if (targetDirItem === undefined) {
+      return;
+    }
+
+    this.loadChildItems(targetDirItem.element, () => {
+      // expanding in UI
+      this.expandItem(targetDirItem.element);
+      // checking is target item already exists
+      const targetRelativePath = targetPathOnly + UtilsService.SERVER_INFO.SLASH + item.value.label;
+      const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
+      if (targetItemCandidate !== undefined) {
+        this.globalComponentsService.notification.openError('The [' + targetPathOnly + '] directory already contains a [' + item.value.label + '] item');
+        return;
+      }
+
+      // moving...
+      this.moveInnerInner();
+    });
+
   }
 
   resolveTargetPathForDragAndDrop(dropItem: any, dropPosition: string) {
     if (dropPosition === 'inside') {
-      return dropItem.value.isDir === true ? dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH : UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
+      return dropItem.value.isDir === true ? dropItem.value.relativePath : UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
     }
 
     if (dropPosition !== 'before' && dropPosition !== 'after') {
@@ -737,24 +762,24 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
-    const targetPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
+    const targetPathOnly = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
 
     // are item and dropItem on same directory level ?
-    if (targetPath === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
+    if (targetPathOnly === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
       return false;
     }
 
     // is item is a part of dropItem ?
-    if (targetPath.indexOf(item.value.relativePath) === 0) {
+    if (targetPathOnly.indexOf(item.value.relativePath) === 0) {
       return false;
     }
 
     const opts = {
       title: 'Confirm item move',
-      label: 'Are you sure you want to move a [' + item.value.relativePath + '] to [' + targetPath + '] ?',
+      label: 'Are you sure you want to move a [' + item.value.relativePath + '] to [' + targetPathOnly + UtilsService.SERVER_INFO.SLASH + '] ?',
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed === true) {
-          this.moveInner(item, dropItem, args, dropPosition);
+          this.moveInner(item, targetPathOnly);
         }
       }
     };
