@@ -337,7 +337,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   insertDirItem(relativePath: string, newDirName: string) {
-    // item still not expanded
+    // item still not expanded, so we don't need to add it to the tree
     if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
       return;
     }
@@ -726,6 +726,18 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
+  resolveTargetPathForDragAndDrop(dropItem: any, dropPosition: string) {
+    if (dropPosition === 'inside') {
+      return dropItem.value.isDir === true ? dropItem.value.relativePath : UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
+    }
+
+    if (dropPosition !== 'before' && dropPosition !== 'after') {
+      throw 'Unknown drop position [' + dropPosition + ']';
+    }
+
+    return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
+  }
+
   moveItemInner() {
     this.globalComponentsService.notification.openInfo('Moving...');
   }
@@ -750,19 +762,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       // moving...
       this.moveItemInner();
     });
-
-  }
-
-  resolveTargetPathForDragAndDrop(dropItem: any, dropPosition: string) {
-    if (dropPosition === 'inside') {
-      return dropItem.value.isDir === true ? dropItem.value.relativePath : UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
-    }
-
-    if (dropPosition !== 'before' && dropPosition !== 'after') {
-      throw 'Unknown drop position [' + dropPosition + ']';
-    }
-
-    return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
   }
 
   onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
