@@ -336,7 +336,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return item.relativePath.replace(/([/\\][^\\/]*)$/, '');
   }
 
-  insertDirItem(relativePath: string, newDirName: string) {
+  insertDirItem(newDirRelativePath: string, newDirName: string) {
     // item still not expanded, so we don't need to add it to the tree
     if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
       return;
@@ -347,7 +347,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     // sub dir is empty
     if (childItems.length < 1) {
-      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), this.rightClickSelectedElement);
+      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
       return;
     }
 
@@ -361,12 +361,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     // add last
     if (index >= childItems.length) {
-      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), childItems[childItems.length - 1]);
+      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), childItems[childItems.length - 1]);
       return;
     }
 
     // add others
-    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(relativePath, newDirName), childItems[index]);
+    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), childItems[index]);
   }
 
   onExpand(event: any) {
@@ -413,18 +413,18 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
+    const newDirRelativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
 
-    if (this.findItemByRelativePath(relativePath) !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + relativePath + '] item is already exists');
+    if (this.findItemByRelativePath(newDirRelativePath) !== undefined) {
+      this.globalComponentsService.notification.openError('The [' + newDirRelativePath + '] item is already exists');
       return;
     }
 
     this.globalComponentsService.loader.open();
 
-    this.nexlSourcesService.makeDir(relativePath).subscribe(
+    this.nexlSourcesService.makeDir(newDirRelativePath).subscribe(
       () => {
-        this.insertDirItem(relativePath, newDirName);
+        this.insertDirItem(newDirRelativePath, newDirName);
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Created new directory');
       },
@@ -738,57 +738,58 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
   }
 
-  moveItemInner() {
+  moveItemInner(item2Move: string, dropPath: string) {
     this.globalComponentsService.notification.openInfo('Moving...');
+    // this.insertDirItem();
   }
 
-  moveItem(item: any, targetPathOnly: any) {
-    const targetDirItem = this.findItemByRelativePath(targetPathOnly);
-    if (targetDirItem === undefined) {
+  moveItem(item2Move: any, dropPath: any) {
+    const dropItem = this.findItemByRelativePath(dropPath);
+    if (dropItem === undefined) {
       return;
     }
 
-    this.loadChildItems(targetDirItem.element, () => {
+    this.loadChildItems(dropItem.element, () => {
       // expanding in UI
-      this.expandItem(targetDirItem.element);
-      // checking is target item already exists
-      const targetRelativePath = targetPathOnly + UtilsService.SERVER_INFO.SLASH + item.value.label;
+      this.expandItem(dropItem.element);
+      // checking is target item2Move already exists
+      const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
       const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
       if (targetItemCandidate !== undefined) {
-        this.globalComponentsService.notification.openError('The [' + targetPathOnly + '] directory already contains a [' + item.value.label + '] item');
+        this.globalComponentsService.notification.openError('The [' + dropPath + '] directory already contains a [' + item2Move.value.label + '] item2Move');
         return;
       }
 
       // moving...
-      this.moveItemInner();
+      this.moveItemInner(item2Move, dropPath);
     });
   }
 
-  onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
+  onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
       this.globalComponentsService.notification.openError('No write permissions to move an item');
       return;
     }
 
-    const targetPathOnly = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
+    const dropPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
 
     // are item and dropItem on same directory level ?
-    if (targetPathOnly === UtilsService.resolvePathOnly(item.value.label, item.value.relativePath)) {
+    if (dropPath === UtilsService.resolvePathOnly(item2Move.value.label, item2Move.value.relativePath)) {
       return false;
     }
 
     // is item is a part of dropItem ?
-    if (targetPathOnly.indexOf(item.value.relativePath) === 0) {
+    if (dropPath.indexOf(item2Move.value.relativePath) === 0) {
       return false;
     }
 
     const opts = {
       title: 'Confirm item move',
-      label: 'Are you sure you want to move a [' + item.value.relativePath + '] to [' + targetPathOnly + UtilsService.SERVER_INFO.SLASH + '] ?',
+      label: 'Are you sure you want to move a [' + item2Move.value.relativePath + '] to [' + dropPath + UtilsService.SERVER_INFO.SLASH + '] ?',
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed === true) {
-          this.moveItem(item, targetPathOnly);
+          this.moveItem(item2Move, dropPath);
         }
       }
     };
