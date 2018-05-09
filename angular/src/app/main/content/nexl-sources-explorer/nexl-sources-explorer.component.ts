@@ -336,24 +336,24 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return item.relativePath.replace(/([/\\][^\\/]*)$/, '');
   }
 
-  insertDirItem(newDirRelativePath: string, newDirName: string) {
+  insertDirItem(item2Add: any, addTo: any) {
     // item still not expanded, so we don't need to add it to the tree
-    if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
+    if (addTo !== undefined && addTo.value.mustLoadChildItems === true) {
       return;
     }
 
     // loading child items
-    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
+    const childItems = this.getFirstLevelChildren(addTo);
 
     // sub dir is empty
     if (childItems.length < 1) {
-      this.tree.addTo(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
+      this.tree.addTo(item2Add, addTo);
       return;
     }
 
     let index = 0;
     while (index < childItems.length) {
-      if (newDirName.toLocaleLowerCase() < childItems[index].value.label.toLocaleLowerCase() || childItems[index].value.isDir !== true) {
+      if (item2Add.label.toLocaleLowerCase() < childItems[index].value.label.toLocaleLowerCase() || childItems[index].value.isDir !== true) {
         break;
       }
       index++;
@@ -361,12 +361,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     // add last
     if (index >= childItems.length) {
-      this.tree.addAfter(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), childItems[childItems.length - 1]);
+      this.tree.addAfter(item2Add, childItems[childItems.length - 1]);
       return;
     }
 
     // add others
-    this.tree.addBefore(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), childItems[index]);
+    this.tree.addBefore(item2Add, childItems[index]);
   }
 
   onExpand(event: any) {
@@ -424,7 +424,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     this.nexlSourcesService.makeDir(newDirRelativePath).subscribe(
       () => {
-        this.insertDirItem(newDirRelativePath, newDirName);
+        this.insertDirItem(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Created new directory');
       },
@@ -738,9 +738,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
   }
 
-  moveItemInner(item2Move: string, dropPath: string) {
+  moveItemInner(item2Move: any, dropItem: any) {
     this.globalComponentsService.notification.openInfo('Moving...');
-    // this.insertDirItem();
+    const item2Add = NexlSourcesService.makeEmptyDirItem(dropItem.value.relativePath, item2Move.value.label);
+    this.insertDirItem(item2Add, dropItem);
   }
 
   moveItem(item2Move: any, dropPath: any) {
@@ -761,7 +762,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       }
 
       // moving...
-      this.moveItemInner(item2Move, dropPath);
+      // this.moveItemInner(item2Move, dropItem);
     });
   }
 
