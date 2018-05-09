@@ -403,6 +403,38 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     );
   }
 
+  newDirInner(newDirName: string) {
+    if (newDirName === undefined) {
+      return;
+    }
+
+    if (!UtilsService.isFileNameValid(newDirName)) {
+      this.globalComponentsService.notification.openError('The [' + newDirName + '] directory name contains forbidden characters');
+      return;
+    }
+
+    const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
+
+    if (this.findItemByRelativePath(relativePath) !== undefined) {
+      this.globalComponentsService.notification.openError('The [' + relativePath + '] item is already exists');
+      return;
+    }
+
+    this.globalComponentsService.loader.open();
+
+    this.nexlSourcesService.makeDir(relativePath).subscribe(
+      () => {
+        this.insertDirItem(relativePath, newDirName);
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openSuccess('Created new directory');
+      },
+      (err) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openError('Failed to create a new directory\nReason : ' + err.statusText);
+      }
+    );
+  }
+
   newDir() {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
@@ -411,35 +443,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     this.globalComponentsService.inputBox.open('Making new directory', 'Directory name', '', (newDirName: string) => {
-      if (newDirName === undefined) {
-        return;
-      }
-
-      if (!UtilsService.isFileNameValid(newDirName)) {
-        this.globalComponentsService.notification.openError('The [' + newDirName + '] directory name contains forbidden characters');
-        return;
-      }
-
-      const relativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
-
-      if (this.findItemByRelativePath(relativePath) !== undefined) {
-        this.globalComponentsService.notification.openError('The [' + relativePath + '] item is already exists');
-        return;
-      }
-
-      this.globalComponentsService.loader.open();
-
-      this.nexlSourcesService.makeDir(relativePath).subscribe(
-        () => {
-          this.insertDirItem(relativePath, newDirName);
-          this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openSuccess('Created new directory');
-        },
-        (err) => {
-          this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openError('Failed to create a new directory\nReason : ' + err.statusText);
-        }
-      );
+      this.newDirInner(newDirName);
     });
   }
 
