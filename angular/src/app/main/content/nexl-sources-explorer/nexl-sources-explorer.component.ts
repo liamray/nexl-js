@@ -740,8 +740,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   moveItemInner(item2Move: any, dropItem: any) {
     this.globalComponentsService.notification.openInfo('Moving...');
-    const item2Add = NexlSourcesService.makeEmptyDirItem(dropItem.value.relativePath, item2Move.value.label);
+    const item2Add: any = NexlSourcesService.makeEmptyDirItem(dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label, item2Move.value.label);
+    item2Add.value.mustLoadChildItems = false;
+    item2Add.items = [{label: 'xxx'}, {label: 'yyy'}];
     this.insertDirItem(item2Add, dropItem);
+    // expanding in UI
+    this.expandItem(dropItem.element);
   }
 
   moveItem(item2Move: any, dropPath: any) {
@@ -751,8 +755,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     this.loadChildItems(dropItem.element, () => {
-      // expanding in UI
-      this.expandItem(dropItem.element);
       // checking is target item2Move already exists
       const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
       const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
@@ -762,7 +764,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       }
 
       // moving...
-      // this.moveItemInner(item2Move, dropItem);
+      this.moveItemInner(item2Move, dropItem);
     });
   }
 
