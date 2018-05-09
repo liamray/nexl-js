@@ -738,12 +738,25 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
   }
 
-  moveItemInner(item2Move: any, dropItem: any) {
-    this.globalComponentsService.notification.openInfo('Moving...');
-    const item2Add: any = NexlSourcesService.makeEmptyDirItem(dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label, item2Move.value.label);
+  moveFileItem(item2Move: any, dropItem: any) {
+    alert('Still not implemented');
+  }
+
+  moveDirItem(item2Move: any, dropItem: any) {
+    let relativePath = dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
+    const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
     item2Add.value.mustLoadChildItems = false;
     item2Add.items = [{label: 'xxx'}, {label: 'yyy'}];
     this.insertDirItem(item2Add, dropItem);
+  }
+
+  moveItemInner(item2Move: any, dropItem: any) {
+    if (item2Move.value.isDir === true) {
+      this.moveDirItem(item2Move, dropItem);
+    } else {
+      this.moveFileItem(item2Move, dropItem);
+    }
+
     // expanding in UI
     this.expandItem(dropItem.element);
   }
