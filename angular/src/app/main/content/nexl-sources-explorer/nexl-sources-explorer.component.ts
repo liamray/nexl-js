@@ -404,6 +404,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   newDir() {
+    // does use have write permissions ?
     if (this.hasWritePermission !== true) {
       this.globalComponentsService.notification.openError('No write permissions to create a directory');
       return;
@@ -721,12 +722,11 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     });
   }
 
-  moveInnerInner() {
+  moveItemInner() {
     this.globalComponentsService.notification.openInfo('Moving...');
   }
 
-  moveInner(item: any, targetPathOnly: any) {
-    console.log(targetPathOnly);
+  moveItem(item: any, targetPathOnly: any) {
     const targetDirItem = this.findItemByRelativePath(targetPathOnly);
     if (targetDirItem === undefined) {
       return;
@@ -744,7 +744,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       }
 
       // moving...
-      this.moveInnerInner();
+      this.moveItemInner();
     });
 
   }
@@ -762,6 +762,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   onDragEnd: any = (item, dropItem, args, dropPosition, tree) => {
+    // does use have write permissions ?
+    if (this.hasWritePermission !== true) {
+      this.globalComponentsService.notification.openError('No write permissions to move an item');
+      return;
+    }
+
     const targetPathOnly = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
 
     // are item and dropItem on same directory level ?
@@ -779,7 +785,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       label: 'Are you sure you want to move a [' + item.value.relativePath + '] to [' + targetPathOnly + UtilsService.SERVER_INFO.SLASH + '] ?',
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed === true) {
-          this.moveInner(item, targetPathOnly);
+          this.moveItem(item, targetPathOnly);
         }
       }
     };
