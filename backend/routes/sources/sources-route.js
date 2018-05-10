@@ -11,7 +11,43 @@ const fsx = require('../../api/fsx');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
-// rename-item
+// move item
+//////////////////////////////////////////////////////////////////////////////
+router.post('/move', function (req, res, next) {
+	let source = req.body['source'];
+	let dest = req.body['dest'];
+
+	// validating ( must not empty string )
+	if (!j79.isString(source) || source.length < 1) {
+		logger.log.error('Invalid source item');
+		utils.sendError(res, 'Invalid source item');
+		return;
+	}
+
+	// validating
+	if (!j79.isString(dest)) {
+		logger.log.error('Invalid dest item');
+		utils.sendError(res, 'Invalid dest item');
+		return;
+	}
+
+	const username = utils.getLoggedInUsername(req);
+
+	security.hasWritePermission(username).then((hasPermission) => {
+		if (!hasPermission) {
+			logger.log.error('The [%s] user doesn\'t have write permissions to move items', username);
+			return Promise.reject('No write permissions');
+		}
+
+		return sources.move(source, dest).then(() => res.send({}));
+	}).catch((err) => {
+		logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, err);
+		utils.sendError(res, err);
+	});
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// rename item
 //////////////////////////////////////////////////////////////////////////////
 router.post('/rename', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
@@ -47,7 +83,7 @@ router.post('/rename', function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// delete-item
+// delete item
 //////////////////////////////////////////////////////////////////////////////
 router.post('/delete', function (req, res, next) {
 	let relativePath = req.body['relativePath'];

@@ -750,6 +750,19 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.insertDirItem(item2Add, dropItem);
   }
 
+  moveItemInnerInner(item2Move: any, dropItem: any) {
+    if (item2Move.value.isDir === true) {
+      this.moveDirItem(item2Move, dropItem);
+    } else {
+      this.moveFileItem(item2Move, dropItem);
+    }
+
+    // expanding in UI
+    this.expandItem(dropItem.element);
+
+    this.globalComponentsService.loader.close();
+  }
+
   moveItemInner(item2Move: any, dropPath: string, dropItem: any) {
     // checking is target item2Move already exists
     const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
@@ -759,14 +772,19 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    if (item2Move.value.isDir === true) {
-      this.moveDirItem(item2Move, dropItem);
-    } else {
-      this.moveFileItem(item2Move, dropItem);
-    }
+    this.globalComponentsService.loader.open();
 
-    // expanding in UI
-    this.expandItem(dropItem.element);
+    // move on server
+    this.nexlSourcesService.moveItem(item2Move.value.relativePath, dropPath).subscribe(
+      () => {
+        this.moveItemInnerInner(item2Move, dropItem);
+      },
+      (err) => {
+        console.log(err);
+        this.globalComponentsService.notification.openError(err.statusText);
+        this.globalComponentsService.loader.close();
+      }
+    );
   }
 
   moveItem(item2Move: any, dropPath: string) {

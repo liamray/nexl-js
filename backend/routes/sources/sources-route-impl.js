@@ -203,6 +203,41 @@ function rename(relativePath, newRelativePath) {
 	);
 }
 
+function moveInner(sourceStuff, destStuff) {
+	return fsx.exists(sourceStuff.fullPath).then(
+		(isSrcExists) => {
+			if (!isSrcExists) {
+				logger.log.error('Failed to move a [%s] source item to [%s] destination item. Reason : source item doesn\'t exist', sourceStuff.fullPath, destStuff.fullPath);
+				return Promise.reject('Source item doesn\'t exist');
+			}
+
+			return fsx.exists(destStuff.fullPath).then(
+				(isDestExists) => {
+					if (isDestExists) {
+						logger.log.error('Failed to move a [%s] source item to [%s] destination item. Reason : destination item already exists', sourceStuff.fullPath, destStuff.fullPath);
+						return Promise.reject('Destination item already exist');
+					}
+
+					// moving...
+					return fsx.move(sourceStuff.fullPath, destStuff.fullPath);
+				}
+			);
+		}
+	);
+}
+
+function move(source, dest) {
+	return resolveFullPath(source).then(
+		(sourceStuff) => {
+			return resolveFullPath(dest).then(
+				(destStuff) => {
+					return moveInner(sourceStuff, destStuff);
+				}
+			);
+		}
+	);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.listNexlSources = listNexlSources;
 module.exports.loadNexlSource = loadNexlSource;
@@ -210,4 +245,5 @@ module.exports.saveNexlSource = saveNexlSource;
 module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
+module.exports.move = move;
 // --------------------------------------------------------------------------------

@@ -7,6 +7,7 @@ const LIST_NEXL_SOURCES_URL = UtilsService.prefixUrl('/sources/list-nexl-sources
 const MAKE_DIR = UtilsService.prefixUrl('/sources/make-dir');
 const DELETE_ITEM = UtilsService.prefixUrl('/sources/delete');
 const RENAME_ITEM = UtilsService.prefixUrl('/sources/rename');
+const MOVE_ITEM = UtilsService.prefixUrl('/sources/move');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
@@ -94,5 +95,14 @@ export class NexlSourcesService {
     };
 
     return this.httpClient.post<any>(RENAME_ITEM, params);
+  }
+
+  moveItem(source: string, dest: string) {
+    const params = {
+      source: source,
+      dest: dest
+    };
+
+    return this.httpClient.post<any>(MOVE_ITEM, params);
   }
 }

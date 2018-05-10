@@ -132,6 +132,10 @@ function rename(oldName, newName) {
 		});
 }
 
+function move(src, dest) {
+	return Promise.reject('Still not implemented');
+}
+
 // --------------------------------------------------------------------------------
 module.exports.join = join;
 module.exports.mkdir = mkdir;
