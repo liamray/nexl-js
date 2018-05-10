@@ -750,7 +750,15 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.insertDirItem(item2Add, dropItem);
   }
 
-  moveItemInner(item2Move: any, dropItem: any) {
+  moveItemInner(item2Move: any, dropPath: string, dropItem: any) {
+    // checking is target item2Move already exists
+    const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
+    const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
+    if (targetItemCandidate !== undefined) {
+      this.globalComponentsService.notification.openError('The [' + dropPath + UtilsService.SERVER_INFO.SLASH + '] directory already contains a [' + item2Move.value.label + '] item');
+      return;
+    }
+
     if (item2Move.value.isDir === true) {
       this.moveDirItem(item2Move, dropItem);
     } else {
@@ -761,23 +769,15 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.expandItem(dropItem.element);
   }
 
-  moveItem(item2Move: any, dropPath: any) {
+  moveItem(item2Move: any, dropPath: string) {
     const dropItem = this.findItemByRelativePath(dropPath);
     if (dropItem === undefined) {
+      this.moveItemInner(item2Move, dropPath, dropItem);
       return;
     }
 
     this.loadChildItems(dropItem.element, () => {
-      // checking is target item2Move already exists
-      const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
-      const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
-      if (targetItemCandidate !== undefined) {
-        this.globalComponentsService.notification.openError('The [' + dropPath + '] directory already contains a [' + item2Move.value.label + '] item2Move');
-        return;
-      }
-
-      // moving...
-      this.moveItemInner(item2Move, dropItem);
+      this.moveItemInner(item2Move, dropPath, dropItem);
     });
   }
 
@@ -785,7 +785,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
       this.globalComponentsService.notification.openError('No write permissions to move an item');
-      return;
+      return false;
     }
 
     const dropPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
