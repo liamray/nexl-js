@@ -219,7 +219,7 @@ function moveInner(sourceStuff, destStuff) {
 					}
 
 					// moving...
-					return fsx.move(sourceStuff.fullPath, destStuff.fullPath);
+					return fsx.rename(sourceStuff.fullPath, destStuff.fullPath);
 				}
 			);
 		}

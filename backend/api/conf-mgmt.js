@@ -343,7 +343,7 @@ function saveAsync(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
 
 	if (!isConfFileDeclared(fileName)) {
-		logger.log.error('The [%s] file is undeclared and cannot be saved');
+		logger.log.error('The [%s] file is undeclared and cannot be saved', fileName);
 		return Promise.reject('Undeclared configuration file cannot be saved');
 	}
 
