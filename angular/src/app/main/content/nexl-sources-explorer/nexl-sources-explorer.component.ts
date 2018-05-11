@@ -743,7 +743,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   moveDirItem(item2Move: any, dropItem: any) {
-    let relativePath = dropItem.value.relativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
+    const dropItemRelativePath = dropItem === undefined ? '' : dropItem.value.relativePath;
+    const relativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
     const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
     item2Add.value.mustLoadChildItems = false;
     item2Add.items = [{label: 'xxx'}, {label: 'yyy'}];
@@ -758,7 +759,9 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     // expanding in UI
-    this.expandItem(dropItem.element);
+    if (dropItem !== undefined) {
+      this.expandItem(dropItem.element);
+    }
 
     this.globalComponentsService.loader.close();
   }

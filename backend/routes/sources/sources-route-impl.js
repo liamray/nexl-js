@@ -211,15 +211,17 @@ function moveInner(sourceStuff, destStuff) {
 				return Promise.reject('Source item doesn\'t exist');
 			}
 
-			return fsx.exists(destStuff.fullPath).then(
+			const destItem = path.join(destStuff.fullPath, path.basename(sourceStuff.fullPath));
+
+			return fsx.exists(destItem).then(
 				(isDestExists) => {
 					if (isDestExists) {
-						logger.log.error('Failed to move a [%s] source item to [%s] destination item. Reason : destination item already exists', sourceStuff.fullPath, destStuff.fullPath);
+						logger.log.error('Failed to move a [%s] source item to [%s] destination item. Reason : destination item already exists', sourceStuff.fullPath, destItem);
 						return Promise.reject('Destination item already exist');
 					}
 
 					// moving...
-					return fsx.rename(sourceStuff.fullPath, destStuff.fullPath);
+					return fsx.move(sourceStuff.fullPath, destItem);
 				}
 			);
 		}

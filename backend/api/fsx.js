@@ -132,6 +132,9 @@ function rename(oldName, newName) {
 		});
 }
 
+function move(src, dest) {
+	return fsextra.move(src, dest, {override: false});
+}
 
 // --------------------------------------------------------------------------------
 module.exports.join = join;
@@ -143,4 +146,5 @@ module.exports.stat = stat;
 module.exports.readdir = readdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
+module.exports.move = move;
 // --------------------------------------------------------------------------------
