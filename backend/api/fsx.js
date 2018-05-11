@@ -111,7 +111,7 @@ function deleteItem(fullPath) {
 			return Promise.resolve();
 		})
 		.catch(err => {
-			logger.log.error('Failed to delete the [%s] item. Reason : [%s]', utils.formatErr(err));
+			logger.log.error('Failed to delete the [%s] item. Reason : [%s]', fullPath, utils.formatErr(err));
 			return Promise.reject('Internal FS error');
 		});
 }
