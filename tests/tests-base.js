@@ -23,22 +23,27 @@ if (fs.existsSync(nexlSoucesDir)) {
 }
 fs.mkdirSync(nexlSoucesDir);
 
-const confMgmt = require('../backend/api/conf-mgmt');
-
-const conf = {
-	version: version,
-	data: {}
-};
-
-conf.data[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSoucesDir;
-
-const settingsFile = path.join(nexlHomeDir, confMgmt.CONF_FILES.SETTINGS);
-
-// updating nexl source dir in settings
-fs.writeFileSync(settingsFile, JSON.stringify(conf, null, 2), confMgmt.ENCODING_UTF8);
+// todo : replace with original confMgmg promised
+	const confMgmt = require('../backend/api/conf-mgmt');
+	const conf = {
+		version: version,
+		data: {}
+	};
+	conf.data[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSoucesDir;
+	const settingsFile = path.join(nexlHomeDir, confMgmt.CONF_FILES.SETTINGS);
+	// updating nexl source dir in settings
+	fs.writeFileSync(settingsFile, JSON.stringify(conf, null, 2), confMgmt.ENCODING_UTF8);
 
 console.log('nexl home dir is [%s]', confMgmt.NEXL_HOME_DIR);
 console.log('nexl sources dir is [%s]', nexlSoucesDir);
 
-module.exports.NEXL_SOURCES_DIR = nexlSoucesDir;
-module.exports.NEXL_HOME_DIR = nexlHomeDir;
+module.exports = require('../backend/api/logger').init().then(
+	() => {
+		return Promise.resolve({
+			NEXL_SOURCES_DIR: nexlSoucesDir,
+			NEXL_HOME_DIR: nexlHomeDir
+		});
+	}
+);
+
+
