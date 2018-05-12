@@ -154,6 +154,15 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   saveNexlSource(relativePath: string) {
+    if (relativePath === undefined) {
+      const tabNr = this.nexlSourcesTabs.val();
+      if (tabNr < 0) {
+        return;
+      }
+
+      relativePath = this.resolveTabAttr(tabNr, 'relative-path');
+    }
+
     if (LocalStorageService.loadRaw(SAVE_NEXL_SOURCE_CONFIRM) === false.toString()) {
       this.saveNexlSourceInner(relativePath);
       return;
@@ -162,7 +171,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // confirming...
     const opts = {
       title: 'Confirm save',
-      label: 'Please note you can evaluate nexl expression without saving a file. Are you sure you want to save a file ?',
+      label: 'Please note if you save this file it will immediately affect all REST requests related to this file. You can evaluate nexl expression without saving a file. Are you sure you want to save a file ?',
       checkBoxText: 'Don\'t show it again',
       callback: (callbackData: any) => {
         LocalStorageService.storeRaw(SAVE_NEXL_SOURCE_CONFIRM, !callbackData.checkBoxVal);
@@ -176,15 +185,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   saveNexlSourceInner(relativePath: string, callback?: (boolean) => void) {
-    if (relativePath === undefined) {
-      const tabNr = this.nexlSourcesTabs.val();
-      if (tabNr < 0) {
-        return;
-      }
-
-      relativePath = this.resolveTabAttr(tabNr, 'relative-path');
-    }
-
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
     const content = ace.edit(TAB_CONTENT + tabInfo.idSeqNr).getValue();
 
