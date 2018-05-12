@@ -49,4 +49,24 @@ export class UtilsService {
   static resolvePathOnly(label: string, relativePath: string) {
     return relativePath.substr(0, relativePath.length - label.length - 1)
   }
+
+  static isPathEqual(path1: string, path2: string) {
+    if (!UtilsService.IS_WIN) {
+      return path1 === path2;
+    }
+
+    path1 = path1 ? path1.toLocaleLowerCase() : path1;
+    path2 = path2 ? path2.toLocaleLowerCase() : path2;
+    return path1 === path2;
+  }
+
+  static pathIndexOf(path1: string, path2: string) {
+    if (!UtilsService.IS_WIN) {
+      return path1.indexOf(path2);
+    }
+
+    path1 = path1 ? path1.toLocaleLowerCase() : path1;
+    path2 = path2 ? path2.toLocaleLowerCase() : path2;
+    return path1.indexOf(path2);
+  }
 }

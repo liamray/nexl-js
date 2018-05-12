@@ -113,17 +113,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     // iterating over all tree items
     const allItems: any[] = this.tree.getItems();
 
-    if (UtilsService.IS_WIN) {
-      relativePath = relativePath.toLocaleLowerCase();
-    }
-
     for (let index in allItems) {
       let item = allItems[index];
       if (item.value === null) {
         continue;
       }
-      const itemRelativePath = UtilsService.IS_WIN ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
-      if (itemRelativePath === relativePath) {
+      if (UtilsService.isPathEqual(relativePath, item.value.relativePath)) {
         return item;
       }
     }
@@ -220,9 +215,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   itemMoved(data: any) {
     let oldRelativePath = data.oldRelativePath;
-    if (UtilsService.IS_WIN) {
-      oldRelativePath = oldRelativePath.toLocaleLowerCase();
-    }
 
     const allItems: any[] = this.tree.getItems();
 
@@ -233,10 +225,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         continue;
       }
 
-      let itemRelativePath = UtilsService.IS_WIN ? item.value.relativePath.toLocaleLowerCase() : item.value.relativePath;
+      let itemRelativePath = item.value.relativePath;
 
       // is it the item which was renamed ?
-      if (itemRelativePath === oldRelativePath) {
+      if (UtilsService.isPathEqual(itemRelativePath, oldRelativePath)) {
         item.value.label = data.newLabel;
         item.value.relativePath = data.newRelativePath;
         item.label = this.makeItemLabel(item.value);
@@ -744,7 +736,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       }
 
       const path = UtilsService.resolvePathOnly(item.value.label, item.value.relativePath);
-      if (path !== rootItem.relativePath) {
+      if (UtilsService.isPathEqual(path, rootItem.relativePath)) {
         return;
       }
 
@@ -815,7 +807,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     // updating tabs
-    this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {});
+    this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {
+      oldRelativePath: item2Move.value.relativePath,
+      oldLabel: item2Move.value.label,
+      newRelativePath: dropItem === undefined ? '' : dropItem.value.relativePath,
+      isDir: item2Move.value.isDir
+    });
 
     this.globalComponentsService.loader.close();
   }
