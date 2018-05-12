@@ -827,6 +827,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       this.expandItem(dropItem.element);
     }
 
+    // updating tabs
+    this.messageService.sendMessage({
+      type: MESSAGE_TYPE.ITEM_MOVED,
+      data: {}
+    });
+
     this.globalComponentsService.loader.close();
   }
 
