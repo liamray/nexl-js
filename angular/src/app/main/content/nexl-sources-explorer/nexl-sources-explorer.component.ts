@@ -266,6 +266,11 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
+    if (!this.hasWritePermission) {
+      this.globalComponentsService.notification.openError('No write permissions to rename an item');
+      return;
+    }
+
     const targetItem = this.rightClickSelectedElement.value.label;
     this.globalComponentsService.inputBox.open('Rename', 'Renaming [' + targetItem + '] ' + this.itemType(), targetItem, (newLabel: string) => {
 
@@ -645,6 +650,11 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   deleteItem() {
     if (this.rightClickSelectedElement === undefined) {
+      return;
+    }
+
+    if (!this.hasWritePermission) {
+      this.globalComponentsService.notification.openError('No write permissions to delete an item');
       return;
     }
 
