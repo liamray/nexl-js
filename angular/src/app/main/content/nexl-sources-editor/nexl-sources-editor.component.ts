@@ -148,7 +148,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
         isChanged: isChanged,
-        relativePath: $('#' + TAB_CONTENT + idSeqNr).attr('relative-path')
+        relativePath: this.getTabContentAttr(idSeqNr, 'relative-path')
       }
     );
   }
@@ -272,6 +272,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     $('#' + TAB_CONTENT + idSeqNr).attr(key, value);
   }
 
+  private getTabContentAttr(idSeqNr: string | number, key: string) {
+    return $('#' + TAB_CONTENT + idSeqNr).attr(key);
+  }
+
   setTabTitleAttr(tabNr: number, attrName: string, attrValue: string) {
     this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.setAttribute(attrName, attrValue);
   }
@@ -352,7 +356,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   closeTabInnerInner(idSeqNr: number) {
-    const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+    const relativePath = this.getTabContentAttr(idSeqNr, 'relative-path');
 
     // ATTR_IS_NEW_FILE means is the file was created but hasn't ever saved. In this case it must be removed from the tree
     const isNewFile = $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE);
@@ -375,7 +379,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeTabInner(idSeqNr: number) {
     return new Promise((resolve, reject) => {
-      const relativePath = $('#' + TAB_CONTENT + idSeqNr).attr('relative-path');
+      const relativePath = this.getTabContentAttr(idSeqNr, 'relative-path');
 
       const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
       if (!isChanged) {
