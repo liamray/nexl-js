@@ -133,13 +133,11 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     $('#' + TITLE_ID + idSeqNr).attr('is-changed', isChanged);
 
     // sending message to tree
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.TAB_CONTENT_CHANGED,
-      data: {
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
         isChanged: isChanged,
         relativePath: $('#' + TAB_CONTENT + idSeqNr).attr('relative-path')
       }
-    });
+    );
   }
 
   saveNexlSource(relativePath: string) {
@@ -352,10 +350,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // ATTR_IS_NEW_FILE means is the file was created but hasn't ever saved. In this case it must be removed from the tree
     const isNewFile = $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE);
     if (isNewFile === true.toString()) {
-      this.messageService.sendMessage({
-        type: MESSAGE_TYPE.REMOVE_FILE_FROM_TREE,
-        data: relativePath
-      });
+      this.messageService.sendMessage(MESSAGE_TYPE.REMOVE_FILE_FROM_TREE, relativePath);
     }
 
     // destroying tooltip
@@ -421,10 +416,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     // binding click on tool tip
     $('#' + this.makeId(data, TITLE_TOOLTIP)).click(() => {
-      this.messageService.sendMessage({
-        type: MESSAGE_TYPE.SELECT_ITEM_IN_TREE,
-        data: $('#' + TITLE_TOOLTIP + data.idSeqNr).text()
-      });
+      this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, $('#' + TITLE_TOOLTIP + data.idSeqNr).text());
     });
   }
 
@@ -467,9 +459,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   sendTabsCountMsg() {
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.TABS_COUNT_CHANGED,
-      data: this.nexlSourcesTabs.length()
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.TABS_COUNT_CHANGED, this.nexlSourcesTabs.length());
   }
 }

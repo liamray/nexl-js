@@ -40,10 +40,7 @@ export class AuthService {
   refreshStatus() {
     this.resolveStatus().subscribe(
       (status: any) => {
-        this.messageService.sendMessage({
-          type: MESSAGE_TYPE.AUTH_CHANGED,
-          data: status.body
-        });
+        this.messageService.sendMessage(MESSAGE_TYPE.AUTH_CHANGED, status.body);
       },
       (err) => {
         this.globalComponentsService.notification.openError('Failed to resolve server status\nReason : ' + err.statusText);

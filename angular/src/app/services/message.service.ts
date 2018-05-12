@@ -22,8 +22,11 @@ export enum MESSAGE_TYPE {
 export class MessageService {
   private subject = new Subject<any>();
 
-  sendMessage(message: any) {
-    this.subject.next(message);
+  sendMessage(messageType: MESSAGE_TYPE, data?: any) {
+    this.subject.next({
+      type: messageType,
+      data: data
+    });
   }
 
   clearMessage() {

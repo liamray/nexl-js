@@ -260,10 +260,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   renameInner(data: any) {
     // send message to tabs to rename relative the item
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.ITEM_MOVED,
-      data: data
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, data);
 
     // rename relative path for all items in tree
     this.itemMoved(data);
@@ -454,11 +451,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   closeDeletedTabs(itemValue: any) {
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.CLOSE_DELETED_TABS,
-      data: itemValue
-    });
-
+    this.messageService.sendMessage(MESSAGE_TYPE.CLOSE_DELETED_TABS, itemValue);
   }
 
   deleteItemInnerInner(targetItem: any) {
@@ -497,13 +490,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         this.updateItem(item.value);
 
         // opening a new tab
-        this.messageService.sendMessage({
-          type: MESSAGE_TYPE.CREATE_NEXL_SOURCE,
-          data: {
-            relativePath: item.value.relativePath,
-            label: item.value.label,
-            body: text === undefined ? '' : text
-          }
+        this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEXL_SOURCE, {
+          relativePath: item.value.relativePath,
+          label: item.value.label,
+          body: text === undefined ? '' : text
         });
         return;
       }
@@ -723,12 +713,9 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.LOAD_NEXL_SOURCE,
-      data: {
-        relativePath: item.value.relativePath,
-        label: item.value.label
-      }
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_NEXL_SOURCE, {
+      relativePath: item.value.relativePath,
+      label: item.value.label
     });
   }
 
@@ -828,10 +815,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     // updating tabs
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.ITEM_MOVED,
-      data: {}
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {});
 
     this.globalComponentsService.loader.close();
   }

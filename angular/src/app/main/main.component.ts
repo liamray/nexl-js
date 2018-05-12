@@ -39,9 +39,7 @@ export class MainComponent implements OnInit {
       const key = this.discoverKeyCombination(event);
       switch (key) {
         case CTRL_S:
-          this.messageService.sendMessage({
-            type: MESSAGE_TYPE.SAVE_NEXL_SOURCE
-          });
+          this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
           event.preventDefault();
           return;
 

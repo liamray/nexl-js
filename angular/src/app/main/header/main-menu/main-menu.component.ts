@@ -47,20 +47,14 @@ export class MainMenuComponent implements AfterViewInit {
   }
 
   saveNexlSource() {
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.SAVE_NEXL_SOURCE
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
   }
 
   closeAllTabs() {
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.CLOSE_ALL_TABS
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.CLOSE_ALL_TABS);
   }
 
   createExamplesFile() {
-    this.messageService.sendMessage({
-      type: MESSAGE_TYPE.CREATE_EXAMPLES_FILE
-    });
+    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_EXAMPLES_FILE);
   }
 }
