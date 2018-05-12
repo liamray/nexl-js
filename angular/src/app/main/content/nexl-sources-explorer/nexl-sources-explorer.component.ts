@@ -736,7 +736,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       }
 
       const path = UtilsService.resolvePathOnly(item.value.label, item.value.relativePath);
-      if (UtilsService.isPathEqual(path, rootItem.relativePath)) {
+      if (!UtilsService.isPathEqual(path, rootItem.relativePath)) {
         return;
       }
 
