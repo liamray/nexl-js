@@ -98,7 +98,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   updateItems(data: any[]) {
     data.forEach((item) => {
-      this.updateItem(item);
+      this.updateItem(item.value);
     });
   }
 
