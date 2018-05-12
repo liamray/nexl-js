@@ -795,13 +795,15 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
     // creating root item
     const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
-    // this item will be collapsed
-    item2Add.value.mustLoadChildItems = item2Add.value.mustLoadChildItems;
 
     // collecting existing items under the item2Move item
     const allItems = this.tree.getItems();
     const changedFileItems = [];
-    item2Add.items = this.collectChildItems(item2Add.value, allItems, changedFileItems);
+    let childItems = this.collectChildItems(item2Move.value, allItems, changedFileItems);
+    if (childItems.length > 0) {
+      item2Add.items = childItems;
+      item2Add.value.mustLoadChildItems = false;
+    }
 
     // adding to the
     this.insertDirItem(item2Add, dropItem);
