@@ -96,6 +96,12 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.tree.updateItem(item, item);
   }
 
+  updateItems(data: any[]) {
+    data.forEach((item) => {
+      this.updateItem(item);
+    });
+  }
+
   expandItem(item: any) {
     while (item.parentElement !== null) {
       this.tree.expandItem(item);
@@ -742,13 +748,66 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     alert('Still not implemented');
   }
 
+  collectChildItems(rootItem: any, allItems: any[], changedFileItems: any[]) {
+    const result = [];
+
+    allItems.forEach((item) => {
+      if (!item.value) {
+        return;
+      }
+
+      const path = UtilsService.resolvePathOnly(item.value.label, item.value.relativePath);
+      if (path !== rootItem.relativePath) {
+        return;
+      }
+
+      let newItem;
+
+      // is dir ?
+      if (item.value.isDir === true) {
+        newItem = NexlSourcesService.makeEmptyDirItem(item.value.relativePath, item.value.label);
+        newItem.mustLoadChildItems = item.value.mustLoadChildItems;
+        // does it have sub items ?
+        if (newItem.mustLoadChildItems !== true) {
+          newItem.items = this.collectChildItems(newItem, allItems, changedFileItems);
+        }
+      }
+
+      // is file ?
+      if (item.value.isDir !== true) {
+        newItem = NexlSourcesService.makeNewFileItem(item.value.relativePath, item.value.label);
+        newItem.isChanged = item.value.isChanged;
+        newItem.isNewFile = item.value.isNewFile;
+        if (newItem.isChanged === true) {
+          changedFileItems.push(newItem);
+        }
+      }
+
+      result.push(newItem);
+    });
+
+    return result;
+  }
+
   moveDirItem(item2Move: any, dropItem: any) {
     const dropItemRelativePath = dropItem === undefined ? '' : dropItem.value.relativePath;
     const relativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
+
+    // creating root item
     const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
-    item2Add.value.mustLoadChildItems = false;
-    item2Add.items = [{label: 'xxx'}, {label: 'yyy'}];
+    // this item will be collapsed
+    item2Add.value.mustLoadChildItems = item2Add.value.mustLoadChildItems;
+
+    // collecting existing items under the item2Move item
+    const allItems = this.tree.getItems();
+    const changedFileItems = [];
+    item2Add.items = this.collectChildItems(item2Add.value, allItems, changedFileItems);
+
+    // adding to the
     this.insertDirItem(item2Add, dropItem);
+
+    // updating changed files
+    this.updateItems(changedFileItems);
   }
 
   moveItemInnerInner(item2Move: any, dropItem: any) {
@@ -757,6 +816,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     } else {
       this.moveFileItem(item2Move, dropItem);
     }
+
+    this.tree.removeItem(item2Move);
 
     // expanding in UI
     if (dropItem !== undefined) {
