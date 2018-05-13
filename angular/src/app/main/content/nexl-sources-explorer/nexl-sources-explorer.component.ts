@@ -473,41 +473,27 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.insertFileItemInner(item);
+    this.insertFileItemInner(item, this.rightClickSelectedElement);
+    const treeItem = this.findItemByRelativePath(item.value.relativePath);
+    this.updateItem(item.value);
+    this.tree.selectItem(treeItem);
+    this.expandItem(treeItem);
 
-    // searching for new added item in tree
-    const allItems = this.tree.getItems();
-    allItems.forEach((treeItem: any) => {
-      if (treeItem.value !== null && treeItem.value.relativePath === item.value.relativePath) {
-        // expanding
-        this.expandItem(treeItem);
-        // selecting
-        this.tree.selectItem(treeItem);
-        // marking as changed
-        this.updateItem(item.value);
-
-        // opening a new tab
-        this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEXL_SOURCE, {
-          relativePath: item.value.relativePath,
-          label: item.value.label,
-          body: text === undefined ? '' : text
-        });
-        return;
-      }
+    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEXL_SOURCE, {
+      relativePath: item.value.relativePath,
+      label: item.value.label,
+      body: text === undefined ? '' : text
     });
+
   }
 
-  insertFileItemInner(item: any) {
-    if (this.rightClickSelectedElement !== undefined) {
-      this.expandItem(this.rightClickSelectedElement.element);
-    }
-
-    // loading child items
-    const childItems = this.getFirstLevelChildren(this.rightClickSelectedElement);
+  insertFileItemInner(item: any, parentItem: any) {
+      // loading child items
+    const childItems = this.getFirstLevelChildren(parentItem);
 
     // sub dir is empty
     if (childItems.length < 1) {
-      this.tree.addTo(item, this.rightClickSelectedElement);
+      this.tree.addTo(item, parentItem);
       return;
     }
 
@@ -734,28 +720,16 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   moveFileItem(data: any) {
-/*
-    const dropItemRelativePath = dropItem === undefined ? '' : dropItem.value.relativePath;
-    const relativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
-
     // creating root item
-    const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
-
-    // collecting existing items under the item2Move item
-    const allItems = this.tree.getItems();
-    const changedFileItems = [];
-    let childItems = this.collectChildItems(item2Move.value, allItems, changedFileItems, dropItemRelativePath);
-    if (childItems.length > 0) {
-      item2Add.items = childItems;
-      item2Add.value.mustLoadChildItems = false;
-    }
+    const item2Add: any = NexlSourcesService.makeNewFileItem(data.targetRelativePath, data.item2Move.value.label);
+    item2Add.isChanged = data.item2Move.value.isChanged;
+    item2Add.isNewFile = data.item2Move.value.isNewFile;
 
     // adding to the
-    this.insertDirItem(item2Add, dropItem);
+    this.insertFileItemInner(item2Add, data.dropItem);
 
     // updating changed files
-    this.updateItems(changedFileItems);
-*/
+    this.updateItem(item2Add);
   }
 
   collectChildItems(rootItem: any, allItems: any[], changedFileItems: any[], dropItemRelativePath: string) {
@@ -838,7 +812,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {
       oldRelativePath: data.item2Move.value.relativePath,
       oldLabel: data.item2Move.value.label,
-      newRelativePath: data.dropItem === undefined ? '' : data.dropItem.value.relativePath,
+      newRelativePath: data.targetRelativePath,
       isDir: data.item2Move.value.isDir
     });
 
