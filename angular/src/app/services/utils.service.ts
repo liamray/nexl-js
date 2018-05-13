@@ -38,7 +38,7 @@ export class UtilsService {
       return true;
     }
 
-    return value.match(/<>:"\/\\|\?\*/) === null && value.match(/^[\s.]+$/) === null;
+    return value.match(/[<>:"\/\\|?*]/) === null && value.match(/^[\s.]+$/) === null;
   }
 
   static setServerInfo(serverInfo: any) {

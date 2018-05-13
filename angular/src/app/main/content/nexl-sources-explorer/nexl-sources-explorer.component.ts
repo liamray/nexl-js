@@ -467,6 +467,13 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     );
   }
 
+  updateSelectExpandItem(item: any) {
+    const treeItem = this.findItemByRelativePath(item.value.relativePath);
+    this.updateItem(item.value);
+    this.tree.selectItem(treeItem);
+    this.expandItem(treeItem);
+  }
+
   insertFileItem(item, text?: string) {
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
       this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] item is already exists');
@@ -474,10 +481,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     this.insertFileItemInner(item, this.rightClickSelectedElement);
-    const treeItem = this.findItemByRelativePath(item.value.relativePath);
-    this.updateItem(item.value);
-    this.tree.selectItem(treeItem);
-    this.expandItem(treeItem);
+    this.updateSelectExpandItem(item);
 
     this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEXL_SOURCE, {
       relativePath: item.value.relativePath,
@@ -488,7 +492,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   insertFileItemInner(item: any, parentItem: any) {
-      // loading child items
+    // loading child items
     const childItems = this.getFirstLevelChildren(parentItem);
 
     // sub dir is empty
@@ -721,15 +725,14 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   moveFileItem(data: any) {
     // creating root item
-    const item2Add: any = NexlSourcesService.makeNewFileItem(data.targetRelativePath, data.item2Move.value.label);
-    item2Add.isChanged = data.item2Move.value.isChanged;
-    item2Add.isNewFile = data.item2Move.value.isNewFile;
+    const item2Add: any = NexlSourcesService.makeNewFileItem(data.dropPath, data.item2Move.value.label);
+    console.log(item2Add);
+    item2Add.value.isChanged = data.item2Move.value.isChanged;
+    item2Add.value.isNewFile = data.item2Move.value.isNewFile;
 
     // adding to the
     this.insertFileItemInner(item2Add, data.dropItem);
-
-    // updating changed files
-    this.updateItem(item2Add);
+    this.updateSelectExpandItem(item2Add);
   }
 
   collectChildItems(rootItem: any, allItems: any[], changedFileItems: any[], dropItemRelativePath: string) {
@@ -829,6 +832,11 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     this.globalComponentsService.loader.open();
+
+    if (data.item2Move.value.isNewFile === true) {
+      this.moveItemInnerInner(data);
+      return;
+    }
 
     // move on server
     this.nexlSourcesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
