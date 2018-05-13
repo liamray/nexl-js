@@ -733,8 +733,29 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return UtilsService.resolvePathOnly(dropItem.value.label, dropItem.value.relativePath);
   }
 
-  moveFileItem(item2Move: any, dropItem: any) {
-    alert('Still not implemented');
+  moveFileItem(data: any) {
+/*
+    const dropItemRelativePath = dropItem === undefined ? '' : dropItem.value.relativePath;
+    const relativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
+
+    // creating root item
+    const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
+
+    // collecting existing items under the item2Move item
+    const allItems = this.tree.getItems();
+    const changedFileItems = [];
+    let childItems = this.collectChildItems(item2Move.value, allItems, changedFileItems, dropItemRelativePath);
+    if (childItems.length > 0) {
+      item2Add.items = childItems;
+      item2Add.value.mustLoadChildItems = false;
+    }
+
+    // adding to the
+    this.insertDirItem(item2Add, dropItem);
+
+    // updating changed files
+    this.updateItems(changedFileItems);
+*/
   }
 
   collectChildItems(rootItem: any, allItems: any[], changedFileItems: any[], dropItemRelativePath: string) {
@@ -779,69 +800,66 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     return result;
   }
 
-  moveDirItem(item2Move: any, dropItem: any) {
-    const dropItemRelativePath = dropItem === undefined ? '' : dropItem.value.relativePath;
-    const relativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
-
+  moveDirItem(data: any) {
     // creating root item
-    const item2Add: any = NexlSourcesService.makeEmptyDirItem(relativePath, item2Move.value.label);
+    const item2Add: any = NexlSourcesService.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
 
     // collecting existing items under the item2Move item
     const allItems = this.tree.getItems();
     const changedFileItems = [];
-    let childItems = this.collectChildItems(item2Move.value, allItems, changedFileItems, dropItemRelativePath);
+    let childItems = this.collectChildItems(data.item2Move.value, allItems, changedFileItems, data.dropPath);
     if (childItems.length > 0) {
       item2Add.items = childItems;
       item2Add.value.mustLoadChildItems = false;
     }
 
     // adding to the
-    this.insertDirItem(item2Add, dropItem);
+    this.insertDirItem(item2Add, data.dropItem);
 
     // updating changed files
     this.updateItems(changedFileItems);
   }
 
-  moveItemInnerInner(item2Move: any, dropItem: any) {
-    if (item2Move.value.isDir === true) {
-      this.moveDirItem(item2Move, dropItem);
+  moveItemInnerInner(data) {
+    if (data.item2Move.value.isDir === true) {
+      this.moveDirItem(data);
     } else {
-      this.moveFileItem(item2Move, dropItem);
+      this.moveFileItem(data);
     }
 
-    this.tree.removeItem(item2Move);
+    this.tree.removeItem(data.item2Move);
 
     // expanding in UI
-    if (dropItem !== undefined) {
-      this.expandItem(dropItem.element);
+    if (data.dropItem !== undefined) {
+      this.expandItem(data.dropItem.element);
     }
 
     // updating tabs
     this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {
-      oldRelativePath: item2Move.value.relativePath,
-      oldLabel: item2Move.value.label,
-      newRelativePath: dropItem === undefined ? '' : dropItem.value.relativePath,
-      isDir: item2Move.value.isDir
+      oldRelativePath: data.item2Move.value.relativePath,
+      oldLabel: data.item2Move.value.label,
+      newRelativePath: data.dropItem === undefined ? '' : data.dropItem.value.relativePath,
+      isDir: data.item2Move.value.isDir
     });
 
     this.globalComponentsService.loader.close();
   }
 
-  moveItemInner(item2Move: any, dropPath: string, dropItem: any) {
+  moveItemInner(data: any) {
     // checking is target item2Move already exists
-    const targetRelativePath = dropPath + UtilsService.SERVER_INFO.SLASH + item2Move.value.label;
-    const targetItemCandidate = this.findItemByRelativePath(targetRelativePath);
+    data.targetRelativePath = data.dropPath + UtilsService.SERVER_INFO.SLASH + data.item2Move.value.label;
+    const targetItemCandidate = this.findItemByRelativePath(data.targetRelativePath);
     if (targetItemCandidate !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + dropPath + UtilsService.SERVER_INFO.SLASH + '] directory already contains a [' + item2Move.value.label + '] item');
+      this.globalComponentsService.notification.openError('The [' + data.dropPath + UtilsService.SERVER_INFO.SLASH + '] directory already contains a [' + data.item2Move.value.label + '] item');
       return;
     }
 
     this.globalComponentsService.loader.open();
 
     // move on server
-    this.nexlSourcesService.moveItem(item2Move.value.relativePath, dropPath).subscribe(
+    this.nexlSourcesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
       () => {
-        this.moveItemInnerInner(item2Move, dropItem);
+        this.moveItemInnerInner(data);
       },
       (err) => {
         console.log(err);
@@ -852,14 +870,19 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   moveItem(item2Move: any, dropPath: string) {
-    const dropItem = this.findItemByRelativePath(dropPath);
-    if (dropItem === undefined) {
-      this.moveItemInner(item2Move, dropPath, dropItem);
+    const data = {
+      item2Move: item2Move,
+      dropPath: dropPath,
+      dropItem: this.findItemByRelativePath(dropPath)
+    };
+
+    if (data.dropItem === undefined) {
+      this.moveItemInner(data);
       return;
     }
 
-    this.loadChildItems(dropItem.element, () => {
-      this.moveItemInner(item2Move, dropPath, dropItem);
+    this.loadChildItems(data.dropItem.element, () => {
+      this.moveItemInner(data);
     });
   }
 
