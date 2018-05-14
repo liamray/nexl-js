@@ -176,7 +176,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // confirming...
     const opts = {
       title: 'Confirm save',
-      label: 'Please note you can evaluate nexl expressions without file saving. If you save this file it will affect all REST requests related to it. Are you sure you want to save this file ?',
+      label: 'Please note you can test your changes without saving the file. If you save this file it will immediately affect all REST requests related to the file. Are you sure you want to save ?',
       checkBoxText: 'Don\'t show it again',
       callback: (callbackData: any) => {
         LocalStorageService.storeRaw(SAVE_NEXL_SOURCE_CONFIRM, !callbackData.checkBoxVal);
