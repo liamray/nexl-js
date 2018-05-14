@@ -146,8 +146,17 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.refreshTreeSource();
   }
 
+  updatePopupMenu() {
+    this.popupMenu.disable('popup-new-dir', !this.hasWritePermission);
+    this.popupMenu.disable('popup-new-file', !this.hasWritePermission);
+    this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
+    this.popupMenu.disable('popup-delete-item', !this.hasWritePermission);
+  }
+
   writePermissionChanged(status: any) {
     this.hasWritePermission = status.hasWritePermission;
+
+    this.updatePopupMenu();
   }
 
   authChanged(status: any) {
@@ -564,8 +573,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       this.rightClickSelectedElement = undefined;
       this.openPopup(event);
     } else {
-      this.popupMenu.disable('popup-delete-item', false);
-      this.popupMenu.disable('popup-rename-item', false);
+      this.popupMenu.disable('popup-delete-item', !this.hasWritePermission);
+      this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
       this.tree.selectItem(target);
       this.rightClickSelectedElement = this.tree.getItem(target);
       this.openPopup(event);
@@ -906,5 +915,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.tree.createComponent({
       dragEnd: this.onDragEnd
     });
+
+    this.updatePopupMenu();
   }
 }

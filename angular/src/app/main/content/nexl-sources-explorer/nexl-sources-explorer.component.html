@@ -23,11 +23,11 @@
     <jqxMenu #popupMenu [width]="120" [height]="112" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
-        <li (click)="newDir()">
+        <li (click)="newDir()" id="popup-new-dir">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/new-dir.png'/><span>New Dir</span>
         </li>
-        <li (click)="newFile()">
+        <li (click)="newFile()" id="popup-new-file">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/new-file.png'/><span>New File</span>
         </li>
