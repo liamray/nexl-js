@@ -1,5 +1,6 @@
 export const SAVE_NEXL_SOURCE_CONFIRM = 'nexl.confirmations.save-nexl-source';
 export const CREDENTIALS = 'nexl.credentials';
+export const SPLITTERS = 'nexl.ui.splitters';
 
 export class LocalStorageService {
   static storeRaw(key, val) {
@@ -15,6 +16,6 @@ export class LocalStorageService {
   }
 
   static loadObj(key): any {
-    return JSON.parse(localStorage.getItem(key));
+    return JSON.parse(localStorage.getItem(key)) || {};
   }
 }
