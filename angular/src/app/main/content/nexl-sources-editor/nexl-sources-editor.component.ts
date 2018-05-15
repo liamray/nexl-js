@@ -114,7 +114,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       this.setTabTitleAttr(index, 'relative-path', relativePath);
       this.setTabContentAttr(idSeqNr, 'relative-path', relativePath);
       $('#' + TITLE_TEXT + idSeqNr).text(data.newLabel);
-      $('#' + TITLE_TOOLTIP + idSeqNr).text(data.newRelativePath);
+      $('#' + TITLE_TOOLTIP + idSeqNr).text(relativePath);
     }
   }
 
