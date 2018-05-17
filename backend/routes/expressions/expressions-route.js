@@ -7,8 +7,12 @@ const j79 = require('j79-utils');
 
 function makeNexlRequest(req) {
 	return {
-		nexlSource: {},
-		item: '',
+		nexlSource: {
+			asText: {
+				text: 'x = [79];'
+			}
+		},
+		item: '${x}',
 		args: ''
 	};
 }
@@ -36,14 +40,25 @@ function nexlize(req, res) {
 		return;
 	}
 
-	res.send(result);
+	if (j79.isArray(result) || j79.isObject(result)) {
+		res.header("Content-Type", 'application/json');
+	} else {
+		res.header("Content-Type", 'text/plain');
+	}
+
+	// string sends as is. all other must be stringified
+	if (j79.isString(result)) {
+		res.send(result);
+	} else {
+		res.send(JSON.stringify(result));
+	}
 }
 
-router.get('/*', function (req, res, next) {
+router.get('/*', function (req, res) {
 	nexlize(req, res);
 });
 
-router.post('/*', function (req, res, next) {
+router.post('/*', function (req, res) {
 	nexlize(req, res);
 });
 

@@ -207,6 +207,14 @@ router.post('/save-nexl-source', function (req, res, next) {
 	});
 });
 
+router.post('/*', function (req, res, next) {
+	utils.sendError(res, 'Service not found', 404);
+});
+
+router.get('/*', function (req, res, next) {
+	utils.sendError(res, 'Service not found', 404);
+});
+
 // --------------------------------------------------------------------------------
 module.exports = router;
 // --------------------------------------------------------------------------------
