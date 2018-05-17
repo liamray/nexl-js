@@ -15,7 +15,7 @@ const ENCODING_UTF8 = 'utf8';
 const ENCODING_ASCII = 'ascii';
 const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
-const NEXL_HOME_DIR = cmdLineArgs.NEXL_HOME_DIR || path.join(osHomeDir(), '.nexl');
+let NEXL_HOME_DIR;
 
 // --------------------------------------------------------------------------------
 // files
@@ -48,6 +48,7 @@ const SETTINGS = {
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
 	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
 
+	// nexl will notify you when nexl source is changed
 	NOTIFICATIONS: 'notifications',
 };
 
@@ -366,11 +367,34 @@ function saveAsync(data, fileName) {
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
 		});
 	});
+}
 
+function init() {
+	let cmdLineOpts = cmdLineArgs.init();
+	NEXL_HOME_DIR = cmdLineOpts[cmdLineArgs.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
+}
+
+function createDefaultConf() {
+	return resolveFullPathPromised(CONF_FILES.SETTINGS).then(
+		(fullPath) => {
+			return fsx.exists(fullPath).then(
+				(isExists) => {
+					if (isExists) {
+						return Promise.resolve();
+					}
+
+					return loadAsync(CONF_FILES.SETTINGS).then(settings => {
+						return saveAsync(settings, CONF_FILES.SETTINGS);
+					});
+				});
+		});
 }
 
 // --------------------------------------------------------------------------------
 module.exports.ENCODING_UTF8 = ENCODING_UTF8;
+
+module.exports.init = init;
+module.exports.createDefaultConf = createDefaultConf;
 
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
@@ -378,6 +402,6 @@ module.exports.SETTINGS = SETTINGS;
 module.exports.loadAsync = loadAsync;
 module.exports.saveAsync = saveAsync;
 
-module.exports.NEXL_HOME_DIR = NEXL_HOME_DIR;
+module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 // --------------------------------------------------------------------------------

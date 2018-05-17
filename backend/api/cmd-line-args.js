@@ -2,11 +2,11 @@ const commandLineArgs = require('command-line-args');
 const util = require('util');
 const version = require('./../../package.json').version;
 
-let cmdLineOpts;
+const NEXL_HOME_DEF = 'nexl-home';
 
 const CMD_LINE_OPTS_DEF = [
 	{
-		name: 'nexl-home',
+		name: NEXL_HOME_DEF,
 		alias: 'n',
 		type: String,
 		desc: 'nexl home directory is where nexl stores all its settings ( [${HOME}/.nexl] is a default value )'
@@ -55,6 +55,8 @@ function printHelp() {
 }
 
 function handleArgs() {
+	let cmdLineOpts;
+
 	try {
 		cmdLineOpts = commandLineArgs(CMD_LINE_OPTS_DEF);
 	} catch (e) {
@@ -75,10 +77,11 @@ function handleArgs() {
 		printHelp();
 		process.exit();
 	}
+
+	return cmdLineOpts;
 }
 
-handleArgs();
-
 // --------------------------------------------------------------------------------
-module.exports.NEXL_HOME_DIR = cmdLineOpts['nexl-home'];
+module.exports.init = handleArgs;
+module.exports.NEXL_HOME_DEF = NEXL_HOME_DEF;
 // --------------------------------------------------------------------------------

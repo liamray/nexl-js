@@ -1,3 +1,6 @@
+// todo : make tests for conf-mgmt.js, security.js
+// todo : REST API
+
 const testBase = require('./tests-base');
 const fsx = require('../backend/api/fsx');
 const fs = require('fs');

@@ -60,7 +60,8 @@ export class MainComponent implements OnInit {
         this.interceptHotKeys();
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to load data from server.\nReason : ' + err);
+        console.log(err);
+        this.globalComponentsService.notification.openError('Failed to load data from server\nReason : ' + err.statusText);
       }
     );
 

@@ -5,10 +5,10 @@ const fsextra = require('fs-extra');
 const version = require('./../package.json').version;
 
 
-const nexlHomeDir = path.join(tmpDir, '.nexl');
-const nexlSoucesDir = path.join(tmpDir, 'nexl-sources');
-
-process.argv.push('--nexl-home=' + nexlHomeDir);
+const workingDir = process.cwd();
+const nexlHomeDir = path.join(workingDir, '.nexl');
+const nexlSourcesDir = path.join(workingDir, 'nexl-sources');
+process.argv.push(util.format('--%s=%s',cmdLineArgs.NEXL_HOME_DEF, nexlHomeDir ));
 
 // recreating nexl home dir
 if (fs.existsSync(nexlHomeDir)) {
