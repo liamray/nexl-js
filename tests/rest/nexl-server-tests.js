@@ -7,11 +7,16 @@ const path = require('path');
 const queryString = require('querystring');
 const confMgmt = require('../../backend/api/conf-mgmt');
 const cmdLineArgs = require('../../backend/api/cmd-line-args');
+const logger = require('../../backend/api/logger');
 const NexlApp = require('../../backend/nexl-app/nexl-app');
 
 const TEST_HOST = 'localhost';
 const TEST_PORT = 8989;
 
+class NexlTestApp extends NexlApp {
+	initCongMgmt() {
+	}
+}
 
 function testCaseInner(options, testCase) {
 	return new Promise((resolve, reject) => {
@@ -25,7 +30,7 @@ function testCaseInner(options, testCase) {
 				const testCaseAsString = util.format('source=%s, args=%s', testCase.request.source, JSON.stringify(testCase.request.args));
 
 				if (res.statusCode !== testCase.result.expectedStatusCode) {
-					reject('Expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString);
+					reject(util.format('Expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString));
 					return;
 				}
 
@@ -40,7 +45,7 @@ function testCaseInner(options, testCase) {
 					return;
 				}
 
-				resolve();
+				resolve('Success !!!');
 			})
 		});
 
@@ -90,16 +95,9 @@ function test(requestParams, testCase) {
 	});
 }
 
-class NexlTestApp extends NexlApp {
-	initCongMgmt() {
-	}
-}
-
 function startInner() {
 	// starting nexl-server
 	new NexlTestApp().start();
-
-	return;
 
 	const promises = [];
 
@@ -113,13 +111,12 @@ function startInner() {
 	});
 
 	Promise.all(promises).then(
-		() => {
-			console.log('All tests are passed !!!');
+		(info) => {
+			logger.log.info('All tests are passed !!!');
 		}
 	).catch(
 		(err) => {
-			console.log('Failed !');
-			console.log(err);
+			logger.log.error(err);
 		}
 	);
 }
@@ -142,7 +139,7 @@ function start() {
 			startInner();
 		});
 	}).catch((err) => {
-		console.log(err);
+		logger.log.error(err);
 	});
 }
 

@@ -35,9 +35,10 @@ function getLoggedInUsername(req) {
 	return username;
 }
 
-function sendError(res, msg) {
+function sendError(res, msg, httpStatus) {
+	httpStatus = httpStatus ? httpStatus : 500;
 	res.statusMessage = msg;
-	res.status(500).end();
+	res.status(httpStatus).end();
 }
 
 function deepMergeAndPeel(obj1, obj2) {
@@ -56,7 +57,7 @@ function deepMergeAndPeel(obj1, obj2) {
 }
 
 function formatErr(err) {
-	return err.toString() + '\n' + JSON.stringify(err, null, 2);
+	return JSON.stringify(err, null, 2);
 }
 
 function isNotEmptyStr(str) {
