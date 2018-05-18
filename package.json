@@ -70,6 +70,7 @@
     "os-homedir": "^1.0.2",
     "path": "^0.12.7",
     "serve-favicon": "~2.4.5",
+    "url": "^0.11.0",
     "winston": "^2.4.0"
   },
   "devDependencies": {

@@ -7,13 +7,6 @@ const logger = require('../../api/logger');
 const confMgmt = require('../../api/conf-mgmt');
 const utils = require('../../api/utils');
 
-const INVALID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
-
-function isPathValid(relativePath) {
-	return relativePath.search(INVALID_PATH_PATTERN) < 0;
-}
-
-
 const CHILD_ITEM = [
 	{
 		label: 'Loading...',
@@ -32,7 +25,7 @@ function sortFilesFunc(a, b) {
 }
 
 function resolveFullPath(relativePath) {
-	if (!isPathValid(relativePath)) {
+	if (!utils.isPathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
 	}
@@ -41,7 +34,7 @@ function resolveFullPath(relativePath) {
 		.then(
 			(settings) => {
 				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
-				if (!isPathValid(fullPath)) {
+				if (!utils.isPathValid(fullPath)) {
 					logger.log.error('The [%s] path is unacceptable', fullPath);
 					return Promise.reject('Unacceptable path');
 				}
@@ -90,7 +83,7 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 				let item = items[index];
 
 				const itemRelativePath = path.join(relativePath, item);
-				if (!isPathValid(itemRelativePath)) {
+				if (!utils.isPathValid(itemRelativePath)) {
 					logger.log.error('The [%s] path is unacceptable', relativePath);
 					return Promise.reject('Unacceptable path');
 				}

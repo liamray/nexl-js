@@ -16,6 +16,7 @@ const ENCODING_ASCII = 'ascii';
 const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
+let NEXL_SOURCES_DIR;
 
 // --------------------------------------------------------------------------------
 // files
@@ -228,6 +229,11 @@ VALIDATION_SCHEMAS[CONF_FILES.PERMISSIONS] = {
 
 // --------------------------------------------------------------------------------
 // api
+
+function getConfFileFullPath(fileName) {
+	return path.join(NEXL_HOME_DIR, fileName);
+}
+
 function resolveFullPathPromised(fileName) {
 	try {
 		return Promise.resolve(path.join(NEXL_HOME_DIR, fileName))
@@ -363,6 +369,11 @@ function saveAsync(data, fileName) {
 				return Promise.reject('Bad data format');
 			}
 
+			// updating cached NEXL_SOURCES_DIR
+			if (fileName === CONF_FILES.SETTINGS) {
+				NEXL_SOURCES_DIR = data[SETTINGS.NEXL_SOURCES_DIR];
+			}
+
 			// saving...
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
 		});
@@ -375,17 +386,19 @@ function init() {
 }
 
 function createDefaultConf() {
-	return resolveFullPathPromised(CONF_FILES.SETTINGS).then(
-		(fullPath) => {
-			return fsx.exists(fullPath).then(
-				(isExists) => {
+	const settingsFullPath = getConfFileFullPath(CONF_FILES.SETTINGS);
+
+	return fsx.exists(settingsFullPath).then(
+		(isExists) => {
+			return loadAsync(CONF_FILES.SETTINGS).then(
+				settings => {
+					NEXL_SOURCES_DIR = settings[SETTINGS.NEXL_SOURCES_DIR];
+
 					if (isExists) {
 						return Promise.resolve();
-					}
-
-					return loadAsync(CONF_FILES.SETTINGS).then(settings => {
+					} else {
 						return saveAsync(settings, CONF_FILES.SETTINGS);
-					});
+					}
 				});
 		});
 }
@@ -402,6 +415,8 @@ module.exports.SETTINGS = SETTINGS;
 module.exports.loadAsync = loadAsync;
 module.exports.saveAsync = saveAsync;
 
-module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
+
+module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
+module.exports.getNexlSourcesDir = () => NEXL_SOURCES_DIR;
 // --------------------------------------------------------------------------------

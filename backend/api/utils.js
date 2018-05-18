@@ -68,6 +68,13 @@ function isEmptyStr(str) {
 	return str === undefined || str === null || str.toString().length < 1;
 }
 
+const INVALID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
+
+function isPathValid(relativePath) {
+	return relativePath.search(INVALID_PATH_PATTERN) < 0;
+}
+
+
 // --------------------------------------------------------------------------------
 module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
 module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
@@ -81,6 +88,8 @@ module.exports.encrypt = encrypt;
 module.exports.formatErr = formatErr;
 module.exports.isNotEmptyStr = isNotEmptyStr;
 module.exports.isEmptyStr = isEmptyStr;
+
+module.exports.isPathValid = isPathValid;
 
 module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------

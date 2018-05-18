@@ -1,32 +1,74 @@
+const j79 = require('j79-utils');
+const url = require('url'); // built-in utility
 const express = require('express');
+const path = require('path');
 const router = express.Router();
 const nexlEngine = require('nexl-engine');
 const logger = require('../../api/logger');
 const utils = require('../../api/utils');
-const j79 = require('j79-utils');
+const confMgmt = require('../../api/conf-mgmt');
 
-function makeNexlRequest(req) {
+function resolveGetParams(req) {
+	const expression = req.query['expression'];
+	delete req.query['expression'];
+
+	// no content in GET request
 	return {
-		nexlSource: {
-			asText: {
-				text: 'x = [79];'
-			}
-		},
-		item: '${x}',
-		args: ''
+		relativePath: url.parse(req.url).pathname,
+		expression: expression,
+		args: req.query
 	};
 }
 
-function nexlizeInner(req) {
-	const nexlRequest = makeNexlRequest(req);
-	return nexlEngine.nexlize(nexlRequest.nexlSource, nexlRequest.item, nexlRequest.args);
+function resolvePostParams(req) {
+	throw 'Still not implemented';
 }
 
-function nexlize(req, res) {
+function assembleNexlParams(httpParams) {
+	if (!j79.isString(httpParams.relativePath)) {
+		logger.log.error('[relativePath] is not provided');
+		throw '[relativePath] is not provided';
+	}
+
+	if (!utils.isPathValid(httpParams.relativePath)) {
+		logger.log.error('Got unacceptable path [%s]', httpParams.relativePath);
+		throw 'Unacceptable path ( relative path contains restricted characters )';
+	}
+
+	const fullPath = path.join(confMgmt.getNexlSourcesDir(), httpParams.relativePath);
+	if (!utils.isPathValid(fullPath)) {
+		logger.log.error('Got unacceptable path [%s]', fullPath);
+		throw 'Unacceptable path ( relative path contains restricted characters )';
+	}
+
+	let nexlSource = {};
+
+	if (httpParams.content === undefined) {
+		nexlSource.asFile = {};
+		nexlSource.asFile['fileName'] = fullPath;
+	} else {
+		nexlSource.asText = {};
+		nexlSource.asText['text'] = httpParams.content;
+		nexlSource.asText['path4imports'] = path.dirname(fullPath);
+	}
+
+	return {
+		nexlSource: nexlSource,
+		item: httpParams.expression,
+		args: httpParams.args
+	};
+}
+
+function nexlizeInner(httpParams) {
+	const nexlParams = assembleNexlParams(httpParams);
+	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
+}
+
+function nexlize(httpParams, req, res) {
 	let result;
 
 	try {
-		result = nexlizeInner(req);
+		result = nexlizeInner(httpParams);
 	} catch (e) {
 		logger.log.error('nexl request rejected. Reason : [%s]', e);
 		utils.sendError(res, e, 500);
@@ -55,11 +97,13 @@ function nexlize(req, res) {
 }
 
 router.get('/*', function (req, res) {
-	nexlize(req, res);
+	const httpParams = resolveGetParams(req);
+	nexlize(httpParams, req, res);
 });
 
 router.post('/*', function (req, res) {
-	nexlize(req, res);
+	const httpParams = resolvePostParams(req);
+	nexlize(httpParams, req, res);
 });
 
 // --------------------------------------------------------------------------------
