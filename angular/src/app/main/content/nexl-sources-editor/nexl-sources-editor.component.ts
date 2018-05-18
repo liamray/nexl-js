@@ -342,7 +342,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   makeTitle(data: any) {
     const modified = '<span style="color:red;display: none;" id="' + this.makeId(data, TITLE_MODIFICATION_ICON) + '">*&nbsp;</span>';
     const theTitle = '<span style="position:relative; top: -2px;" id="' + this.makeId(data, TITLE_TEXT) + '">' + data.label + '</span>';
-    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="/nexl/site/images/close-tab.png" id="' + this.makeId(data, TITLE_CLOSE_ICON) + '"/>';
+    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/images/close-tab.png" id="' + this.makeId(data, TITLE_CLOSE_ICON) + '"/>';
     const attrs = {
       id: this.makeId(data, TITLE_ID),
       'id-seq-nr': data.idSeqNr
