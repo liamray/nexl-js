@@ -56,17 +56,19 @@ function generateTokenAndSave(username) {
 
 function resetPasswordInner(username, password, tokens) {
 	// removing token
-	return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(confMgmt.CONF_FILES.PASSWORDS)).then((passwords) => {
-		return bcrypt.hash(password).then((hash) => {
-			passwords[username] = hash;
-			return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+	return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(
+		() => confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS)).then(
+		(passwords) => {
+			return bcrypt.hash(password).then((hash) => {
+				passwords[username] = hash;
+				return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+			});
 		});
-	});
 }
 
 function resetPassword(username, password, token) {
 	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
-		if (tokens[username] === undefined) {
+		if (tokens[username] !== token) {
 			return Promise.reject('Bad token');
 		}
 
