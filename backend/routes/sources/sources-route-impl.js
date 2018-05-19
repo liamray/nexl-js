@@ -120,8 +120,16 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 function loadNexlSource(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
-			return fsx.readFile(stuff.fullPath, {encoding: encoding});
+			return fsx.exists(relativePath).then(
+				(isExists) => {
+					if (!isExists) {
+						logger.log.error('The [%s] nexl source file doesn\'t exist', relativePath);
+						return Promise.reject('nexl sources dir doesn\'t exist !');
+					}
+
+					const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+					return fsx.readFile(stuff.fullPath, {encoding: encoding});
+				});
 		}
 	);
 }
