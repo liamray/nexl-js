@@ -9,7 +9,7 @@ const utils = require('../../api/utils');
 const confMgmt = require('../../api/conf-mgmt');
 
 function resolveGetParams(req) {
-	const expression = req.query['expression'];
+	const expression = req.query.expression;
 	delete req.query['expression'];
 
 	// no content in GET request
@@ -21,7 +21,14 @@ function resolveGetParams(req) {
 }
 
 function resolvePostParams(req) {
-	throw 'Still not implemented';
+	const expression = req.body.expression;
+	delete req.body['expression'];
+
+	return {
+		relativePath: req.url,
+		expression: expression,
+		args: req.body
+	};
 }
 
 function assembleNexlParams(httpParams) {

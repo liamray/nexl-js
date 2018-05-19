@@ -125,17 +125,17 @@ function start() {
 	const workingDir = process.cwd();
 	const nexlHomeDir = path.join(workingDir, '.nexl');
 	const nexlSourcesDir = path.join(workingDir, 'nexl-sources');
-	process.argv.push(util.format('--%s=%s',cmdLineArgs.NEXL_HOME_DEF, nexlHomeDir ));
+	process.argv.push(util.format('--%s=%s', cmdLineArgs.NEXL_HOME_DEF, nexlHomeDir));
 
 	confMgmt.init();
 
-	confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(settings => {
+	confMgmt.loadSettings().then(settings => {
 
 		settings[confMgmt.SETTINGS.HTTP_PORT] = TEST_PORT;
 		settings[confMgmt.SETTINGS.HTTP_BINDING] = TEST_HOST;
 		settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSourcesDir;
 
-		return confMgmt.saveAsync(settings, confMgmt.CONF_FILES.SETTINGS).then(() => {
+		return confMgmt.saveSettings(settings).then(() => {
 			startInner();
 		});
 	}).catch((err) => {
