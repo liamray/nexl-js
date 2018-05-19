@@ -29,7 +29,7 @@ router.post('/load', function (req, res, next) {
 
 		return confMgmt.loadSettings().then(
 			(settings) => {
-				settings['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
+				settings['nexl-home-dir'] = confMgmt.getNexlHomeDir();
 				res.send(settings);
 			});
 	}).catch((err) => {

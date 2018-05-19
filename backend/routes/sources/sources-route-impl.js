@@ -32,7 +32,7 @@ function resolveFullPath(relativePath) {
 
 	return confMgmt.loadSettings().then(
 		(settings) => {
-			const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
+			const fullPath = path.join(confMgmt.getNexlSourcesDir(), relativePath || '');
 			if (!utils.isPathValid(fullPath)) {
 				logger.log.error('The [%s] path is unacceptable', fullPath);
 				return Promise.reject('Unacceptable path');
@@ -120,7 +120,6 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 function loadNexlSource(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			const nexlSourcesRootDir = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
 			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
 			return fsx.readFile(stuff.fullPath, {encoding: encoding});
 		}
@@ -130,7 +129,6 @@ function loadNexlSource(relativePath) {
 function saveNexlSource(relativePath, content) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			const nexlSourcesRootDir = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
 			const encoding = stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
 			return fsx.writeFile(stuff.fullPath, content, {encoding: encoding});
 		}
@@ -140,15 +138,16 @@ function saveNexlSource(relativePath, content) {
 function listNexlSources(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			return fsx.exists(stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]).then((isExists) => {
-				if (!isExists) {
-					logger.log.error('The [%s] nexl source dir doesn\'t exist', stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]);
-					return Promise.reject('nexl sources dir doesn\'t exist !');
-				} else {
-					return fsx.readdir(stuff.fullPath).then(
-						(items) => assembleItemsPromised(relativePath, stuff.settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], items));
-				}
-			});
+			return fsx.exists(confMgmt.getNexlSourcesDir()).then(
+				(isExists) => {
+					if (!isExists) {
+						logger.log.error('The [%s] nexl source dir doesn\'t exist', confMgmt.getNexlSourcesDir());
+						return Promise.reject('nexl sources dir doesn\'t exist !');
+					} else {
+						return fsx.readdir(stuff.fullPath).then(
+							(items) => assembleItemsPromised(relativePath, confMgmt.getNexlSourcesDir(), items));
+					}
+				});
 		}
 	);
 }
