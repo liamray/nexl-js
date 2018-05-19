@@ -19,8 +19,8 @@ router.post('/load', function (req, res, next) {
 			return Promise.reject('admin permissions required');
 		}
 
-		return confMgmt.loadAsync(confMgmt.CONF_FILES.ADMINS).then((admins) => {
-			return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+		return confMgmt.load(confMgmt.CONF_FILES.ADMINS).then((admins) => {
+			return confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
 				res.send({
 					admins: admins,
 					assignPermissions: permissions
@@ -45,8 +45,8 @@ router.post('/save', function (req, res, next) {
 
 		const admins = req.body.admins;
 		const assignPermissions = req.body.assignPermissions;
-		return confMgmt.saveAsync(admins, confMgmt.CONF_FILES.ADMINS).then(() => {
-			return confMgmt.saveAsync(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => res.send({}));
+		return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS).then(() => {
+			return confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => res.send({}));
 		});
 	}).catch((err) => {
 		logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);

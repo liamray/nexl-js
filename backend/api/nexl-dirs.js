@@ -33,7 +33,7 @@ function initNexlHomeDir() {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confMgmt.CONF_FILES.ADMINS, confMgmt.getNexlHomeDir(), utils.ADMIN_USERNAME);
 				const admins = [utils.ADMIN_USERNAME];
-				return confMgmt.saveAsync(admins, confMgmt.CONF_FILES.ADMINS);
+				return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
 			}
 		}
 	));
@@ -48,7 +48,7 @@ function initNexlHomeDir() {
 					read: true,
 					write: true
 				};
-				return confMgmt.saveAsync(permission, confMgmt.CONF_FILES.PERMISSIONS);
+				return confMgmt.save(permission, confMgmt.CONF_FILES.PERMISSIONS);
 			}
 		}
 	));
@@ -60,9 +60,10 @@ function initNexlHomeDir() {
 				return Promise.resolve();
 			}
 
-			return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
-				return confMgmt.saveAsync(settings, confMgmt.CONF_FILES.SETTINGS);
-			});
+			return confMgmt.loadSettings().then(
+				(settings) => {
+					return confMgmt.saveSettings(settings);
+				});
 		}
 	));
 
@@ -88,14 +89,6 @@ function createNexlHomeDirectoryIfNeeded() {
 			});
 		}
 	});
-}
-
-function getNexlSourcesDir() {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then(
-		(settings) => {
-			return Promise.resolve(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR]);
-		}
-	);
 }
 
 // --------------------------------------------------------------------------------

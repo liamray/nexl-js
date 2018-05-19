@@ -27,10 +27,11 @@ router.post('/load', function (req, res, next) {
 			return Promise.reject('admin permissions required');
 		}
 
-		return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
-			settings['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
-			res.send(settings);
-		});
+		return confMgmt.loadSettings().then(
+			(settings) => {
+				settings['nexl-home-dir'] = cmdLineArgs.NEXL_HOME_DIR;
+				res.send(settings);
+			});
 	}).catch((err) => {
 		logger.log.error('Failed to load settings. Reason : [%s]', err);
 		utils.sendError(res, err);
@@ -49,7 +50,7 @@ router.post('/save', function (req, res, next) {
 
 		const data = req.body;
 		logger.log.level = data['log-level'];
-		return confMgmt.saveAsync(data, confMgmt.CONF_FILES.SETTINGS).then(() => res.send({}));
+		return confMgmt.saveSettings(data).then(() => res.send({}));
 	}).catch((err) => {
 		logger.log.error('Failed to save settings. Reason : [%s]', err);
 		utils.sendError(res, err);

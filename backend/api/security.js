@@ -7,7 +7,7 @@ const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
 
 function isAdmin(user) {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.ADMINS).then((admins) => {
+	return confMgmt.load(confMgmt.CONF_FILES.ADMINS).then((admins) => {
 		return Promise.resolve(admins.indexOf(user) >= 0);
 	});
 }
@@ -20,7 +20,7 @@ function hasPermission(user, type, value) {
 			return Promise.resolve(true);
 		}
 
-		return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+		return confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
 			return Promise.resolve(permissions[user] && permissions[user][type] === value);
 		});
 	});
@@ -36,7 +36,7 @@ function hasWritePermission(user) {
 
 function status(user) {
 	return isAdmin(user).then((isAdmin) => {
-		return confMgmt.loadAsync(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
+		return confMgmt.load(confMgmt.CONF_FILES.PERMISSIONS).then((permissions) => {
 			return Promise.resolve({
 				isAdmin: isAdmin,
 				hasReadPermission: isAdmin || ( permissions[user] && permissions[user][READ_PERMISSION] === true ),
@@ -48,26 +48,26 @@ function status(user) {
 
 function generateTokenAndSave(username) {
 	const token = uuidv4();
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
+	return confMgmt.load(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
 		tokens[username] = token;
-		return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(token));
+		return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(token));
 	});
 }
 
 function resetPasswordInner(username, password, tokens) {
 	// removing token
-	return confMgmt.saveAsync(tokens, confMgmt.CONF_FILES.TOKENS).then(
-		() => confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS)).then(
+	return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(
+		() => confMgmt.load(confMgmt.CONF_FILES.PASSWORDS)).then(
 		(passwords) => {
 			return bcrypt.hash(password).then((hash) => {
 				passwords[username] = hash;
-				return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+				return confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 			});
 		});
 }
 
 function resetPassword(username, password, token) {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
+	return confMgmt.load(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
 		if (tokens[username] !== token) {
 			return Promise.reject('Bad token');
 		}
@@ -78,7 +78,7 @@ function resetPassword(username, password, token) {
 }
 
 function changePassword(username, currentPassword, newPassword) {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+	return confMgmt.load(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
 		if (!passwords[username]) {
 			return Promise.reject('User doesn\'t exist');
 		}
@@ -91,14 +91,14 @@ function changePassword(username, currentPassword, newPassword) {
 			// set the password
 			return bcrypt.hash(newPassword).then((hash) => {
 				passwords[username] = hash;
-				return confMgmt.saveAsync(passwords, confMgmt.CONF_FILES.PASSWORDS);
+				return confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
 			});
 		});
 	});
 }
 
 function isPasswordValid(username, password) {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
+	return confMgmt.load(confMgmt.CONF_FILES.PASSWORDS).then((passwords) => {
 		const encryptedPassword = passwords[username];
 		if (encryptedPassword === undefined) {
 			return Promise.resolve(false);

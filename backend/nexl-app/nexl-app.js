@@ -223,10 +223,11 @@ class NexlApp {
 	}
 
 	startNexlServer() {
-		confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
-			this.startHTTP(settings);
-			this.startHTTPS(settings);
-		});
+		confMgmt.loadSettings().then(
+			(settings) => {
+				this.startHTTP(settings);
+				this.startHTTPS(settings);
+			});
 	}
 
 	stopNexlServer() {

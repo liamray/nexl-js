@@ -30,21 +30,20 @@ function resolveFullPath(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	return Promise.resolve(confMgmt.CONF_FILES.SETTINGS).then(confMgmt.loadAsync)
-		.then(
-			(settings) => {
-				const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
-				if (!utils.isPathValid(fullPath)) {
-					logger.log.error('The [%s] path is unacceptable', fullPath);
-					return Promise.reject('Unacceptable path');
-				}
-
-				return Promise.resolve({
-					fullPath: fullPath,
-					settings: settings
-				});
+	return confMgmt.loadSettings().then(
+		(settings) => {
+			const fullPath = path.join(settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR], relativePath || '');
+			if (!utils.isPathValid(fullPath)) {
+				logger.log.error('The [%s] path is unacceptable', fullPath);
+				return Promise.reject('Unacceptable path');
 			}
-		);
+
+			return Promise.resolve({
+				fullPath: fullPath,
+				settings: settings
+			});
+		}
+	);
 }
 
 function makeDirItem(item, relativePath) {
