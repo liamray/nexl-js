@@ -24,10 +24,14 @@ function resolvePostParams(req) {
 	const expression = req.body.expression;
 	delete req.body['expression'];
 
+	const content = req.body['nexl-source-content'];
+	delete req.body['nexl-source-content'];
+
 	return {
 		relativePath: req.url,
 		expression: expression,
-		args: req.body
+		args: req.body,
+		content: content
 	};
 }
 
