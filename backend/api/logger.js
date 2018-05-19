@@ -8,33 +8,34 @@ function logFormatter(options) {
 }
 
 function init() {
-	return confMgmt.loadAsync(confMgmt.CONF_FILES.SETTINGS).then((settings) => {
-		// removing existing console transport
-		winston.remove(winston.transports.Console);
+	return confMgmt.loadSettings(confMgmt.CONF_FILES.SETTINGS).then(
+		(settings) => {
+			// removing existing console transport
+			winston.remove(winston.transports.Console);
 
-		// add new console transport
-		winston.add(winston.transports.Console, {
-			formatter: logFormatter
+			// add new console transport
+			winston.add(winston.transports.Console, {
+				formatter: logFormatter
+			});
+
+			// loading log setting
+			// adding file transport
+			winston.add(winston.transports.File, {
+				filename: settings[confMgmt.SETTINGS.LOG_FILE_LOCATION],
+				formatter: logFormatter,
+				json: false,
+				tailable: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
+				maxsize: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
+				maxFiles: settings[confMgmt.SETTINGS.LOG_ROTATE_FILES_COUNT]
+			});
+
+			// setting up log level
+			winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
+
+			winston.debug('Log is set up');
+
+			return Promise.resolve();
 		});
-
-		// loading log setting
-		// adding file transport
-		winston.add(winston.transports.File, {
-			filename: settings[confMgmt.SETTINGS.LOG_FILE_LOCATION],
-			formatter: logFormatter,
-			json: false,
-			tailable: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
-			maxsize: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
-			maxFiles: settings[confMgmt.SETTINGS.LOG_ROTATE_FILES_COUNT]
-		});
-
-		// setting up log level
-		winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
-
-		winston.debug('Log is set up');
-
-		return Promise.resolve();
-	});
 }
 
 function isLogLevel(level) {

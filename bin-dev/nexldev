@@ -8,6 +8,10 @@ class NexlDevApp extends NexlApp {
 		this.nexlApp.use(devInterceptor);
 		super.applyInterceptors();
 	}
+
+	getFavIconPath() {
+		return '../../frontend/src';
+	}
 }
 
 new NexlDevApp().start();

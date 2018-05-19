@@ -38,6 +38,10 @@ class NexlApp {
 		confMgmt.init();
 	}
 
+	getFavIconPath() {
+		return '../../site/nexl/site/';
+	}
+
 	applyInterceptors() {
 		// general interceptors
 		this.nexlApp.use(session({
@@ -46,7 +50,7 @@ class NexlApp {
 			saveUninitialized: false
 		}));
 
-		this.nexlApp.use(favicon(path.join(__dirname, '../../frontend/nexl/site/', 'favicon.ico')));
+		this.nexlApp.use(favicon(path.join(__dirname, this.getFavIconPath(), 'favicon.ico')));
 		this.nexlApp.use((req, res, next) => {
 			logger.logHttpRequest(req, res, next);
 		});
@@ -55,7 +59,7 @@ class NexlApp {
 		this.nexlApp.use(cookieParser());
 
 		// static resources, root page, nexl rest, nexl expressions
-		this.nexlApp.use(express.static(path.join(__dirname, '../../frontend')));
+		this.nexlApp.use(express.static(path.join(__dirname, '../../site')));
 
 		// nexl routes
 		this.nexlApp.use('/', root);

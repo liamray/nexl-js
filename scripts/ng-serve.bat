@@ -1,2 +1,2 @@
-cd ..\angular
+cd ..\frontend
 ng serve --aot

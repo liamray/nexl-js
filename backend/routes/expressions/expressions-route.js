@@ -76,12 +76,27 @@ function nexlize(httpParams, req, res) {
 	}
 
 	// is undefined ?
-	if (!j79.isValSet(result)) {
+	if (result === undefined) {
 		logger.log.error('Got undefined value');
 		utils.sendError(res, e, 555);
 		return;
 	}
 
+	// is null ?
+	if (result === null) {
+		logger.log.error('Got null value');
+		utils.sendError(res, e, 556);
+		return;
+	}
+
+	// is NaN ?
+	if (result !== result) {
+		logger.log.error('Got NaN value');
+		utils.sendError(res, e, 557);
+		return;
+	}
+
+	// setting up headers
 	if (j79.isArray(result) || j79.isObject(result)) {
 		res.header("Content-Type", 'application/json');
 	} else {

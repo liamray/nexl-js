@@ -120,10 +120,10 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 function loadNexlSource(relativePath) {
 	return resolveFullPath(relativePath).then(
 		(stuff) => {
-			return fsx.exists(relativePath).then(
+			return fsx.exists(stuff.fullPath).then(
 				(isExists) => {
 					if (!isExists) {
-						logger.log.error('The [%s] nexl source file doesn\'t exist', relativePath);
+						logger.log.error('The [%s] nexl source file doesn\'t exist', stuff.fullPath);
 						return Promise.reject('nexl sources dir doesn\'t exist !');
 					}
 
