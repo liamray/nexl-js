@@ -102,7 +102,8 @@ function test(requestParams, testCase) {
 
 function startInner() {
 	// starting nexl-server
-	new NexlTestApp().start();
+	this.nexlApp = new NexlTestApp();
+	this.nexlApp.start();
 
 	const promises = [];
 
@@ -138,10 +139,12 @@ function start() {
 	}).then(
 		() => {
 			logger.log.error('Tests are PASSED !!!');
+			this.nexlApp.stop();
 		}).catch(
 		(err) => {
 			logger.log.error('Tests are failed !');
 			logger.log.error(err);
+			this.nexlApp.stop();
 		});
 }
 

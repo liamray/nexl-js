@@ -258,6 +258,16 @@ class NexlApp {
 				process.exit(1);
 			});
 	}
+
+	stop() {
+		if (this.httpServer) {
+			this.httpServer.close();
+		}
+
+		if (this.httpsServer) {
+			this.httpsServer.close();
+		}
+	}
 }
 
 // --------------------------------------------------------------------------------
