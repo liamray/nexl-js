@@ -31,13 +31,13 @@ function testCaseInner(options, testCase) {
 				const testCaseAsString = util.format('source=%s, args=%s', testCase.request.source, JSON.stringify(testCase.request.args));
 
 				if (res.statusCode !== testCase.result.expectedStatusCode) {
-					reject(util.format('For [%s] method, expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', options.method, testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString));
+					reject(util.format('TEST FAILED !!! Method is [%s]. Expected [%s] http status doesn\'t match to received [%s]\nmsg = %s\n%s', options.method, testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString));
 					return;
 				}
 
 				const contentType = res.headers["content-type"];
 				if (contentType !== testCase.result.expectedHeader) {
-					reject(util.format('For [%s] method, expected header [%s] doesn\'t match to received [%s]\n%s', options.method, testCase.result.expectedHeader, contentType, testCaseAsString));
+					reject(util.format('TEST FAILED !!! Method is [%s]. Expected [%s] header doesn\'t match to received [%s]\n%s', options.method, testCase.result.expectedHeader, contentType, testCaseAsString));
 					return;
 				}
 
@@ -46,11 +46,11 @@ function testCaseInner(options, testCase) {
 				}
 
 				if (data !== testCase.result.expectedResult) {
-					reject(util.format('For [%s] method, expected result\n[%s] doesn\'t match to received\n[%s]\n%s', options.method, testCase.result.expectedResult, data, testCaseAsString));
+					reject(util.format('TEST FAILED !!! Method is [%s]. Expected\n[%s]\n doesn\'t match to received\n[%s]\n%s', options.method, testCase.result.expectedResult, data, testCaseAsString));
 					return;
 				}
 
-				resolve('Success !!!');
+				resolve('TEST PASSED !!!');
 			})
 		});
 
@@ -137,7 +137,7 @@ function start() {
 			return startInner();
 		});
 	}).then(
-		() => {
+		(info) => {
 			logger.log.error('Tests are PASSED !!!');
 			this.nexlApp.stop();
 		}).catch(

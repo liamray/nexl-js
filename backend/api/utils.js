@@ -1,13 +1,8 @@
 const crypto = require('crypto');
-const path = require('path');
-const fs = require('fs');
-const deepMerge = require('deepmerge');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const j79 = require('j79-utils');
-
-const confMgmt = require('./conf-mgmt');
-const logger = require('./logger');
+const path = require('path');
 
 // is a password to encrypt/decrypt tokens
 const SECRET = uuidv4();
@@ -42,21 +37,6 @@ function sendError(res, msg, httpStatus) {
 	res.status(httpStatus).end();
 }
 
-function deepMergeAndPeel(obj1, obj2) {
-	// iterating over obj1 and deleting fields which not present in obj2
-	for (let key in obj1) {
-		if (obj2[key] === undefined) {
-			delete obj1[key];
-		}
-	}
-
-	return deepMerge(obj1, obj2, {
-		arrayMerge: function (target, source) {
-			return source.slice(0);
-		}
-	});
-}
-
 function formatErr(err) {
 	if (j79.getType(err) === '[object Error]') {
 		return err.message + '\n' + err.stack;
@@ -81,7 +61,7 @@ function isEmptyStr(str) {
 	return str === undefined || str === null || str.toString().length < 1;
 }
 
-const BAD_DIR_PATH_REGEX = '([\\\\/]\\.?[\\\\|/])|(^\\.{2,})|(\\.+$)';
+const BAD_DIR_PATH_REGEX = '([\\\\/]\\.?[\\\\|/])|(\\.{2,})|(\\.+$)';
 const BAD_FILE_PATH_REGEX = BAD_DIR_PATH_REGEX + '|(^[\\\\/]*$)';
 
 const BAD_DIR_PATH = new RegExp(BAD_DIR_PATH_REGEX);
@@ -112,6 +92,4 @@ module.exports.isEmptyStr = isEmptyStr;
 
 module.exports.isFilePathValid = isFilePathValid;
 module.exports.isDirPathValid = isDirPathValid;
-
-module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------

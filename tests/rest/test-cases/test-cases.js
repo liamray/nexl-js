@@ -14,7 +14,6 @@ module.exports.push({
 		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
 });
-/*
 
 module.exports.push({
 	request: {
@@ -27,7 +26,7 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'The [../nexl-source1.js] path is unacceptable'
+		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
 });
 
@@ -42,7 +41,7 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'The [c:\\nexl-source1.js] path is unacceptable'
+		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
 });
 
@@ -57,7 +56,7 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'The [/nexl-source1.js] path is unacceptable'
+		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
 });
 
@@ -70,12 +69,11 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
 		expectedResult: '{"FIRST":["hothead1","awakening1","dynamite1","military1"],"SECOND":["cuddly2","grease2","fate2","atmosphere2"]}'
 	}
 });
-
 
 module.exports.push({
 	request: {
@@ -86,7 +84,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
 		expectedResult: '["FIRST","SECOND"]'
 	}
@@ -224,4 +222,3 @@ module.exports.push({
 		expectedResult: 'queen\nmuscle\n79\nfalse queen\tmuscle\t79\tfalse'
 	}
 });
-*/
