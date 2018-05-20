@@ -16,7 +16,7 @@ const ENCODING_ASCII = 'ascii';
 const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
-let NEXL_SOURCES_DIR;
+let NEXL_SETTINGS_CACHE;
 
 // --------------------------------------------------------------------------------
 // files
@@ -381,8 +381,7 @@ function loadSettings() {
 }
 
 function saveSettings(settings) {
-	// updating nexl sources dir
-	NEXL_SOURCES_DIR = settings[SETTINGS.NEXL_SOURCES_DIR];
+	NEXL_SETTINGS_CACHE = settings;
 
 	return save(settings, CONF_FILES.SETTINGS);
 }
@@ -399,9 +398,8 @@ function createDefaultConf() {
 		(isExists) => {
 			return loadSettings().then(
 				settings => {
-					NEXL_SOURCES_DIR = settings[SETTINGS.NEXL_SOURCES_DIR];
-
 					if (isExists) {
+						NEXL_SETTINGS_CACHE = settings;
 						return Promise.resolve();
 					} else {
 						return saveSettings(settings);
@@ -428,5 +426,6 @@ module.exports.saveSettings = saveSettings;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
-module.exports.getNexlSourcesDir = () => NEXL_SOURCES_DIR;
+module.exports.getNexlSourcesDir = () => NEXL_SETTINGS_CACHE[SETTINGS.NEXL_SOURCES_DIR];
+module.exports.getNexlSettingsCached = () => NEXL_SETTINGS_CACHE;
 // --------------------------------------------------------------------------------

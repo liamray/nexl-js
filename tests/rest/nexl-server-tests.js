@@ -20,6 +20,7 @@ class NexlTestApp extends NexlApp {
 
 function testCaseInner(options, testCase) {
 	return new Promise((resolve, reject) => {
+		logger.log.info('Method : [%s], path : [%s]', options.method, options.path);
 		const req = http.request(options, function (res) {
 			res.setEncoding('utf8');
 			let data = '';
@@ -30,18 +31,22 @@ function testCaseInner(options, testCase) {
 				const testCaseAsString = util.format('source=%s, args=%s', testCase.request.source, JSON.stringify(testCase.request.args));
 
 				if (res.statusCode !== testCase.result.expectedStatusCode) {
-					reject(util.format('Expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString));
+					reject(util.format('For [%s] method, expected status code [%s] doesn\'t match to received status code [%s]\nmsg = %s\n%s', options.method, testCase.result.expectedStatusCode, res.statusCode, data, testCaseAsString));
 					return;
 				}
 
 				const contentType = res.headers["content-type"];
 				if (contentType !== testCase.result.expectedHeader) {
-					reject(util.format('Expected header [%s] doesn\'t match to received [%s]\n%s', testCase.result.expectedHeader, contentType, testCaseAsString));
+					reject(util.format('For [%s] method, expected header [%s] doesn\'t match to received [%s]\n%s', options.method, testCase.result.expectedHeader, contentType, testCaseAsString));
 					return;
 				}
 
+				if (res.statusCode > 299 || res.statusCode < 200) {
+					data = res.statusMessage;
+				}
+
 				if (data !== testCase.result.expectedResult) {
-					reject(util.format('Expected result\n[%s] doesn\'t match to received\n[%s]\n%s', testCase.result.expectedResult, data, testCaseAsString));
+					reject(util.format('For [%s] method, expected result\n[%s] doesn\'t match to received\n[%s]\n%s', options.method, testCase.result.expectedResult, data, testCaseAsString));
 					return;
 				}
 
@@ -110,15 +115,7 @@ function startInner() {
 		promises.push(test(postRequestOpts, testCase));
 	});
 
-	Promise.all(promises).then(
-		(info) => {
-			logger.log.info('All tests are passed !!!');
-		}
-	).catch(
-		(err) => {
-			logger.log.error(err);
-		}
-	);
+	return Promise.all(promises);
 }
 
 function start() {
@@ -136,11 +133,16 @@ function start() {
 		settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSourcesDir;
 
 		return confMgmt.saveSettings(settings).then(() => {
-			startInner();
+			return startInner();
 		});
-	}).catch((err) => {
-		logger.log.error(err);
-	});
+	}).then(
+		() => {
+			logger.log.error('Tests are PASSED !!!');
+		}).catch(
+		(err) => {
+			logger.log.error('Tests are failed !');
+			logger.log.error(err);
+		});
 }
 
 start();

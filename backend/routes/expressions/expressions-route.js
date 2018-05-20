@@ -41,13 +41,13 @@ function assembleNexlParams(httpParams) {
 		throw '[relativePath] is not provided';
 	}
 
-	if (!utils.isPathValid(httpParams.relativePath)) {
+	if (!utils.isFilePathValid(httpParams.relativePath)) {
 		logger.log.error('Got unacceptable path [%s]', httpParams.relativePath);
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
 
 	const fullPath = path.join(confMgmt.getNexlSourcesDir(), httpParams.relativePath);
-	if (!utils.isPathValid(fullPath)) {
+	if (!utils.isFilePathValid(fullPath)) {
 		logger.log.error('Got unacceptable path [%s]', fullPath);
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
@@ -89,21 +89,21 @@ function nexlize(httpParams, req, res) {
 	// is undefined ?
 	if (result === undefined) {
 		logger.log.error('Got undefined value');
-		utils.sendError(res, e, 555);
+		utils.sendError(res, 'Got undefined value', 555);
 		return;
 	}
 
 	// is null ?
 	if (result === null) {
 		logger.log.error('Got null value');
-		utils.sendError(res, e, 556);
+		utils.sendError(res, 'Got null value', 556);
 		return;
 	}
 
 	// is NaN ?
 	if (result !== result) {
 		logger.log.error('Got NaN value');
-		utils.sendError(res, e, 557);
+		utils.sendError(res, 'Got NaN value', 557);
 		return;
 	}
 

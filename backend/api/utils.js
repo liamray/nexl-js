@@ -4,6 +4,7 @@ const fs = require('fs');
 const deepMerge = require('deepmerge');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
+const j79 = require('j79-utils');
 
 const confMgmt = require('./conf-mgmt');
 const logger = require('./logger');
@@ -57,6 +58,18 @@ function deepMergeAndPeel(obj1, obj2) {
 }
 
 function formatErr(err) {
+	if (j79.getType(err) === '[object Error]') {
+		return err.message + '\n' + err.stack;
+	}
+
+	if (!j79.isObject(err)) {
+		return err;
+	}
+
+	if (Object.keys(err).length < 1) {
+		return err;
+	}
+
 	return JSON.stringify(err, null, 2);
 }
 
@@ -68,10 +81,18 @@ function isEmptyStr(str) {
 	return str === undefined || str === null || str.toString().length < 1;
 }
 
-const INVALID_PATH_PATTERN = '((\\\\|/)\\.+(\\\\|/))|(^\\.{2,})|(\\.+$)';
+const BAD_DIR_PATH_REGEX = '([\\\\/]\\.?[\\\\|/])|(^\\.{2,})|(\\.+$)';
+const BAD_FILE_PATH_REGEX = BAD_DIR_PATH_REGEX + '|(^[\\\\/]*$)';
 
-function isPathValid(relativePath) {
-	return relativePath.search(INVALID_PATH_PATTERN) < 0;
+const BAD_DIR_PATH = new RegExp(BAD_DIR_PATH_REGEX);
+const BAD_FILE_PATH = new RegExp(BAD_FILE_PATH_REGEX);
+
+function isDirPathValid(relativePath) {
+	return relativePath.match(BAD_DIR_PATH) === null;
+}
+
+function isFilePathValid(relativePath) {
+	return relativePath.match(BAD_FILE_PATH) === null;
 }
 
 
@@ -89,7 +110,8 @@ module.exports.formatErr = formatErr;
 module.exports.isNotEmptyStr = isNotEmptyStr;
 module.exports.isEmptyStr = isEmptyStr;
 
-module.exports.isPathValid = isPathValid;
+module.exports.isFilePathValid = isFilePathValid;
+module.exports.isDirPathValid = isDirPathValid;
 
 module.exports.deepMergeAndPeel = deepMergeAndPeel;
 // --------------------------------------------------------------------------------

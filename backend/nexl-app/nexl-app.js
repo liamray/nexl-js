@@ -223,7 +223,7 @@ class NexlApp {
 			return;
 		}
 
-		logger.log.error('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
+		logger.log.warn('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
 	}
 
 	startNexlServer() {

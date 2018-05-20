@@ -11,9 +11,10 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'The [/nexl-source1.js] path is unacceptable'
+		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
 });
+/*
 
 module.exports.push({
 	request: {
@@ -223,3 +224,4 @@ module.exports.push({
 		expectedResult: 'queen\nmuscle\n79\nfalse queen\tmuscle\t79\tfalse'
 	}
 });
+*/
