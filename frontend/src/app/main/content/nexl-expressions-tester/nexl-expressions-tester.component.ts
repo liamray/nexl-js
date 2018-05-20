@@ -3,6 +3,7 @@ import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {HttpRequestService} from "../../../services/http.requests.service";
 import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
+import * as queryString from "querystring";
 
 @Component({
   selector: '.app-nexl-expressions-tester',
@@ -39,10 +40,17 @@ export class NexlExpressionsTesterComponent {
       return;
     }
 
-    const data = {
-      expression: this.nexlExpression.val(),
-      'nexl-source-content': tabInfo.nexlSourceContent
-    };
+    let data: any = {};
+
+    if (tabInfo.nexlSourceContent !== undefined) {
+      data['nexl-source-content'] = tabInfo.nexlSourceContent;
+    }
+
+    if (this.nexlExpression.val() !== '') {
+      data.expression = this.nexlExpression.val();
+    }
+
+    data = queryString.stringify(data);
 
     // evaluating nexl expression
     this.http.post2Root(data, tabInfo.relativePath, 'text').subscribe(

@@ -22,7 +22,9 @@ export class HttpRequestService {
     const opts: any = {
       observe: 'response',
       responseType: responseType,
-      body: data
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     };
 
     return this.httpClient.post<any>(UtilsService.prefixRootlUrl(url), data, opts);
