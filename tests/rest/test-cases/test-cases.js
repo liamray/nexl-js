@@ -41,7 +41,7 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
+		expectedResult: 'The [nexl-source1.js] nexl source file doesn\'t exist'
 	}
 });
 
@@ -130,8 +130,23 @@ module.exports.push({
 
 	result: {
 		expectedHeader: undefined,
-		expectedStatusCode: 500,
+		expectedStatusCode: 555,
 		expectedResult: 'Got undefined value'
+	}
+});
+
+module.exports.push({
+	request: {
+		source: '/nexl-source1.js',
+		args: {
+			expression: '${:null}'
+		}
+	},
+
+	result: {
+		expectedHeader: undefined,
+		expectedStatusCode: 556,
+		expectedResult: 'Got null value'
 	}
 });
 

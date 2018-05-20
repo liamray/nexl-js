@@ -100,13 +100,6 @@ function nexlize(httpParams, req, res) {
 		return;
 	}
 
-	// is NaN ?
-	if (result !== result) {
-		logger.log.error('Got NaN value');
-		utils.sendError(res, 'Got NaN value', 557);
-		return;
-	}
-
 	// setting up headers
 	if (j79.isArray(result) || j79.isObject(result)) {
 		res.header("Content-Type", 'application/json');

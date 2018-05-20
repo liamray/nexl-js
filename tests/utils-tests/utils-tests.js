@@ -68,3 +68,5 @@ assert(utils.isDirPathValid('a/c/b'));
 
 assert(utils.isFilePathValid('a\\c\\b'));
 assert(utils.isDirPathValid('a\\c\\b'));
+
+assert(utils.isFilePathValid('/c:\\nexl-source1.js'));
