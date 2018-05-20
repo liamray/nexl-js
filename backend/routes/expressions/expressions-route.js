@@ -113,6 +113,8 @@ function nexlize(httpParams, req, res) {
 	} else {
 		res.send(JSON.stringify(result));
 	}
+
+	res.end();
 }
 
 router.get('/*', function (req, res) {

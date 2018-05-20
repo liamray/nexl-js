@@ -45,7 +45,7 @@ export class NexlExpressionsTesterComponent {
     };
 
     // evaluating nexl expression
-    this.http.post2Root(data, tabInfo.relativePath, 'json').subscribe(
+    this.http.post2Root(data, tabInfo.relativePath, 'text').subscribe(
       (info: any) => {
         this.output.nativeElement.innerText = info.body;
         this.globalComponentsService.loader.close();
