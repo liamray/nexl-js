@@ -4,8 +4,12 @@ export class UtilsService {
   static SERVER_INFO: any;
   static IS_WIN: boolean;
 
-  static prefixUrl(url: string) {
+  static prefixNexlUrl(url: string) {
     return environment.nexlRootUrl + url;
+  }
+
+  static prefixRootlUrl(url: string) {
+    return environment.rootUrl + url;
   }
 
   static isPositiveIneger(str) {

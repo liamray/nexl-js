@@ -6,10 +6,10 @@ import {MESSAGE_TYPE, MessageService} from "./message.service";
 import {GlobalComponentsService} from "./global-components.service";
 import {CREDENTIALS, LocalStorageService} from "./localstorage.service";
 
-const LOGIN_URL = UtilsService.prefixUrl('/auth/login');
-const REGISTER_URL = UtilsService.prefixUrl('/auth/register');
-const RESOLVE_STATUS = UtilsService.prefixUrl('/auth/resolve-status');
-const CHANGE_PASSWORD = UtilsService.prefixUrl('/auth/change-password');
+const LOGIN_URL = UtilsService.prefixNexlUrl('/auth/login');
+const REGISTER_URL = UtilsService.prefixNexlUrl('/auth/register');
+const RESOLVE_STATUS = UtilsService.prefixNexlUrl('/auth/resolve-status');
+const CHANGE_PASSWORD = UtilsService.prefixNexlUrl('/auth/change-password');
 
 @Injectable()
 export class AuthService {

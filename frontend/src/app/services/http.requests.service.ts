@@ -15,6 +15,16 @@ export class HttpRequestService {
       body: data
     };
 
-    return this.httpClient.post<any>(UtilsService.prefixUrl(url), data, opts);
+    return this.httpClient.post<any>(UtilsService.prefixNexlUrl(url), data, opts);
+  }
+
+  post2Root(data, url, responseType) {
+    const opts: any = {
+      observe: 'response',
+      responseType: responseType,
+      body: data
+    };
+
+    return this.httpClient.post<any>(UtilsService.prefixRootlUrl(url), data, opts);
   }
 }

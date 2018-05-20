@@ -82,7 +82,34 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.itemMoved(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.REQUEST_CURRENT_TAB: {
+        this.sendCurrentTabInfo();
+        return;
+      }
     }
+  }
+
+  sendCurrentTabInfo() {
+    const tabNr = this.nexlSourcesTabs.val();
+    if (tabNr < 0) {
+      // sending empty data
+      this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB);
+      return;
+    }
+
+    const data: any = {
+      relativePath: this.resolveTabAttr(tabNr, 'relative-path')
+    };
+
+    const idSeqNr = this.resolveTabAttr(tabNr, 'id-seq-nr');
+    const isTabChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed');
+
+    if (isTabChanged === 'true') {
+      data.nexlSourceContent = ace.edit(TAB_CONTENT + idSeqNr).getValue();
+    }
+
+    this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB, data);
   }
 
   fileMoved(data: any) {

@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  nexlRootUrl: 'http://localhost:3000/nexl'
+  nexlRootUrl: 'http://localhost:3000/nexl',
+  rootUrl: 'http://localhost:3000'
 };
