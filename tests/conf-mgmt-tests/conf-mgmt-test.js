@@ -1,6 +1,6 @@
 require('./tests-main');
 
-const confMgmt = require('../backend/api/conf-mgmt');
+const confMgmt = require('../../backend/api/conf-mgmt');
 const assert = require('assert');
 const path = require('path');
 
