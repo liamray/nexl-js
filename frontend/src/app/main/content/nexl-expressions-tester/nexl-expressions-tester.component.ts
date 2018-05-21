@@ -48,6 +48,11 @@ export class NexlExpressionsTesterComponent {
         this.tabsCountChanged(msg.data);
         return;
       }
+
+      case MESSAGE_TYPE.EVAL_NEXL_EXPRESSION: {
+        this.eval();
+        return;
+      }
     }
   }
 

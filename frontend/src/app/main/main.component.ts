@@ -46,6 +46,7 @@ export class MainComponent implements OnInit {
 
         case F9 :
           event.preventDefault();
+          this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
           return;
       }
     });
