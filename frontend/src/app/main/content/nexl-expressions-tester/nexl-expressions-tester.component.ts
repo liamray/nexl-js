@@ -60,6 +60,7 @@ export class NexlExpressionsTesterComponent {
         this.globalComponentsService.loader.close();
       },
       (err) => {
+        this.output = '';
         this.globalComponentsService.loader.close();
         console.log(err);
         this.globalComponentsService.notification.openError(err.statusText);
@@ -73,4 +74,11 @@ export class NexlExpressionsTesterComponent {
 
   args() {
   }
+
+  onKeyPress(event) {
+    if (event.keyCode === 13) {
+      this.eval();
+    }
+  }
+
 }

@@ -12,7 +12,9 @@
           width="100%"
           [searchMode]="'startswith'"
           [dropDownVerticalAlignment]="'top'"
-          [source]="[]" [selectedIndex]='0'>
+          [source]="[]" [selectedIndex]='0'
+          (keypress)="onKeyPress($event)"
+        >
         </jqxComboBox>
       </div>
 
