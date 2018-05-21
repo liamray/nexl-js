@@ -12,7 +12,8 @@ import * as queryString from "querystring";
 })
 export class NexlExpressionsTesterComponent {
   @ViewChild('nexlExpression') nexlExpression: jqxComboBoxComponent;
-  @ViewChild('output') output: ElementRef;
+
+  output: string = '';
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -55,7 +56,7 @@ export class NexlExpressionsTesterComponent {
     // evaluating nexl expression
     this.http.post2Root(data, tabInfo.relativePath, 'text').subscribe(
       (info: any) => {
-        this.output.nativeElement.innerText = info.body;
+        this.output = info.body;
         this.globalComponentsService.loader.close();
       },
       (err) => {
