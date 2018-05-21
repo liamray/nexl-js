@@ -1,4 +1,10 @@
-<jqxExpander [height]="85" [showArrow]="false" [toggleMode]="'none'">
+<jqxExpander
+  [height]="85"
+  [showArrow]="false"
+  [toggleMode]="'none'"
+  #expressionArea
+  [disabled]="true"
+>
 
   <div>nexl expressions tester</div>
 
@@ -14,25 +20,47 @@
           [dropDownVerticalAlignment]="'top'"
           [source]="[]" [selectedIndex]='0'
           (keypress)="onKeyPress($event)"
+          [disabled]="true"
         >
         </jqxComboBox>
       </div>
 
       <div class="nexl-expression-buttons" style="margin-left:4px;">
-        <jqxButton [width]='60' [height]='27' class="nexl-expression-buttons"
-                   [imgSrc]='"./nexl/site/images/eval.png"' (onClick)="eval()">
+        <jqxButton
+          #evalButton
+          [width]='60'
+          [height]='27'
+          class="nexl-expression-buttons"
+          [imgSrc]='"./nexl/site/images/eval.png"'
+          (onClick)="eval()"
+          [disabled]="true"
+        >
         </jqxButton>
       </div>
 
       <div class="nexl-expression-buttons">
-        <jqxButton [width]='27' [height]='27' class="nexl-expression-buttons"
-                   [imgSrc]='"./nexl/site/images/assemble.png"' (onClick)="assemble()">
+        <jqxButton
+          #assembleButton
+          [width]='27'
+          [height]='27'
+          class="nexl-expression-buttons"
+          [imgSrc]='"./nexl/site/images/assemble.png"'
+          (onClick)="assemble()"
+          [disabled]="true"
+        >
         </jqxButton>
       </div>
 
       <div class="nexl-expression-buttons">
-        <jqxButton [width]='27' [height]='27' class="nexl-expression-buttons"
-                   [imgSrc]='"./nexl/site/images/args.png"' (onClick)="args()">
+        <jqxButton
+          #argsButton
+          [width]='27'
+          [height]='27'
+          class="nexl-expression-buttons"
+          [imgSrc]='"./nexl/site/images/args.png"'
+          (onClick)="args()"
+          [disabled]="true"
+        >
         </jqxButton>
       </div>
 
@@ -40,14 +68,20 @@
 
     <div class="nexl-url-container">
       <div class="nexl-url-label">URL</div>
-      <div><a href="http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}" target="_blank">http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}</a>
+      <div><a href="http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}" target="_blank">{{url}}</a>
       </div>
     </div>
 
   </div>
 </jqxExpander>
 
-<jqxExpander height="100%" [showArrow]="false" [toggleMode]="'none'">
+<jqxExpander
+  height="100%"
+  [showArrow]="false"
+  [toggleMode]="'none'"
+  [disabled]="true"
+  #outputArea
+>
 
   <div>Output</div>
 

@@ -1,9 +1,11 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ComponentRef, ElementRef, ViewChild} from '@angular/core';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {HttpRequestService} from "../../../services/http.requests.service";
 import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
 import * as queryString from "querystring";
+import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
+import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 @Component({
   selector: '.app-nexl-expressions-tester',
@@ -12,8 +14,17 @@ import * as queryString from "querystring";
 })
 export class NexlExpressionsTesterComponent {
   @ViewChild('nexlExpression') nexlExpression: jqxComboBoxComponent;
+  @ViewChild('outputArea') outputArea: jqxExpanderComponent;
+  @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;
+
+  @ViewChild('evalButton') evalButton: jqxButtonComponent;
+  @ViewChild('assembleButton') assembleButton: jqxButtonComponent;
+  @ViewChild('argsButton') argsButton: jqxButtonComponent;
 
   output: string = '';
+  url: '';
+  hasReadPermission = false;
+  tabsCount = 0;
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -27,10 +38,35 @@ export class NexlExpressionsTesterComponent {
         this.evalInner(msg.data);
         return;
       }
+
+      case MESSAGE_TYPE.AUTH_CHANGED: {
+        this.updatePermissions(msg.data);
+        return;
+      }
+
+      case MESSAGE_TYPE.TABS_COUNT_CHANGED: {
+        this.tabsCountChanged(msg.data);
+        return;
+      }
     }
   }
 
+  updatePermissions(data: any) {
+    if (data.hasReadPermission === this.hasReadPermission) {
+      return;
+    }
+
+    this.hasReadPermission = data.hasReadPermission;
+    this.updateComponentsState();
+  }
+
+
   eval() {
+    // todo : remove after jqx fix
+    if (this.isDisabled()) {
+      return;
+    }
+
     this.globalComponentsService.loader.open();
     this.messageService.sendMessage(MESSAGE_TYPE.REQUEST_CURRENT_TAB);
   }
@@ -70,9 +106,19 @@ export class NexlExpressionsTesterComponent {
   }
 
   assemble() {
+    // todo : remove after jqx fix
+    if (this.isDisabled()) {
+      return;
+    }
+
   }
 
   args() {
+    // todo : remove after jqx fix
+    if (this.isDisabled()) {
+      return;
+    }
+
   }
 
   onKeyPress(event) {
@@ -81,4 +127,22 @@ export class NexlExpressionsTesterComponent {
     }
   }
 
+  private tabsCountChanged(tabsCount: number) {
+    this.tabsCount = tabsCount;
+    this.updateComponentsState();
+  }
+
+  private updateComponentsState() {
+    let isDisabled = this.isDisabled();
+    this.outputArea.disabled(isDisabled);
+    this.expressionArea.disabled(isDisabled);
+    this.nexlExpression.disabled(isDisabled);
+    this.evalButton.disabled(isDisabled);
+    this.argsButton.disabled(isDisabled);
+    this.assembleButton.disabled(isDisabled);
+  }
+
+  private isDisabled() {
+    return !this.hasReadPermission || this.tabsCount < 1;
+  }
 }
