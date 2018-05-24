@@ -15,6 +15,8 @@ const TITLE_MODIFICATION_ICON = 'tabs-title-modification-icon-';
 const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
 const ATTR_IS_NEW_FILE = 'is-new-file';
 
+const ID_SEQ_NR = 'id-seq-nr';
+
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -103,7 +105,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       relativePath: this.resolveTabAttr(tabNr, 'relative-path')
     };
 
-    const idSeqNr = this.resolveTabAttr(tabNr, 'id-seq-nr');
+    const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
     const isTabChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed');
 
     if (isTabChanged === 'true') {
@@ -131,7 +133,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       let tabRelativePath = this.resolveTabAttr(index, 'relative-path');
-      let idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+      let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
 
       if (UtilsService.pathIndexOf(tabRelativePath, oldRelativePath) !== 0) {
         continue;
@@ -164,7 +166,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     let promise: any = Promise.resolve();
 
     for (let tabNr = this.nexlSourcesTabs.length() - 1; tabNr >= 0; tabNr--) {
-      const idSeqNr = this.resolveTabAttr(tabNr, 'id-seq-nr');
+      const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
       promise = promise.then(() => this.closeTabInner(idSeqNr));
     }
   }
@@ -253,7 +255,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
 
       if (UtilsService.pathIndexOf(tabsRelativePath, relativePath) === 0) {
-        const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+        const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
         this.closeTabInnerInner(idSeqNr);
       }
     }
@@ -263,7 +265,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
       if (UtilsService.isPathEqual(tabsRelativePath, relativePath)) {
-        const idSeqNr = this.resolveTabAttr(index, 'id-seq-nr');
+        const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
         this.closeTabInnerInner(idSeqNr);
         return;
       }
@@ -330,7 +332,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
           id: this.resolveTabAttr(index, 'id'),
           index: index,
           relativePath: path,
-          idSeqNr: this.resolveTabAttr(index, 'id-seq-nr')
+          idSeqNr: this.resolveTabAttr(index, ID_SEQ_NR)
         };
       }
     }
@@ -381,18 +383,19 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const theTitle = '<span style="position:relative; top: -2px;" id="' + this.makeId(data, TITLE_TEXT) + '">' + data.label + '</span>';
     const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/images/close-tab.png" id="' + this.makeId(data, TITLE_CLOSE_ICON) + '"/>';
     const attrs = {
-      id: this.makeId(data, TITLE_ID),
-      'id-seq-nr': data.idSeqNr
+      id: this.makeId(data, TITLE_ID)
     };
+    attrs[ID_SEQ_NR] = data.idSeqNr;
     return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
     const attrs = {
       id: this.makeId(data, TAB_CONTENT),
-      'id-seq-nr': data.idSeqNr,
       'relative-path': data.relativePath
     };
+
+    attrs[ID_SEQ_NR] = data.idSeqNr;
 
     return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
@@ -415,7 +418,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   closeTab(event: any) {
-    const idSeqNr = event.target.parentElement.getAttribute('id-seq-nr');
+    const idSeqNr = event.target.parentElement.getAttribute(ID_SEQ_NR);
     this.closeTabInner(idSeqNr).then();
   }
 
@@ -508,7 +511,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   onTabSelect(event: any) {
-    const idSeqNr = this.resolveTabAttr(event.args.item, 'id-seq-nr');
+    const idSeqNr = this.resolveTabAttr(event.args.item, ID_SEQ_NR);
     ace.edit(TAB_CONTENT + idSeqNr).focus();
   }
 
