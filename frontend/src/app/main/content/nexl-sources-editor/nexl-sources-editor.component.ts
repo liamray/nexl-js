@@ -114,6 +114,21 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return ace.edit(TAB_CONTENT + idSeqNr).getValue();
   }
 
+  getTooltipText(idSeqNr: string | number) {
+    return $('#' + TITLE_TOOLTIP + idSeqNr).text();
+  }
+
+  setTooltipText(idSeqNr: string | number, text: string) {
+    return $('#' + TITLE_TOOLTIP + idSeqNr).text(text);
+  }
+
+  getTitleText(idSeqNr: string | number) {
+    return $('#' + TITLE_TEXT + idSeqNr).text();
+  }
+
+  setTitleText(idSeqNr: string | number, text: string) {
+    return $('#' + TITLE_TEXT + idSeqNr).text(text);
+  }
 
   sendCurrentTabInfo() {
     const tabNr = this.nexlSourcesTabs.val();
@@ -144,8 +159,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     this.setTabTitleAttr(tabInfo.index, RELATIVE_PATH, data.newRelativePath);
     this.setTabContentAttr(tabInfo.idSeqNr, RELATIVE_PATH, data.newRelativePath);
-    $('#' + TITLE_TEXT + tabInfo.idSeqNr).text(data.newLabel);
-    $('#' + TITLE_TOOLTIP + tabInfo.idSeqNr).text(data.newRelativePath);
+    this.setTitleText(tabInfo.idSeqNr, data.newLabel);
+    this.setTooltipText(tabInfo.idSeqNr, data.newRelativePath);
   }
 
   dirMoved(data: any) {
@@ -164,8 +179,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       const relativePath = data.newRelativePath + tabRelativePath.substr(oldRelativePath.length);
       this.setTabTitleAttr(index, RELATIVE_PATH, relativePath);
       this.setTabContentAttr(idSeqNr, RELATIVE_PATH, relativePath);
-      $('#' + TITLE_TEXT + idSeqNr).text(data.newLabel);
-      $('#' + TITLE_TOOLTIP + idSeqNr).text(relativePath);
+      this.setTitleText(idSeqNr, data.newLabel);
+      this.setTooltipText(idSeqNr, relativePath);
     }
   }
 
@@ -491,7 +506,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     // binding click on tool tip
     $('#' + this.makeId(data, TITLE_TOOLTIP)).click(() => {
-      this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, $('#' + TITLE_TOOLTIP + data.idSeqNr).text());
+      this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
     });
   }
 
