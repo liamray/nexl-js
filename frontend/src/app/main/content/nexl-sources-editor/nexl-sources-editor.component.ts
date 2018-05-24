@@ -16,6 +16,8 @@ const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
 const ATTR_IS_NEW_FILE = 'is-new-file';
 const ID_SEQ_NR = 'id-seq-nr';
 const RELATIVE_PATH = 'relative-path';
+const IS_CHANGED = 'is-changed';
+const TRUE = 'true';
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -105,9 +107,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     };
 
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
-    const isTabChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed');
+    const isTabChanged = $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED);
 
-    if (isTabChanged === 'true') {
+    if (isTabChanged === TRUE) {
       data.nexlSourceContent = ace.edit(TAB_CONTENT + idSeqNr).getValue();
     }
 
@@ -172,7 +174,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   changeFileStatus(idSeqNr: any, isChanged: boolean) {
     $('#' + TITLE_MODIFICATION_ICON + idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
-    $('#' + TITLE_ID + idSeqNr).attr('is-changed', isChanged);
+    $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED, isChanged);
 
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
@@ -425,7 +427,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
-      const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
+      const isChanged = $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED) === TRUE;
       if (!isChanged) {
         this.closeTabInnerInner(idSeqNr);
         resolve();
