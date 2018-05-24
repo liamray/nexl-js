@@ -17,7 +17,7 @@ const ATTR_IS_NEW_FILE = 'is-new-file';
 const ID_SEQ_NR = 'id-seq-nr';
 const RELATIVE_PATH = 'relative-path';
 const IS_CHANGED = 'is-changed';
-const TRUE = 'true';
+const TRUE = true.toString();
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -94,6 +94,27 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
   }
 
+  isTabChanged(idSeqNr: string | number) {
+    return $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED) === TRUE;
+  }
+
+  setTabChanged(idSeqNr: string | number, isChanged: boolean) {
+    $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED, isChanged);
+  }
+
+  isNewFile(idSeqNr: string | number) {
+    return $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE) === TRUE;
+  }
+
+  setNewFile(idSeqNr: string | number, isChanged: boolean) {
+    $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE, isChanged);
+  }
+
+  getTabContent(idSeqNr: string) {
+    return ace.edit(TAB_CONTENT + idSeqNr).getValue();
+  }
+
+
   sendCurrentTabInfo() {
     const tabNr = this.nexlSourcesTabs.val();
     if (tabNr < 0) {
@@ -107,10 +128,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     };
 
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
-    const isTabChanged = $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED);
 
-    if (isTabChanged === TRUE) {
-      data.nexlSourceContent = ace.edit(TAB_CONTENT + idSeqNr).getValue();
+    if (this.isTabChanged(idSeqNr)) {
+      data.nexlSourceContent = this.getTabContent(idSeqNr);
     }
 
     this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB, data);
@@ -160,7 +180,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   createNexlSource(data) {
     const nexlSource = this.loadNexlSourceInner(data);
     this.changeFileStatus(nexlSource.idSeqNr, true);
-    $('#' + TITLE_ID + nexlSource.idSeqNr).attr(ATTR_IS_NEW_FILE, true);
+    this.setNewFile(nexlSource.idSeqNr, true);
   }
 
   closeAllTabs() {
@@ -174,7 +194,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   changeFileStatus(idSeqNr: any, isChanged: boolean) {
     $('#' + TITLE_MODIFICATION_ICON + idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
-    $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED, isChanged);
+    this.setTabChanged(idSeqNr, isChanged);
 
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
@@ -222,7 +242,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   saveNexlSourceInner(relativePath: string, callback?: (boolean) => void) {
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
-    const content = ace.edit(TAB_CONTENT + tabInfo.idSeqNr).getValue();
+    const content = this.getTabContent(tabInfo.idSeqNr);
 
     this.globalComponentsService.loader.open();
 
@@ -231,7 +251,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.globalComponentsService.notification.openSuccess('File saved !');
         this.globalComponentsService.loader.close();
         this.changeFileStatus(tabInfo.idSeqNr, false);
-        $('#' + TITLE_ID + tabInfo.idSeqNr).attr(ATTR_IS_NEW_FILE, false);
+        this.setNewFile(tabInfo.idSeqNr, false);
         if (callback !== undefined) {
           callback(true);
         }
@@ -404,9 +424,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   closeTabInnerInner(idSeqNr: number) {
     const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
-    // ATTR_IS_NEW_FILE means is the file was created but hasn't ever saved. In this case it must be removed from the tree
-    const isNewFile = $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE);
-    if (isNewFile === true.toString()) {
+    // new file means is the file was created but hasn't ever saved. In this case it must be removed from the tree
+    if (this.isNewFile(idSeqNr)) {
       this.messageService.sendMessage(MESSAGE_TYPE.REMOVE_FILE_FROM_TREE, relativePath);
     }
 
@@ -427,8 +446,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return new Promise((resolve, reject) => {
       const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
-      const isChanged = $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED) === TRUE;
-      if (!isChanged) {
+      if (!this.isTabChanged(idSeqNr)) {
         this.closeTabInnerInner(idSeqNr);
         resolve();
         return;
