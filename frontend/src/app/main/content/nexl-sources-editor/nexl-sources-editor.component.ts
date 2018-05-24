@@ -25,6 +25,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   @ViewChild('nexlSourcesTabs') nexlSourcesTabs: jqxTabsComponent;
 
   idSeqNr = 0;
+  hasReadPermission = false;
   hasWritePermission = false;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
@@ -277,13 +278,22 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
   }
 
+  writePermissionChanged() {
+    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      const id = this.resolveTabAttr(index, 'id');
+      ace.edit(id).setReadOnly(!this.hasWritePermission);
+    }
+  }
+
   updateTabsPermissions(data: any) {
-    if (data.hasWritePermission === this.hasWritePermission) {
-      return;
+    if (data.hasWritePermission !== this.hasWritePermission) {
+      this.hasWritePermission = data.hasWritePermission;
+      this.writePermissionChanged();
     }
 
-    // updating opened tabs
-    this.hasWritePermission = data.hasWritePermission;
+    if (data.hasReadPermission !== this.hasReadPermission) {
+      this.hasReadPermission = data.hasReadPermission;
+    }
   }
 
   resizeAce() {
@@ -470,7 +480,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       fontSize: "10pt",
       autoScrollEditorIntoView: true,
       theme: "ace/theme/xcode",
-      mode: "ace/mode/javascript"
+      mode: "ace/mode/javascript",
+      readOnly: !this.hasWritePermission
     });
 
     aceEditor.$blockScrolling = Infinity;
