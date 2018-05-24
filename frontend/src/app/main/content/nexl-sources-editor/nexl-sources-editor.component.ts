@@ -14,9 +14,8 @@ const TITLE_TEXT = 'tabs-title-text-';
 const TITLE_MODIFICATION_ICON = 'tabs-title-modification-icon-';
 const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
 const ATTR_IS_NEW_FILE = 'is-new-file';
-
 const ID_SEQ_NR = 'id-seq-nr';
-
+const RELATIVE_PATH = 'relative-path';
 
 @Component({
   selector: '.app-nexl-sources-editor',
@@ -102,7 +101,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
 
     const data: any = {
-      relativePath: this.resolveTabAttr(tabNr, 'relative-path')
+      relativePath: this.resolveTabAttr(tabNr, RELATIVE_PATH)
     };
 
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
@@ -121,8 +120,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       return;
     }
 
-    this.setTabTitleAttr(tabInfo.index, 'relative-path', data.newRelativePath);
-    this.setTabContentAttr(tabInfo.idSeqNr, 'relative-path', data.newRelativePath);
+    this.setTabTitleAttr(tabInfo.index, RELATIVE_PATH, data.newRelativePath);
+    this.setTabContentAttr(tabInfo.idSeqNr, RELATIVE_PATH, data.newRelativePath);
     $('#' + TITLE_TEXT + tabInfo.idSeqNr).text(data.newLabel);
     $('#' + TITLE_TOOLTIP + tabInfo.idSeqNr).text(data.newRelativePath);
   }
@@ -132,7 +131,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const oldRelativePath = data.oldRelativePath;
 
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      let tabRelativePath = this.resolveTabAttr(index, 'relative-path');
+      let tabRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
       let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
 
       if (UtilsService.pathIndexOf(tabRelativePath, oldRelativePath) !== 0) {
@@ -141,8 +140,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
       // updating tab
       const relativePath = data.newRelativePath + tabRelativePath.substr(oldRelativePath.length);
-      this.setTabTitleAttr(index, 'relative-path', relativePath);
-      this.setTabContentAttr(idSeqNr, 'relative-path', relativePath);
+      this.setTabTitleAttr(index, RELATIVE_PATH, relativePath);
+      this.setTabContentAttr(idSeqNr, RELATIVE_PATH, relativePath);
       $('#' + TITLE_TEXT + idSeqNr).text(data.newLabel);
       $('#' + TITLE_TOOLTIP + idSeqNr).text(relativePath);
     }
@@ -178,7 +177,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
         isChanged: isChanged,
-        relativePath: this.getTabContentAttr(idSeqNr, 'relative-path')
+        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
       }
     );
   }
@@ -195,7 +194,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         return;
       }
 
-      relativePath = this.resolveTabAttr(tabNr, 'relative-path');
+      relativePath = this.resolveTabAttr(tabNr, RELATIVE_PATH);
     }
 
     if (LocalStorageService.loadRaw(SAVE_NEXL_SOURCE_CONFIRM) === false.toString()) {
@@ -252,7 +251,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     const tabsLength = this.nexlSourcesTabs.length();
     for (let index = tabsLength - 1; index >= 0; index--) {
-      let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
+      let tabsRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
 
       if (UtilsService.pathIndexOf(tabsRelativePath, relativePath) === 0) {
         const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
@@ -263,7 +262,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeDeletedTabs4File(relativePath: string) {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      let tabsRelativePath = this.resolveTabAttr(index, 'relative-path');
+      let tabsRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
       if (UtilsService.isPathEqual(tabsRelativePath, relativePath)) {
         const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
         this.closeTabInnerInner(idSeqNr);
@@ -326,7 +325,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   resolveTabInfoByRelativePath(relativePath: string): any {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
-      const path = this.resolveTabAttr(index, 'relative-path');
+      const path = this.resolveTabAttr(index, RELATIVE_PATH);
       if (UtilsService.isPathEqual(path, relativePath)) {
         return {
           id: this.resolveTabAttr(index, 'id'),
@@ -391,17 +390,17 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   makeBody(data: any) {
     const attrs = {
-      id: this.makeId(data, TAB_CONTENT),
-      'relative-path': data.relativePath
+      id: this.makeId(data, TAB_CONTENT)
     };
 
     attrs[ID_SEQ_NR] = data.idSeqNr;
+    attrs[RELATIVE_PATH] = data.relativePath;
 
     return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
   closeTabInnerInner(idSeqNr: number) {
-    const relativePath = this.getTabContentAttr(idSeqNr, 'relative-path');
+    const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
     // ATTR_IS_NEW_FILE means is the file was created but hasn't ever saved. In this case it must be removed from the tree
     const isNewFile = $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE);
@@ -424,7 +423,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   closeTabInner(idSeqNr: number) {
     return new Promise((resolve, reject) => {
-      const relativePath = this.getTabContentAttr(idSeqNr, 'relative-path');
+      const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
       const isChanged = $('#' + TITLE_ID + idSeqNr).attr('is-changed') === 'true';
       if (!isChanged) {
