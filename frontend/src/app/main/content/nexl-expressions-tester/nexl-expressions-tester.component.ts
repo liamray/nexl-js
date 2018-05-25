@@ -99,6 +99,7 @@ export class NexlExpressionsTesterComponent {
       (info: any) => {
         this.output = info.body;
         this.globalComponentsService.loader.close();
+        this.globalComponentsService.notification.openSuccess('Successfully evaluated nexl expression. See output');
       },
       (err) => {
         this.output = '';
