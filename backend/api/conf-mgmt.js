@@ -416,13 +416,117 @@ function init() {
 	NEXL_HOME_DIR = cmdLineOpts[cmdLineArgs.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 }
 
+function isConfFileExists(fileName) {
+	return fsx.join(NEXL_HOME_DIR, fileName).then(fsx.exists);
+}
+
+function initSettings() {
+	logger.log.debug('Initializing settings');
+
+	return isConfFileExists(CONF_FILES.SETTINGS).then(
+		(isExists) => {
+			return loadSettings().then(
+				(settings) => {
+					if (isExists) {
+						return Promise.resolve();
+					} else {
+						return saveSettings(settings);
+					}
+				});
+		});
+}
+
+function initTokens() {
+	logger.log.debug('Initializing tokens');
+
+	return isConfFileExists(CONF_FILES.TOKENS).then(
+		(isExists) => {
+			if (!isExists) {
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
+				logger.log.info('------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
+				return security.generateTokenAndSave(utils.ADMIN_USERNAME);
+			}
+		}
+	)
+}
+
+function initPermissions() {
+	logger.log.debug('Initializing permissions');
+
+	return isConfFileExists(CONF_FILES.PERMISSIONS).then(
+		(isExists) => {
+			if (!isExists) {
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.UNAUTHORIZED_USERNAME);
+				const permission = {};
+				permission[utils.UNAUTHORIZED_USERNAME] = {
+					read: true,
+					write: true
+				};
+				return save(permission, CONF_FILES.PERMISSIONS);
+			}
+		}
+	)
+}
+
+function initPasswords() {
+	logger.log.debug('Initializing passwords');
+
+	// preloading passwords to store them in cache
+	return load(CONF_FILES.PASSWORDS);
+}
+
+function initAdmins() {
+	logger.log.debug('Initializing admins conf');
+
+	return isConfFileExists(CONF_FILES.ADMINS).then(
+		(isExists) => {
+			if (!isExists) {
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
+				const admins = [utils.ADMIN_USERNAME];
+				return save(admins, CONF_FILES.ADMINS);
+			}
+		}
+	)
+}
+
+function createNexlHomeDirectoryIfNeeded() {
+	return fsx.exists(NEXL_HOME_DIR).then(
+		(isExists) => {
+			if (isExists) {
+				return fsx.stat(NEXL_HOME_DIR).then(
+					(stat) => {
+						if (stat.isDirectory()) {
+							logger.log.debug('The [%s] nexl home directory exists', NEXL_HOME_DIR);
+							return Promise.resolve();
+						} else {
+							logger.log.error('The [%s] nexl home directory points to existing file ( or something else ). Recreate it as a directory or use another nexl home directory in the following way :\nnexl --nexl-home=/path/to/nexl/home/directory', NEXL_HOME_DIR);
+							return Promise.reject('nexl home directory probably points to existing file or something else');
+						}
+					});
+			} else {
+				return fsx.mkdir(NEXL_HOME_DIR).then(
+					() => {
+						logger.log.info('The [%s] nexl home dir has been created', NEXL_HOME_DIR);
+						return Promise.resolve();
+					});
+			}
+		});
+}
+
+
 // --------------------------------------------------------------------------------
 module.exports.ENCODING_UTF8 = ENCODING_UTF8;
-
-module.exports.init = init;
-
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
+module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
+
+module.exports.init = init;
+module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
+module.exports.initSettings = initSettings;
+module.exports.initTokens = initTokens;
+module.exports.initPermissions = initPermissions;
+module.exports.initPasswords = initPasswords;
+module.exports.initAdmins = initAdmins;
 
 module.exports.load = load;
 module.exports.save = save;
@@ -430,12 +534,8 @@ module.exports.save = save;
 module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
 
-module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
-
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
 module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
 module.exports.loadCached = (fileName) => CACHE[fileName];
-
-module.exports.getConfFileFullPath = getConfFileFullPath;
 // --------------------------------------------------------------------------------

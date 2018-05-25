@@ -10,7 +10,6 @@ const util = require('util');
 
 const confMgmt = require('../api/conf-mgmt');
 const utils = require('../api/utils');
-const nexlDirs = require('../api/nexl-dirs');
 const logger = require('../api/logger');
 const fsx = require('../api/fsx');
 
@@ -248,7 +247,7 @@ class NexlApp {
 		logger.log.level = 'info';
 
 		// creating nexl home dir if doesn't exist
-		nexlDirs.createNexlHomeDirectoryIfNeeded().then(nexlDirs.initSettings).then(logger.init).then(nexlDirs.initTokens).then(nexlDirs.initPermissions).then(nexlDirs.initPasswords).then(nexlDirs.initAdmins).then(
+		confMgmt.createNexlHomeDirectoryIfNeeded().then(confMgmt.initSettings).then(logger.init).then(confMgmt.initTokens).then(confMgmt.initPermissions).then(confMgmt.initPasswords).then(confMgmt.initAdmins).then(
 			() => {
 				this.applyInterceptors();
 				this.startNexlServer();
