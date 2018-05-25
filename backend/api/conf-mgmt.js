@@ -16,7 +16,6 @@ const ENCODING_ASCII = 'ascii';
 const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
-let NEXL_SETTINGS_CACHE;
 let CACHE = {};
 
 // --------------------------------------------------------------------------------
@@ -397,7 +396,7 @@ function save(data, fileName) {
 			}
 
 			// updating cache
-			CACHE[fileName] = conf;
+			CACHE[fileName] = conf['data'];
 
 			// saving...
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
@@ -409,8 +408,6 @@ function loadSettings() {
 }
 
 function saveSettings(settings) {
-	NEXL_SETTINGS_CACHE = settings;
-
 	return save(settings, CONF_FILES.SETTINGS);
 }
 
@@ -427,7 +424,6 @@ function createDefaultConf() {
 			return loadSettings().then(
 				settings => {
 					if (isExists) {
-						NEXL_SETTINGS_CACHE = settings;
 						return Promise.resolve();
 					} else {
 						return saveSettings(settings);
@@ -454,6 +450,7 @@ module.exports.saveSettings = saveSettings;
 module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
-module.exports.getNexlSourcesDir = () => NEXL_SETTINGS_CACHE[SETTINGS.NEXL_SOURCES_DIR];
-module.exports.getNexlSettingsCached = () => NEXL_SETTINGS_CACHE;
+module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
+module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
+module.exports.loadCached = (fileName) => CACHE[fileName];
 // --------------------------------------------------------------------------------

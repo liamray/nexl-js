@@ -48,10 +48,11 @@ function status(user) {
 
 function generateTokenAndSave(username) {
 	const token = uuidv4();
-	return confMgmt.load(confMgmt.CONF_FILES.TOKENS).then((tokens) => {
-		tokens[username] = token;
-		return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(token));
-	});
+	return confMgmt.load(confMgmt.CONF_FILES.TOKENS).then(
+		(tokens) => {
+			tokens[username] = token;
+			return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(() => Promise.resolve(token));
+		});
 }
 
 function resetPasswordInner(username, password, tokens) {
