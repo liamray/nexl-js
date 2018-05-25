@@ -7,6 +7,7 @@ const nexlEngine = require('nexl-engine');
 const logger = require('../../api/logger');
 const utils = require('../../api/utils');
 const confMgmt = require('../../api/conf-mgmt');
+const security = require('../../api/security');
 
 function resolveGetParams(req) {
 	const expression = req.query.expression;
@@ -35,7 +36,14 @@ function resolvePostParams(req) {
 	};
 }
 
-function assembleNexlParams(httpParams) {
+function assembleNexlParams(httpParams, username) {
+	// if content set user must have write permissions
+	if (httpParams.content !== undefined && !security.hasWritePermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression with altered nexl source', username);
+		utils.sendError('No write permissions');
+		return;
+	}
+
 	if (!j79.isString(httpParams.relativePath)) {
 		logger.log.error('[relativePath] is not provided');
 		throw '[relativePath] is not provided';
@@ -70,16 +78,26 @@ function assembleNexlParams(httpParams) {
 	};
 }
 
-function nexlizeInner(httpParams) {
-	const nexlParams = assembleNexlParams(httpParams);
+function nexlizeInner(httpParams, username) {
+	const nexlParams = assembleNexlParams(httpParams, username);
 	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
 }
 
 function nexlize(httpParams, req, res) {
+	const username = utils.getLoggedInUsername(req);
+	logger.log.debug('Evaluating nexl expression for [%s] user', username);
+
+	// user must have at least read permissions
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to evaluate nexl expression', username);
+		utils.sendError('No read permissions');
+		return;
+	}
+
 	let result;
 
 	try {
-		result = nexlizeInner(httpParams);
+		result = nexlizeInner(httpParams, username);
 	} catch (e) {
 		logger.log.error('nexl request rejected. Reason : [%s]', e);
 		utils.sendError(res, e, 500);
