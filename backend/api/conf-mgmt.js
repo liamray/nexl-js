@@ -17,6 +17,7 @@ const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
 let NEXL_SETTINGS_CACHE;
+let CACHE = {};
 
 // --------------------------------------------------------------------------------
 // files
@@ -234,15 +235,6 @@ function getConfFileFullPath(fileName) {
 	return path.join(NEXL_HOME_DIR, fileName);
 }
 
-function resolveFullPathPromised(fileName) {
-	try {
-		return Promise.resolve(path.join(NEXL_HOME_DIR, fileName))
-	} catch (e) {
-		logger.log.error('Failed to join path. nexl home dir is [%s], file name is [%s]. Reason : [%s]', NEXL_HOME_DIR, fileName, utils.formatErr(e));
-		return Promise.reject('FS API error');
-	}
-}
-
 function substDefValues(defValue) {
 	if (j79.isPrimitive(defValue)) {
 		return defValue;
@@ -296,7 +288,7 @@ function setupDefaultValues(data, fileName) {
 	return data;
 }
 
-function loadInner(fullPath, fileName) {
+function loadInnerInner(fullPath, fileName) {
 	return fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
 		(fileBody) => {
 			// JSONing. The JSON must be an object which contains config version and the data itself
@@ -313,8 +305,13 @@ function loadInner(fullPath, fileName) {
 
 			logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
 
-			// setting up default values
-			return Promise.resolve(setupDefaultValues(data, fileName));
+			// completing default values
+			let result = setupDefaultValues(data, fileName);
+
+			// updating cache
+			CACHE[fileName] = result;
+
+			return Promise.resolve(result);
 		});
 }
 
@@ -328,8 +325,7 @@ function isConfFileDeclared(fileName) {
 	return false;
 }
 
-
-function load(fileName) {
+function loadInner(fileName) {
 	logger.log.debug('Loading config from [%s] file', fileName);
 
 	if (!isConfFileDeclared(fileName)) {
@@ -337,15 +333,43 @@ function load(fileName) {
 		return Promise.reject('Undeclared configuration file cannot be loaded');
 	}
 
-	return resolveFullPathPromised(fileName).then((fullPath) => {
-		return fsx.exists(fullPath).then((isExists) => {
-			return isExists ? loadInner(fullPath, fileName) : new Promise((resolve, reject) => {
-				logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
-				resolve(substDefValues(DEF_VALUES[fileName]))
-			})
+	const fullPath = getConfFileFullPath(fileName);
+
+	return Promise.resolve(fullPath).then(fsx.exists).then(
+		(isExists) => {
+			if (isExists) {
+				logger.log.debug('The [%s] file exists', fileName);
+				return loadInnerInner(fullPath, fileName);
+			}
+
+			return new Promise(
+				(resolve, reject) => {
+					logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
+
+					// applying default values
+					let result = substDefValues(DEF_VALUES[fileName]);
+
+					// updating cache
+					CACHE[fileName] = result;
+
+					resolve(result)
+				});
 		});
-	})
 }
+
+function load(fileName) {
+	// is cached ?
+	if (CACHE[fileName] !== undefined) {
+		logger.log.debug('Loading [%s] from cache', fileName);
+		let data = CACHE[fileName];
+		data = setupDefaultValues(data, fileName);
+		return Promise.resolve(data);
+	}
+
+	logger.log.debug('The [%s] file is not in cache. Loading from file', fileName);
+	return loadInner(fileName);
+}
+
 
 function save(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
@@ -355,9 +379,11 @@ function save(data, fileName) {
 		return Promise.reject('Undeclared configuration file cannot be saved');
 	}
 
-	return resolveFullPathPromised(fileName).then((fullPath) => {
-		const schema = VALIDATION_SCHEMAS[fileName];
-		return schemaValidation(data, schema).then(() => {
+	const fullPath = getConfFileFullPath(fileName);
+	const schema = VALIDATION_SCHEMAS[fileName];
+
+	return schemaValidation(data, schema).then(
+		() => {
 			let conf = {
 				version: version,
 				data: data
@@ -370,10 +396,12 @@ function save(data, fileName) {
 				return Promise.reject('Bad data format');
 			}
 
+			// updating cache
+			CACHE[fileName] = conf;
+
 			// saving...
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
 		});
-	});
 }
 
 function loadSettings() {
