@@ -104,7 +104,11 @@ export class NexlExpressionsTesterComponent {
         this.output = '';
         this.globalComponentsService.loader.close();
         console.log(err);
-        this.globalComponentsService.notification.openError(err.statusText);
+        if (err.status > 554 && err.status < 600) {
+          this.globalComponentsService.notification.openInfo(err.statusText);
+        } else {
+          this.globalComponentsService.notification.openError(err.statusText);
+        }
       }
     );
 
