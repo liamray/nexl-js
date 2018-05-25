@@ -12,12 +12,26 @@ function isConfFileExists(fileName) {
 	return fsx.join(confMgmt.getNexlHomeDir(), fileName).then(fsx.exists);
 }
 
-function initNexlHomeDir() {
-	logger.log.debug('Creating default configuration files if absent in [%s] nexl home dir', confMgmt.getNexlHomeDir());
-	const promises = [];
+function initSettings() {
+	logger.log.debug('Initializing settings');
 
-	// creating tokens file is not exists
-	promises.push(isConfFileExists(confMgmt.CONF_FILES.TOKENS).then(
+	return isConfFileExists(confMgmt.CONF_FILES.SETTINGS).then(
+		(isExists) => {
+			return confMgmt.loadSettings().then(
+				(settings) => {
+					if (isExists) {
+						return Promise.resolve();
+					} else {
+						return confMgmt.saveSettings(settings);
+					}
+				});
+		});
+}
+
+function initTokens() {
+	logger.log.debug('Initializing tokens');
+
+	return isConfFileExists(confMgmt.CONF_FILES.TOKENS).then(
 		(isExists) => {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', confMgmt.CONF_FILES.TOKENS, confMgmt.getNexlHomeDir(), utils.ADMIN_USERNAME);
@@ -25,21 +39,13 @@ function initNexlHomeDir() {
 				return security.generateTokenAndSave(utils.ADMIN_USERNAME);
 			}
 		}
-	));
+	)
+}
 
-	// creating admins file if not exists
-	promises.push(isConfFileExists(confMgmt.CONF_FILES.ADMINS).then(
-		(isExists) => {
-			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confMgmt.CONF_FILES.ADMINS, confMgmt.getNexlHomeDir(), utils.ADMIN_USERNAME);
-				const admins = [utils.ADMIN_USERNAME];
-				return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
-			}
-		}
-	));
+function initPermissions() {
+	logger.log.debug('Initializing permissions');
 
-	// creating permissions file if not exists
-	promises.push(isConfFileExists(confMgmt.CONF_FILES.PERMISSIONS).then(
+	return isConfFileExists(confMgmt.CONF_FILES.PERMISSIONS).then(
 		(isExists) => {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', confMgmt.CONF_FILES.PERMISSIONS, confMgmt.getNexlHomeDir(), utils.UNAUTHORIZED_USERNAME);
@@ -51,23 +57,28 @@ function initNexlHomeDir() {
 				return confMgmt.save(permission, confMgmt.CONF_FILES.PERMISSIONS);
 			}
 		}
-	));
+	)
+}
 
-	// creating settings file with defaults if not exists
-	promises.push(isConfFileExists(confMgmt.CONF_FILES.SETTINGS).then(
+function initPasswords() {
+	logger.log.debug('Initializing passwords');
+
+	// preloading passwords to store them in cache
+	return confMgmt.load(confMgmt.CONF_FILES.PASSWORDS);
+}
+
+function initAdmins() {
+	logger.log.debug('Initializing admins conf');
+
+	return isConfFileExists(confMgmt.CONF_FILES.ADMINS).then(
 		(isExists) => {
-			if (isExists) {
-				return Promise.resolve();
+			if (!isExists) {
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confMgmt.CONF_FILES.ADMINS, confMgmt.getNexlHomeDir(), utils.ADMIN_USERNAME);
+				const admins = [utils.ADMIN_USERNAME];
+				return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS);
 			}
-
-			return confMgmt.loadSettings().then(
-				(settings) => {
-					return confMgmt.saveSettings(settings);
-				});
 		}
-	));
-
-	return Promise.all(promises);
+	)
 }
 
 function createNexlHomeDirectoryIfNeeded() {
@@ -93,5 +104,9 @@ function createNexlHomeDirectoryIfNeeded() {
 
 // --------------------------------------------------------------------------------
 module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
-module.exports.initNexlHomeDir = initNexlHomeDir;
+module.exports.initSettings = initSettings;
+module.exports.initTokens = initTokens;
+module.exports.initPermissions = initPermissions;
+module.exports.initPasswords = initPasswords;
+module.exports.initAdmins = initAdmins;
 // --------------------------------------------------------------------------------

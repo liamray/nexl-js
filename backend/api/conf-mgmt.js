@@ -416,27 +416,10 @@ function init() {
 	NEXL_HOME_DIR = cmdLineOpts[cmdLineArgs.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 }
 
-function createDefaultConf() {
-	const settingsFullPath = getConfFileFullPath(CONF_FILES.SETTINGS);
-
-	return fsx.exists(settingsFullPath).then(
-		(isExists) => {
-			return loadSettings().then(
-				settings => {
-					if (isExists) {
-						return Promise.resolve();
-					} else {
-						return saveSettings(settings);
-					}
-				});
-		});
-}
-
 // --------------------------------------------------------------------------------
 module.exports.ENCODING_UTF8 = ENCODING_UTF8;
 
 module.exports.init = init;
-module.exports.createDefaultConf = createDefaultConf;
 
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
@@ -453,4 +436,6 @@ module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
 module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
 module.exports.loadCached = (fileName) => CACHE[fileName];
+
+module.exports.getConfFileFullPath = getConfFileFullPath;
 // --------------------------------------------------------------------------------

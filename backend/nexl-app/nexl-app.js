@@ -248,7 +248,7 @@ class NexlApp {
 		logger.log.level = 'info';
 
 		// creating nexl home dir if doesn't exist
-		nexlDirs.createNexlHomeDirectoryIfNeeded().then(confMgmt.createDefaultConf).then(logger.init).then(nexlDirs.initNexlHomeDir).then(
+		nexlDirs.createNexlHomeDirectoryIfNeeded().then(nexlDirs.initSettings).then(logger.init).then(nexlDirs.initTokens).then(nexlDirs.initPermissions).then(nexlDirs.initPasswords).then(nexlDirs.initAdmins).then(
 			() => {
 				this.applyInterceptors();
 				this.startNexlServer();
