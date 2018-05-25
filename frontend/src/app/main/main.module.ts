@@ -55,6 +55,7 @@ import {NotificationComponent} from './globalcomponents/notification/notificatio
 import {InputBoxComponent} from './globalcomponents/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./globalcomponents/confirmbox/confirmbox.component";
 import {LocalStorageService} from "../services/localstorage.service";
+import {ArgsComponent} from './content/nexl-expressions-tester/args/args.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +102,8 @@ import {LocalStorageService} from "../services/localstorage.service";
     RegisterComponent,
     NotificationComponent,
     InputBoxComponent,
-    ConfirmBoxComponent
+    ConfirmBoxComponent,
+    ArgsComponent
   ],
 
   imports: [

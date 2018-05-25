@@ -6,6 +6,7 @@ import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxco
 import * as queryString from "querystring";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
+import {ArgsComponent} from "./args/args.component";
 
 @Component({
   selector: '.app-nexl-expressions-tester',
@@ -20,6 +21,8 @@ export class NexlExpressionsTesterComponent {
   @ViewChild('evalButton') evalButton: jqxButtonComponent;
   @ViewChild('assembleButton') assembleButton: jqxButtonComponent;
   @ViewChild('argsButton') argsButton: jqxButtonComponent;
+
+  @ViewChild('argsWindow') argsWindow: ArgsComponent;
 
   output: string = '';
   url: '';
@@ -129,6 +132,7 @@ export class NexlExpressionsTesterComponent {
       return;
     }
 
+    this.argsWindow.toggleOpen();
   }
 
   onKeyPress(event) {
