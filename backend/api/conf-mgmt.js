@@ -503,13 +503,13 @@ function createNexlHomeDirectoryIfNeeded() {
 							return Promise.reject('nexl home directory probably points to existing file or something else');
 						}
 					});
-			} else {
-				return fsx.mkdir(NEXL_HOME_DIR).then(
-					() => {
-						logger.log.info('The [%s] nexl home dir has been created', NEXL_HOME_DIR);
-						return Promise.resolve();
-					});
 			}
+
+			return fsx.mkdir(NEXL_HOME_DIR).then(
+				() => {
+					logger.log.info('The [%s] nexl home dir has been created', NEXL_HOME_DIR);
+					return Promise.resolve();
+				});
 		});
 }
 
@@ -537,5 +537,6 @@ module.exports.saveSettings = saveSettings;
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
 module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
-module.exports.loadCached = (fileName) => CACHE[fileName];
+
+module.exports.invalidateCache = (fileName) => CACHE[fileName] = undefined;
 // --------------------------------------------------------------------------------
