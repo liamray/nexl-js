@@ -1,10 +1,10 @@
 <jqxWindow #argsWindow
-           [autoOpen]="false"
+           [autoOpen]="true"
            [initContent]="initContent"
            [isModal]="false"
            [resizable]="false"
-           [width]="390"
-           [height]="200"
+           [width]="490"
+           [height]="300"
 >
 
   <div>
@@ -13,7 +13,36 @@
   </div>
 
 
-  <div style="overflow: hidden;" #windowContent>
-    content goes here...
+  <div>
+    <div style="margin: 5px;">
+      <div style="float:left">
+        Click
+        <jqxButton (click)="addNewItem()">here</jqxButton>
+        to add a new item&nbsp;
+      </div>
+
+      <div>
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="10000"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='./nexl/site/images/tooltip.png' style="position: relative; top: 3px;"/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both; height: 5px;"></div>
+
+      <jqxGrid
+        #argsGrid
+        [source]="argsDataAdapter"
+        [columns]="argsColumns"
+        [width]="'100%'"
+        [height]="'180px'"
+        [filterable]="false"
+        [sortable]="true"
+        [editable]="true"
+      ></jqxGrid>
+    </div>
+
   </div>
 </jqxWindow>
