@@ -1,7 +1,7 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
-import * as $ from 'jquery';
+import {UtilsService} from "../../../../services/utils.service";
 
 @Component({
   selector: 'app-args-window',
@@ -12,6 +12,8 @@ import * as $ from 'jquery';
 export class ArgsComponent implements OnInit {
   @ViewChild('argsGrid') argsGrid: jqxGridComponent;
   @ViewChild('argsWindow') argsWindow: jqxWindowComponent;
+
+  @Output('onArgs') argsEE: EventEmitter<any> = new EventEmitter();
 
   counter = 0;
 
@@ -77,6 +79,7 @@ export class ArgsComponent implements OnInit {
             let clickedButton = value;
             row.bounddata.disabled = !row.bounddata.disabled;
             this.argsGrid.refresh();
+            this.onChange();
           });
 
           this.counter++;
@@ -113,6 +116,7 @@ export class ArgsComponent implements OnInit {
 
           deleteButton.addEventHandler('click', (): void => {
             this.argsGrid.deleterow(row.bounddata.uid);
+            this.onChange();
           });
 
           this.counter++;
@@ -128,6 +132,7 @@ export class ArgsComponent implements OnInit {
 
   addNewItem() {
     this.argsGrid.addrow(1, {});
+    this.onChange();
   }
 
   initContent = () => {
@@ -142,5 +147,18 @@ export class ArgsComponent implements OnInit {
     } else {
       this.argsWindow.open();
     }
+  }
+
+  onChange() {
+    const data = this.argsGrid.getrows();
+    const result = {};
+    data.forEach((item) => {
+      if (item.disabled || item.key === '') {
+        return;
+      }
+
+      result[item.key] = item.value;
+    });
+    this.argsEE.emit(result);
   }
 }

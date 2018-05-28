@@ -1,4 +1,4 @@
-import {Component, ComponentRef, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ComponentRef, ElementRef, ViewChild} from '@angular/core';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {HttpRequestService} from "../../../services/http.requests.service";
@@ -7,13 +7,14 @@ import * as queryString from "querystring";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {ArgsComponent} from "./args/args.component";
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: '.app-nexl-expressions-tester',
   templateUrl: './nexl-expressions-tester.component.html',
   styleUrls: ['./nexl-expressions-tester.component.css']
 })
-export class NexlExpressionsTesterComponent {
+export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('nexlExpression') nexlExpression: jqxComboBoxComponent;
   @ViewChild('outputArea') outputArea: jqxExpanderComponent;
   @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;
@@ -25,9 +26,11 @@ export class NexlExpressionsTesterComponent {
   @ViewChild('argsWindow') argsWindow: ArgsComponent;
 
   output: string = '';
-  url: '';
+  url: string = '';
   hasReadPermission = false;
   tabsCount = 0;
+  currentArgs: any = {};
+  relativePath: string = '';
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -56,7 +59,17 @@ export class NexlExpressionsTesterComponent {
         this.eval();
         return;
       }
+
+      case MESSAGE_TYPE.TAB_SELECTED: {
+        this.tabSelected(msg.data);
+        return;
+      }
     }
+  }
+
+  tabSelected(relativePath: string) {
+    this.relativePath = relativePath;
+    this.updateUrl();
   }
 
   updatePermissions(data: any) {
@@ -154,9 +167,62 @@ export class NexlExpressionsTesterComponent {
     this.evalButton.disabled(isDisabled);
     this.argsButton.disabled(isDisabled);
     this.assembleButton.disabled(isDisabled);
+    this.updateUrl();
   }
 
   private isDisabled() {
     return !this.hasReadPermission || this.tabsCount < 1;
+  }
+
+  onArgs(data: any) {
+    this.currentArgs = data;
+    this.updateUrl();
+  }
+
+  updateUrl() {
+    if (this.isDisabled()) {
+      this.url = '';
+      return;
+    }
+
+    let url = environment.rootUrl;
+    url += this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+
+    let expression = this.nexlExpression.val();
+
+    if (expression !== '') {
+      url += '?' + 'expression=' + expression;
+    }
+
+    if (Object.keys(this.currentArgs).length < 1) {
+      this.url = url;
+      return;
+    }
+
+    if (expression === '') {
+      url += '?';
+    } else {
+      url += '&';
+    }
+
+    for (let key in this.currentArgs) {
+      url += key;
+      url += '=';
+      url += this.currentArgs[key];
+      url += '&';
+    }
+
+    this.url = url.replace(/&$/, '');
+  }
+
+  onExpressionChange() {
+    this.updateUrl();
+  }
+
+  ngAfterViewInit() {
+    this.nexlExpression.elementRef.nativeElement.addEventListener('keypress', () => {
+      console.log('key pressed');
+      this.updateUrl();
+    });
   }
 }

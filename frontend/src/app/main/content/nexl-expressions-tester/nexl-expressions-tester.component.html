@@ -21,6 +21,7 @@
           [source]="[]" [selectedIndex]='0'
           (keypress)="onKeyPress($event)"
           [disabled]="true"
+          (onkeydown)="onExpressionChange()"
         >
         </jqxComboBox>
       </div>
@@ -68,7 +69,7 @@
 
     <div class="nexl-url-container">
       <div class="nexl-url-label">URL</div>
-      <div><a href="http://nexl-server:8080/interfaces.js?expression=${{'{test}'}}" target="_blank">{{url}}</a>
+      <div><a href="{{ url }}" target="_blank">{{ url }}</a>
       </div>
     </div>
 
@@ -90,4 +91,4 @@
   </div>
 </jqxExpander>
 
-<app-args-window #argsWindow></app-args-window>
+<app-args-window #argsWindow (onArgs)="onArgs($event)"></app-args-window>

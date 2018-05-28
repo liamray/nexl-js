@@ -88,7 +88,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.REQUEST_CURRENT_TAB: {
-        this.sendCurrentTabInfo();
+        this.sendCurrentTabInfo(message.data);
         return;
       }
     }
@@ -130,7 +130,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return $('#' + TITLE_TEXT + idSeqNr).text(text);
   }
 
-  sendCurrentTabInfo() {
+  sendCurrentTabInfo(shortInfo: boolean) {
     const tabNr = this.nexlSourcesTabs.val();
     if (tabNr < 0) {
       // sending empty data
@@ -505,9 +505,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
 
     // binding click on tool tip
-    $('#' + this.makeId(data, TITLE_TOOLTIP)).click(() => {
-      this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
-    });
+    $('#' + this.makeId(data, TITLE_TOOLTIP)).click(
+      () => {
+        this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
+      });
   }
 
   bindBody(data: any) {
@@ -547,6 +548,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   onTabSelect(event: any) {
     const idSeqNr = this.resolveTabAttr(event.args.item, ID_SEQ_NR);
     ace.edit(TAB_CONTENT + idSeqNr).focus();
+
+    const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_SELECTED, relativePath);
   }
 
   sendTabsCountMsg() {

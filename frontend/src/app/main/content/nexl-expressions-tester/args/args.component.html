@@ -1,5 +1,5 @@
 <jqxWindow #argsWindow
-           [autoOpen]="true"
+           [autoOpen]="false"
            [initContent]="initContent"
            [isModal]="false"
            [resizable]="false"
@@ -41,6 +41,7 @@
         [filterable]="false"
         [sortable]="true"
         [editable]="true"
+        (onCellvaluechanged)="onChange()"
       ></jqxGrid>
     </div>
 

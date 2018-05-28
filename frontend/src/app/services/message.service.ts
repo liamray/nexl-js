@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  TAB_SELECTED,
   EVAL_NEXL_EXPRESSION,
   AUTH_CHANGED,
   LOAD_NEXL_SOURCE,
