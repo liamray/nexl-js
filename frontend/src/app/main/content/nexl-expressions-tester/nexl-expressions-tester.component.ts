@@ -108,6 +108,11 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       data.expression = this.nexlExpression.val();
     }
 
+    // args
+    for (let key in this.currentArgs) {
+      data[key] = this.currentArgs[key];
+    }
+
     data = queryString.stringify(data);
 
     // evaluating nexl expression
