@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-args-window',
@@ -57,18 +58,22 @@ export class ArgsComponent implements OnInit {
 
           let options = {
             width: '100%',
-            height: 16,
+            height: 27,
             template: 'default',
-            imgSrc: './nexl/site/images/no.png',
+            imgSrc: './nexl/site/images/toggle.png',
             imgWidth: 16,
             imgHeight: 16,
             imgPosition: 'center',
             textPosition: 'center'
           };
 
-          let myButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+          let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+          jqwidgets.createInstance(`#${id}`, 'jqxTooltip', {
+            content: 'Toggle disable/enable this arg',
+            position: 'mouse'
+          });
 
-          myButton.addEventHandler('click', (): void => {
+          toggleButton.addEventHandler('click', (): void => {
             let clickedButton = value;
             row.bounddata.disabled = !row.bounddata.disabled;
             this.argsGrid.refresh();
@@ -78,22 +83,44 @@ export class ArgsComponent implements OnInit {
         },
         initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
         }
-      }, {
-      text: ' ',
-      align: 'center',
-      sortable: false,
-      editable: false,
-      showeverpresentrow: false,
-      columntype: 'button',
-      cellsrenderer: (): string => {
-        return 'Disable';
       },
-      buttonclick: (row: number): void => {
-        const rowdata = this.argsGrid.getrowdata(row);
-        rowdata.disabled = !rowdata.disabled;
-        this.argsGrid.refresh();
+      {
+        text: '',
+        width: 50,
+        createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
+          let container = document.createElement('div');
+          let id = `myButton${this.counter}`;
+          container.id = id;
+          container.style.border = 'none';
+          htmlElement.appendChild(container);
+
+          let options = {
+            width: '100%',
+            height: 27,
+            template: 'default',
+            imgSrc: './nexl/site/images/delete.png',
+            imgWidth: 16,
+            imgHeight: 16,
+            imgPosition: 'center',
+            textPosition: 'center'
+          };
+
+          let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+          jqwidgets.createInstance(`#${id}`, 'jqxTooltip', {
+            content: 'Delete arg',
+            position: 'mouse'
+          });
+
+          deleteButton.addEventHandler('click', (): void => {
+            this.argsGrid.deleterow(row.bounddata.uid);
+          });
+
+          this.counter++;
+        },
+        initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
+        }
       }
-    }
+
     ];
 
   constructor() {
