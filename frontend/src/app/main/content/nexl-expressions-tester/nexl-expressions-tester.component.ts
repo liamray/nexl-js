@@ -220,9 +220,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.nexlExpression.elementRef.nativeElement.addEventListener('keypress', () => {
-      console.log('key pressed');
-      this.updateUrl();
-    });
+    this.nexlExpression.elementRef.nativeElement.addEventListener('keyup',
+      () => {
+        this.updateUrl();
+      });
   }
 }
