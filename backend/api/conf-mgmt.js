@@ -8,6 +8,7 @@ const version = require('./../../package.json').version;
 
 const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
+const security = require('./security');
 const logger = require('./logger');
 const schemaValidation = require('./schema-validation');
 
