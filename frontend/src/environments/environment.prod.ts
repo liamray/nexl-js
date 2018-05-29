@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  nexlRootUrl: '/nexl',
-  rootUrl: '/'
+  nexlRootUrl: window.location.origin + '/nexl',
+  rootUrl: window.location.origin
 };

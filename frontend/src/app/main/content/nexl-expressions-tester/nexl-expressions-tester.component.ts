@@ -27,6 +27,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   output: string = '';
   url: string = '';
+  urlEscaped: string = '';
   hasReadPermission = false;
   tabsCount = 0;
   currentArgs: any = {};
@@ -190,24 +191,28 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       return;
     }
 
-    let url = environment.production ? window.location.origin : environment.rootUrl;
+    let url = environment.rootUrl;
     url += this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+    let urlEscaped = url;
 
     let expression = this.nexlExpression.val();
 
     if (expression !== '') {
       url += '?' + 'expression=' + expression;
+      urlEscaped += '?' + 'expression=' + encodeURIComponent(expression);
     }
 
     if (Object.keys(this.currentArgs).length < 1) {
       this.url = url;
+      this.urlEscaped = urlEscaped;
       return;
     }
 
     if (expression === '') {
       url += '?';
+      urlEscaped += '?';
     } else {
-      url += '&';
+      urlEscaped += '&';
     }
 
     for (let key in this.currentArgs) {
@@ -215,9 +220,15 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       url += '=';
       url += this.currentArgs[key];
       url += '&';
+
+      urlEscaped += encodeURIComponent(key);
+      urlEscaped += '=';
+      urlEscaped += encodeURIComponent(this.currentArgs[key]);
+      urlEscaped += '&';
     }
 
     this.url = url.replace(/&$/, '');
+    this.urlEscaped = urlEscaped.replace(/&$/, '');
   }
 
   onExpressionChange() {
