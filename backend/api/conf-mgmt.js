@@ -397,7 +397,7 @@ function save(data, fileName) {
 			}
 
 			// updating cache
-			CACHE[fileName] = conf['data'];
+			CACHE[fileName] = data;
 
 			// saving...
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});

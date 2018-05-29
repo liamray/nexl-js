@@ -7,6 +7,7 @@ const cmdLineArgs = require('../../api/cmd-line-args');
 const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
+const NEXL_HOME_DIR = 'nexl-home-dir';
 
 router.post('/avail-values', function (req, res, next) {
 	const data = {
@@ -29,7 +30,7 @@ router.post('/load', function (req, res, next) {
 
 		return confMgmt.loadSettings().then(
 			(settings) => {
-				settings['nexl-home-dir'] = confMgmt.getNexlHomeDir();
+				settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
 				res.send(settings);
 			});
 	}).catch((err) => {
@@ -49,6 +50,8 @@ router.post('/save', function (req, res, next) {
 		}
 
 		const data = req.body;
+		delete data[NEXL_HOME_DIR];
+
 		logger.log.level = data['log-level'];
 		return confMgmt.saveSettings(data).then(() => res.send({}));
 	}).catch((err) => {
