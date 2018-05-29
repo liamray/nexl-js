@@ -514,6 +514,34 @@ function createNexlHomeDirectoryIfNeeded() {
 		});
 }
 
+function createNexlSourcesDirIfNeeded() {
+	return loadSettings().then(
+		(settings) => {
+			const nexlSourcesDir = settings[SETTINGS.NEXL_SOURCES_DIR];
+			return fsx.exists(nexlSourcesDir).then(
+				(isExists) => {
+					if (!isExists) {
+						logger.log.info('The [%s] nexl sources dir doesn\'t exist. Creating...', nexlSourcesDir);
+						return fsx.mkdir(nexlSourcesDir);
+					}
+
+					return fsx.stat(nexlSourcesDir).then(
+						(stat) => {
+							if (stat.isDirectory()) {
+								logger.log.debug('The [%s] nexl sources dir exists', nexlSourcesDir);
+								return Promise.resolve();
+							} else {
+								logger.log.error('The [%s] nexl sources directory points to existing file ( or something else ). Recreate it as a directory or use another nexl sources directory ', nexlSourcesDir);
+								return Promise.reject('nexl sources directory probably points to existing file or something else');
+							}
+						}
+					);
+				}
+			);
+		}
+	);
+}
+
 
 // --------------------------------------------------------------------------------
 module.exports.ENCODING_UTF8 = ENCODING_UTF8;
@@ -523,6 +551,7 @@ module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 
 module.exports.init = init;
 module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
+module.exports.createNexlSourcesDirIfNeeded = createNexlSourcesDirIfNeeded;
 module.exports.initSettings = initSettings;
 module.exports.initTokens = initTokens;
 module.exports.initPermissions = initPermissions;
