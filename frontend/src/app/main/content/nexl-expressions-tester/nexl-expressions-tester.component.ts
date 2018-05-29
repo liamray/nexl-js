@@ -190,7 +190,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       return;
     }
 
-    let url = environment.rootUrl;
+    let url = environment.production ? window.location.origin : environment.rootUrl;
     url += this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
 
     let expression = this.nexlExpression.val();
