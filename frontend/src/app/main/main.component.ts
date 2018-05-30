@@ -8,6 +8,7 @@ import {UtilsService} from "../services/utils.service";
 
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';
+export const F8 = 'F8';
 
 @Component({
   selector: 'app-main',
@@ -27,6 +28,10 @@ export class MainComponent implements OnInit {
       }
     }
 
+    if (event.which === 119) {
+      return F8;
+    }
+
     if (event.which === 120) {
       return F9;
     }
@@ -35,21 +40,30 @@ export class MainComponent implements OnInit {
   }
 
   interceptHotKeys() {
-    $(window).bind('keydown', (event) => {
-      const key = this.discoverKeyCombination(event);
-      switch (key) {
-        case CTRL_S:
-          this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
-          event.preventDefault();
-          return;
+    $(window).bind('keydown',
+      (event) => {
+        const key = this.discoverKeyCombination(event);
 
+        switch (key) {
+          case CTRL_S: {
+            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
+            event.preventDefault();
+            return;
+          }
 
-        case F9 :
-          event.preventDefault();
-          this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
-          return;
-      }
-    });
+          case F8 : {
+            event.preventDefault();
+            this.messageService.sendMessage(MESSAGE_TYPE.TOGGLE_ARGS_WINDOW);
+            return;
+          }
+
+          case F9 : {
+            event.preventDefault();
+            this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
+            return;
+          }
+        }
+      });
   }
 
   ngOnInit() {

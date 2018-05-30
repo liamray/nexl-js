@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  TOGGLE_ARGS_WINDOW,
   TAB_SELECTED,
   EVAL_NEXL_EXPRESSION,
   AUTH_CHANGED,

@@ -58,4 +58,12 @@ export class MainMenuComponent implements AfterViewInit {
   createExamplesFile() {
     this.messageService.sendMessage(MESSAGE_TYPE.CREATE_EXAMPLES_FILE);
   }
+
+  toggleArgsWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.TOGGLE_ARGS_WINDOW);
+  }
+
+  evaluateNexlExpression() {
+    this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
+  }
 }

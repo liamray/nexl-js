@@ -40,11 +40,11 @@
     <li>
       <span>Expression</span>
       <ul style="width:160px;">
-        <li>
+        <li (click)="toggleArgsWindow()">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/args.png'/><span>Arguments</span>
+               src='./nexl/site/images/args.png'/><span>Arguments ( F8 )</span>
         </li>
-        <li>
+        <li (click)="evaluateNexlExpression()">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/eval.png'/><span>Evaluate ( F9 )</span>
         </li>

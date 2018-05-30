@@ -65,6 +65,13 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
         this.tabSelected(msg.data);
         return;
       }
+
+      case MESSAGE_TYPE.TOGGLE_ARGS_WINDOW: {
+        if (!this.isDisabled()) {
+          this.argsWindow.toggleOpen();
+        }
+        return;
+      }
     }
   }
 
