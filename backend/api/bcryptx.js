@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const logger = require('./logger');
 const utils = require('./utils');
 
@@ -6,14 +6,16 @@ const SALT_ROUNDS = 10;
 
 function hash(password) {
 	return new Promise((resolve, reject) => {
-		bcrypt.hash(password, SALT_ROUNDS, function (err, hash) {
-			if (err) {
-				logger.log.error('Failed to generate new hash. Reason : [%s]', utils.formatErr(err));
-				reject('Failed to generate new hash');
-				return;
-			}
+		bcrypt.genSalt(SALT_ROUNDS, function (err, salt) {
+			bcrypt.hash(password, salt, function (err, hash) {
+				if (err) {
+					logger.log.error('Failed to generate new hash. Reason : [%s]', utils.formatErr(err));
+					reject('Failed to generate new hash');
+					return;
+				}
 
-			resolve(hash);
+				resolve(hash);
+			});
 		});
 	});
 }
