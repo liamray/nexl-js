@@ -212,6 +212,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       url += '?';
       urlEscaped += '?';
     } else {
+      url += '&';
       urlEscaped += '&';
     }
 
