@@ -55,13 +55,14 @@ function assembleNexlParams(httpParams) {
 
 	let nexlSource = {};
 
-	if (httpParams.content === undefined) {
-		nexlSource.asFile = {};
-		nexlSource.asFile['fileName'] = fullPath;
-	} else {
+	// ignoring content for GET method. Altered nexl source works only for POST method
+	if (httpParams.method.toUpperCase() === 'POST' && httpParams.content !== undefined) {
 		nexlSource.asText = {};
 		nexlSource.asText['text'] = httpParams.content;
 		nexlSource.asText['path4imports'] = path.dirname(fullPath);
+	} else {
+		nexlSource.asFile = {};
+		nexlSource.asFile['fileName'] = fullPath;
 	}
 
 	return {
@@ -78,6 +79,8 @@ function nexlizeInner(httpParams) {
 
 function nexlize(httpParams, req, res) {
 	let result;
+
+	httpParams.method = req.method;
 
 	try {
 		result = nexlizeInner(httpParams);
