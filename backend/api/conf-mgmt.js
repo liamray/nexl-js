@@ -110,6 +110,7 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_ENCODING] = (val) 
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_TIMEOUT] = (val) => {
+	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'HTTP timeout must be a positive integer';
 	}
@@ -121,6 +122,7 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_BINDING] = (val) => {
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_PORT] = (val) => {
+	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'HTTP port be a positive integer';
 	}
@@ -131,10 +133,11 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTPS_BINDING] = (val) => {
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTPS_PORT] = (val) => {
-	if (val === undefined) {
+	if (val === undefined || val === '') {
 		return;
 	}
 
+	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'HTTPS port must be a positive integer';
 	}
@@ -160,11 +163,13 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_LEVEL] = (val) => {
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => {
+	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'Log rotate file size must be a positive integer';
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => {
+	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'Log rotate files count must be a positive integer';
 	}
