@@ -68,7 +68,7 @@ function assembleNexlParams(httpParams) {
 	return {
 		nexlSource: nexlSource,
 		item: httpParams.expression,
-		args: httpParams.args
+		args: nexlEngine.convertStrItems2Obj(httpParams.args)
 	};
 }
 
