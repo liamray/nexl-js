@@ -7,6 +7,7 @@ import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 export class PathService {
   path: any;
@@ -47,6 +48,7 @@ export class SettingsComponent {
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   settings: any = {};
+  nexlSourcesDirBefore: string;
   isSaving: boolean;
   width = 190;
   encodings = [];
@@ -114,10 +116,12 @@ export class SettingsComponent {
       }
     ];
 
-  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private settingsService: PathService) {
+  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private settingsService: PathService, private messageService: MessageService) {
   }
 
   openInner() {
+    this.nexlSourcesDirBefore = undefined;
+
     // loading data
     this.http.post({}, '/settings/load', 'json').subscribe(
       (data: any) => {
@@ -128,6 +132,7 @@ export class SettingsComponent {
         UtilsService.arr2DS(this.settings.notifications || [], this.notificationsSource);
         this.notificationsGrid.updatebounddata();
         this.settingsService.setNexlSourcesPath(this.settings['nexl-sources-path']);
+        this.nexlSourcesDirBefore = this.settings['nexl-sources-dir'];
         this.settingsWindow.open();
       },
       err => {
@@ -191,6 +196,9 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Updated settings');
+        if (this.nexlSourcesDirBefore !== this.settings['nexl-sources-dir']) {
+          this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_NEXL_SOURCES);
+        }
       },
       err => {
         this.globalComponentsService.loader.close();

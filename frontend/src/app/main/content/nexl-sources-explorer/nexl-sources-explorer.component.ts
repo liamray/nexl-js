@@ -57,6 +57,13 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         this.createExamplesFile();
         return;
       }
+
+      case MESSAGE_TYPE.RELOAD_NEXL_SOURCES: {
+        if (this.hasReadPermission) {
+          this.refreshTreeSource();
+        }
+        return;
+      }
     }
   }
 
@@ -170,6 +177,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   refreshTreeSource() {
+    this.treeSource = [];
+
     this.nexlSourcesService.listNexlSources().subscribe(
       (data: any) => {
         this.expander.disabled(false);
