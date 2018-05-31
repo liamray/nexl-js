@@ -1,7 +1,9 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {UtilsService} from "../../../../services/utils.service";
+import {ARGS_WINDOW, LocalStorageService} from "../../../../services/localstorage.service";
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-args-window',
@@ -9,7 +11,8 @@ import {UtilsService} from "../../../../services/utils.service";
   styleUrls: ['./args.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class ArgsComponent implements OnInit {
+export class ArgsComponent implements OnInit, AfterViewInit {
+
   @ViewChild('argsGrid') argsGrid: jqxGridComponent;
   @ViewChild('argsWindow') argsWindow: jqxWindowComponent;
 
@@ -141,6 +144,28 @@ export class ArgsComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngAfterViewInit(): void {
+    this.loadArgsWindow();
+  }
+
+  loadArgsWindow() {
+    let args = LocalStorageService.loadObj(ARGS_WINDOW);
+    if (Object.keys(args).length < 1) {
+      return;
+    }
+
+    this.argsWindow.move(args.pos.left, args.pos.top);
+    if (args.isOpened) {
+      this.argsWindow.open();
+    }
+
+    this.argsSource.localdata = args.args;
+    this.argsGrid.updatebounddata();
+
+    const result = this.getActiveArgs();
+    this.argsEE.emit(result);
+  }
+
   toggleOpen() {
     if (this.argsWindow.isOpen()) {
       this.argsWindow.close();
@@ -149,7 +174,44 @@ export class ArgsComponent implements OnInit {
     }
   }
 
+
   onChange() {
+    const result = this.getActiveArgs();
+    this.argsEE.emit(result);
+    this.storeArgsWindow();
+  }
+
+  onMoved() {
+    this.storeArgsWindow();
+  }
+
+  storeArgsWindow() {
+    const data = {
+      pos: $('#argsWindow').parent().offset(),
+      args: this.getAllArgs(),
+      isOpened: this.argsWindow.isOpen()
+    };
+    LocalStorageService.storeObj(ARGS_WINDOW, data);
+  }
+
+  getAllArgs() {
+    const data = this.argsGrid.getrows();
+
+    const result = [];
+    data.forEach((item) => {
+      result.push(
+        {
+          key: item.key,
+          value: item.value,
+          disabled: item.disabled
+        }
+      );
+    });
+
+    return result;
+  }
+
+  getActiveArgs() {
     const data = this.argsGrid.getrows();
     const result = {};
     data.forEach((item) => {
@@ -159,6 +221,7 @@ export class ArgsComponent implements OnInit {
 
       result[item.key] = item.value;
     });
-    this.argsEE.emit(result);
+
+    return result;
   }
 }
