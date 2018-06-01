@@ -5,7 +5,7 @@
            [width]="600"
            [height]="400"
            [initContent]="initContent"
-           (onOpen)="isSaving = false"
+           (onOpen)="onOpen()"
 >
 
   <div>
@@ -457,44 +457,6 @@
             <!--UI-->
             <div>
               <div style="margin-top: 5px;"></div>
-
-              <!--Autoscroll from source-->
-              <div class="item">
-                <label>Autoscroll from source</label>
-                <jqxCheckBox
-                  style='margin-left: 10px; float: left;'
-                  [width]='120'
-                  [height]='25'>
-                </jqxCheckBox>
-              </div>
-              <div class="tooltip">
-                <jqxTooltip
-                  [position]="'mouse'"
-                  [autoHideDelay]="100000"
-                  [content]="'<p style=\'text-align: left;\'></p>'">
-                  <img src='./nexl/site/images/tooltip.png'/>
-                </jqxTooltip>
-              </div>
-              <div style="clear: both"></div>
-
-              <!--Autoscroll to source-->
-              <div class="item">
-                <label>Autoscroll to source</label>
-                <jqxCheckBox
-                  style='margin-left: 10px; float: left;'
-                  [width]='120'
-                  [height]='25'>
-                </jqxCheckBox>
-              </div>
-              <div class="tooltip">
-                <jqxTooltip
-                  [position]="'mouse'"
-                  [autoHideDelay]="100000"
-                  [content]="'<p style=\'text-align: left;\'></p>'">
-                  <img src='./nexl/site/images/tooltip.png'/>
-                </jqxTooltip>
-              </div>
-              <div style="clear: both"></div>
 
               <!--Theme-->
               <div class="item" style="margin-top: 10px;">

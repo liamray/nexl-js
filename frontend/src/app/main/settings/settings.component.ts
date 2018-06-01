@@ -48,6 +48,7 @@ export class SettingsComponent {
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   settings: any = {};
+  isAdmin = false;
   nexlSourcesDirBefore: string;
   isSaving: boolean;
   width = 190;
@@ -117,6 +118,33 @@ export class SettingsComponent {
     ];
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private settingsService: PathService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(
+      (message) => {
+        switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.authChanged(message.data);
+            return;
+          }
+        }
+      });
+  }
+
+  authChanged(status: any) {
+    this.isAdmin = status.isAdmin;
+  }
+
+  disableAdminItems() {
+    this.ribbon.disableAt(0);
+    this.ribbon.disableAt(1);
+    this.ribbon.disableAt(2);
+    this.ribbon.disableAt(3);
+  }
+
+  enableAdminItems() {
+    this.ribbon.enableAt(0);
+    this.ribbon.enableAt(1);
+    this.ribbon.enableAt(2);
+    this.ribbon.enableAt(3);
   }
 
   openInner() {
@@ -144,6 +172,11 @@ export class SettingsComponent {
   }
 
   open() {
+    if (!this.isAdmin) {
+      this.settingsWindow.open();
+      return;
+    }
+
     // opening indicator
     this.globalComponentsService.loader.open();
 
@@ -179,7 +212,18 @@ export class SettingsComponent {
 
   save() {
     this.isSaving = true;
+
+    if (!this.isAdmin) {
+      this.saveUI();
+      this.settingsWindow.close();
+      return;
+    }
+
     this.validate();
+  }
+
+  saveUI() {
+
   }
 
   onValidationSuccess(event) {
@@ -213,5 +257,15 @@ export class SettingsComponent {
 
   addNewItem() {
     this.notificationsGrid.addrow(1, {});
+  }
+
+  onOpen() {
+    this.isSaving = false;
+    if (!this.isAdmin) {
+      this.disableAdminItems();
+      this.ribbon.selectAt(4);
+    } else {
+      this.enableAdminItems();
+    }
   }
 }
