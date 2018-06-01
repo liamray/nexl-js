@@ -52,8 +52,12 @@ export class ArgsComponent implements OnInit, AfterViewInit {
         }
       },
       {
-        text: '',
-        width: 50,
+        text: 'Enable/<br/>Disable',
+        align: 'center',
+        sortable: false,
+        editable: false,
+        width: 70,
+        height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
           let id = `myButton${this.counter}`;
@@ -73,10 +77,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
           };
 
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
-          jqwidgets.createInstance(`#${id}`, 'jqxTooltip', {
-            content: 'Toggle disable/enable this arg',
-            position: 'mouse'
-          });
 
           toggleButton.addEventHandler('click', (): void => {
             let clickedButton = value;
@@ -91,8 +91,11 @@ export class ArgsComponent implements OnInit, AfterViewInit {
         }
       },
       {
-        text: '',
-        width: 50,
+        text: 'Remove',
+        align: 'center',
+        width: 70,
+        sortable: false,
+        editable: false,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
           let id = `myButton${this.counter}`;
@@ -112,10 +115,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
           };
 
           let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
-          jqwidgets.createInstance(`#${id}`, 'jqxTooltip', {
-            content: 'Delete arg',
-            position: 'mouse'
-          });
 
           deleteButton.addEventHandler('click', (): void => {
             this.argsGrid.deleterow(row.bounddata.uid);

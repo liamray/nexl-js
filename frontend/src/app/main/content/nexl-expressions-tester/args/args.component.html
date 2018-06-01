@@ -3,7 +3,7 @@
            [initContent]="initContent"
            [isModal]="false"
            [resizable]="false"
-           [width]="420"
+           [width]="460"
            [height]="300"
            (onOpen)="this.storeArgsWindow()"
            (onClose)="this.storeArgsWindow()"
@@ -24,15 +24,6 @@
         to add a new item&nbsp;
       </div>
 
-      <div>
-        <jqxTooltip
-          [position]="'mouse'"
-          [autoHideDelay]="10000"
-          [content]="'<p style=\'text-align: left;\'>...</p>'">
-          <img src='./nexl/site/images/tooltip.png' style="position: relative; top: 3px;"/>
-        </jqxTooltip>
-      </div>
-
       <div style="clear: both; height: 5px;"></div>
 
       <jqxGrid
@@ -40,7 +31,8 @@
         [source]="argsDataAdapter"
         [columns]="argsColumns"
         [width]="'100%'"
-        [height]="'180px'"
+        [height]="180"
+        [columnsheight]="55"
         [filterable]="false"
         [sortable]="true"
         [editable]="true"
