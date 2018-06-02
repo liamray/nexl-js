@@ -27,14 +27,14 @@ import {NexlLogoComponent} from './header/nexl-logo/nexl-logo.component';
 import {MainMenuComponent} from './header/main-menu/main-menu.component';
 import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 
-import {ContentComponent} from './content/content.component';
-import {NexlSourcesExplorerComponent} from './content/nexl-sources-explorer/nexl-sources-explorer.component';
-import {NexlSourcesEditorComponent} from './content/nexl-sources-editor/nexl-sources-editor.component';
-import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/nexl-expressions-tester.component';
+import {ContentComponent} from './filemanager/content.component';
+import {NexlSourcesExplorerComponent} from './filemanager/nexl-sources-explorer/nexl-sources-explorer.component';
+import {NexlSourcesEditorComponent} from './filemanager/nexl-sources-editor/nexl-sources-editor.component';
+import {NexlExpressionsTesterComponent} from './filemanager/nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
-import {LoginComponent} from './auth/login/login.component';
+import {LoginComponent} from './authdialogs/login/login.component';
 import {FormsModule} from "@angular/forms";
 import {PermissionsComponent} from './settingsdialogs/permissions/permissions.component';
 import {AdminsComponent} from './settingsdialogs/permissions/admins/admins.component';
@@ -47,14 +47,14 @@ import {HttpRequestService} from "./services/http.requests.service";
 import {AuthService} from "./services/auth.service";
 import {NexlSourcesService} from "./services/nexl-sources.service";
 import {MessageService} from "./services/message.service";
-import {RegisterComponent} from "./auth/register/register.component";
-import {GenerateTokenComponent} from "./auth/generatetoken/generatetoken.component";
-import {ChangePasswordComponent} from "./auth/changepassword/changepassword.component";
+import {RegisterComponent} from "./authdialogs/register/register.component";
+import {GenerateTokenComponent} from "./authdialogs/generatetoken/generatetoken.component";
+import {ChangePasswordComponent} from "./authdialogs/changepassword/changepassword.component";
 import {NotificationComponent} from './misc/notification/notification.component';
 import {InputBoxComponent} from './misc/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./misc/confirmbox/confirmbox.component";
 import {LocalStorageService} from "./services/localstorage.service";
-import {ArgsComponent} from './content/nexl-expressions-tester/args/args.component';
+import {ArgsComponent} from './filemanager/nexl-expressions-tester/args/args.component';
 import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
 import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 
