@@ -6,6 +6,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 import jqxValidator = jqwidgets.jqxValidator;
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 
 @Component({
@@ -27,7 +28,16 @@ export class LoginComponent {
   validationRules =
     [];
 
-  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
+  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(
+      (message) => {
+        switch (message.type) {
+          case MESSAGE_TYPE.OPEN_LOGIN_WINDOW: {
+            this.open();
+            return;
+          }
+        }
+      });
   }
 
   displayErrorMessage(msg?) {

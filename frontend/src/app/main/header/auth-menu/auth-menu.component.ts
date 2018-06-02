@@ -36,4 +36,20 @@ export class AuthMenuComponent implements AfterViewInit {
     this.authService.logout();
     this.globalComponentsService.notification.openInfo('Logged out');
   }
+
+  openLoginWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_LOGIN_WINDOW);
+  }
+
+  openRegisterWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_REGISTER_WINDOW);
+  }
+
+  openGenerateTokenWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_GENERATE_TOKEN_WINDOW);
+  }
+
+  openChangePasswordWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_CHANGE_PASSWORD_WINDOW);
+  }
 }

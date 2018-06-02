@@ -5,6 +5,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 
 @Component({
@@ -27,7 +28,16 @@ export class ChangePasswordComponent {
   confirmPassword = '';
   validationRules = [];
 
-  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
+  constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(
+      (message) => {
+        switch (message.type) {
+          case MESSAGE_TYPE.OPEN_CHANGE_PASSWORD_WINDOW: {
+            this.open();
+            return;
+          }
+        }
+      });
   }
 
   displayErrorMessage(msg?) {

@@ -1,14 +1,9 @@
-<app-login #loginWindow></app-login>
-<app-register #registerWindow></app-register>
-<app-generate-token #generateTokenWindow></app-generate-token>
-<app-change-password #changePasswordWindow></app-change-password>
-
 <div class="item" [style.display]="isLoginVisible ? '' : 'none'">
   <jqxTooltip [position]="'bottom-left'" [content]="'Register a new nexl user or reset password'">
 
     <jqxButton [height]='32'
                [width]='140'
-               (click)='registerWindow.open()'
+               (click)='openRegisterWindow()'
                [textImageRelation]='"imageBeforeText"'
                [textPosition]='"left"'
                [imgSrc]='"./nexl/site/images/register.png"'
@@ -24,7 +19,7 @@
 
     <jqxButton [width]='140'
                [height]='32'
-               (click)='loginWindow.open()'
+               (click)='openLoginWindow()'
                [textImageRelation]='"imageBeforeText"'
                [textPosition]='"left"'
                [imgSrc]='"./nexl/site/images/login.png"'
@@ -41,11 +36,11 @@
       <li id="menu-direction">
         <span>Hello, {{ username }}</span>
         <ul style="width:160px;">
-          <li (click)="changePasswordWindow.open()">
+          <li (click)="openChangePasswordWindow()">
             <img style='float: left; margin-right: 5px;'
                  src='./nexl/site/images/change-password.png'/><span>Change password</span>
           </li>
-          <li id="menu-generate-token" (click)="generateTokenWindow.open()">
+          <li id="menu-generate-token" (click)="openGenerateTokenWindow()">
             <img style='float: left; margin-right: 5px;'
                  src='./nexl/site/images/token.png'/><span>Generate token</span>
           </li>

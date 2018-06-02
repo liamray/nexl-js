@@ -4,6 +4,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {HttpRequestService} from "../../services/http.requests.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 
 @Component({
@@ -20,7 +21,16 @@ export class GenerateTokenComponent {
   token = '';
   username = '';
 
-  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
+  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(
+      (message) => {
+        switch (message.type) {
+          case MESSAGE_TYPE.OPEN_GENERATE_TOKEN_WINDOW: {
+            this.open();
+            return;
+          }
+        }
+      });
   }
 
   open() {
