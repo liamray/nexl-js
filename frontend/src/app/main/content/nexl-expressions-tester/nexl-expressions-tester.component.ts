@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ComponentRef, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 import {GlobalComponentsService} from "../../../services/global-components.service";
 import {HttpRequestService} from "../../../services/http.requests.service";
