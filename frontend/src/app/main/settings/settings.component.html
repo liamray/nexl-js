@@ -15,457 +15,386 @@
 
   <div class="container">
 
-
-    <jqxRibbon #ribbon
-               [width]="'100%'"
-               [height]="'315px'"
-               [auto-create]="false"
-               [animationType]="'none'"
-               [selectionMode]="'click'"
-               [position]="'left'"
-               (onSelect)="validate()"
+    <jqxValidator
+      #validator
+      [rules]="validationRules"
+      [animationDuration]="0"
+      [hintType]="'label'"
+      (onValidationSuccess)="onValidationSuccess()"
+      (onValidationError)="onValidationError()"
     >
-      <ul id="header" style="width: 150px;">
-        <li>General</li>
-        <li>Bindings & SSL</li>
-        <li>Logger</li>
-        <li>UI</li>
-      </ul>
+      <form id='validationForm' action="./">
 
-      <div>
-        <!-- ------------------------------------------------------------------------------ -->
-        <!--General-->
-        <jqxValidator #generalValidator [rules]="generalValidationRules"
-                      [animationDuration]="0"
-                      [hintType]="'label'"
-                      (onValidationSuccess)="onValidationSuccess()"
-                      (onValidationError)="onValidationError()"
+        <jqxRibbon #ribbon
+                   [width]="'100%'"
+                   [height]="'315px'"
+                   [auto-create]="false"
+                   [animationType]="'none'"
+                   [selectionMode]="'click'"
+                   [position]="'left'"
+                   (onSelect)="validate()"
         >
-          <form id='generalForm' action="./">
-            <!--nexl home dir-->
-            <div class="item">
-              <label>nexl home dir</label>
-              <jqxInput
-                name="nexlHomeDir"
-                [(ngModel)]="settings['nexl-home-dir']"
-                [disabled]="true"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
+          <ul id="header" style="width: 150px;">
+            <li>General</li>
+            <li>Bindings & SSL</li>
+            <li>Logger</li>
+          </ul>
+
+          <div>
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--General-->
+            <div>
+              <!--nexl home dir-->
+              <div class="item">
+                <label>nexl home dir</label>
+                <jqxInput
+                  name="nexlHomeDir"
+                  [(ngModel)]="settings['nexl-home-dir']"
+                  [disabled]="true"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This might be usefull if you need to start multiple nexl server instances<br/> By default nexl home dir located in [${HOME}/.nexl] directory </p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--nexl sources dir-->
+              <div class="item">
+                <label>nexl sources dir</label>
+                <jqxInput
+                  id="nexlSourcesDir"
+                  name="nexlSourcesDir"
+                  [(ngModel)]="settings['nexl-sources-dir']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'>nexl sources directory contains JavaScript files to be exposed by nexl server via REST<br/> Those files appear in [nexl sources explorer] window<br/> For example, the [weight] variable from [examples.js] file located in the nexl sources dir<br/> will be exposed via REST in the following way :<br/> <span style=\'margin-left:30px; font-style: italic\'>http://your-nexl-server:3000/examples.js?expression=${weight}</span> </p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--nexl sources encoding-->
+              <div class="item" style="margin-top: 15px;">
+                <label>nexl sources encoding</label>
+                <jqxDropDownList
+                  style="margin-top: -4px;"
+                  name="nexlSourcesEncoding"
+                  #nexlSourcesEncoding
+                  [(ngModel)]="settings['nexl-sources-encoding']"
+                  [width]="width - 50"
+                  [height]="25"
+                  [dropDownHeight]="53"
+                  [source]="encodings"
+                  [selectedIndex]="0">
+                </jqxDropDownList>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--HTTP timeout-->
+              <div class="item">
+                <label>HTTP timeout</label>
+                <jqxInput
+                  #httpTimeout
+                  id="httpTimeout"
+                  name="httpTimeout"
+                  [(ngModel)]="settings['http-timeout']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--LDAP auth-->
+              <div class="item">
+                <label>LDAP URL</label>
+                <jqxInput
+                  id="ldapUrl"
+                  name="ldapUrl"
+                  [(ngModel)]="settings['ldap-url']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
             </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This might be usefull if you need to start multiple nexl server instances<br/> By default nexl home dir located in [${HOME}/.nexl] directory </p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--Bindings & SSL-->
+            <div>
+              <div style="margin-top: 5px;"></div>
+              <!--HTTP binding-->
+              <div class="item">
+                <label>HTTP binding</label>
+                <jqxInput
+                  #httpBinding
+                  id="httpBinding"
+                  name="httpBinding"
+                  [(ngModel)]="settings['http-binding']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--HTTP port-->
+              <div class="item">
+                <label>HTTP port</label>
+                <jqxInput
+                  #httpPort
+                  id="httpPort"
+                  name="httpPort"
+                  [(ngModel)]="settings['http-port']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <hr/>
+
+              <!--HTTPS binding-->
+              <div class="item">
+                <label>HTTPS binding</label>
+                <jqxInput
+                  #httpsBinding
+                  id="httpsBinding"
+                  name="httpsBinding"
+                  [(ngModel)]="settings['https-binding']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--HTTPS port-->
+              <div class="item">
+                <label>HTTPS port</label>
+                <jqxInput
+                  #httpsPort
+                  id="httpsPort"
+                  name="httpsPort"
+                  [(ngModel)]="settings['https-port']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--SSL key location-->
+              <div class="item">
+                <label>SSL key location</label>
+                <jqxInput
+                  #sslKeyLocation
+                  id="sslKeyLocation"
+                  name="sslKeyLocation"
+                  [(ngModel)]="settings['ssl-key-location']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
+
+              <!--SSL cert location-->
+              <div class="item">
+                <label>SSL cert location</label>
+                <jqxInput
+                  #sslCertLocation
+                  id="sslCertLocation"
+                  name="sslCertLocation"
+                  [(ngModel)]="settings['ssl-cert-location']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
             </div>
 
-            <div style="clear: both"></div>
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--Logger-->
+            <div>
+              <div style="margin-top: 5px;"></div>
+              <!--Log file location-->
+              <div class="item">
+                <label>Log file location</label>
+                <jqxInput
+                  #logFileLocation
+                  id="logFileLocation"
+                  name="logFileLocation"
+                  [(ngModel)]="settings['log-file-location']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
 
-            <!--nexl sources dir-->
-            <div class="item">
-              <label>nexl sources dir</label>
-              <jqxInput
-                id="nexlSourcesDir"
-                name="nexlSourcesDir"
-                [(ngModel)]="settings['nexl-sources-dir']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'>nexl sources directory contains JavaScript files to be exposed by nexl server via REST<br/> Those files appear in [nexl sources explorer] window<br/> For example, the [weight] variable from [examples.js] file located in the nexl sources dir<br/> will be exposed via REST in the following way :<br/> <span style=\'margin-left:30px; font-style: italic\'>http://your-nexl-server:3000/examples.js?expression=${weight}</span> </p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
+              <!--Log level-->
+              <div class="item" style="margin-top: 10px;">
+                <label>Log level</label>
+                <jqxDropDownList
+                  name="logLevel"
+                  #logLevel
+                  [(ngModel)]="settings['log-level']"
+                  [width]="width - 50"
+                  [height]="25"
+                  [dropDownHeight]="130"
+                  [source]="logLevels"
+                  [selectedIndex]="0">
+                </jqxDropDownList>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
 
-            <div style="clear: both"></div>
+              <!--Log rotate file size-->
+              <div class="item">
+                <label>Log rotate file size</label>
+                <jqxInput
+                  #logRotateFileSize
+                  id="logRotateFileSize"
+                  name="logRotateFileSize"
+                  [(ngModel)]="settings['log-rotate-file-size-kb']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
 
-            <!--nexl sources encoding-->
-            <div class="item" style="margin-top: 15px;">
-              <label>nexl sources encoding</label>
-              <jqxDropDownList
-                style="margin-top: -4px;"
-                name="nexlSourcesEncoding"
-                #nexlSourcesEncoding
-                [(ngModel)]="settings['nexl-sources-encoding']"
-                [width]="width - 50"
-                [height]="25"
-                [dropDownHeight]="53"
-                [source]="encodings"
-                [selectedIndex]="0">
-              </jqxDropDownList>
+              <!-- Log rotate files count-->
+              <div class="item">
+                <label> Log rotate files count</label>
+                <jqxInput
+                  #logRotateFilesCount
+                  id="logRotateFilesCount"
+                  name="logRotateFilesCount"
+                  [(ngModel)]="settings['log-rotate-files-count']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="100000"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+              <div style="clear: both"></div>
             </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
+          </div>
+        </jqxRibbon>
 
-            <div style="clear: both"></div>
+      </form>
+    </jqxValidator>
 
-            <!--HTTP timeout-->
-            <div class="item">
-              <label>HTTP timeout</label>
-              <jqxInput
-                #httpTimeout
-                id="httpTimeout"
-                name="httpTimeout"
-                [(ngModel)]="settings['http-timeout']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-
-            <div style="clear: both"></div>
-
-            <!--LDAP auth-->
-            <div class="item">
-              <label>LDAP URL</label>
-              <jqxInput
-                id="ldapUrl"
-                name="ldapUrl"
-                [(ngModel)]="settings['ldap-url']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-          </form>
-        </jqxValidator>
-
-        <!-- ------------------------------------------------------------------------------ -->
-        <!--Bindings & SSL-->
-        <jqxValidator #bindingsValidator [rules]="bindingsValidationRules"
-                      [animationDuration]="0"
-                      [hintType]="'label'"
-                      (onValidationSuccess)="onValidationSuccess()"
-                      (onValidationError)="onValidationError()"
-        >
-          <form id='bindingsForm' action="./">
-
-            <div style="margin-top: 5px;"></div>
-            <!--HTTP binding-->
-            <div class="item">
-              <label>HTTP binding</label>
-              <jqxInput
-                #httpBinding
-                id="httpBinding"
-                name="httpBinding"
-                [(ngModel)]="settings['http-binding']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--HTTP port-->
-            <div class="item">
-              <label>HTTP port</label>
-              <jqxInput
-                #httpPort
-                id="httpPort"
-                name="httpPort"
-                [(ngModel)]="settings['http-port']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <hr/>
-
-            <!--HTTPS binding-->
-            <div class="item">
-              <label>HTTPS binding</label>
-              <jqxInput
-                #httpsBinding
-                id="httpsBinding"
-                name="httpsBinding"
-                [(ngModel)]="settings['https-binding']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--HTTPS port-->
-            <div class="item">
-              <label>HTTPS port</label>
-              <jqxInput
-                #httpsPort
-                id="httpsPort"
-                name="httpsPort"
-                [(ngModel)]="settings['https-port']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--SSL key location-->
-            <div class="item">
-              <label>SSL key location</label>
-              <jqxInput
-                #sslKeyLocation
-                id="sslKeyLocation"
-                name="sslKeyLocation"
-                [(ngModel)]="settings['ssl-key-location']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--SSL cert location-->
-            <div class="item">
-              <label>SSL cert location</label>
-              <jqxInput
-                #sslCertLocation
-                id="sslCertLocation"
-                name="sslCertLocation"
-                [(ngModel)]="settings['ssl-cert-location']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-          </form>
-        </jqxValidator>
-
-        <!-- ------------------------------------------------------------------------------ -->
-        <!--Logger-->
-        <jqxValidator #loggerValidator [rules]="loggerValidationRules"
-                      [animationDuration]="0"
-                      [hintType]="'label'"
-                      (onValidationSuccess)="onValidationSuccess()"
-                      (onValidationError)="onValidationError()"
-        >
-          <form id='loggerForm' action="./">
-
-            <div style="margin-top: 5px;"></div>
-            <!--Log file location-->
-            <div class="item">
-              <label>Log file location</label>
-              <jqxInput
-                #logFileLocation
-                id="logFileLocation"
-                name="logFileLocation"
-                [(ngModel)]="settings['log-file-location']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--Log level-->
-            <div class="item" style="margin-top: 10px;">
-              <label>Log level</label>
-              <jqxDropDownList
-                name="logLevel"
-                #logLevel
-                [(ngModel)]="settings['log-level']"
-                [width]="width - 50"
-                [height]="25"
-                [dropDownHeight]="130"
-                [source]="logLevels"
-                [selectedIndex]="0">
-              </jqxDropDownList>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--Log rotate file size-->
-            <div class="item">
-              <label>Log rotate file size</label>
-              <jqxInput
-                #logRotateFileSize
-                id="logRotateFileSize"
-                name="logRotateFileSize"
-                [(ngModel)]="settings['log-rotate-file-size-kb']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!-- Log rotate files count-->
-            <div class="item">
-              <label> Log rotate files count</label>
-              <jqxInput
-                #logRotateFilesCount
-                id="logRotateFilesCount"
-                name="logRotateFilesCount"
-                [(ngModel)]="settings['log-rotate-files-count']"
-                [width]="width"
-                [height]="25">
-              </jqxInput>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-          </form>
-        </jqxValidator>
-
-        <!-- ------------------------------------------------------------------------------ -->
-        <!--UI-->
-        <jqxValidator #uiValidator [rules]="uiValidationRules"
-                      [animationDuration]="0"
-                      [hintType]="'label'"
-                      (onValidationSuccess)="onValidationSuccess()"
-                      (onValidationError)="onValidationError()"
-        >
-          <form id='uiForm' action="./">
-
-            <div style="margin-top: 5px;"></div>
-
-            <!--Font Size, Font type, themes, Notification message disappear time-->
-
-            <!--Font-->
-            <div class="item" style="margin-top: 10px;">
-              <label>Font</label>
-              <jqxDropDownList
-                [width]="width - 50"
-                [height]="25"
-                [dropDownHeight]="130"
-                [source]="fonts"
-                [selectedIndex]="0">
-              </jqxDropDownList>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-
-            <!--Theme-->
-            <div class="item" style="margin-top: 10px;">
-              <label>Theme</label>
-              <jqxDropDownList
-                [width]="width - 50"
-                [height]="25"
-                [dropDownHeight]="130"
-                [source]="themes"
-                [selectedIndex]="0">
-              </jqxDropDownList>
-            </div>
-            <div class="tooltip">
-              <jqxTooltip
-                [position]="'mouse'"
-                [autoHideDelay]="100000"
-                [content]="'<p style=\'text-align: left;\'></p>'">
-                <img src='./nexl/site/images/tooltip.png'/>
-              </jqxTooltip>
-            </div>
-            <div style="clear: both"></div>
-          </form>
-        </jqxValidator>
-
-      </div>
-    </jqxRibbon>
 
     <div class="buttons">
       <div class="button">

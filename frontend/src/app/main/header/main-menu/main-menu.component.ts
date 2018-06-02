@@ -23,6 +23,7 @@ export class MainMenuComponent implements AfterViewInit {
       case MESSAGE_TYPE.AUTH_CHANGED: {
         const status = message.data;
         this.mainMenu.disable('main-menu-permissions', !status.isAdmin);
+        this.mainMenu.disable('main-menu-settings', !status.isAdmin);
         this.hasWritePermission = status.hasWritePermission;
         this.updateSaveMenuItem();
         return;
@@ -43,6 +44,7 @@ export class MainMenuComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.mainMenu.disable('main-menu-permissions', true);
+    this.mainMenu.disable('main-menu-settings', true);
   }
 
   saveNexlSource() {

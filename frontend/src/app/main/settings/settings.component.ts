@@ -16,13 +16,7 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
-
-  // validators
-  @ViewChild('generalValidator') generalValidator: jqxValidator;
-  @ViewChild('bindingsValidator') bindingsValidator: jqxValidator;
-  @ViewChild('loggerValidator') loggerValidator: jqxValidator;
-  @ViewChild('uiValidator') uiValidator: jqxValidator;
-
+  @ViewChild('validator') validator: jqxValidator;
   @ViewChild('nexlSourcesEncoding') nexlSourcesEncoding: any;
   @ViewChild('httpTimeout') httpTimeout: any;
   @ViewChild('httpBinding') httpBiding: any;
@@ -40,14 +34,12 @@ export class SettingsComponent {
   settings: any = {};
   isAdmin = false;
   nexlSourcesDirBefore: string;
-  validationCountDown: any = undefined;
+  isSaving = false;
   width = 190;
   encodings = [];
-  themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
-  fonts = ['Times New Roman', 'Tahoma'];
   logLevels = [];
 
-  generalValidationRules =
+  validationRules =
     [
       {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
       {
@@ -56,11 +48,7 @@ export class SettingsComponent {
           const val = this.httpTimeout.val() || '';
           return UtilsService.isPositiveIneger(val);
         }
-      }
-    ];
-
-  bindingsValidationRules =
-    [
+      },
       {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
       {input: '#httpPort', message: 'HTTP port is required!', action: 'keyup, blur', rule: 'required'},
       {
@@ -76,11 +64,8 @@ export class SettingsComponent {
           const val = this.httpsPort.val() || '';
           return UtilsService.isPositiveIneger(val);
         }
-      }
-    ];
+      },
 
-  loggerValidationRules =
-    [
       {input: '#logFileLocation', message: 'Log file location is required!', action: 'keyup, blur', rule: 'required'},
       {
         input: '#logRotateFileSize', message: 'Log rotate file size must be a positive integer', action: 'keyup, blur',
@@ -100,35 +85,17 @@ export class SettingsComponent {
       }
     ];
 
-  uiValidationRules =
-    [];
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
           case MESSAGE_TYPE.AUTH_CHANGED: {
-            this.authChanged(message.data);
+            this.isAdmin = message.data.isAdmin;
             return;
           }
         }
       });
-  }
-
-  authChanged(status: any) {
-    this.isAdmin = status.isAdmin;
-  }
-
-  disableAdminItems() {
-    this.ribbon.disableAt(0);
-    this.ribbon.disableAt(1);
-    this.ribbon.disableAt(2);
-  }
-
-  enableAdminItems() {
-    this.ribbon.enableAt(0);
-    this.ribbon.enableAt(1);
-    this.ribbon.enableAt(2);
   }
 
   openInner() {
@@ -154,7 +121,6 @@ export class SettingsComponent {
 
   open() {
     if (!this.isAdmin) {
-      this.settingsWindow.open();
       return;
     }
 
@@ -188,39 +154,16 @@ export class SettingsComponent {
   };
 
   validate() {
-    this.uiValidator.validate(document.getElementById('uiForm'));
-    if (!this.isAdmin) {
-      return;
-    }
-    this.generalValidator.validate(document.getElementById('generalForm'));
-    this.bindingsValidator.validate(document.getElementById('bindingsForm'));
-    this.loggerValidator.validate(document.getElementById('loggerForm'));
+    this.validator.validate(document.getElementById('validationForm'));
   }
 
   save() {
-    // 4 validators for admin, 1 validator for others
-    this.validationCountDown = this.isAdmin ? 4 : 1;
-
+    this.isSaving = true;
     this.validate();
   }
 
-  saveUI() {
-  }
-
   onValidationSuccess() {
-    if (this.validationCountDown === undefined) {
-      return;
-    }
-
-    this.validationCountDown--;
-    if (this.validationCountDown > 0) {
-      return;
-    }
-
-    this.validationCountDown = undefined;
-
-    this.saveUI();
-    if (!this.isAdmin) {
+    if (!this.isSaving) {
       return;
     }
 
@@ -243,16 +186,10 @@ export class SettingsComponent {
   }
 
   onValidationError() {
-    this.validationCountDown = undefined;
+    this.isSaving = false;
   }
 
   onOpen() {
-    this.validationCountDown = undefined;
-    if (!this.isAdmin) {
-      this.disableAdminItems();
-      this.ribbon.selectAt(3);
-    } else {
-      this.enableAdminItems();
-    }
+    this.isSaving = false;
   }
 }

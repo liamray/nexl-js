@@ -6,6 +6,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {HttpRequestService} from "../../services/http.requests.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 
 @Component({
@@ -22,8 +23,18 @@ export class PermissionsComponent implements AfterViewInit {
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   permissions: any;
+  isAdmin = false;
 
-  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
+  constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService, private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(
+      (message) => {
+        switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.isAdmin = message.data.isAdmin;
+            return;
+          }
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -31,6 +42,10 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   open() {
+    if (!this.isAdmin) {
+      return;
+    }
+
     // opening indicator
     this.globalComponentsService.loader.open();
 
