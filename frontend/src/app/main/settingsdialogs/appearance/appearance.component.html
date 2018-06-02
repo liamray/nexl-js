@@ -1,0 +1,146 @@
+<jqxWindow #appearanceWindow
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="450"
+           [height]="300"
+           [initContent]="initContent"
+           (onOpen)="onOpen()"
+>
+
+  <div>
+    <img src="./nexl/site/images/appearance.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Appearance</span>
+  </div>
+
+  <div class="container">
+
+    <jqxValidator #appearanceValidator [rules]="appearanceValidationRules"
+                  [animationDuration]="0"
+                  [hintType]="'label'"
+                  (onValidationSuccess)="onValidationSuccess()"
+                  (onValidationError)="onValidationError()"
+    >
+      <form id='appearanceForm' action="./">
+
+        <div style="margin-top: 5px;"></div>
+
+        <!--Font-->
+        <div class="item" style="margin-top: 10px;">
+          <label>Font</label>
+          <jqxDropDownList
+            #font
+            [width]="width"
+            [height]="25"
+            [dropDownHeight]="130"
+            [source]="fonts"
+            [selectedIndex]="0">
+          </jqxDropDownList>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="100000"
+            [content]="'<p style=\'text-align: left;\'></p>'">
+            <img src='./nexl/site/images/tooltip.png'/>
+          </jqxTooltip>
+        </div>
+        <div style="clear: both"></div>
+
+        <!--Font size-->
+        <div class="item">
+          <label>Font size</label>
+          <jqxInput
+            #fontSize
+            id="fontSize"
+            name="httpTimeout"
+            [width]="width"
+            [height]="25">
+          </jqxInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="100000"
+            [content]="'<p style=\'text-align: left;\'></p>'">
+            <img src='./nexl/site/images/tooltip.png'/>
+          </jqxTooltip>
+        </div>
+        <div style="clear: both"></div>
+
+        <!--Theme-->
+        <div class="item" style="margin-top: 10px;">
+          <label>Theme</label>
+          <jqxDropDownList
+            #theme
+            [width]="width"
+            [height]="25"
+            [dropDownHeight]="130"
+            [source]="themes"
+            [selectedIndex]="0">
+          </jqxDropDownList>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="100000"
+            [content]="'<p style=\'text-align: left;\'></p>'">
+            <img src='./nexl/site/images/tooltip.png'/>
+          </jqxTooltip>
+        </div>
+        <div style="clear: both"></div>
+
+        <!--Notification message disappear time-->
+        <div class="item">
+          <label>Notification message disappear time</label>
+          <jqxInput
+            #notificationMessageDisappearTime
+            id="notificationMessageDisappearTime"
+            name="notificationMessageDisappearTime"
+            [width]="width"
+            [height]="25">
+          </jqxInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="100000"
+            [content]="'<p style=\'text-align: left;\'></p>'">
+            <img src='./nexl/site/images/tooltip.png'/>
+          </jqxTooltip>
+        </div>
+        <div style="clear: both"></div>
+
+      </form>
+    </jqxValidator>
+
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="save()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/save.png"'
+                   #saveButton>
+          Save
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="appearanceWindow.close()"
+                   [imgSrc]='"./nexl/site/images/close.png"'
+                   [auto-create]="false"
+                   #cancelButton>
+          Cancel
+        </jqxButton>
+      </div>
+
+    </div>
+
+  </div>
+</jqxWindow>

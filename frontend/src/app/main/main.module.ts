@@ -55,6 +55,7 @@ import {InputBoxComponent} from './globalcomponents/inputbox/inputbox.component'
 import {ConfirmBoxComponent} from "./globalcomponents/confirmbox/confirmbox.component";
 import {LocalStorageService} from "../services/localstorage.service";
 import {ArgsComponent} from './content/nexl-expressions-tester/args/args.component';
+import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import {ArgsComponent} from './content/nexl-expressions-tester/args/args.compone
     AssignPermissionsComponent,
     LoaderComponent,
     SettingsComponent,
+    AppearanceComponent,
     SplashscreenComponent,
     RegisterComponent,
     NotificationComponent,

@@ -64,4 +64,8 @@ export class MainMenuComponent implements AfterViewInit {
   evaluateNexlExpression() {
     this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
   }
+
+  openAppearanceWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_APPEARANCE_WINDOW);
+  }
 }

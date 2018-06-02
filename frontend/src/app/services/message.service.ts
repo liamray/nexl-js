@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  OPEN_APPEARANCE_WINDOW,
   RELOAD_NEXL_SOURCES,
   TOGGLE_ARGS_WINDOW,
   TAB_SELECTED,
