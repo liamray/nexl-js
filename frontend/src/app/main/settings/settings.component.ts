@@ -189,7 +189,6 @@ export class SettingsComponent {
   }
 
   onValidationSuccess(event) {
-    console.log('Okokokok');
     if (!this.isSaving) {
       return;
     }
