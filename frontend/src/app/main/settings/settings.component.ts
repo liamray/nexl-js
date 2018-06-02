@@ -3,35 +3,26 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {UtilsService} from "../../services/utils.service";
-import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
-export class PathService {
-  path: any;
-
-  getNexlSourcesPath() {
-    return this.path || [];
-  }
-
-  setNexlSourcesPath(path) {
-    this.path = path;
-  }
-}
-
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css'],
-  providers: [PathService]
+  styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
-  @ViewChild('pathWindow') pathWindow: any;
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
-  @ViewChild('validator') validator: jqxValidator;
+
+  // validators
+  @ViewChild('generalValidator') generalValidator: jqxValidator;
+  @ViewChild('bindingsValidator') bindingsValidator: jqxValidator;
+  @ViewChild('loggerValidator') loggerValidator: jqxValidator;
+  @ViewChild('uiValidator') uiValidator: jqxValidator;
+
   @ViewChild('nexlSourcesEncoding') nexlSourcesEncoding: any;
   @ViewChild('httpTimeout') httpTimeout: any;
   @ViewChild('httpBinding') httpBiding: any;
@@ -49,41 +40,67 @@ export class SettingsComponent {
   settings: any = {};
   isAdmin = false;
   nexlSourcesDirBefore: string;
-  isSaving: boolean;
+  validationCountDown: any = undefined;
   width = 190;
   encodings = [];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
   logLevels = [];
 
-  validationRules =
+  generalValidationRules =
     [
       {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
       {
         input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
-        rule: (input: any, commit: any): any => {
-          const val = this.httpTimeout.val() || '0';
+        rule: (): any => {
+          const val = this.httpTimeout.val() || '';
           return UtilsService.isPositiveIneger(val);
         }
-      },
+      }
+    ];
+
+  bindingsValidationRules =
+    [
       {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
       {input: '#httpPort', message: 'HTTP port is required!', action: 'keyup, blur', rule: 'required'},
       {
         input: '#httpPort', message: 'HTTP port must be a positive integer', action: 'keyup, blur',
-        rule: (input: any, commit: any): any => {
+        rule: (): any => {
           const val = this.httpPort.val() || '';
           return UtilsService.isPositiveIneger(val);
         }
       },
       {
         input: '#httpsPort', message: 'HTTPS port must be a positive integer', action: 'keyup, blur',
-        rule: (input: any, commit: any): any => {
-          const val = this.httpsPort.val() || '0';
+        rule: (): any => {
+          const val = this.httpsPort.val() || '';
           return UtilsService.isPositiveIneger(val);
         }
       }
     ];
 
-  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private settingsService: PathService, private messageService: MessageService) {
+  loggerValidationRules =
+    [
+      {input: '#logFileLocation', message: 'Log file location is required!', action: 'keyup, blur', rule: 'required'},
+      {
+        input: '#logRotateFileSize', message: 'Log rotate file size must be a positive integer', action: 'keyup, blur',
+        rule: (): any => {
+          const val = this.logRotateFileSize.val() || '';
+          return UtilsService.isPositiveIneger(val);
+        }
+      },
+      {
+        input: '#logRotateFilesCount', message: 'Log rotate files count must be a positive integer', action: 'keyup, blur',
+        rule: (): any => {
+          const val = this.logRotateFilesCount.val() || '';
+          return UtilsService.isPositiveIneger(val);
+        }
+      }
+    ];
+
+  uiValidationRules =
+    [];
+
+  constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
@@ -121,7 +138,6 @@ export class SettingsComponent {
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings['log-level']);
         this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
-        this.settingsService.setNexlSourcesPath(this.settings['nexl-sources-path']);
         this.nexlSourcesDirBefore = this.settings['nexl-sources-dir'];
         this.settingsWindow.open();
       },
@@ -169,33 +185,44 @@ export class SettingsComponent {
   }
 
   validate() {
-    this.validator.validate(document.getElementById('settingsForm'));
+    this.uiValidator.validate(document.getElementById('uiForm'));
+    if (!this.isAdmin) {
+      return;
+    }
+    this.generalValidator.validate(document.getElementById('generalForm'));
+    this.bindingsValidator.validate(document.getElementById('bindingsForm'));
+    this.loggerValidator.validate(document.getElementById('loggerForm'));
   }
 
   save() {
-    this.isSaving = true;
-
-    if (!this.isAdmin) {
-      this.saveUI();
-      this.settingsWindow.close();
-      return;
-    }
+    // 4 validators for admin, 1 validator for others
+    this.validationCountDown = this.isAdmin ? 4 : 1;
 
     this.validate();
   }
 
   saveUI() {
-
   }
 
-  onValidationSuccess(event) {
-    if (!this.isSaving) {
+  onValidationSuccess() {
+    if (this.validationCountDown === undefined) {
+      return;
+    }
+
+    this.validationCountDown--;
+    if (this.validationCountDown > 0) {
+      return;
+    }
+
+    this.validationCountDown = undefined;
+
+    this.saveUI();
+    if (!this.isAdmin) {
       return;
     }
 
     this.settingsWindow.close();
     this.globalComponentsService.loader.open();
-    this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
       () => {
@@ -212,12 +239,12 @@ export class SettingsComponent {
       });
   }
 
-  onValidationError(event) {
-    this.isSaving = false;
+  onValidationError() {
+    this.validationCountDown = undefined;
   }
 
   onOpen() {
-    this.isSaving = false;
+    this.validationCountDown = undefined;
     if (!this.isAdmin) {
       this.disableAdminItems();
       this.ribbon.selectAt(3);

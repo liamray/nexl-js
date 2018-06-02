@@ -43,7 +43,6 @@ import {LoaderComponent} from './globalcomponents/loader/loader.component';
 import {GlobalComponentsService} from "../services/global-components.service";
 import {SettingsComponent} from './settings/settings.component';
 import {SplashscreenComponent} from './splashscreen/splashscreen.component';
-import {PathComponent} from "./settings/path/path.component";
 import {HttpRequestService} from "../services/http.requests.service";
 import {AuthService} from "../services/auth.service";
 import {NexlSourcesService} from "../services/nexl-sources.service";
@@ -98,7 +97,6 @@ import {ArgsComponent} from './content/nexl-expressions-tester/args/args.compone
     LoaderComponent,
     SettingsComponent,
     SplashscreenComponent,
-    PathComponent,
     RegisterComponent,
     NotificationComponent,
     InputBoxComponent,
