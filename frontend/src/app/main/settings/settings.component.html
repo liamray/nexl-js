@@ -418,6 +418,29 @@
 
             <div style="margin-top: 5px;"></div>
 
+            <!--Font Size, Font type, themes, Notification message disappear time-->
+
+            <!--Font-->
+            <div class="item" style="margin-top: 10px;">
+              <label>Font</label>
+              <jqxDropDownList
+                [width]="width - 50"
+                [height]="25"
+                [dropDownHeight]="130"
+                [source]="fonts"
+                [selectedIndex]="0">
+              </jqxDropDownList>
+            </div>
+            <div class="tooltip">
+              <jqxTooltip
+                [position]="'mouse'"
+                [autoHideDelay]="100000"
+                [content]="'<p style=\'text-align: left;\'></p>'">
+                <img src='./nexl/site/images/tooltip.png'/>
+              </jqxTooltip>
+            </div>
+            <div style="clear: both"></div>
+
             <!--Theme-->
             <div class="item" style="margin-top: 10px;">
               <label>Theme</label>

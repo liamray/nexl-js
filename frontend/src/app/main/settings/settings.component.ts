@@ -44,6 +44,7 @@ export class SettingsComponent {
   width = 190;
   encodings = [];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
+  fonts = ['Times New Roman', 'Tahoma'];
   logLevels = [];
 
   generalValidationRules =
@@ -89,7 +90,9 @@ export class SettingsComponent {
         }
       },
       {
-        input: '#logRotateFilesCount', message: 'Log rotate files count must be a positive integer', action: 'keyup, blur',
+        input: '#logRotateFilesCount',
+        message: 'Log rotate files count must be a positive integer',
+        action: 'keyup, blur',
         rule: (): any => {
           const val = this.logRotateFilesCount.val() || '';
           return UtilsService.isPositiveIneger(val);
@@ -182,7 +185,7 @@ export class SettingsComponent {
     this.ribbon.createComponent();
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
-  }
+  };
 
   validate() {
     this.uiValidator.validate(document.getElementById('uiForm'));
