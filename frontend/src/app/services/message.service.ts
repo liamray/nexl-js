@@ -3,6 +3,8 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  OPEN_PERMISSIONS_WINDOW,
+  OPEN_SETTINGS_WINDOW,
   OPEN_APPEARANCE_WINDOW,
   RELOAD_NEXL_SOURCES,
   TOGGLE_ARGS_WINDOW,

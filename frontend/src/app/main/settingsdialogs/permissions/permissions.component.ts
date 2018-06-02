@@ -33,6 +33,11 @@ export class PermissionsComponent implements AfterViewInit {
             this.isAdmin = message.data.isAdmin;
             return;
           }
+
+          case MESSAGE_TYPE.OPEN_PERMISSIONS_WINDOW: {
+            this.open();
+            return;
+          }
         }
       });
   }

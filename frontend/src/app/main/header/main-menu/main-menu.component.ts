@@ -70,4 +70,12 @@ export class MainMenuComponent implements AfterViewInit {
   openAppearanceWindow() {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_APPEARANCE_WINDOW);
   }
+
+  openPermissionsWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_PERMISSIONS_WINDOW);
+  }
+
+  openSettingsWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_SETTINGS_WINDOW);
+  }
 }

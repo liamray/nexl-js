@@ -94,6 +94,11 @@ export class SettingsComponent {
             this.isAdmin = message.data.isAdmin;
             return;
           }
+
+          case MESSAGE_TYPE.OPEN_SETTINGS_WINDOW: {
+            this.open();
+            return;
+          }
         }
       });
   }
