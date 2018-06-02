@@ -1,33 +1,29 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from "../../../services/auth.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import {GlobalComponentsService} from "../../services/global-components.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 import jqxValidator = jqwidgets.jqxValidator;
 
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
-export class RegisterComponent {
+export class LoginComponent {
   @ViewChild('validator') validator: jqxValidator;
-  @ViewChild('registerWindow') registerWindow: jqxWindowComponent;
+  @ViewChild('loginWindow') loginWindow: jqxWindowComponent;
   @ViewChild('usernameRef') usernameRef: jqxInputComponent;
-  @ViewChild('tokenRef') tokenRef: jqxPasswordInputComponent;
   @ViewChild('passwordRef') passwordRef: jqxPasswordInputComponent;
-  @ViewChild('confirmPasswordRef') confirmPasswordRef: jqxInputComponent;
   @ViewChild('messageBox') messageBox: ElementRef;
-  @ViewChild('registerButton') registerButton: jqxButtonComponent;
+  @ViewChild('loginButton') loginButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   username = '';
-  token = '';
   password = '';
-  confirmPassword = '';
   validationRules =
     [];
 
@@ -48,38 +44,33 @@ export class RegisterComponent {
     this.displayErrorMessage();
 
     this.username = '';
-    this.token = '';
     this.password = '';
-    this.confirmPassword = '';
-
     // WTF BUG ???
     this.usernameRef.val(this.username);
-    this.tokenRef.val(this.token);
     this.passwordRef.val(this.password);
-    this.confirmPasswordRef.val(this.confirmPassword);
-    this.registerWindow.open();
+    this.loginWindow.open();
   }
 
-  register() {
+  login() {
     this.globalComponentsService.loader.open();
 
-    this.authService.register(this.username, this.password, this.token)
+    this.authService.login(this.username, this.password)
       .subscribe(
         response => {
           this.globalComponentsService.loader.close();
-          this.registerWindow.close();
-          this.globalComponentsService.notification.openSuccess('User registered');
+          this.globalComponentsService.notification.openInfo('Logged in as [' + this.username + ']');
+          this.loginWindow.close();
+          this.authService.refreshStatus();
         },
         err => {
           this.globalComponentsService.loader.close();
           this.password = '';
-          this.confirmPassword = '';
           this.displayErrorMessage(err.statusText);
         });
   }
 
   initContent = () => {
-    this.registerButton.createComponent();
+    this.loginButton.createComponent();
     this.cancelButton.createComponent();
   }
 
@@ -88,10 +79,8 @@ export class RegisterComponent {
   }
 
   onKeyPress(event) {
-    this.displayErrorMessage();
-
-    if (event.keyCode === 13 && this.username.length > 0 && this.password.length > 0 && this.password === this.confirmPassword) {
-      this.register();
+    if (event.keyCode === 13 && this.username.length > 0 && this.password.length > 0) {
+      this.login();
       return;
     }
   }

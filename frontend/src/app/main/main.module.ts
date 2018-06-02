@@ -34,7 +34,7 @@ import {NexlExpressionsTesterComponent} from './content/nexl-expressions-tester/
 
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
-import {LoginComponent} from './login/login.component';
+import {LoginComponent} from './auth/login/login.component';
 import {FormsModule} from "@angular/forms";
 import {PermissionsComponent} from './settingsdialogs/permissions/permissions.component';
 import {AdminsComponent} from './settingsdialogs/permissions/admins/admins.component';
@@ -47,9 +47,9 @@ import {HttpRequestService} from "../services/http.requests.service";
 import {AuthService} from "../services/auth.service";
 import {NexlSourcesService} from "../services/nexl-sources.service";
 import {MessageService} from "../services/message.service";
-import {RegisterComponent} from "./register/register.component";
-import {GenerateTokenComponent} from "./header/generatetoken/generatetoken.component";
-import {ChangePasswordComponent} from "./header/changepassword/changepassword.component";
+import {RegisterComponent} from "./auth/register/register.component";
+import {GenerateTokenComponent} from "./auth/generatetoken/generatetoken.component";
+import {ChangePasswordComponent} from "./auth/changepassword/changepassword.component";
 import {NotificationComponent} from './misc/notification/notification.component';
 import {InputBoxComponent} from './misc/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./misc/confirmbox/confirmbox.component";
