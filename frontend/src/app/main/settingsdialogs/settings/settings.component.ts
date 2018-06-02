@@ -2,11 +2,11 @@ import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
-import {UtilsService} from "../../services/utils.service";
-import {GlobalComponentsService} from "../../services/global-components.service";
-import {HttpRequestService} from "../../services/http.requests.service";
+import {UtilsService} from "../../../services/utils.service";
+import {GlobalComponentsService} from "../../../services/global-components.service";
+import {HttpRequestService} from "../../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
-import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 
 @Component({
   selector: 'app-settings',

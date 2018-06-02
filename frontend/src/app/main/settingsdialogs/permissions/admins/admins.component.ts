@@ -1,7 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 import jqxGrid = jqwidgets.jqxGrid;
-import {UtilsService} from "../../../services/utils.service";
+import {UtilsService} from "../../../../services/utils.service";
 
 
 @Component({
