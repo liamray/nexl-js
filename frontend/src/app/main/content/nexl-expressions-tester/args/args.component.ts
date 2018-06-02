@@ -1,8 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
-import {UtilsService} from "../../../../services/utils.service";
-import {ARGS_WINDOW, LocalStorageService} from "../../../../services/localstorage.service";
+import {ARGS_WINDOW, LocalStorageService} from "../../../services/localstorage.service";
 import * as $ from 'jquery';
 
 @Component({

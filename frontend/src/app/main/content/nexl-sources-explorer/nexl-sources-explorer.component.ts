@@ -2,11 +2,11 @@ import {AfterViewInit, Component, ViewChild} from "@angular/core";
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import * as $ from 'jquery';
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
-import {GlobalComponentsService} from "../../../services/global-components.service";
-import {NexlSourcesService} from "../../../services/nexl-sources.service";
-import {UtilsService} from "../../../services/utils.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
+import {NexlSourcesService} from "../../services/nexl-sources.service";
+import {UtilsService} from "../../services/utils.service";
 import {EXAMPLES_FILE_NAME, EXAMPLES_JS} from "./examples.js";
 
 @Component({

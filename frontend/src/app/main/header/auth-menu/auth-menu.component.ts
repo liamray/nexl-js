@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {Subscription} from 'rxjs/Subscription';
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
-import {AuthService} from "../../../services/auth.service";
-import {GlobalComponentsService} from "../../../services/global-components.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {AuthService} from "../../services/auth.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 
 @Component({
   selector: '.app-auth-menu',

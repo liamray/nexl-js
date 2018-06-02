@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from "../services/auth.service";
+import {AuthService} from "./services/auth.service";
 import * as $ from 'jquery';
-import {MESSAGE_TYPE, MessageService} from "../services/message.service";
-import {HttpRequestService} from "../services/http.requests.service";
-import {GlobalComponentsService} from "../services/global-components.service";
-import {UtilsService} from "../services/utils.service";
+import {MESSAGE_TYPE, MessageService} from "./services/message.service";
+import {HttpRequestService} from "./services/http.requests.service";
+import {GlobalComponentsService} from "./services/global-components.service";
+import {UtilsService} from "./services/utils.service";
 
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';

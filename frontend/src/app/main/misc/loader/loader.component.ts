@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxLoaderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxloader";
-import {GlobalComponentsService} from "../../../services/global-components.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 
 @Component({
   selector: 'app-loader',

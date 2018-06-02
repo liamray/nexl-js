@@ -1,9 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import {GlobalComponentsService} from "../../../services/global-components.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
-import {HttpRequestService} from "../../../services/http.requests.service";
+import {HttpRequestService} from "../../services/http.requests.service";
 
 
 @Component({

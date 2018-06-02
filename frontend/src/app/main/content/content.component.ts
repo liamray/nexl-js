@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, HostListener, ViewChild} from '@angular/core';
 import {jqxSplitterComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter';
-import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
-import {LocalStorageService, SPLITTERS} from "../../services/localstorage.service";
+import {MESSAGE_TYPE, MessageService} from "../services/message.service";
+import {LocalStorageService, SPLITTERS} from "../services/localstorage.service";
 
 @Component({
   selector: '.app-content',

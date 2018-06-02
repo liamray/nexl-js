@@ -1,11 +1,11 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {jqxTabsComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtabs";
-import {HttpRequestService} from "../../../services/http.requests.service";
-import {GlobalComponentsService} from "../../../services/global-components.service";
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
+import {HttpRequestService} from "../../services/http.requests.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
-import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../../services/localstorage.service";
-import {UtilsService} from "../../../services/utils.service";
+import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../services/localstorage.service";
+import {UtilsService} from "../../services/utils.service";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';

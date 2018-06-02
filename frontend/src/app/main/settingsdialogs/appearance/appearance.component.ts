@@ -2,10 +2,10 @@ import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import jqxValidator = jqwidgets.jqxValidator;
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxDropDownListComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist";
-import {UtilsService} from "../../../services/utils.service";
+import {UtilsService} from "../../services/utils.service";
 
 @Component({
   selector: 'app-appearance',

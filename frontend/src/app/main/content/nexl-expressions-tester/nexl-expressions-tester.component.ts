@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
-import {GlobalComponentsService} from "../../../services/global-components.service";
-import {HttpRequestService} from "../../../services/http.requests.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
+import {HttpRequestService} from "../../services/http.requests.service";
 import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
 import * as queryString from "querystring";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";

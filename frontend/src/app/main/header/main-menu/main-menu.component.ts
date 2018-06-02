@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
+import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 @Component({
   selector: '.app-main-menu',

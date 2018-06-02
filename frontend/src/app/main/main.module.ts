@@ -1,5 +1,5 @@
 import {NgModule} from "@angular/core";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
@@ -40,22 +40,24 @@ import {PermissionsComponent} from './settingsdialogs/permissions/permissions.co
 import {AdminsComponent} from './settingsdialogs/permissions/admins/admins.component';
 import {AssignPermissionsComponent} from './settingsdialogs/permissions/assignpermissions/assignpermissions.component';
 import {LoaderComponent} from './misc/loader/loader.component';
-import {GlobalComponentsService} from "../services/global-components.service";
+import {GlobalComponentsService} from "./services/global-components.service";
 import {SettingsComponent} from './settingsdialogs/settings/settings.component';
 import {SplashscreenComponent} from './misc/splashscreen/splashscreen.component';
-import {HttpRequestService} from "../services/http.requests.service";
-import {AuthService} from "../services/auth.service";
-import {NexlSourcesService} from "../services/nexl-sources.service";
-import {MessageService} from "../services/message.service";
+import {HttpRequestService} from "./services/http.requests.service";
+import {AuthService} from "./services/auth.service";
+import {NexlSourcesService} from "./services/nexl-sources.service";
+import {MessageService} from "./services/message.service";
 import {RegisterComponent} from "./auth/register/register.component";
 import {GenerateTokenComponent} from "./auth/generatetoken/generatetoken.component";
 import {ChangePasswordComponent} from "./auth/changepassword/changepassword.component";
 import {NotificationComponent} from './misc/notification/notification.component';
 import {InputBoxComponent} from './misc/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./misc/confirmbox/confirmbox.component";
-import {LocalStorageService} from "../services/localstorage.service";
+import {LocalStorageService} from "./services/localstorage.service";
 import {ArgsComponent} from './content/nexl-expressions-tester/args/args.component';
 import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
+import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
+
 
 @NgModule({
   declarations: [
@@ -118,7 +120,12 @@ import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.compo
     NexlSourcesService,
     HttpRequestService,
     MessageService,
-    LocalStorageService
+    LocalStorageService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthHttpInterceptor,
+      multi: true
+    }
   ],
 
   entryComponents: [],

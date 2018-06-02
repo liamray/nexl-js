@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
-import {GlobalComponentsService} from "../../../services/global-components.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 
 @Component({
