@@ -27,11 +27,17 @@ export class ChangePasswordComponent {
   newPassword = '';
   confirmPassword = '';
   validationRules = [];
+  isLoggedIn = false;
 
   constructor(private authService: AuthService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.isLoggedIn = message.data.isLoggedIn;
+            return;
+          }
+
           case MESSAGE_TYPE.OPEN_CHANGE_PASSWORD_WINDOW: {
             this.open();
             return;
@@ -51,6 +57,10 @@ export class ChangePasswordComponent {
   }
 
   open() {
+    if (!this.isLoggedIn) {
+      return;
+    }
+
     this.displayErrorMessage();
 
     this.currentPassword = '';

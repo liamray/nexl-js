@@ -25,6 +25,7 @@ export class RegisterComponent {
   @ViewChild('registerButton') registerButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
+  isLoggedIn = false;
   username = '';
   token = '';
   password = '';
@@ -36,6 +37,12 @@ export class RegisterComponent {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.isLoggedIn = message.data.isLoggedIn;
+            return;
+          }
+
+
           case MESSAGE_TYPE.OPEN_REGISTER_WINDOW: {
             this.open();
             return;
@@ -55,6 +62,10 @@ export class RegisterComponent {
   }
 
   open() {
+    if (this.isLoggedIn) {
+      return;
+    }
+
     this.displayErrorMessage();
 
     this.username = '';

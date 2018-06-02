@@ -20,11 +20,17 @@ export class GenerateTokenComponent {
 
   token = '';
   username = '';
+  isAdmin = false;
 
   constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.isAdmin = message.data.isAdmin;
+            return;
+          }
+
           case MESSAGE_TYPE.OPEN_GENERATE_TOKEN_WINDOW: {
             this.open();
             return;
@@ -34,6 +40,10 @@ export class GenerateTokenComponent {
   }
 
   open() {
+    if (!this.isAdmin) {
+      return;
+    }
+
     this.generateTokenWindow.open();
   }
 

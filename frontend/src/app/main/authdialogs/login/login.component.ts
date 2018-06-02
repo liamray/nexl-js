@@ -23,6 +23,7 @@ export class LoginComponent {
   @ViewChild('loginButton') loginButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
+  isLoggedIn = false;
   username = '';
   password = '';
   validationRules =
@@ -32,6 +33,11 @@ export class LoginComponent {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
+          case MESSAGE_TYPE.AUTH_CHANGED: {
+            this.isLoggedIn = message.data.isLoggedIn;
+            return;
+          }
+
           case MESSAGE_TYPE.OPEN_LOGIN_WINDOW: {
             this.open();
             return;
@@ -51,6 +57,10 @@ export class LoginComponent {
   }
 
   open() {
+    if (this.isLoggedIn) {
+      return;
+    }
+
     this.displayErrorMessage();
 
     this.username = '';
