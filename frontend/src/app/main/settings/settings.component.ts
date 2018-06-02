@@ -43,7 +43,6 @@ export class SettingsComponent {
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
-  @ViewChild('notificationsGrid') notificationsGrid: jqxGridComponent;
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
@@ -55,39 +54,6 @@ export class SettingsComponent {
   encodings = [];
   themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
   logLevels = [];
-  notificationsSource =
-    {
-      localdata: [],
-      datafields: [
-        {name: 'notifications', type: 'string', map: '0'}
-      ],
-      datatype: 'array'
-    };
-  notificationsDataAdapter = new jqx.dataAdapter(this.notificationsSource);
-  notificationsColumns: any[] =
-    [
-      {
-        text: 'Notifications',
-        datafield: 'notifications',
-        align: 'center',
-        width: '360px'
-      },
-      {
-        text: ' ',
-        align: 'center',
-        sortable: false,
-        editable: false,
-        showeverpresentrow: false,
-        columntype: 'button',
-        cellsrenderer: (): string => {
-          return 'Delete';
-        },
-        buttonclick: (row: number): void => {
-          const rowdata = this.notificationsGrid.getrowdata(row);
-          this.notificationsGrid.deleterow(rowdata.uid);
-        }
-      }
-    ];
 
   validationRules =
     [
@@ -137,14 +103,12 @@ export class SettingsComponent {
     this.ribbon.disableAt(0);
     this.ribbon.disableAt(1);
     this.ribbon.disableAt(2);
-    this.ribbon.disableAt(3);
   }
 
   enableAdminItems() {
     this.ribbon.enableAt(0);
     this.ribbon.enableAt(1);
     this.ribbon.enableAt(2);
-    this.ribbon.enableAt(3);
   }
 
   openInner() {
@@ -157,8 +121,6 @@ export class SettingsComponent {
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings['log-level']);
         this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
-        UtilsService.arr2DS(this.settings.notifications || [], this.notificationsSource);
-        this.notificationsGrid.updatebounddata();
         this.settingsService.setNexlSourcesPath(this.settings['nexl-sources-path']);
         this.nexlSourcesDirBefore = this.settings['nexl-sources-dir'];
         this.settingsWindow.open();
@@ -227,13 +189,13 @@ export class SettingsComponent {
   }
 
   onValidationSuccess(event) {
+    console.log('Okokokok');
     if (!this.isSaving) {
       return;
     }
 
     this.settingsWindow.close();
     this.globalComponentsService.loader.open();
-    this.settings['notifications'] = UtilsService.arrFromDS(this.notificationsGrid.getrows(), 'notifications');
     this.settings['nexl-sources-path'] = this.settingsService.getNexlSourcesPath();
 
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
@@ -255,15 +217,11 @@ export class SettingsComponent {
     this.isSaving = false;
   }
 
-  addNewItem() {
-    this.notificationsGrid.addrow(1, {});
-  }
-
   onOpen() {
     this.isSaving = false;
     if (!this.isAdmin) {
       this.disableAdminItems();
-      this.ribbon.selectAt(4);
+      this.ribbon.selectAt(3);
     } else {
       this.enableAdminItems();
     }
