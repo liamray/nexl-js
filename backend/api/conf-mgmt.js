@@ -431,7 +431,7 @@ function initTokens() {
 		(isExists) => {
 			if (!isExists) {
 				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-				logger.log.info('------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
+				logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
 				return security.generateTokenAndSave(utils.ADMIN_USERNAME);
 			}
 		}
