@@ -33,7 +33,6 @@ const CONF_FILES = {
 // available options for SETTINGS
 const SETTINGS = {
 	NEXL_SOURCES_DIR: 'nexl-sources-dir',
-	NEXL_SOURCES_PATH: 'nexl-sources-path',
 	NEXL_SOURCES_ENCODING: 'nexl-sources-encoding',
 	HTTP_TIMEOUT: 'http-timeout',
 	LDAP_URL: 'ldap-url',
@@ -48,10 +47,7 @@ const SETTINGS = {
 	LOG_FILE_LOCATION: 'log-file-location',
 	LOG_LEVEL: 'log-level',
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
-	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
-
-	// nexl will notify you when nexl source is changed
-	NOTIFICATIONS: 'notifications',
+	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count'
 };
 
 // --------------------------------------------------------------------------------
@@ -97,13 +93,6 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR] = (val) => {
 		return 'nexl sources dir must be a non empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_PATH] = [
-	(val) => {
-		if (!j79.isString(val)) {
-			return 'nexl sources path must be a string';
-		}
-	}
-];
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_ENCODING] = (val) => {
 	if (AVAILABLE_ENCODINGS.indexOf(val) < 0) {
 		return 'nexl sources encoding must be one of the following : [' + AVAILABLE_ENCODINGS.join(',') + ']';
@@ -174,13 +163,6 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = (val)
 		return 'Log rotate files count must be a positive integer';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NOTIFICATIONS] = [
-	(val) => {
-		if (!j79.isString(val) && val.length < 0) {
-			return 'Notification item must be a non empty string';
-		}
-	}
-];
 
 // --------------------------------------------------------------------------------
 // TOKENS validations
