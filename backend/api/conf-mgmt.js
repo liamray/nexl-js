@@ -34,7 +34,7 @@ const CONF_FILES = {
 const SETTINGS = {
 	NEXL_SOURCES_DIR: 'nexl-sources-dir',
 	NEXL_SOURCES_ENCODING: 'nexl-sources-encoding',
-	HTTP_TIMEOUT: 'http-timeout',
+	HTTP_TIMEOUT: 'http-timeout-sec',
 	LDAP_URL: 'ldap-url',
 
 	HTTP_BINDING: 'http-binding',
