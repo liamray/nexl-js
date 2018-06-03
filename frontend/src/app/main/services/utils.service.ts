@@ -13,7 +13,7 @@ export class UtilsService {
   }
 
   static isPositiveIneger(str) {
-    return str.match(/^[0-9]+$/) !== null;
+    return typeof str === 'string' && str.match(/^[0-9]+$/) !== null;
   }
 
   static arr2DS(arr, ds) {

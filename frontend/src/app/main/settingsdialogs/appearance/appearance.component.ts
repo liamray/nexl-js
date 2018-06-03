@@ -6,6 +6,8 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxDropDownListComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist";
 import {UtilsService} from "../../services/utils.service";
+import {APPEARANCE, LocalStorageService} from "../../services/localstorage.service";
+import {AppearanceService, FONTS, THEMES} from "../../services/appearance.service";
 
 @Component({
   selector: 'app-appearance',
@@ -21,27 +23,31 @@ export class AppearanceComponent {
   @ViewChild('font') font: jqxDropDownListComponent;
   @ViewChild('fontSize') fontSize: jqxInputComponent;
   @ViewChild('theme') theme: jqxDropDownListComponent;
-  @ViewChild('notificationMessageDisappearTime') notificationMessageDisaapearTime: jqxInputComponent;
+  @ViewChild('notificationMessageDelay') notificationMessageDelay: jqxInputComponent;
 
   isSaving = false;
   width = 190;
-  themes = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
-  fonts = ['Arial', 'Bookman', 'Comic Sans MS', 'Courier New', 'Georgia', 'Helvetica', 'Impact', 'Lucida Console', 'Palatino', 'Tahoma', 'Times New Roman', 'Verdana'];
+  themes = THEMES;
+  fonts = FONTS;
+
+  appearanceData = {};
 
   appearanceValidationRules =
     [
       {
-        input: '#fontSize', message: 'Font size must be a positive integer', action: 'keyup, blur',
+        input: '#fontSize',
+        message: 'Font size must be a positive integer',
+        action: 'keyup, blur',
         rule: (): any => {
-          const val = this.fontSize.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return AppearanceService.validate('font-size', this.fontSize.val());
         }
       },
       {
-        input: '#notificationMessageDisappearTime', message: 'Notification message disappear time must be a positive integer', action: 'keyup, blur',
+        input: '#notificationMessageDelay',
+        message: 'Notification message delay must be a positive integer',
+        action: 'keyup, blur',
         rule: (): any => {
-          const val = this.notificationMessageDisaapearTime.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return AppearanceService.validate('notification-message-delay', this.notificationMessageDelay.val());
         }
       }
     ];
@@ -59,6 +65,9 @@ export class AppearanceComponent {
   }
 
   open() {
+    this.appearanceData = AppearanceService.load();
+    this.font.val(this.appearanceData['font']);
+    this.theme.val(this.appearanceData['theme']);
     this.isSaving = false;
     this.appearanceWindow.open();
   }
@@ -78,8 +87,8 @@ export class AppearanceComponent {
       return;
     }
 
-    // save goes here...
-
+    AppearanceService.save(this.appearanceData);
+    this.messageService.sendMessage(MESSAGE_TYPE.UPDATE_UI);
     this.appearanceWindow.close();
   }
 

@@ -2,6 +2,7 @@ export const SAVE_NEXL_SOURCE_CONFIRM = 'nexl.confirmations.save-nexl-source';
 export const CREDENTIALS = 'nexl.credentials';
 export const SPLITTERS = 'nexl.ui.splitters';
 export const ARGS_WINDOW = 'nexl.ui.args-window';
+export const APPEARANCE = 'nexl.ui.appearance';
 
 export class LocalStorageService {
   static storeRaw(key, val) {

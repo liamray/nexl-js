@@ -6,6 +6,7 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
 import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
+import {AppearanceService} from "../../services/appearance.service";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -30,6 +31,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   idSeqNr = 0;
   hasReadPermission = false;
   hasWritePermission = false;
+
+  font: string;
+  fontSize: string;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
@@ -91,6 +95,28 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.sendCurrentTabInfo(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.UPDATE_UI: {
+        this.updateUI();
+        return;
+      }
+    }
+  }
+
+  loadUISettings() {
+    const appearanceData = AppearanceService.load();
+    this.font = appearanceData['font'];
+    this.fontSize = appearanceData['font-size'];
+  }
+
+  updateUI() {
+    this.loadUISettings();
+    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      const id = this.resolveTabAttr(index, 'id');
+      ace.edit(id).setOptions({
+        fontFamily: this.font,
+        fontSize: this.fontSize + 'pt'
+      });
     }
   }
 
@@ -409,6 +435,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.loadUISettings();
     this.nexlSourcesTabs.scrollPosition('both');
     this.nexlSourcesTabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
@@ -515,7 +542,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const aceEditor = ace.edit(this.makeId(data, TAB_CONTENT));
 
     aceEditor.setOptions({
-      fontSize: "10pt",
+      fontFamily: this.font,
+      fontSize: this.fontSize + 'pt',
       autoScrollEditorIntoView: true,
       theme: "ace/theme/xcode",
       mode: "ace/mode/javascript",

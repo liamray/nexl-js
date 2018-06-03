@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  UPDATE_UI,
   OPEN_CHANGE_PASSWORD_WINDOW,
   OPEN_GENERATE_TOKEN_WINDOW,
   OPEN_REGISTER_WINDOW,

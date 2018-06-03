@@ -15,7 +15,8 @@
 
   <div class="container">
 
-    <jqxValidator #appearanceValidator [rules]="appearanceValidationRules"
+    <jqxValidator #appearanceValidator
+                  [rules]="appearanceValidationRules"
                   [animationDuration]="0"
                   [hintType]="'label'"
                   (onValidationSuccess)="onValidationSuccess()"
@@ -30,11 +31,15 @@
           <label>Font</label>
           <jqxDropDownList
             #font
+            id="appearanceFont"
+            name="appearanceFont"
             [width]="width"
             [height]="25"
             [dropDownHeight]="130"
             [source]="fonts"
-            [selectedIndex]="0">
+            [selectedIndex]="0"
+            [(ngModel)]="appearanceData['font']"
+          >
           </jqxDropDownList>
         </div>
         <div class="tooltip">
@@ -53,9 +58,11 @@
           <jqxInput
             #fontSize
             id="fontSize"
-            name="httpTimeout"
+            name="fontSize"
             [width]="width"
-            [height]="25">
+            [height]="25"
+            [(ngModel)]="appearanceData['font-size']"
+          >
           </jqxInput>
         </div>
         <div class="tooltip">
@@ -73,11 +80,15 @@
           <label>Theme</label>
           <jqxDropDownList
             #theme
+            name="appearanceTheme"
+            id="appearanceTheme"
             [width]="width"
             [height]="25"
             [dropDownHeight]="130"
             [source]="themes"
-            [selectedIndex]="0">
+            [selectedIndex]="0"
+            [(ngModel)]="appearanceData['theme']"
+          >
           </jqxDropDownList>
         </div>
         <div class="tooltip">
@@ -90,15 +101,17 @@
         </div>
         <div style="clear: both"></div>
 
-        <!--Notification message disappear time-->
+        <!--Notification message delay-->
         <div class="item">
-          <label>Notification message disappear time</label>
+          <label>Notification message delay</label>
           <jqxInput
-            #notificationMessageDisappearTime
-            id="notificationMessageDisappearTime"
-            name="notificationMessageDisappearTime"
+            #notificationMessageDelay
+            id="notificationMessageDelay"
+            name="notificationMessageDelay"
             [width]="width"
-            [height]="25">
+            [height]="25"
+            [(ngModel)]="appearanceData['notification-message-delay']"
+          >
           </jqxInput>
         </div>
         <div class="tooltip">
