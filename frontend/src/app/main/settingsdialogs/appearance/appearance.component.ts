@@ -5,9 +5,7 @@ import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxDropDownListComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist";
-import {UtilsService} from "../../services/utils.service";
-import {APPEARANCE, LocalStorageService} from "../../services/localstorage.service";
-import {AppearanceService, FONTS, THEMES} from "../../services/appearance.service";
+import {AppearanceService, THEMES} from "../../services/appearance.service";
 
 @Component({
   selector: 'app-appearance',
@@ -20,7 +18,6 @@ export class AppearanceComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  @ViewChild('font') font: jqxDropDownListComponent;
   @ViewChild('fontSize') fontSize: jqxInputComponent;
   @ViewChild('theme') theme: jqxDropDownListComponent;
   @ViewChild('notificationMessageDelay') notificationMessageDelay: jqxInputComponent;
@@ -28,7 +25,6 @@ export class AppearanceComponent {
   isSaving = false;
   width = 190;
   themes = THEMES;
-  fonts = FONTS;
 
   appearanceData = {};
 
@@ -66,7 +62,6 @@ export class AppearanceComponent {
 
   open() {
     this.appearanceData = AppearanceService.load();
-    this.font.val(this.appearanceData['font']);
     this.theme.val(this.appearanceData['theme']);
     this.isSaving = false;
     this.appearanceWindow.open();

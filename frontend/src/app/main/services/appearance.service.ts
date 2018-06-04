@@ -1,16 +1,9 @@
 import {UtilsService} from "./utils.service";
 import {APPEARANCE, LocalStorageService} from "./localstorage.service";
 
-export const FONTS = ['Arial', 'Bookman', 'Comic Sans MS', 'Courier New', 'Georgia', 'Helvetica', 'Impact', 'Lucida Console', 'Palatino', 'Tahoma', 'Times New Roman', 'Verdana'];
 export const THEMES = ['android', 'arctic', 'base', 'black', 'blackberry', 'bootstrap', 'classic', 'dark', 'darkblue', 'energyblue', 'flat', 'fresh', 'glacier', 'highcontrast', 'light', 'metro', 'metrodark', 'mobile', 'office', 'orange', 'shinyblack', 'summer', 'ui-darkness', 'ui-le-frog', 'ui-lightness', 'ui-overcast', 'ui-redmond', 'ui-smoothness', 'ui-start', 'ui-sunny', 'web', 'windowsphone'];
 
 const APPEARANCE_DATA = {
-  'font': {
-    defVal: FONTS[0],
-    isValid: (val) => {
-      return FONTS.indexOf(val) >= 0;
-    }
-  },
   'font-size': {
     defVal: '12',
     isValid: (val) => {

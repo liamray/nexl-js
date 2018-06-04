@@ -32,7 +32,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   hasReadPermission = false;
   hasWritePermission = false;
 
-  font: string;
   fontSize: string;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
@@ -105,7 +104,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   loadUISettings() {
     const appearanceData = AppearanceService.load();
-    this.font = appearanceData['font'];
     this.fontSize = appearanceData['font-size'];
   }
 
@@ -114,7 +112,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       const id = this.resolveTabAttr(index, 'id');
       ace.edit(id).setOptions({
-        fontFamily: this.font,
         fontSize: this.fontSize + 'pt'
       });
     }
@@ -554,7 +551,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     const aceEditor = ace.edit(this.makeId(data, TAB_CONTENT));
 
     aceEditor.setOptions({
-      fontFamily: this.font,
       fontSize: this.fontSize + 'pt',
       autoScrollEditorIntoView: true,
       theme: "ace/theme/xcode",
