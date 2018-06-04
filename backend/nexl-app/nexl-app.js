@@ -7,11 +7,13 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const util = require('util');
+const figlet = require('figlet');
 
 const confMgmt = require('../api/conf-mgmt');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
 const fsx = require('../api/fsx');
+const version = require('../../package.json').version;
 
 const expressionsRoute = require('../routes/expressions/expressions-route');
 const notFoundInterceptor = require('../interceptors/404-interceptor');
@@ -39,6 +41,22 @@ class NexlApp {
 
 	getFavIconPath() {
 		return '../../site/nexl/site/';
+	}
+
+	printWelcomeMessage() {
+		return new Promise(
+			(resolve, reject) => {
+				figlet.text('nexl ' + version, {font: 'doom'}, function (err, data) {
+					if (err) {
+						reject(err);
+						return;
+					}
+
+					console.log(data);
+					resolve();
+				});
+
+			});
 	}
 
 	applyInterceptors() {
@@ -247,7 +265,7 @@ class NexlApp {
 		logger.log.level = 'info';
 
 		// creating nexl home dir if doesn't exist
-		confMgmt.createNexlHomeDirectoryIfNeeded().then(confMgmt.initSettings).then(logger.init).then(confMgmt.initTokens).then(confMgmt.initPermissions).then(confMgmt.initPasswords).then(confMgmt.initAdmins).then(confMgmt.createNexlSourcesDirIfNeeded).then(
+		this.printWelcomeMessage().then(confMgmt.createNexlHomeDirectoryIfNeeded).then(confMgmt.initSettings).then(logger.init).then(confMgmt.initTokens).then(confMgmt.initPermissions).then(confMgmt.initPasswords).then(confMgmt.initAdmins).then(confMgmt.createNexlSourcesDirIfNeeded).then(
 			() => {
 				this.applyInterceptors();
 				this.startNexlServer();
