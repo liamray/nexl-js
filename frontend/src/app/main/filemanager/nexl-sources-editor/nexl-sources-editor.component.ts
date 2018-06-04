@@ -256,7 +256,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   saveNexlSource(relativePath: string) {
     if (!this.hasWritePermission) {
-      this.globalComponentsService.notification.openError('No write permissions to save a file');
       return;
     }
 

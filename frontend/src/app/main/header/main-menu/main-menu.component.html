@@ -41,15 +41,15 @@
     <li>
       <span>Expression</span>
       <ul style="width:160px;">
-        <li (click)="toggleArgsWindow()">
+        <li (click)="toggleArgsWindow()" id="main-menu-arguments">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/args.png'/><span>Arguments ( F8 )</span>
         </li>
-        <li (click)="evaluateNexlExpression()">
+        <li (click)="evaluateNexlExpression()" id="main-menu-evaluate">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/eval.png'/><span>Evaluate ( F9 )</span>
         </li>
-        <li>
+        <li  id="main-menu-wizard">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/assemble.png'/><span>Wizard</span>
         </li>

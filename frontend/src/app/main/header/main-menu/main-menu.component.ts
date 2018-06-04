@@ -10,6 +10,7 @@ export class MainMenuComponent implements AfterViewInit {
   @ViewChild('mainMenuRef') mainMenu: any;
 
   tabsCount = 0;
+  hasReadPermission = false;
   hasWritePermission = false;
 
   constructor(private messageService: MessageService) {
@@ -24,6 +25,7 @@ export class MainMenuComponent implements AfterViewInit {
         const status = message.data;
         this.mainMenu.disable('main-menu-permissions', !status.isAdmin);
         this.mainMenu.disable('main-menu-settings', !status.isAdmin);
+        this.hasReadPermission = status.hasReadPermission;
         this.hasWritePermission = status.hasWritePermission;
         this.updateSaveMenuItem();
         return;
@@ -40,6 +42,10 @@ export class MainMenuComponent implements AfterViewInit {
   updateSaveMenuItem() {
     this.mainMenu.disable('main-menu-save', this.tabsCount < 1 || !this.hasWritePermission);
     this.mainMenu.disable('main-menu-close-all', this.tabsCount < 1);
+
+    this.mainMenu.disable('main-menu-arguments', this.tabsCount < 1 || !this.hasReadPermission);
+    this.mainMenu.disable('main-menu-evaluate', this.tabsCount < 1 || !this.hasReadPermission);
+    this.mainMenu.disable('main-menu-wizard', this.tabsCount < 1 || !this.hasReadPermission);
   }
 
   ngAfterViewInit(): void {

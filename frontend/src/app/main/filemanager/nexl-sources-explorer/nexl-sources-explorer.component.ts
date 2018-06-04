@@ -291,7 +291,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     if (!this.hasWritePermission) {
-      this.globalComponentsService.notification.openError('No write permissions to rename an item');
       return;
     }
 
@@ -462,7 +461,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   newDir() {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
-      this.globalComponentsService.notification.openError('No write permissions to create a directory');
       return;
     }
 
@@ -552,7 +550,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   newFile() {
     if (this.hasWritePermission !== true) {
-      this.globalComponentsService.notification.openError('No write permissions to create a file');
       return;
     }
 
@@ -668,7 +665,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     }
 
     if (!this.hasWritePermission) {
-      this.globalComponentsService.notification.openError('No write permissions to delete an item');
       return;
     }
 
