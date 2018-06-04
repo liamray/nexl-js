@@ -97,10 +97,16 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    item.value.isChanged = data.isChanged;
-    item.label = this.makeItemLabel(item.value);
+    if (data.isChanged !== undefined) {
+      item.value.isChanged = data.isChanged;
+      item.label = this.makeItemLabel(item.value);
+      this.tree.updateItem(item, item);
+    }
 
-    this.tree.updateItem(item, item);
+    if (data.isNewFile !== undefined) {
+      item.value.isNewFile = data.isNewFile;
+      this.tree.updateItem(item, item);
+    }
   }
 
   updateItems(data: any[]) {
@@ -744,7 +750,6 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   moveFileItem(data: any) {
     // creating root item
     const item2Add: any = NexlSourcesService.makeNewFileItem(data.dropPath, data.item2Move.value.label);
-    console.log(item2Add);
     item2Add.value.isChanged = data.item2Move.value.isChanged;
     item2Add.value.isNewFile = data.item2Move.value.isNewFile;
 

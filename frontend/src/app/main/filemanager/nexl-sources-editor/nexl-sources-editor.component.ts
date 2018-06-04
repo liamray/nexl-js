@@ -126,14 +126,28 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   setTabChanged(idSeqNr: string | number, isChanged: boolean) {
     $('#' + TITLE_ID + idSeqNr).attr(IS_CHANGED, isChanged);
+
+    // sending message to tree
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
+        isChanged: isChanged,
+        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
+      }
+    );
   }
 
   isNewFile(idSeqNr: string | number) {
     return $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE) === TRUE;
   }
 
-  setNewFile(idSeqNr: string | number, isChanged: boolean) {
-    $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE, isChanged);
+  setNewFile(idSeqNr: string | number, isNewFile: boolean) {
+    $('#' + TITLE_ID + idSeqNr).attr(ATTR_IS_NEW_FILE, isNewFile);
+
+    // sending message to tree
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
+        isNewFile: isNewFile,
+        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
+      }
+    );
   }
 
   getTabContent(idSeqNr: string) {
@@ -234,15 +248,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   changeFileStatus(idSeqNr: any, isChanged: boolean) {
+    // is already updated ?
+    if (this.isTabChanged(idSeqNr) === isChanged) {
+      return;
+    }
+
     $('#' + TITLE_MODIFICATION_ICON + idSeqNr).css('display', isChanged ? 'inline-block' : 'none');
     this.setTabChanged(idSeqNr, isChanged);
-
-    // sending message to tree
-    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
-        isChanged: isChanged,
-        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
-      }
-    );
   }
 
   saveNexlSource(relativePath: string) {
