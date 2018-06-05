@@ -530,8 +530,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     jqwidgets.createInstance($('#' + this.makeId(data, TITLE_ID)), 'jqxTooltip', {
       content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.makeId(data, TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
       position: 'mouse',
-      closeOnClick: true,
-      autoHide: true,
+      closeOnClick: false,
+      autoHide: false,
       autoHideDelay: 99999,
       animationShowDelay: 400,
       showDelay: 600,

@@ -27,11 +27,14 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   output: string = '';
   url: string = '';
+  urlTooltip: string = '';
   urlEscaped: string = '';
   hasReadPermission = false;
   tabsCount = 0;
   currentArgs: any = {};
+  currentArgsAsStr = '';
   relativePath: string = '';
+  relativePathSlashed: string = '';
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -195,11 +198,25 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   updateUrl() {
     if (this.isDisabled()) {
       this.url = '';
+      this.urlEscaped = '';
+      this.urlTooltip = '';
       return;
     }
 
+    this.updateUrlInner();
+    this.urlTooltip = '<p style="text-align: left;">' + this.url + '<br/>Hello</p>';
+    const expression = this.nexlExpression.val();
+    const text = `<span style="text-decoration: underline;">${environment.rootUrl}</span> <span style="border: 2px dashed green; padding: 5px;">${this.relativePathSlashed}</span> <span style="">?</span> <span style="border: 2px solid red; padding: 5px;">expression=${expression}</span> <span style="">&</span> <span style="border: 2px dotted blue; padding: 5px;">${this.currentArgsAsStr}</span>`;
+    this.urlTooltip = '<p style="text-align: left;">' + text + '<br/></p>';
+  }
+
+  updateUrlInner() {
+    this.currentArgsAsStr = '';
+
+
     let url = environment.rootUrl;
-    url += this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+    this.relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+    url += this.relativePathSlashed;
     let urlEscaped = url;
 
     let expression = this.nexlExpression.val();
@@ -223,11 +240,13 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       urlEscaped += '&';
     }
 
+    this.currentArgsAsStr = '';
+
     for (let key in this.currentArgs) {
-      url += key;
-      url += '=';
-      url += this.currentArgs[key];
-      url += '&';
+      this.currentArgsAsStr += key;
+      this.currentArgsAsStr += '=';
+      this.currentArgsAsStr += this.currentArgs[key];
+      this.currentArgsAsStr += '&';
 
       urlEscaped += encodeURIComponent(key);
       urlEscaped += '=';
@@ -235,7 +254,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       urlEscaped += '&';
     }
 
-    this.url = url.replace(/&$/, '');
+    this.currentArgsAsStr = this.currentArgsAsStr.replace(/&$/, '');
+    this.url = url + this.currentArgsAsStr;
     this.urlEscaped = urlEscaped.replace(/&$/, '');
   }
 
@@ -248,5 +268,10 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       () => {
         this.updateUrl();
       });
+  }
+
+  onUrlClick() {
+    window.open(this.urlEscaped);
+    return false;
   }
 }

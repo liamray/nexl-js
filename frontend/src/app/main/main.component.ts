@@ -67,6 +67,10 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
+    window['showExamples'] = () => {
+      throw 'Imlement me !';
+    };
+
     // loading server info
     this.http.post({}, '/general/info', 'json').subscribe(
       (info: any) => {
