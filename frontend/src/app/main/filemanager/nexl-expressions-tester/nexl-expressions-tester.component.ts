@@ -203,60 +203,61 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       return;
     }
 
-    this.updateUrlInner();
-    this.urlTooltip = '<p style="text-align: left;">' + this.url + '<br/>Hello</p>';
+    const rootUrl = environment.rootUrl;
+    const relativePath = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+    const url = rootUrl + relativePath;
     const expression = this.nexlExpression.val();
-    const text = `<span style="text-decoration: underline;">${environment.rootUrl}</span> <span style="border: 2px dashed green; padding: 5px;">${this.relativePathSlashed}</span> <span style="">?</span> <span style="border: 2px solid red; padding: 5px;">expression=${expression}</span> <span style="">&</span> <span style="border: 2px dotted blue; padding: 5px;">${this.currentArgsAsStr}</span>`;
+    const argsAsArray = this.args2Array();
+    const args4Tooltip = this.args2Str(argsAsArray, false);
+
+    if (expression !== '') {
+      argsAsArray.unshift({
+        key: 'expression',
+        value: expression
+      });
+    }
+
+    const argsAsStr = this.args2Str(argsAsArray, false);
+    const argsAsStrEncoded = this.args2Str(argsAsArray, true);
+
+    // updating this.url, this.urlEscaped
+    if (argsAsStr === '') {
+      this.url = url;
+      this.urlEscaped = url;
+    } else {
+      this.url = url + '?' + argsAsStr;
+      this.urlEscaped = url + '?' + argsAsStrEncoded;
+    }
+
+    // updating tooltip
+    const text = `<span style="text-decoration: underline;">${rootUrl}</span> <span style="border: 2px dashed green; padding: 5px;">${relativePath}</span> <span style="">?</span> <span style="border: 2px solid red; padding: 5px;">expression=${expression}</span> <span style="">&</span> <span style="border: 2px dotted blue; padding: 5px;">${args4Tooltip}</span>`;
     this.urlTooltip = '<p style="text-align: left;">' + text + '<br/></p>';
   }
 
-  updateUrlInner() {
-    this.currentArgsAsStr = '';
-
-
-    let url = environment.rootUrl;
-    this.relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
-    url += this.relativePathSlashed;
-    let urlEscaped = url;
-
-    let expression = this.nexlExpression.val();
-
-    if (expression !== '') {
-      url += '?' + 'expression=' + expression;
-      urlEscaped += '?' + 'expression=' + encodeURIComponent(expression);
-    }
-
-    if (Object.keys(this.currentArgs).length < 1) {
-      this.url = url;
-      this.urlEscaped = urlEscaped;
-      return;
-    }
-
-    if (expression === '') {
-      url += '?';
-      urlEscaped += '?';
-    } else {
-      url += '&';
-      urlEscaped += '&';
-    }
-
-    this.currentArgsAsStr = '';
-
+  args2Array() {
+    const result = [];
     for (let key in this.currentArgs) {
-      this.currentArgsAsStr += key;
-      this.currentArgsAsStr += '=';
-      this.currentArgsAsStr += this.currentArgs[key];
-      this.currentArgsAsStr += '&';
-
-      urlEscaped += encodeURIComponent(key);
-      urlEscaped += '=';
-      urlEscaped += encodeURIComponent(this.currentArgs[key]);
-      urlEscaped += '&';
+      result.push({
+        key: key,
+        value: this.currentArgs[key]
+      });
     }
 
-    this.currentArgsAsStr = this.currentArgsAsStr.replace(/&$/, '');
-    this.url = url + this.currentArgsAsStr;
-    this.urlEscaped = urlEscaped.replace(/&$/, '');
+    return result;
+  }
+
+  args2Str(args: any[], encode: boolean) {
+    let result = '';
+    args.forEach(
+      (item) => {
+        result += item.key;
+        result += '=';
+        result += encode ? encodeURIComponent(item.value) : item.value;
+        result += '&';
+      });
+
+    // removing last ampersand if present
+    return result.replace(/&$/, '');
   }
 
   onExpressionChange() {
