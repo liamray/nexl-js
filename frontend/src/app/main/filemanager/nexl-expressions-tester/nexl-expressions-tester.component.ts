@@ -230,7 +230,13 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     }
 
     // updating tooltip
-    const text = `<span style="text-decoration: underline;">${rootUrl}</span> <span style="border: 2px dashed green; padding: 5px;">${relativePath}</span> <span style="">?</span> <span style="border: 2px solid red; padding: 5px;">expression=${expression}</span> <span style="">&</span> <span style="border: 2px dotted blue; padding: 5px;">${args4Tooltip}</span>`;
+    const ttRootUrl = `<span style="text-decoration: underline;">${rootUrl}</span>`;
+    const ttRelativePath = `<span style="border: 2px dashed green; padding: 5px;">${relativePath}</span>`;
+    const ttQuestion = `<span style="">?</span>`;
+    const ttExpression = `<span style="border: 2px solid red; padding: 5px;">expression=${expression}</span>`;
+    const ttAmpersand = `<span style="">&</span>`;
+    const ttArgs = `<span style="border: 2px dotted blue; padding: 5px;">${args4Tooltip}</span>`;
+    const text = ttRootUrl + ttRelativePath + ttQuestion + ttExpression + ttAmpersand + ttArgs;
     this.urlTooltip = '<p style="text-align: left;">' + text + '<br/></p>';
   }
 

@@ -68,7 +68,7 @@ export class ArgsComponent implements OnInit, AfterViewInit {
             width: '100%',
             height: 27,
             template: 'default',
-            imgSrc: './nexl/site/images/toggle.png',
+            imgSrc: './nexl/site/images/turn-off.png',
             imgWidth: 16,
             imgHeight: 16,
             imgPosition: 'center',
