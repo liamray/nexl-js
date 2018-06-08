@@ -38,6 +38,7 @@
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification"
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel"
   ]
 }
