@@ -91,26 +91,27 @@
 
     </div>
 
-    <div class="nexl-url-container">
-      <div class="nexl-url-label">URL</div>
-      <div>
-        <jqxTooltip
-          [content]="urlTooltip"
-          [position]="'mouse'"
-          [closeOnClick]="false"
-          [autoHide]="false"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="hover"
-          [height]="25"
-        >
-          <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
-        </jqxTooltip>
-      </div>
-    </div>
-
   </div>
+
+  <div class="nexl-url-container">
+    <div class="nexl-url-label">URL</div>
+    <div>
+      <jqxTooltip
+        [content]="urlTemplate"
+        [position]="'mouse'"
+        [closeOnClick]="false"
+        [autoHide]="false"
+        [autoHideDelay]="99999"
+        [animationShowDelay]="400"
+        [showDelay]="600"
+        [trigger]="'hover'"
+        [height]="25"
+      >
+        <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
+      </jqxTooltip>
+    </div>
+  </div>
+
 </jqxPanel>
 
 <jqxExpander

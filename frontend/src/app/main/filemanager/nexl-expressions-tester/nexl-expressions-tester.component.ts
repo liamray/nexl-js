@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
@@ -8,6 +8,41 @@ import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxex
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
+import * as $ from 'jquery';
+
+const URL_TEMPLATE = `
+<div style="text-align: left; display: block; padding: 10px;">
+    <span style="text-decoration: underline;" id="tooltipRootUrl"></span>
+    <span style="border: 2px dashed green; padding: 5px;" id="tooltipRelativePath"></span>
+    <span style="" id="tooltipQuestionChar">?</span>
+    <span style="border: 2px solid red; padding: 5px;" id="tooltipExpression"></span>
+    <span style="" id="tooltipAmpersand">&</span>
+    <span style="border: 2px dotted blue; padding: 5px;" id="tooltipArgs"></span>
+
+    <br/>
+    <br/>
+
+    <div
+            style="border: 2px dashed green; padding: 5px;width: 15px;height: 15px; float: left;"></div>
+    <div style="position: relative; top: 6px; left: 6px;float: left;"> - relative path to JavaScript file</div>
+    <div style="clear: both;"></div>
+
+    <div id="tooltipExpressionExplanation" style="padding-top: 10px;">
+        <div
+                style="border: 2px solid red; padding: 5px;width: 15px;height: 15px; float: left;"></div>
+        <div style="position: relative; top: 6px; left: 6px;float: left;"> - nexl expression</div>
+        <div style="clear: both;"></div>
+    </div>
+
+    <div id="tooltipArgsExplanation" style="padding-top: 10px;">
+        <div
+                style="border: 2px dotted blue; padding: 5px;width: 15px;height: 15px; float: left;"></div>
+        <div style="position: relative; top: 6px; left: 6px;float: left;"> - arguments</div>
+        <div style="clear: both;"></div>
+    </div>
+</div>
+   
+`;
 
 @Component({
   selector: '.app-nexl-expressions-tester',
@@ -24,17 +59,17 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('argsButton') argsButton: jqxButtonComponent;
 
   @ViewChild('argsWindow') argsWindow: ArgsComponent;
+  @ViewChild('template') template: ElementRef;
+
+  urlTemplate: string = URL_TEMPLATE;
 
   output: string = '';
   url: string = '';
-  urlTooltip: string = '';
   urlEncoded: string = '';
   hasReadPermission = false;
   tabsCount = 0;
   currentArgs: any = {};
-  currentArgsAsStr = '';
   relativePath: string = '';
-  relativePathSlashed: string = '';
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -199,13 +234,12 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     if (this.isDisabled()) {
       this.url = '';
       this.urlEncoded = '';
-      this.urlTooltip = '';
       return;
     }
 
     const rootUrl = environment.rootUrl;
-    const relativePath = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
-    const url = rootUrl + relativePath;
+    const relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
+    const url = rootUrl + relativePathSlashed;
     const expression = this.nexlExpression.val();
     const argsAsArray = this.args2Array();
     const args4Tooltip = this.args2Str(argsAsArray, false);
@@ -230,40 +264,52 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     }
 
     // updating tooltip
-    const ttRootUrl = `<span style="text-decoration: underline;">${rootUrl}</span>`;
-    const ttRelativePath = `<span style="border: 2px dashed green; padding: 5px;">${relativePath}</span>`;
-    const ttQuestion = `<span style="">?</span>`;
-    const ttExpression = `<span style="border: 2px solid red; padding: 5px;">expression=${expression}</span>`;
-    const ttAmpersand = `<span style="">&</span>`;
-    const ttArgs = `<span style="border: 2px dotted blue; padding: 5px;">${args4Tooltip}</span>`;
-
-    const relativePathExplanation = '<div style="border: 2px dashed green; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - relative path to JavaScript file</div>';
-    const expressionPathExplanation = '<div style="border: 2px solid red; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - nexl expression</div>';
-    const argsPathExplanation = '<div style="border: 2px dotted blue; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - arguments</div>';
-
-    // todo : add this
-    // todo : make css classes separately for borders and explanations
-    // todo : add tooltip for relativePathExplanation, expressionPathExplanation, argsPathExplanation
-    const escapedUrl = `Encoded URL ${this.urlEncoded}`;
+    $('#tooltipRootUrl').text(rootUrl);
+    $('#tooltipRelativePath').text(relativePathSlashed);
+    $('#tooltipExpression').text(`expression=${expression}`);
+    $('#tooltipArgs').text(args4Tooltip);
 
     if (expression === '' && args4Tooltip === '') {
-      this.urlTooltip = `<p style="text-align: left;">${ttRootUrl}${ttRelativePath}<hr/>${relativePathExplanation}</p>`;
+      $('#tooltipQuestionChar').css('display', 'none');
+      $('#tooltipExpression').css('display', 'none');
+      $('#tooltipAmpersand').css('display', 'none');
+      $('#tooltipArgs').css('display', 'none');
+
+      $('#tooltipExpressionExplanation').css('display', 'none');
+      $('#tooltipArgsExplanation').css('display', 'none');
       return;
     }
 
     if (expression !== '' && args4Tooltip !== '') {
-      this.urlTooltip = `<p style="text-align: left;">${ttRootUrl}${ttRelativePath}${ttQuestion}${ttExpression}${ttAmpersand}${ttArgs}<hr/>${relativePathExplanation}<br/>${expressionPathExplanation}<br/>${argsPathExplanation}</p>`;
+      $('#tooltipQuestionChar').css('display', '');
+      $('#tooltipExpression').css('display', '');
+      $('#tooltipAmpersand').css('display', '');
+      $('#tooltipArgs').css('display', '');
 
+      $('#tooltipExpressionExplanation').css('display', '');
+      $('#tooltipArgsExplanation').css('display', '');
       return;
     }
 
-    if (expression === '') {
-      this.urlTooltip = '<p style="text-align: left;">' + ttRootUrl + ttRelativePath + ttQuestion + ttArgs + '<br/></p>';
+    if (expression !== '') {
+      $('#tooltipQuestionChar').css('display', '');
+      $('#tooltipExpression').css('display', '');
+      $('#tooltipAmpersand').css('display', 'none');
+      $('#tooltipArgs').css('display', 'none');
+
+      $('#tooltipExpressionExplanation').css('display', '');
+      $('#tooltipArgsExplanation').css('display', 'none');
       return;
     }
 
-    if (args4Tooltip === '') {
-      this.urlTooltip = '<p style="text-align: left;">' + ttRootUrl + ttRelativePath + ttQuestion + ttExpression + '<br/></p>';
+    if (args4Tooltip !== '') {
+      $('#tooltipQuestionChar').css('display', '');
+      $('#tooltipExpression').css('display', 'none');
+      $('#tooltipAmpersand').css('display', 'none');
+      $('#tooltipArgs').css('display', '');
+
+      $('#tooltipExpressionExplanation').css('display', 'none');
+      $('#tooltipArgsExplanation').css('display', '');
       return;
     }
   }
