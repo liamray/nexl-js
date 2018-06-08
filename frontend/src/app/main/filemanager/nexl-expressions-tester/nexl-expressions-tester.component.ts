@@ -40,6 +40,13 @@ const URL_TEMPLATE = `
         <div style="position: relative; top: 6px; left: 6px;float: left;"> - arguments</div>
         <div style="clear: both;"></div>
     </div>
+    
+    <div id="tooltipEmptyExpressionExplanation" style="padding-top: 15px;">
+        <img src='./nexl/site/images/tip.png' style="position: relative; top: 2px;"/>
+        Please note empty nexl expression is evaluated to undefined value.<br/>
+        You can specify automatically executed nexl expression in your JavaScript file in the following way :<br/>
+        <span style="padding-top: 5px; padding-left: 150px; font-weight: bold;">nexl.defaultExpression = '\${myExpression...}';</span>  
+    </div>
 </div>
    
 `;
@@ -277,6 +284,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
       $('#tooltipExpressionExplanation').css('display', 'none');
       $('#tooltipArgsExplanation').css('display', 'none');
+      $('#tooltipEmptyExpressionExplanation').css('display', '');
       return;
     }
 
@@ -288,6 +296,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
       $('#tooltipExpressionExplanation').css('display', '');
       $('#tooltipArgsExplanation').css('display', '');
+      $('#tooltipEmptyExpressionExplanation').css('display', 'none');
       return;
     }
 
@@ -299,6 +308,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
       $('#tooltipExpressionExplanation').css('display', '');
       $('#tooltipArgsExplanation').css('display', 'none');
+      $('#tooltipEmptyExpressionExplanation').css('display', 'none');
       return;
     }
 
@@ -310,6 +320,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
       $('#tooltipExpressionExplanation').css('display', 'none');
       $('#tooltipArgsExplanation').css('display', '');
+      $('#tooltipEmptyExpressionExplanation').css('display', '');
       return;
     }
   }
