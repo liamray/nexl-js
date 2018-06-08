@@ -57,6 +57,7 @@ import {LocalStorageService} from "./services/localstorage.service";
 import {ArgsComponent} from './filemanager/nexl-expressions-tester/args/args.component';
 import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
 import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
+import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
 
 
 @NgModule({
@@ -80,6 +81,7 @@ import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
     jqxCheckBoxComponent,
     jqxPasswordInputComponent,
     jqxNotificationComponent,
+    jqxPanelComponent,
 
     HeaderComponent,
     NexlLogoComponent,
