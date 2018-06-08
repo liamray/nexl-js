@@ -28,7 +28,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   output: string = '';
   url: string = '';
   urlTooltip: string = '';
-  urlEscaped: string = '';
+  urlEncoded: string = '';
   hasReadPermission = false;
   tabsCount = 0;
   currentArgs: any = {};
@@ -198,7 +198,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   updateUrl() {
     if (this.isDisabled()) {
       this.url = '';
-      this.urlEscaped = '';
+      this.urlEncoded = '';
       this.urlTooltip = '';
       return;
     }
@@ -220,13 +220,13 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     const argsAsStr = this.args2Str(argsAsArray, false);
     const argsAsStrEncoded = this.args2Str(argsAsArray, true);
 
-    // updating this.url, this.urlEscaped
+    // updating this.url, this.urlEncoded
     if (argsAsStr === '') {
       this.url = url;
-      this.urlEscaped = url;
+      this.urlEncoded = url;
     } else {
       this.url = url + '?' + argsAsStr;
-      this.urlEscaped = url + '?' + argsAsStrEncoded;
+      this.urlEncoded = url + '?' + argsAsStrEncoded;
     }
 
     // updating tooltip
@@ -237,14 +237,23 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     const ttAmpersand = `<span style="">&</span>`;
     const ttArgs = `<span style="border: 2px dotted blue; padding: 5px;">${args4Tooltip}</span>`;
 
+    const relativePathExplanation = '<div style="border: 2px dashed green; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - relative path to JavaScript file</div>';
+    const expressionPathExplanation = '<div style="border: 2px solid red; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - nexl expression</div>';
+    const argsPathExplanation = '<div style="border: 2px dotted blue; padding: 5px;float: left; margin-top: 10px; width: 15px;height: 15px;"></div><div style="float: left;position: relative; top: 17px; left: 6px;"> - arguments</div>';
+
+    // todo : add this
+    // todo : make css classes separately for borders and explanations
+    // todo : add tooltip for relativePathExplanation, expressionPathExplanation, argsPathExplanation
+    const escapedUrl = `Encoded URL ${this.urlEncoded}`;
 
     if (expression === '' && args4Tooltip === '') {
-      this.urlTooltip = '<p style="text-align: left;">' + ttRootUrl + ttRelativePath + '<br/></p>';
+      this.urlTooltip = `<p style="text-align: left;">${ttRootUrl}${ttRelativePath}<hr/>${relativePathExplanation}</p>`;
       return;
     }
 
     if (expression !== '' && args4Tooltip !== '') {
-      this.urlTooltip = '<p style="text-align: left;">' + ttRootUrl + ttRelativePath + ttQuestion + ttExpression + ttAmpersand + ttArgs + '<br/></p>';
+      this.urlTooltip = `<p style="text-align: left;">${ttRootUrl}${ttRelativePath}${ttQuestion}${ttExpression}${ttAmpersand}${ttArgs}<hr/>${relativePathExplanation}<br/>${expressionPathExplanation}<br/>${argsPathExplanation}</p>`;
+
       return;
     }
 
@@ -297,7 +306,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   onUrlClick() {
-    window.open(this.urlEscaped);
+    window.open(this.urlEncoded);
     return false;
   }
 }
