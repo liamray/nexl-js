@@ -1,12 +1,12 @@
-<jqxPanel
-  [height]="90"
-  [width]="'100%'"
+<jqxExpander
+  [height]="85"
+  [showArrow]="false"
+  [toggleMode]="'none'"
   #expressionArea
   [disabled]="true"
 >
-  <div class="jqx-widget-header" style="height: 27px; padding-top: 6px; text-align: center; font-size: 15px; ">
-    nexl expressions tester
-  </div>
+
+  <div style="text-align: center; font-size: 14px; width: 100%;">nexl expressions tester</div>
 
   <div class="nexl-expressions-container">
     <div>
@@ -90,30 +90,27 @@
       </div>
 
     </div>
-
-  </div>
-
-  <div class="nexl-url-container">
-    <div class="nexl-url-label">URL</div>
-    <div>
-      <jqxTooltip
-        #urlTooltip
-        [content]="urlTemplate"
-        [position]="'mouse'"
-        [closeOnClick]="false"
-        [autoHide]="false"
-        [autoHideDelay]="99999"
-        [animationShowDelay]="400"
-        [showDelay]="600"
-        [trigger]="'hover'"
-        [height]="25"
-      >
-        <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
-      </jqxTooltip>
+    <div class="nexl-url-container">
+      <div class="nexl-url-label">URL</div>
+      <div>
+        <jqxTooltip
+          #urlTooltip
+          [content]="urlTemplate"
+          [position]="'mouse'"
+          [closeOnClick]="false"
+          [autoHide]="false"
+          [autoHideDelay]="99999"
+          [animationShowDelay]="400"
+          [showDelay]="600"
+          [trigger]="'hover'"
+          [height]="25"
+        >
+          <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
+        </jqxTooltip>
+      </div>
     </div>
   </div>
-
-</jqxPanel>
+</jqxExpander>
 
 <jqxExpander
   height="100%"
