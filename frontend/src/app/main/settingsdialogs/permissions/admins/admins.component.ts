@@ -26,6 +26,7 @@ export class AdminsComponent implements AfterViewInit {
     };
 
   dataAdapter = new jqx.dataAdapter(this.source);
+  counter = 0;
   columns: any[] =
     [
       {
@@ -34,17 +35,38 @@ export class AdminsComponent implements AfterViewInit {
         align: 'center'
       },
       {
-        text: ' ',
+        text: 'Remove',
+        align: 'center',
+        width: 70,
         sortable: false,
         editable: false,
-        showeverpresentrow: false,
-        columntype: 'button',
-        cellsrenderer: (): string => {
-          return 'Delete';
+        createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
+          let container = document.createElement('div');
+          let id = `adminsButton${this.counter}`;
+          container.id = id;
+          container.style.border = 'none';
+          htmlElement.appendChild(container);
+
+          let options = {
+            width: '100%',
+            height: 27,
+            template: 'default',
+            imgSrc: './nexl/site/images/delete.png',
+            imgWidth: 16,
+            imgHeight: 16,
+            imgPosition: 'center',
+            textPosition: 'center'
+          };
+
+          let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+
+          deleteButton.addEventHandler('click', (): void => {
+            this.adminsGrid.deleterow(row.bounddata.uid);
+          });
+
+          this.counter++;
         },
-        buttonclick: (row: number): void => {
-          const rowdata = this.adminsGrid.getrowdata(row);
-          this.adminsGrid.deleterow(rowdata.uid);
+        initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
         }
       }
     ];

@@ -25,40 +25,63 @@ export class AssignPermissionsComponent implements AfterViewInit {
     };
 
   dataAdapter = new jqx.dataAdapter(this.source);
+  counter = 0;
+
   columns: any[] =
     [
       {
         text: 'User',
         datafield: 'user',
         align: 'center',
-        width: 100
+        width: 109
       },
       {
-        text: 'Read sources',
+        text: 'Read JS files',
         datafield: 'read',
         columntype: 'checkbox',
         align: 'center',
-        width: 100
+        width: 125
       },
       {
-        text: 'Write sources',
+        text: 'Write JS files',
         datafield: 'write',
         columntype: 'checkbox',
         align: 'center',
-        width: 100
+        width: 125
       },
       {
-        text: ' ',
+        text: 'Remove',
+        align: 'center',
+        width: 70,
         sortable: false,
         editable: false,
-        showeverpresentrow: false,
-        columntype: 'button',
-        cellsrenderer: (): string => {
-          return 'Delete';
+        createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
+          let container = document.createElement('div');
+          let id = `assignPermissionsRemoveButton${this.counter}`;
+          container.id = id;
+          container.style.border = 'none';
+          htmlElement.appendChild(container);
+
+          let options = {
+            width: '100%',
+            height: 27,
+            template: 'default',
+            imgSrc: './nexl/site/images/delete.png',
+            imgWidth: 16,
+            imgHeight: 16,
+            imgPosition: 'center',
+            textPosition: 'center'
+          };
+
+          let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+
+          deleteButton.addEventHandler('click', (): void => {
+            this.assignPermissions.deleterow(row.bounddata.uid);
+          });
+
+          this.counter++;
         },
-        buttonclick: (row: number): void => {
-          const rowdata = this.assignPermissions.getrowdata(row);
-          this.assignPermissions.deleterow(rowdata.uid);
+        initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
         }
       }
     ];

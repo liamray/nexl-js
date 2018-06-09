@@ -59,7 +59,7 @@ export class ArgsComponent implements OnInit, AfterViewInit {
         height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
-          let id = `myButton${this.counter}`;
+          let id = `argsEnableDisableButton${this.counter}`;
           container.id = id;
           container.style.border = 'none';
           htmlElement.appendChild(container);
@@ -97,7 +97,7 @@ export class ArgsComponent implements OnInit, AfterViewInit {
         editable: false,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
-          let id = `myButton${this.counter}`;
+          let id = `argsRemoveButton${this.counter}`;
           container.id = id;
           container.style.border = 'none';
           htmlElement.appendChild(container);
