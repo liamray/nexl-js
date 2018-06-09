@@ -390,7 +390,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
     const opts = {
       title: 'Information',
-      label: 'Please note this JavaScript file is not saved. You can get different result until you save it',
+      label: `Please note the [${this.relativePath}] JavaScript file is not saved. You can get different result until you save it`,
       checkBoxText: 'Don\'t show this message again',
       callback: (dontShowAgain: boolean) => {
         window.open(this.urlEncoded);
