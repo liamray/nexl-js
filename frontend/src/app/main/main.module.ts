@@ -59,6 +59,7 @@ import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.compo
 import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
 import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
+import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 
 
 @NgModule({
@@ -83,6 +84,7 @@ import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
     jqxPasswordInputComponent,
     jqxNotificationComponent,
     jqxPanelComponent,
+    jqxToggleButtonComponent,
 
     HeaderComponent,
     NexlLogoComponent,

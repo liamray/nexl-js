@@ -8,6 +8,8 @@ export const APPEARANCE = 'nexl.ui.appearance';
 
 export const SHOW_SPLASH_SCREEN = 'nexl.ui.show-splash-screen';
 
+export const PRETTIFY_BUTTON_STATE = 'nexl.ui.prettify-button-state';
+
 export class LocalStorageService {
   static storeRaw(key, val) {
     localStorage.setItem(key, val);

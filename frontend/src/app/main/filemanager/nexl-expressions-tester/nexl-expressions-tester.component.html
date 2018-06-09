@@ -123,8 +123,16 @@
   #outputArea
 >
 
-  <div>Output</div>
-
+  <div>
+    Output |
+    <jqxToggleButton
+      #prettifyButton
+      (onClick)="onPrettify()"
+      [toggled]="true"
+    >
+      Prettify
+    </jqxToggleButton>
+  </div>
   <div>
     <textarea readonly class="output-textarea">{{output}}</textarea>
   </div>

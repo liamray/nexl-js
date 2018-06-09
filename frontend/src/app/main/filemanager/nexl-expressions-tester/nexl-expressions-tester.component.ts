@@ -9,8 +9,12 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import * as $ from 'jquery';
-import {LocalStorageService, OPEN_URL_WARNING_MESSAGE} from "../../services/localstorage.service";
+import {
+  LocalStorageService, OPEN_URL_WARNING_MESSAGE,
+  PRETTIFY_BUTTON_STATE
+} from "../../services/localstorage.service";
 import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip";
+import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -72,6 +76,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('template') template: ElementRef;
 
   @ViewChild('urlTooltip') urlTooltip: jqxTooltipComponent;
+
+  @ViewChild('prettifyButton') prettifyButton: jqxToggleButtonComponent;
 
   urlTemplate: string = URL_TEMPLATE;
 
@@ -377,6 +383,11 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // loading state of prettify button
+    const prettifyButtonState: any = LocalStorageService.loadRaw(PRETTIFY_BUTTON_STATE) || false;
+    const isToggled = prettifyButtonState.toString() === false.toString();
+    this.prettifyButton.toggled(isToggled);
+
     this.nexlExpression.elementRef.nativeElement.addEventListener('keyup',
       () => {
         this.updateUrl();
@@ -406,5 +417,13 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
     this.globalComponentsService.messageBox.open(opts);
     return false;
+  }
+
+  onPrettify() {
+    const isToggled = this.prettifyButton.toggled();
+    LocalStorageService.storeRaw(PRETTIFY_BUTTON_STATE, isToggled);
+    if (isToggled) {
+
+    }
   }
 }
