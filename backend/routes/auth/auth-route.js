@@ -11,7 +11,7 @@ router.post('/change-password', function (req, res) {
 	logger.log.debug('Changing password for [%s] user', loggedInUsername);
 
 	Promise.resolve().then(() => {
-		if (loggedInUsername === utils.UNAUTHORIZED_USERNAME) {
+		if (loggedInUsername === utils.GUEST_USER) {
 			logger.log.error('You must be logged in to change your password');
 			return Promise.reject('Not logged in');
 		}
@@ -62,7 +62,7 @@ router.post('/generate-token', function (req, res) {
 router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	security.status(username).then((status) => {
-		status['isLoggedIn'] = username !== utils.UNAUTHORIZED_USERNAME;
+		status['isLoggedIn'] = username !== utils.GUEST_USER;
 		status['username'] = username;
 		res.send(status);
 	}).catch((err) => {

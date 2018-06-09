@@ -7,9 +7,9 @@ const path = require('path');
 // is a password to encrypt/decrypt tokens
 const SECRET = uuidv4();
 
-const UNAUTHORIZED_USERNAME = 'unauthorized';
-const AUTHORIZED_USERNAME = 'authorized';
-const ADMIN_USERNAME = 'admin';
+const GUEST_USER = 'guest';
+const LOGGED_IN_USER = 'loggedin';
+const ADMIN_USER = 'admin';
 
 function encrypt(username) {
 	return jwt.encode(username, SECRET);
@@ -25,7 +25,7 @@ function getLoggedInUsername(req) {
 	try {
 		username = jwt.decode(token, SECRET);
 	} catch (e) {
-		return UNAUTHORIZED_USERNAME;
+		return GUEST_USER;
 	}
 
 	return username;
@@ -77,9 +77,9 @@ function isFilePathValid(relativePath) {
 
 
 // --------------------------------------------------------------------------------
-module.exports.UNAUTHORIZED_USERNAME = UNAUTHORIZED_USERNAME;
-module.exports.AUTHORIZED_USERNAME = AUTHORIZED_USERNAME;
-module.exports.ADMIN_USERNAME = ADMIN_USERNAME;
+module.exports.GUEST_USER = GUEST_USER;
+module.exports.LOGGED_IN_USER = LOGGED_IN_USER;
+module.exports.ADMIN_USER = ADMIN_USER;
 
 module.exports.generateRandomBytes = generateRandomBytes;
 module.exports.getLoggedInUsername = getLoggedInUsername;

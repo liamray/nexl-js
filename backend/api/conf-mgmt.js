@@ -430,9 +430,9 @@ function initTokens() {
 	return isConfFileExists(CONF_FILES.TOKENS).then(
 		(isExists) => {
 			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-				logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-				return security.generateTokenAndSave(utils.ADMIN_USERNAME);
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+				logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+				return security.generateTokenAndSave(utils.ADMIN_USER);
 			}
 		}
 	)
@@ -444,9 +444,9 @@ function initPermissions() {
 	return isConfFileExists(CONF_FILES.PERMISSIONS).then(
 		(isExists) => {
 			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.UNAUTHORIZED_USERNAME);
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER);
 				const permission = {};
-				permission[utils.UNAUTHORIZED_USERNAME] = {
+				permission[utils.GUEST_USER] = {
 					read: true,
 					write: true
 				};
@@ -469,8 +469,8 @@ function initAdmins() {
 	return isConfFileExists(CONF_FILES.ADMINS).then(
 		(isExists) => {
 			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USERNAME);
-				const admins = [utils.ADMIN_USERNAME];
+				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USER);
+				const admins = [utils.ADMIN_USER];
 				return save(admins, CONF_FILES.ADMINS);
 			}
 		}
