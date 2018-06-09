@@ -10,6 +10,7 @@ import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import * as $ from 'jquery';
 import {LocalStorageService, OPEN_URL_WARNING_MESSAGE} from "../../services/localstorage.service";
+import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip";
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -69,6 +70,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   @ViewChild('argsWindow') argsWindow: ArgsComponent;
   @ViewChild('template') template: ElementRef;
+
+  @ViewChild('urlTooltip') urlTooltip: jqxTooltipComponent;
 
   urlTemplate: string = URL_TEMPLATE;
 
@@ -256,8 +259,11 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     if (this.isDisabled()) {
       this.url = '';
       this.urlEncoded = '';
+      this.urlTooltip.disabled(true);
       return;
     }
+
+    this.urlTooltip.disabled(false);
 
     const rootUrl = environment.rootUrl;
     const relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
