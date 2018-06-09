@@ -36,18 +36,6 @@
         <jqxButton [height]='32'
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
-                   [textPosition]='"center"'
-                   [auto-create]="false"
-                   (click)="save()"
-                   [imgSrc]='"./nexl/site/images/save.png"'
-                   #saveButton>
-          Save
-        </jqxButton>
-      </div>
-      <div class="button">
-        <jqxButton [height]='32'
-                   [width]="94"
-                   [textImageRelation]='"imageBeforeText"'
                    [auto-create]="false"
                    [textPosition]='"center"'
                    (click)="permissionsWindow.close()"
@@ -56,6 +44,19 @@
           Cancel
         </jqxButton>
       </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   [auto-create]="false"
+                   (click)="save()"
+                   [imgSrc]='"./nexl/site/images/save.png"'
+                   #saveButton>
+          Save
+        </jqxButton>
+      </div>
+
 
     </div>
 

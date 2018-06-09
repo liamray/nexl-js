@@ -402,18 +402,6 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="save()"
-                   [auto-create]="false"
-                   [imgSrc]='"./nexl/site/images/save.png"'
-                   #saveButton>
-          Save
-        </jqxButton>
-      </div>
-      <div class="button">
-        <jqxButton [height]='32'
-                   [width]="94"
-                   [textImageRelation]='"imageBeforeText"'
-                   [textPosition]='"center"'
                    (click)="settingsWindow.close()"
                    [imgSrc]='"./nexl/site/images/close.png"'
                    [auto-create]="false"
@@ -421,6 +409,19 @@
           Cancel
         </jqxButton>
       </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="save()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/images/save.png"'
+                   #saveButton>
+          Save
+        </jqxButton>
+      </div>
+
 
     </div>
 

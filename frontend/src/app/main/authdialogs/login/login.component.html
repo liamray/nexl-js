@@ -54,12 +54,11 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/login.png"'
-              [disabled]="username === '' || password === ''"
+              [imgSrc]='"./nexl/site/images/close.png"'
               [auto-create]="false"
-              (click)="login()"
-              #loginButton>
-              Login
+              (click)="loginWindow.close()"
+              #cancelButton>
+              Cancel
             </jqxButton>
           </div>
           <div class="button">
@@ -68,11 +67,12 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/close.png"'
+              [imgSrc]='"./nexl/site/images/login.png"'
+              [disabled]="username === '' || password === ''"
               [auto-create]="false"
-              (click)="loginWindow.close()"
-              #cancelButton>
-              Cancel
+              (click)="login()"
+              #loginButton>
+              Login
             </jqxButton>
           </div>
 

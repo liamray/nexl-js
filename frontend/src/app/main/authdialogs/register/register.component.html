@@ -87,12 +87,11 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/register.png"'
-              [disabled]="username === '' || password === '' || token === '' || password !== confirmPassword"
+              [imgSrc]='"./nexl/site/images/close.png"'
               [auto-create]="false"
-              (click)="register()"
-              #registerButton>
-              Register
+              (click)="registerWindow.close()"
+              #cancelButton>
+              Cancel
             </jqxButton>
           </div>
           <div class="button">
@@ -101,11 +100,12 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/close.png"'
+              [imgSrc]='"./nexl/site/images/register.png"'
+              [disabled]="username === '' || password === '' || token === '' || password !== confirmPassword"
               [auto-create]="false"
-              (click)="registerWindow.close()"
-              #cancelButton>
-              Cancel
+              (click)="register()"
+              #registerButton>
+              Register
             </jqxButton>
           </div>
 
