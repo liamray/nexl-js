@@ -38,7 +38,7 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="isValueSet = true ; window.close();"
+                   (click)="onOk()"
                    [auto-create]="false"
                    [disabled]="input.val().length < 1"
                    [imgSrc]='"./nexl/site/images/ok.png"'

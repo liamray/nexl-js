@@ -9,6 +9,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import * as $ from 'jquery';
+import {LocalStorageService, OPEN_URL_WARNING_MESSAGE} from "../../services/localstorage.service";
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -44,6 +45,7 @@ const URL_TEMPLATE = `
     <div id="tooltipEmptyExpressionExplanation" style="padding-top: 15px;">
         <img src='./nexl/site/images/tip.png' style="position: relative; top: 2px;"/>
         Please note empty nexl expression is evaluated to undefined value.<br/>
+        <img src='./nexl/site/images/tip.png' style="position: relative; top: 2px;"/>
         You can specify automatically executed nexl expression in your JavaScript file in the following way :<br/>
         <span style="padding-top: 5px; padding-left: 150px; font-weight: bold;">nexl.defaultExpression = '\${myExpression...}';</span>  
     </div>
@@ -77,6 +79,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   tabsCount = 0;
   currentArgs: any = {};
   relativePath: string = '';
+
+  tabsInfo: any = {};
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -117,7 +121,21 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
         }
         return;
       }
+
+      case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
+        this.tabContentChanged(msg.data);
+        return;
+      }
+
+      case MESSAGE_TYPE.TAB_CLOSED: {
+        delete this.tabsInfo[msg.data];
+        return;
+      }
     }
+  }
+
+  tabContentChanged(tabInfo: any) {
+    this.tabsInfo[tabInfo.relativePath] = tabInfo.isChanged;
   }
 
   tabSelected(relativePath: string) {
@@ -360,7 +378,27 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   onUrlClick() {
-    window.open(this.urlEncoded);
+    if (this.tabsInfo[this.relativePath] !== true) {
+      window.open(this.urlEncoded);
+      return false;
+    }
+
+    if (LocalStorageService.loadRaw(OPEN_URL_WARNING_MESSAGE) === false.toString()) {
+      window.open(this.urlEncoded);
+      return false;
+    }
+
+    const opts = {
+      title: 'Information',
+      label: 'Please note this JavaScript file is not saved. You can get different result until you save it',
+      checkBoxText: 'Don\'t show this message again',
+      callback: (dontShowAgain: boolean) => {
+        window.open(this.urlEncoded);
+        LocalStorageService.storeRaw(OPEN_URL_WARNING_MESSAGE, !dontShowAgain);
+      }
+    };
+
+    this.globalComponentsService.messageBox.open(opts);
     return false;
   }
 }

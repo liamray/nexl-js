@@ -48,8 +48,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.REMOVE_FILE_FROM_TREE: {
-        this.removeFileFromTree(message.data);
+      case MESSAGE_TYPE.TAB_CLOSED: {
+        this.tabClosed(message.data);
         return;
       }
 
@@ -76,9 +76,10 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.insertFileItem(item, EXAMPLES_JS);
   }
 
-  removeFileFromTree(relativePath: string) {
+  tabClosed(relativePath: string) {
     let item = this.findItemByRelativePath(relativePath);
-    if (item !== undefined) {
+    // removing new files
+    if (item !== undefined && item.value.isNewFile === true) {
       this.tree.removeItem(item);
     }
   }

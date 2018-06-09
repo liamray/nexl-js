@@ -4,7 +4,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
-import {LocalStorageService, SAVE_NEXL_SOURCE_CONFIRM} from "../../services/localstorage.service";
+import {LocalStorageService, SAVE_JS_FILE_CONFIRM} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 
@@ -268,7 +268,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       relativePath = this.resolveTabAttr(tabNr, RELATIVE_PATH);
     }
 
-    if (LocalStorageService.loadRaw(SAVE_NEXL_SOURCE_CONFIRM) === false.toString()) {
+    if (LocalStorageService.loadRaw(SAVE_JS_FILE_CONFIRM) === false.toString()) {
       this.saveNexlSourceInner(relativePath);
       return;
     }
@@ -279,7 +279,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       label: 'Please note you can test your changes without saving the file. If you save this file it will immediately affect all REST requests related to the file. Are you sure you want to save ?',
       checkBoxText: 'Don\'t show it again',
       callback: (callbackData: any) => {
-        LocalStorageService.storeRaw(SAVE_NEXL_SOURCE_CONFIRM, !callbackData.checkBoxVal);
+        LocalStorageService.storeRaw(SAVE_JS_FILE_CONFIRM, !callbackData.checkBoxVal);
         if (callbackData.isConfirmed === true) {
           this.saveNexlSourceInner(relativePath);
         }
@@ -474,17 +474,15 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   closeTabInnerInner(idSeqNr: number) {
     const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
 
-    // new file means is the file was created but hasn't ever saved. In this case it must be removed from the tree
-    if (this.isNewFile(idSeqNr)) {
-      this.messageService.sendMessage(MESSAGE_TYPE.REMOVE_FILE_FROM_TREE, relativePath);
-    }
-
     // destroying tooltip
     jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
     // destroying ace
     ace.edit(TAB_CONTENT + idSeqNr).destroy();
     // removing tab
     this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
+
+    // notifying
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CLOSED, relativePath);
   }
 
   closeTab(event: any) {

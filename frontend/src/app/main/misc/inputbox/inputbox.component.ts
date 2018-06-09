@@ -58,4 +58,13 @@ export class InputBoxComponent implements OnInit {
     this.okButton.createComponent();
     this.cancelButton.createComponent();
   };
+
+  onOk() {
+    if (this.input.val() === '') {
+      return;
+    }
+
+    this.isValueSet = true;
+    this.window.close();
+  }
 }

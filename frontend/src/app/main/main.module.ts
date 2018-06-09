@@ -58,6 +58,7 @@ import {ArgsComponent} from './filemanager/nexl-expressions-tester/args/args.com
 import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
 import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
+import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 
 
 @NgModule({
@@ -106,6 +107,7 @@ import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel
     RegisterComponent,
     NotificationComponent,
     InputBoxComponent,
+    MessageBoxComponent,
     ConfirmBoxComponent,
     ArgsComponent
   ],
