@@ -54,6 +54,10 @@ export class GenerateTokenComponent {
   }
 
   generateToken() {
+    if (this.usernameRef.val() === '') {
+      return;
+    }
+
     // opening indicator
     this.globalComponentsService.loader.open();
 

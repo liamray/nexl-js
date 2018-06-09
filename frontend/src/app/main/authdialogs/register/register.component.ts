@@ -82,6 +82,10 @@ export class RegisterComponent {
   }
 
   register() {
+    if (this.registerButton.disabled()) {
+      return;
+    }
+
     this.globalComponentsService.loader.open();
 
     this.authService.register(this.username, this.password, this.token)

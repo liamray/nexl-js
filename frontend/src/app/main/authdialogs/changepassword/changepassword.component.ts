@@ -75,6 +75,10 @@ export class ChangePasswordComponent {
   }
 
   changePassword() {
+    if (this.okButton.disabled()) {
+      return;
+    }
+
     this.globalComponentsService.loader.open();
 
     this.authService.changePassword(this.currentPassword, this.newPassword)

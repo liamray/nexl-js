@@ -72,6 +72,10 @@ export class LoginComponent {
   }
 
   login() {
+    if (this.loginButton.disabled()) {
+      return;
+    }
+
     this.globalComponentsService.loader.open();
 
     this.authService.login(this.username, this.password)

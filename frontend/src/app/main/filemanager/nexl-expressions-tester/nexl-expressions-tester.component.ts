@@ -136,7 +136,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
 
   eval() {
-    // todo : remove after jqx fix
     if (this.isDisabled()) {
       return;
     }
@@ -190,7 +189,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   assemble() {
-    // todo : remove after jqx fix
     if (this.isDisabled()) {
       return;
     }
@@ -198,7 +196,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   args() {
-    // todo : remove after jqx fix
     if (this.isDisabled()) {
       return;
     }
