@@ -6,6 +6,8 @@ export const SPLITTERS = 'nexl.ui.splitters';
 export const ARGS_WINDOW = 'nexl.ui.args-window';
 export const APPEARANCE = 'nexl.ui.appearance';
 
+export const SHOW_SPLASH_SCREEN = 'nexl.ui.show-splash-screen';
+
 export class LocalStorageService {
   static storeRaw(key, val) {
     localStorage.setItem(key, val);

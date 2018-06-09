@@ -1,14 +1,30 @@
 <jqxWindow
   #splash
-  [autoOpen]="true"
+  [autoOpen]="isShowSplashScreen"
   [isModal]="true"
   [resizable]="false"
   [showCloseButton]="false"
   [title]="' '"
-  [width]="600"
-  [height]="400">
+  [width]="500"
+  [height]="250"
+
+>
 
   <div style="overflow: hidden;text-align: center" #windowContent>
-    <div style="margin-top: 160px;">Welcome to nexl-js !!!</div>
+
+    <div style="position: relative; top: 57px;">
+      <img src="./nexl/site/images/nexl-logo.png">
+    </div>
+
+    <div style="position: relative; top: 115px;">
+      <jqxCheckBox
+        [boxSize]="'10px;'"
+        (onChecked)="onChecked()"
+        #checkBox
+      >
+        <span style="font-size: 8px;position: relative; top: -3px;">Don't show splash screen again</span>
+      </jqxCheckBox>
+    </div>
   </div>
+
 </jqxWindow>
