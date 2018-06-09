@@ -45,7 +45,8 @@ export class MainMenuComponent implements AfterViewInit {
 
     this.mainMenu.disable('main-menu-arguments', this.tabsCount < 1 || !this.hasReadPermission);
     this.mainMenu.disable('main-menu-evaluate', this.tabsCount < 1 || !this.hasReadPermission);
-    this.mainMenu.disable('main-menu-wizard', this.tabsCount < 1 || !this.hasReadPermission);
+
+    this.mainMenu.disable('main-menu-wizard', true);
   }
 
   ngAfterViewInit(): void {

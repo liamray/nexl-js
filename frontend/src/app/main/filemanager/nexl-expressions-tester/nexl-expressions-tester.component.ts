@@ -248,7 +248,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.nexlExpression.disabled(isDisabled);
     this.evalButton.disabled(isDisabled);
     this.argsButton.disabled(isDisabled);
-    this.assembleButton.disabled(isDisabled);
+
+    this.assembleButton.disabled(true);
+
     this.updateUrl();
   }
 
