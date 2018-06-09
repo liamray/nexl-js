@@ -19,7 +19,7 @@ export class AppearanceComponent {
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   @ViewChild('fontSize') fontSize: jqxInputComponent;
-  @ViewChild('theme') theme: jqxDropDownListComponent;
+  // @ViewChild('theme') theme: jqxDropDownListComponent;
   @ViewChild('notificationMessageDelay') notificationMessageDelay: jqxInputComponent;
 
   isSaving = false;
@@ -62,7 +62,7 @@ export class AppearanceComponent {
 
   open() {
     this.appearanceData = AppearanceService.load();
-    this.theme.val(this.appearanceData['theme']);
+    // this.theme.val(this.appearanceData['theme']);
     this.isSaving = false;
     this.appearanceWindow.open();
   }
