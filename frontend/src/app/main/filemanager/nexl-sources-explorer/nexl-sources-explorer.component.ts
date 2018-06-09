@@ -181,6 +181,13 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     if (status.hasWritePermission !== this.hasWritePermission) {
       this.writePermissionChanged(status);
     }
+
+    // lock icon the title
+    if (this.hasReadPermission === true && this.hasWritePermission !== true) {
+      $('#jsFilesLockIcon').css('display', '');
+    } else {
+      $('#jsFilesLockIcon').css('display', 'none');
+    }
   }
 
   refreshTreeSource() {
