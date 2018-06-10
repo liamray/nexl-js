@@ -14,6 +14,7 @@ const TITLE_TOOLTIP = 'tabs-title-tooltip-';
 const TITLE_TEXT = 'tabs-title-text-';
 const TITLE_MODIFICATION_ICON = 'tabs-title-modification-icon-';
 const TITLE_CLOSE_ICON = 'tabs-title-close-icon-';
+const TITLE_READ_ONLY_ICON = 'tabs-title-lock-icon-';
 const ATTR_IS_NEW_FILE = 'is-new-file';
 const ID_SEQ_NR = 'id-seq-nr';
 const RELATIVE_PATH = 'relative-path';
@@ -350,10 +351,21 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
   }
 
+  getAceTheme() {
+    return this.hasWritePermission ? 'ace/theme/xcode' : 'ace/theme/xcode';
+  }
+
   writePermissionChanged() {
     for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
       const id = this.resolveTabAttr(index, 'id');
+      let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
+
+      // updating ace editor
       ace.edit(id).setReadOnly(!this.hasWritePermission);
+      ace.edit(id).setTheme(this.getAceTheme());
+
+      // read only icon
+      $('#' + TITLE_READ_ONLY_ICON + idSeqNr).css('display', this.hasWritePermission ? 'none' : 'inline-block');
     }
   }
 
@@ -438,10 +450,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     );
   }
 
-  makeId(data: any, prefix: string) {
-    return prefix + data.idSeqNr;
-  }
-
   ngAfterViewInit(): void {
     this.loadUISettings();
     this.nexlSourcesTabs.scrollPosition('both');
@@ -450,19 +458,21 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   makeTitle(data: any) {
-    const modified = '<span style="color:red;display: none;" id="' + this.makeId(data, TITLE_MODIFICATION_ICON) + '">*&nbsp;</span>';
-    const theTitle = '<span style="position:relative; top: -2px;" id="' + this.makeId(data, TITLE_TEXT) + '">' + data.label + '</span>';
-    const closeIcon = '<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/images/close-tab.png" id="' + this.makeId(data, TITLE_CLOSE_ICON) + '"/>';
+    const modified = `<span style="color:red;display: none;" id="${TITLE_MODIFICATION_ICON}${data.idSeqNr}">*&nbsp;</span>`;
+    const theTitle = `<span style="position:relative; top: -2px;" id="${TITLE_TEXT}${data.idSeqNr}">${data.label}</span>`;
+    const readOnlyIconDisplay = this.hasWritePermission ? 'none' : 'inline-block';
+    const readOnlyIcon = `<img style="position:relative; top: 1px; margin-right: 3px;display:${readOnlyIconDisplay}" src="./nexl/site/images/lock.png" id="${TITLE_READ_ONLY_ICON}${data.idSeqNr}"/>`;
+    const closeIcon = `<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/images/close-tab.png" id="${TITLE_CLOSE_ICON}${data.idSeqNr}"/>`;
     const attrs = {
-      id: this.makeId(data, TITLE_ID)
+      id: `${TITLE_ID}${data.idSeqNr}`
     };
     attrs[ID_SEQ_NR] = data.idSeqNr;
-    return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + theTitle + closeIcon + '</span>';
+    return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + readOnlyIcon + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
     const attrs = {
-      id: this.makeId(data, TAB_CONTENT)
+      id: `${TAB_CONTENT}${data.idSeqNr}`
     };
 
     attrs[ID_SEQ_NR] = data.idSeqNr;
@@ -520,13 +530,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   bindTitle(data: any) {
     // binding close action
-    $('#' + this.makeId(data, TITLE_CLOSE_ICON)).click((event) => {
+    $(`#${TITLE_CLOSE_ICON}${data.idSeqNr}`).click((event) => {
       this.closeTab(event);
     });
 
     // binding tooltip
-    jqwidgets.createInstance($('#' + this.makeId(data, TITLE_ID)), 'jqxTooltip', {
-      content: '<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="' + this.makeId(data, TITLE_TOOLTIP) + '">' + data.relativePath + '</span>]',
+    jqwidgets.createInstance($(`#${TITLE_ID}${data.idSeqNr}`), 'jqxTooltip', {
+      content: `<div style="height: 8px;"></div>Path : [<span style="cursor: pointer; text-decoration: underline" id="${TITLE_TOOLTIP}${data.idSeqNr}">${data.relativePath}</span>]`,
       position: 'mouse',
       closeOnClick: false,
       autoHide: false,
@@ -538,20 +548,20 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
 
     // binding click on tool tip
-    $('#' + this.makeId(data, TITLE_TOOLTIP)).click(
+    $(`#${TITLE_TOOLTIP}${data.idSeqNr}`).click(
       () => {
         this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
       });
   }
 
   bindBody(data: any) {
-    const aceEditor = ace.edit(this.makeId(data, TAB_CONTENT));
+    const aceEditor = ace.edit(`${TAB_CONTENT}${data.idSeqNr}`);
 
     aceEditor.setOptions({
       fontSize: this.fontSize + 'pt',
       autoScrollEditorIntoView: true,
-      theme: "ace/theme/xcode",
-      mode: "ace/mode/javascript",
+      theme: this.getAceTheme(),
+      mode: 'ace/mode/javascript',
       readOnly: !this.hasWritePermission
     });
 

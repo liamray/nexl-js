@@ -40,22 +40,33 @@
       </div>
 
       <div class="nexl-expression-buttons" style="margin-left:4px;">
-        <jqxButton
-          #evalButton
-          [width]='60'
-          [height]='27'
-          class="nexl-expression-buttons"
-          [imgSrc]='"./nexl/site/images/eval.png"'
-          (onClick)="eval()"
-          [disabled]="true"
+        <jqxTooltip
+          [position]="'bottom-left'"
+          [content]="'<p style=\'text-align: left;\'>Evaluate nexl expression</p>'"
+          [closeOnClick]="false"
+          [autoHide]="true"
+          [autoHideDelay]="99999"
+          [animationShowDelay]="400"
+          [showDelay]="600"
+          [trigger]="hover"
         >
-        </jqxButton>
+          <jqxButton
+            #evalButton
+            [width]='60'
+            [height]='27'
+            class="nexl-expression-buttons"
+            [imgSrc]='"./nexl/site/images/eval.png"'
+            (onClick)="eval()"
+            [disabled]="true"
+          >
+          </jqxButton>
+        </jqxTooltip>
       </div>
 
       <div class="nexl-expression-buttons">
         <jqxTooltip
-          [position]="'left'"
-          [content]="'<p style=\'text-align: left;\'>...</p>'"
+          [position]="'bottom-left'"
+          [content]="'<p style=\'text-align: left;\'>Arguments</p>'"
           [closeOnClick]="false"
           [autoHide]="true"
           [autoHideDelay]="99999"
@@ -77,16 +88,27 @@
       </div>
 
       <div class="nexl-expression-buttons">
-        <jqxButton
-          #assembleButton
-          [width]='27'
-          [height]='27'
-          class="nexl-expression-buttons"
-          [imgSrc]='"./nexl/site/images/assemble.png"'
-          (onClick)="assemble()"
-          [disabled]="true"
+        <jqxTooltip
+          [position]="'bottom-left'"
+          [content]="'<p style=\'text-align: left;\'>nexl expressions wizard</p>'"
+          [closeOnClick]="false"
+          [autoHide]="true"
+          [autoHideDelay]="99999"
+          [animationShowDelay]="400"
+          [showDelay]="600"
+          [trigger]="hover"
         >
-        </jqxButton>
+          <jqxButton
+            #assembleButton
+            [width]='27'
+            [height]='27'
+            class="nexl-expression-buttons"
+            [imgSrc]='"./nexl/site/images/assemble.png"'
+            (onClick)="assemble()"
+            [disabled]="true"
+          >
+          </jqxButton>
+        </jqxTooltip>
       </div>
 
     </div>
