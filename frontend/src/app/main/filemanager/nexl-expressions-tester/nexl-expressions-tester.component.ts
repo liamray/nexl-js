@@ -82,6 +82,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   urlTemplate: string = URL_TEMPLATE;
 
   output: string = '';
+  originalOutput: string = '';
+  isPrettify: boolean = true; // jqxToggleButton has a certain problem with its state, so storing its state externally
+
   url: string = '';
   urlEncoded: string = '';
   hasReadPermission = false;
@@ -197,7 +200,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     // evaluating nexl expression
     this.http.post2Root(data, tabInfo.relativePath, 'text').subscribe(
       (info: any) => {
-        this.output = info.body;
+        this.originalOutput = info.body;
+        this.output = this.prettifyIfNeeded();
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Successfully evaluated nexl expression. See output');
       },
@@ -212,7 +216,18 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
         }
       }
     );
+  }
 
+  prettifyIfNeeded() {
+    if (!this.isPrettify) {
+      return this.originalOutput;
+    }
+
+    try {
+      return JSON.stringify(JSON.parse(this.originalOutput), null, 2);
+    } catch (e) {
+      return this.originalOutput;
+    }
   }
 
   assemble() {
@@ -248,8 +263,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.nexlExpression.disabled(isDisabled);
     this.evalButton.disabled(isDisabled);
     this.argsButton.disabled(isDisabled);
-
     this.assembleButton.disabled(true);
+
+    this.prettifyButton.disabled(this.isDisabled());
 
     this.updateUrl();
   }
@@ -386,9 +402,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     // loading state of prettify button
-    const prettifyButtonState: any = LocalStorageService.loadRaw(PRETTIFY_BUTTON_STATE) || false;
-    const isToggled = prettifyButtonState.toString() === false.toString();
-    this.prettifyButton.toggled(isToggled);
+    this.isPrettify = LocalStorageService.loadObj(PRETTIFY_BUTTON_STATE, true);
+    this.prettifyButton.toggled(!this.isPrettify);
 
     this.nexlExpression.elementRef.nativeElement.addEventListener('keyup',
       () => {
@@ -422,10 +437,10 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   onPrettify() {
-    const isToggled = this.prettifyButton.toggled();
-    LocalStorageService.storeRaw(PRETTIFY_BUTTON_STATE, isToggled);
-    if (isToggled) {
+    this.isPrettify = !this.isPrettify;
+    this.prettifyButton.toggled(this.isPrettify);
+    LocalStorageService.storeObj(PRETTIFY_BUTTON_STATE, this.isPrettify);
 
-    }
+    this.output = this.prettifyIfNeeded();
   }
 }

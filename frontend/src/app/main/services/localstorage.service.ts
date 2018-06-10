@@ -23,7 +23,16 @@ export class LocalStorageService {
     localStorage.setItem(key, JSON.stringify(val));
   }
 
-  static loadObj(key): any {
-    return JSON.parse(localStorage.getItem(key)) || {};
+  static loadObj(key: string, defValue?: any): any {
+    const result = JSON.parse(localStorage.getItem(key));
+    if (result !== null) {
+      return result;
+    }
+
+    if (defValue !== undefined) {
+      return defValue;
+    }
+
+    return {};
   }
 }
