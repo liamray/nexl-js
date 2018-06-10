@@ -143,7 +143,28 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
         delete this.tabsInfo[msg.data];
         return;
       }
+
+      case MESSAGE_TYPE.ITEM_MOVED: {
+        this.itemMoved(msg.data);
+        return;
+      }
     }
+  }
+
+  itemMoved(data: any) {
+    if (data.isDir === true) {
+      return;
+    }
+
+    this.relativePath = data.newRelativePath;
+
+    const item = this.tabsInfo[data.oldRelativePath];
+    if (item !== undefined) {
+      delete this.tabsInfo[data.oldRelativePath];
+      this.tabsInfo[data.newRelativePath] = item;
+    }
+
+    this.updateUrl();
   }
 
   tabContentChanged(tabInfo: any) {
