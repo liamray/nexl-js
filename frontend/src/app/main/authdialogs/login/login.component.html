@@ -6,6 +6,7 @@
            [width]="390"
            [height]="200"
            (onOpen)="onOpen()"
+           (onClose)="onClose()"
 >
 
   <div>
@@ -56,8 +57,8 @@
               [textPosition]='"center"'
               [imgSrc]='"./nexl/site/images/close.png"'
               [auto-create]="false"
-              (click)="loginWindow.close()"
-              #cancelButton>
+              #cancelButton
+            >
               Cancel
             </jqxButton>
           </div>
