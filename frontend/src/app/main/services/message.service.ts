@@ -16,7 +16,7 @@ export enum MESSAGE_TYPE {
   TAB_SELECTED,
   EVAL_NEXL_EXPRESSION,
   AUTH_CHANGED,
-  OPEN_JS_FILE,
+  LOAD_JS_FILE,
   CREATE_JS_FILE,
   SAVE_JS_FILE,
   CONTENT_AREA_RESIZED, // splitters don't produce a "resize window" broadcast message, so application need to dispatch that itself in order to ace editor adjust it's editing area ( there is also another bug when maximizing window, ace editor doesn't get a resize window message )

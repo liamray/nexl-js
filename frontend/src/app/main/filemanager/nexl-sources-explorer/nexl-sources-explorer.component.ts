@@ -733,7 +733,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_JS_FILE, {
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
       relativePath: item.value.relativePath,
       label: item.value.label
     });
