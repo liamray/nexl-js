@@ -28,8 +28,8 @@ import {MainMenuComponent} from './header/main-menu/main-menu.component';
 import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 
 import {ContentComponent} from './filemanager/content.component';
-import {NexlSourcesExplorerComponent} from './filemanager/nexl-sources-explorer/nexl-sources-explorer.component';
-import {NexlSourcesEditorComponent} from './filemanager/nexl-sources-editor/nexl-sources-editor.component';
+import {NexlSourcesExplorerComponent} from './filemanager/javascript-files-explorer/nexl-sources-explorer.component';
+import {NexlSourcesEditorComponent} from './filemanager/javascript-files-editor/nexl-sources-editor.component';
 import {NexlExpressionsTesterComponent} from './filemanager/nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {MainComponent} from "./main.component";
