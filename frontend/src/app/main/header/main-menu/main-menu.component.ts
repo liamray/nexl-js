@@ -55,7 +55,7 @@ export class MainMenuComponent implements AfterViewInit {
   }
 
   saveNexlSource() {
-    this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
+    this.messageService.sendMessage(MESSAGE_TYPE.SAVE_JS_FILE);
   }
 
   closeAllTabs() {

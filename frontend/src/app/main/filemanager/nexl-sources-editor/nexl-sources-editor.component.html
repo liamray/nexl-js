@@ -1,13 +1,15 @@
-<jqxTabs #nexlSourcesTabs style="float: left;"
-         width="100%"
-         height="100%"
-         [enabledHover]="true"
-         [showCloseButtons]="false"
-         [position]="'top'"
-         [reorder]="false"
-         (onSelected)="onTabSelect($event)"
-         (onAdded)="sendTabsCountMsg()"
-         (onRemoved)="sendTabsCountMsg()"
+<jqxTabs
+  #tabs
+  style="float: left;"
+  width="100%"
+  height="100%"
+  [enabledHover]="true"
+  [showCloseButtons]="false"
+  [position]="'top'"
+  [reorder]="false"
+  (onSelected)="onTabSelect($event)"
+  (onAdded)="sendTabsCountMsg()"
+  (onRemoved)="sendTabsCountMsg()"
 >
   <ul style="margin-left: 30px;" #unorderedList>
     <li></li>

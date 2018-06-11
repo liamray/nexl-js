@@ -4,7 +4,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
-import {LocalStorageService, SAVE_JS_FILE_CONFIRM} from "../../services/localstorage.service";
+import {LocalStorageService, SAVE_JS_FILE_CONFIRM, TABS} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 
@@ -27,7 +27,7 @@ const TRUE = true.toString();
   styleUrls: ['./nexl-sources-editor.component.css'],
 })
 export class NexlSourcesEditorComponent implements AfterViewInit {
-  @ViewChild('nexlSourcesTabs') nexlSourcesTabs: jqxTabsComponent;
+  @ViewChild('tabs') tabs: jqxTabsComponent;
 
   idSeqNr = 0;
   hasReadPermission = false;
@@ -56,8 +56,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.LOAD_NEXL_SOURCE: {
-        this.loadNexlSource(message.data);
+      case MESSAGE_TYPE.OPEN_JS_FILE: {
+        this.openJSFile(message.data);
         return;
       }
 
@@ -71,8 +71,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.SAVE_NEXL_SOURCE: {
-        this.saveNexlSource(message.data);
+      case MESSAGE_TYPE.SAVE_JS_FILE: {
+        this.saveJSFile(message.data);
         return;
       }
 
@@ -81,7 +81,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.CREATE_NEXL_SOURCE: {
+      case MESSAGE_TYPE.CREATE_JS_FILE: {
         this.createNexlSource(message.data);
         return;
       }
@@ -110,7 +110,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   updateUI() {
     this.loadUISettings();
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+    for (let index = 0; index < this.tabs.length(); index++) {
       const id = this.resolveTabAttr(index, 'id');
       ace.edit(id).setOptions({
         fontSize: this.fontSize + 'pt'
@@ -169,7 +169,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   sendCurrentTabInfo(shortInfo: boolean) {
-    const tabNr = this.nexlSourcesTabs.val();
+    const tabNr = this.tabs.val();
     if (tabNr < 0) {
       // sending empty data
       this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB);
@@ -205,7 +205,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // iterating over opened tabs
     const oldRelativePath = data.oldRelativePath;
 
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+    for (let index = 0; index < this.tabs.length(); index++) {
       let tabRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
       let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
 
@@ -239,7 +239,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   closeAllTabs() {
     let promise: any = Promise.resolve();
 
-    for (let tabNr = this.nexlSourcesTabs.length() - 1; tabNr >= 0; tabNr--) {
+    for (let tabNr = this.tabs.length() - 1; tabNr >= 0; tabNr--) {
       const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
       promise = promise.then(() => this.closeTabInner(idSeqNr));
     }
@@ -255,13 +255,13 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.setTabChanged(idSeqNr, isChanged);
   }
 
-  saveNexlSource(relativePath: string) {
+  saveJSFile(relativePath: string) {
     if (!this.hasWritePermission) {
       return;
     }
 
     if (relativePath === undefined) {
-      const tabNr = this.nexlSourcesTabs.val();
+      const tabNr = this.tabs.val();
       if (tabNr < 0) {
         return;
       }
@@ -321,7 +321,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // adding slash to the end
     relativePath = relativePath + UtilsService.SERVER_INFO.SLASH;
 
-    const tabsLength = this.nexlSourcesTabs.length();
+    const tabsLength = this.tabs.length();
     for (let index = tabsLength - 1; index >= 0; index--) {
       let tabsRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
 
@@ -333,7 +333,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   closeDeletedTabs4File(relativePath: string) {
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+    for (let index = 0; index < this.tabs.length(); index++) {
       let tabsRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
       if (UtilsService.isPathEqual(tabsRelativePath, relativePath)) {
         const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
@@ -356,7 +356,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   writePermissionChanged() {
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+    for (let index = 0; index < this.tabs.length(); index++) {
       const id = this.resolveTabAttr(index, 'id');
       let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
 
@@ -383,7 +383,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   resizeAce() {
     setTimeout(() => {
       // iterating over tabs
-      for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+      for (let index = 0; index < this.tabs.length(); index++) {
         const id = this.resolveTabAttr(index, 'id');
         ace.edit(id).resize();
       }
@@ -391,7 +391,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   resolveTabAttr(tabNr: number, attrName: string) {
-    return this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.getAttribute(attrName);
+    return this.tabs.getContentAt(tabNr).firstElementChild.getAttribute(attrName);
   }
 
   private setTabContentAttr(idSeqNr: string, key: string, value: string) {
@@ -403,11 +403,11 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   setTabTitleAttr(tabNr: number, attrName: string, attrValue: string) {
-    this.nexlSourcesTabs.getContentAt(tabNr).firstElementChild.setAttribute(attrName, attrValue);
+    this.tabs.getContentAt(tabNr).firstElementChild.setAttribute(attrName, attrValue);
   }
 
   resolveTabInfoByRelativePath(relativePath: string): any {
-    for (let index = 0; index < this.nexlSourcesTabs.length(); index++) {
+    for (let index = 0; index < this.tabs.length(); index++) {
       const path = this.resolveTabAttr(index, RELATIVE_PATH);
       if (UtilsService.isPathEqual(path, relativePath)) {
         return {
@@ -425,11 +425,11 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     return tabInfo === undefined ? -1 : tabInfo.index;
   }
 
-  loadNexlSource(data: any) {
+  openJSFile(data: any) {
     // is tab already opened ?
     const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
     if (tabInfo !== undefined && tabInfo.index >= 0) {
-      this.nexlSourcesTabs.val(tabInfo.index + '');
+      this.tabs.val(tabInfo.index + '');
       return;
     }
 
@@ -452,8 +452,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.loadUISettings();
-    this.nexlSourcesTabs.scrollPosition('both');
-    this.nexlSourcesTabs.removeFirst();
+    this.tabs.scrollPosition('both');
+    this.tabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
   }
 
@@ -489,7 +489,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     // destroying ace
     ace.edit(TAB_CONTENT + idSeqNr).destroy();
     // removing tab
-    this.nexlSourcesTabs.removeAt(this.resolveTabByRelativePath(relativePath));
+    this.tabs.removeAt(this.resolveTabByRelativePath(relativePath));
 
     // notifying
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CLOSED, relativePath);
@@ -579,7 +579,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
 
     const title = this.makeTitle(data);
     const body = this.makeBody(data);
-    this.nexlSourcesTabs.addLast(title, body);
+    this.tabs.addLast(title, body);
     this.sendTabsCountMsg();
 
     this.bindTitle(data);
@@ -597,7 +597,29 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   sendTabsCountMsg() {
-    this.messageService.sendMessage(MESSAGE_TYPE.TABS_COUNT_CHANGED, this.nexlSourcesTabs.length());
+    this.messageService.sendMessage(MESSAGE_TYPE.TABS_COUNT_CHANGED, this.tabs.length());
   }
 
+  saveTabs() {
+    const tabs2Save = [];
+
+    // iterating over tabs and gathering info
+    for (let index = 0; index < this.tabs.length(); index++) {
+      const tab = {};
+
+      let tabRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
+      let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
+      tab[RELATIVE_PATH] = tabRelativePath;
+      tab[ATTR_IS_NEW_FILE] = this.isNewFile(idSeqNr);
+      tab[IS_CHANGED] = this.isTabChanged(idSeqNr);
+      if (tab[IS_CHANGED]) {
+        tab['tab-content'] = this.getTabContent(idSeqNr);
+      }
+
+      tabs2Save.push(tab);
+    }
+
+    // saving in local storage
+    LocalStorageService.storeObj(TABS, tabs2Save);
+  }
 }

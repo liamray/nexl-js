@@ -513,7 +513,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
     this.insertFileItemInner(item, this.rightClickSelectedElement);
     this.updateSelectExpandItem(item);
 
-    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEXL_SOURCE, {
+    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_JS_FILE, {
       relativePath: item.value.relativePath,
       label: item.value.label,
       body: text === undefined ? '' : text
@@ -733,7 +733,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_NEXL_SOURCE, {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_JS_FILE, {
       relativePath: item.value.relativePath,
       label: item.value.label
     });

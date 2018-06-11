@@ -46,7 +46,7 @@ export class MainComponent implements OnInit {
 
         switch (key) {
           case CTRL_S: {
-            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_NEXL_SOURCE);
+            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_JS_FILE);
             event.preventDefault();
             return;
           }
