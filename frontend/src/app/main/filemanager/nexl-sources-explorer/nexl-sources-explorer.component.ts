@@ -58,7 +58,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.RELOAD_NEXL_SOURCES: {
+      case MESSAGE_TYPE.RELOAD_JS_FILES: {
         if (this.hasReadPermission) {
           this.refreshTreeSource();
         }
@@ -197,6 +197,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
+        this.messageService.sendMessage(MESSAGE_TYPE.JS_FILES_TREE_RELOADED);
       },
       (err) => {
         this.globalComponentsService.notification.openError('Failed to resolve nexl sources list\nReason : ' + err.statusText);

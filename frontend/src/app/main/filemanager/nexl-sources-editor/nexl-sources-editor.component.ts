@@ -33,6 +33,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   hasReadPermission = false;
   hasWritePermission = false;
   fontSize: string;
+  firstTimeLoad: boolean = true;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
@@ -99,7 +100,27 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         this.updateUI();
         return;
       }
+
+      case MESSAGE_TYPE.JS_FILES_TREE_RELOADED: {
+        this.jsFilesTreeReloaded();
+        return;
+      }
     }
+  }
+
+  jsFilesTreeReloaded() {
+    if (!this.firstTimeLoad) {
+      return;
+    }
+
+    this.firstTimeLoad = false;
+    // loading tabs from local storage
+    this.loadTabsFromLocalStorage();
+    // starting timer to store tabs to the local storage
+    setInterval(
+      () => {
+        this.saveTabs2LocalStorage();
+      }, 30000);
   }
 
   loadUISettings() {
@@ -466,16 +487,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.tabs.scrollPosition('both');
     this.tabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
-
-    setTimeout(
-      () => {
-        this.loadTabsFromLocalStorage();
-      }, 5000);
-
-    setInterval(
-      () => {
-        this.saveTabs2LocalStorage();
-      }, 30000);
   }
 
   makeTitle(data: any) {

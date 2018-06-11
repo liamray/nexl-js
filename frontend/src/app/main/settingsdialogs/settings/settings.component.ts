@@ -180,7 +180,7 @@ export class SettingsComponent {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Updated settings');
         if (this.nexlSourcesDirBefore !== this.settings['nexl-sources-dir']) {
-          this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_NEXL_SOURCES);
+          this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
         }
       },
       err => {
