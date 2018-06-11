@@ -22,6 +22,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
 
   hasReadPermission = false;
   hasWritePermission = false;
+  isAdmin = false;
   treeSource = [];
   rightClickSelectedElement: any;
 
@@ -174,6 +175,8 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
   }
 
   authChanged(status: any) {
+    this.isAdmin = status.isAdmin;
+
     if (status.hasReadPermission !== this.hasReadPermission) {
       this.readPermissionChanged(status);
     }
