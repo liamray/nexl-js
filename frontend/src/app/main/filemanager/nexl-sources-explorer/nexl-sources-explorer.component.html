@@ -7,9 +7,23 @@
   [disabled]="true"
 >
   <div>
-    <img src='./nexl/site/images/lock.png' title="Read only files" id="jsFilesLockIcon"
-         style="position: relative; left: 3px;"/>
-    <span style="position: relative; top: -1px; left: 4px;">JavaScript files explorer</span>
+    <jqxTooltip
+      style="float: left;"
+      #readOnlyFilesToolTip
+      [content]="'Read only files'"
+      [position]="'bottom-right'"
+      [closeOnClick]="false"
+      [autoHide]="true"
+      [autoHideDelay]="99999"
+      [animationShowDelay]="400"
+      [showDelay]="600"
+      [trigger]="'hover'"
+      [height]="25"
+    >
+      <img src='./nexl/site/images/lock.png' id="jsFilesLockIcon" style="position: relative; top: 3px; left: 3px;"/>
+    </jqxTooltip>
+
+    <div style="float: left; position: relative; top: 3px; left: 7px;">JavaScript files explorer</div>
   </div>
   <div style="overflow: hidden;">
     <jqxTree
