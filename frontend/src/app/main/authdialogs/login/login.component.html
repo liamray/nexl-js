@@ -58,6 +58,7 @@
               [imgSrc]='"./nexl/site/images/close.png"'
               [auto-create]="false"
               #cancelButton
+              (onClick)="this.loginWindow.close();"
             >
               Cancel
             </jqxButton>
