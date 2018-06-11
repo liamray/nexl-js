@@ -10,11 +10,11 @@ import {UtilsService} from "../../services/utils.service";
 import {EXAMPLES_FILE_NAME, EXAMPLES_JS} from "./examples.js";
 
 @Component({
-  selector: '.app-nexl-sources-explorer',
-  templateUrl: './nexl-sources-explorer.component.html',
-  styleUrls: ['./nexl-sources-explorer.component.css']
+  selector: '.app-javascript-files-explorer',
+  templateUrl: './javascript-files-explorer.component.html',
+  styleUrls: ['./javascript-files-explorer.component.css']
 })
-export class NexlSourcesExplorerComponent implements AfterViewInit {
+export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   @ViewChild('expander') expander: jqxExpanderComponent;
   @ViewChild('tree') tree: jqxTreeComponent;
@@ -239,7 +239,7 @@ export class NexlSourcesExplorerComponent implements AfterViewInit {
         this.tree.host.jqxTree("val", undefined);
       }
 
-      if (NexlSourcesExplorerComponent.isRightClick(event)) {
+      if (JavaScriptFilesExplorerComponent.isRightClick(event)) {
         this.handleRightClick(target);
       } else {
         this.handleLeftClick(target);

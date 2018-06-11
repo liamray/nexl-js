@@ -22,11 +22,11 @@ const IS_CHANGED = 'is-changed';
 const TRUE = true.toString();
 
 @Component({
-  selector: '.app-nexl-sources-editor',
-  templateUrl: './nexl-sources-editor.component.html',
-  styleUrls: ['./nexl-sources-editor.component.css'],
+  selector: '.app-javascript-files-editor',
+  templateUrl: './javascript-files-editor.component.html',
+  styleUrls: ['./javascript-files-editor.component.css'],
 })
-export class NexlSourcesEditorComponent implements AfterViewInit {
+export class JavaScriptFilesEditorComponent implements AfterViewInit {
   @ViewChild('tabs') tabs: jqxTabsComponent;
 
   idSeqNr = 0;
@@ -499,7 +499,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       id: `${TITLE_ID}${data.idSeqNr}`
     };
     attrs[ID_SEQ_NR] = data.idSeqNr;
-    return '<span ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + modified + readOnlyIcon + theTitle + closeIcon + '</span>';
+    return '<span ' + JavaScriptFilesEditorComponent.obj2Array(attrs) + '>' + modified + readOnlyIcon + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
@@ -510,7 +510,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     attrs[ID_SEQ_NR] = data.idSeqNr;
     attrs[RELATIVE_PATH] = data.relativePath;
 
-    return '<div ' + NexlSourcesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
+    return '<div ' + JavaScriptFilesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
   closeTabInnerInner(idSeqNr: number) {
