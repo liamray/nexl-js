@@ -54,6 +54,10 @@ export class UtilsService {
     return relativePath.substr(0, relativePath.length - label.length - 1)
   }
 
+  static resolveFileName(filePath: string) {
+    return filePath.replace(/^.*[\\/]/, '');
+  }
+
   static isPathEqual(path1: string, path2: string) {
     if (!UtilsService.IS_WIN) {
       return path1 === path2;

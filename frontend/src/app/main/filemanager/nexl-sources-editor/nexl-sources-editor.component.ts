@@ -433,28 +433,32 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   }
 
   loadJSFile(data: any) {
-    // is tab already opened ?
-    const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
-    if (tabInfo !== undefined && tabInfo.index >= 0) {
-      this.tabs.val(tabInfo.index + '');
-      return;
-    }
-
-    this.globalComponentsService.loader.open();
-
-    // loading file content by relativePath
-    this.http.post({relativePath: data.relativePath}, '/sources/load-nexl-source', 'text').subscribe(
-      (content: any) => {
-        data.body = content.body;
-        this.loadJSFileInner(data);
-        this.globalComponentsService.loader.close();
-      },
-      (err) => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to read nexl source content\nReason : ' + err.statusText);
-        console.log(err);
+    return new Promise((resolve, reject) => {
+      // is tab already opened ?
+      const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
+      if (tabInfo !== undefined && tabInfo.index >= 0) {
+        this.tabs.val(tabInfo.index + '');
+        return;
       }
-    );
+
+      this.globalComponentsService.loader.open();
+
+      // loading file content by relativePath
+      this.http.post({relativePath: data.relativePath}, '/sources/load-nexl-source', 'text').subscribe(
+        (content: any) => {
+          data.body = content.body;
+          this.loadJSFileInner(data);
+          this.globalComponentsService.loader.close();
+          resolve();
+        },
+        (err) => {
+          this.globalComponentsService.loader.close();
+          this.globalComponentsService.notification.openError('Failed to read nexl source content\nReason : ' + err.statusText);
+          console.log(err);
+          reject();
+        }
+      );
+    });
   }
 
   ngAfterViewInit(): void {
@@ -462,6 +466,12 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.tabs.scrollPosition('both');
     this.tabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
+
+    setTimeout(
+      () => {
+        this.loadTabsFromLocalStorage();
+      }, 5000);
+
     setInterval(
       () => {
         this.saveTabs2LocalStorage();
@@ -637,5 +647,20 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   loadTabsFromLocalStorage() {
     // loading tabs
     let loadedTabs = LocalStorageService.loadObj(TABS);
+    loadedTabs.reduce(
+      (current, newItem) => {
+        if (newItem[ATTR_IS_NEW_FILE]) {
+          // creating new file ...
+        }
+
+        const data: any = {};
+        data.relativePath = newItem[RELATIVE_PATH];
+        data.label = UtilsService.resolveFileName(data.relativePath);
+
+        return current.then(
+          () => {
+            return this.loadJSFile(data);
+          });
+      }, Promise.resolve());
   }
 }
