@@ -32,7 +32,6 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
   idSeqNr = 0;
   hasReadPermission = false;
   hasWritePermission = false;
-
   fontSize: string;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
@@ -82,7 +81,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.CREATE_JS_FILE: {
-        this.createNexlSource(message.data);
+        this.createJSFile(message.data);
         return;
       }
 
@@ -228,12 +227,14 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     } else {
       this.fileMoved(data);
     }
+    this.saveTabs();
   }
 
-  createNexlSource(data) {
-    const nexlSource = this.loadNexlSourceInner(data);
+  createJSFile(data) {
+    const nexlSource = this.loadJSFileInner(data);
     this.changeFileStatus(nexlSource.idSeqNr, true);
     this.setNewFile(nexlSource.idSeqNr, true);
+    this.saveTabs();
   }
 
   closeAllTabs() {
@@ -243,6 +244,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
       promise = promise.then(() => this.closeTabInner(idSeqNr));
     }
+
+    promise.then(() => {
+      this.saveTabs();
+    })
   }
 
   changeFileStatus(idSeqNr: any, isChanged: boolean) {
@@ -270,7 +275,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     }
 
     if (LocalStorageService.loadRaw(SAVE_JS_FILE_CONFIRM) === false.toString()) {
-      this.saveNexlSourceInner(relativePath);
+      this.saveJSFileInner(relativePath);
       return;
     }
 
@@ -282,7 +287,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
       callback: (callbackData: any) => {
         LocalStorageService.storeRaw(SAVE_JS_FILE_CONFIRM, !callbackData.checkBoxVal);
         if (callbackData.isConfirmed === true) {
-          this.saveNexlSourceInner(relativePath);
+          this.saveJSFileInner(relativePath);
         }
       },
     };
@@ -290,7 +295,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.globalComponentsService.confirmBox.open(opts);
   }
 
-  saveNexlSourceInner(relativePath: string, callback?: (boolean) => void) {
+  saveJSFileInner(relativePath: string, callback?: (boolean) => void) {
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
     const content = this.getTabContent(tabInfo.idSeqNr);
 
@@ -305,6 +310,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
         if (callback !== undefined) {
           callback(true);
         }
+        this.saveTabs();
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -349,6 +355,8 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     } else {
       this.closeDeletedTabs4File(data.relativePath);
     }
+
+    this.saveTabs();
   }
 
   getAceTheme() {
@@ -439,8 +447,9 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.http.post({relativePath: data.relativePath}, '/sources/load-nexl-source', 'text').subscribe(
       (content: any) => {
         data.body = content.body;
-        this.loadNexlSourceInner(data);
+        this.loadJSFileInner(data);
         this.globalComponentsService.loader.close();
+        this.saveTabs();
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -455,6 +464,10 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     this.tabs.scrollPosition('both');
     this.tabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
+    setInterval(
+      () => {
+        this.saveTabs();
+      }, 30000);
   }
 
   makeTitle(data: any) {
@@ -573,7 +586,7 @@ export class NexlSourcesEditorComponent implements AfterViewInit {
     });
   }
 
-  loadNexlSourceInner(data: any) {
+  loadJSFileInner(data: any) {
     this.idSeqNr++;
     data.idSeqNr = this.idSeqNr;
 
