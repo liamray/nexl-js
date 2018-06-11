@@ -2,7 +2,6 @@ import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
-import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
 import * as queryString from "querystring";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
@@ -15,6 +14,7 @@ import {
 } from "../../services/localstorage.service";
 import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
+import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -64,7 +64,7 @@ const URL_TEMPLATE = `
   styleUrls: ['./nexl-expressions-tester.component.css']
 })
 export class NexlExpressionsTesterComponent implements AfterViewInit {
-  @ViewChild('nexlExpression') nexlExpression: jqxComboBoxComponent;
+  @ViewChild('nexlExpression') nexlExpression: jqxInputComponent;
   @ViewChild('outputArea') outputArea: jqxExpanderComponent;
   @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;
 
@@ -269,6 +269,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   onKeyPress(event) {
     if (event.keyCode === 13) {
       this.eval();
+      return;
     }
   }
 
@@ -417,19 +418,15 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     return result.replace(/&$/, '');
   }
 
-  onExpressionChange() {
-    this.updateUrl();
-  }
-
   ngAfterViewInit() {
     // loading state of prettify button
     this.isPrettify = LocalStorageService.loadObj(PRETTIFY_BUTTON_STATE, true);
     this.prettifyButton.toggled(!this.isPrettify);
 
-    this.nexlExpression.elementRef.nativeElement.addEventListener('keyup',
-      () => {
-        this.updateUrl();
-      });
+    //
+    this.nexlExpression.elementRef.nativeElement.addEventListener('input', () => {
+      this.updateUrl();
+    });
   }
 
   onUrlClick() {
