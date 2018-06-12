@@ -57,7 +57,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.LOAD_JS_FILE: {
-        this.loadJSFile(message.data);
+        this.loadJSFile(message.data).then(
+          () => {
+            this.saveTabs2LocalStorage();
+          }
+        );
         return;
       }
 
@@ -88,6 +92,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.ITEM_MOVED: {
         this.itemMoved(message.data);
+        this.saveTabs2LocalStorage();
         return;
       }
 
@@ -271,7 +276,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     } else {
       this.fileMoved(data);
     }
-    this.saveTabs2LocalStorage();
   }
 
   createJSFile(data) {
@@ -354,6 +358,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         if (callback !== undefined) {
           callback(true);
         }
+        this.saveTabs2LocalStorage();
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -587,6 +592,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // binding close action
     $(`#${TITLE_CLOSE_ICON}${data.idSeqNr}`).click((event) => {
       this.closeTab(event);
+      this.saveTabs2LocalStorage();
     });
 
     // binding tooltip

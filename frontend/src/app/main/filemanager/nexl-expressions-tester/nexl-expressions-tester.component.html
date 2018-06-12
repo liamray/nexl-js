@@ -139,15 +139,29 @@
   #outputArea
 >
 
-  <div title='Prettifying JavaScript arrays and objects'>
-    Output |
-    <jqxToggleButton
-      #prettifyButton
-      (onClick)="onPrettify()"
-      [toggled]="true"
+  <div>
+    <div style="float: left; position: relative; top: 3px;">Output |</div>
+    <jqxTooltip
+      style="float: left;"
+      #urlTooltip
+      [content]="'Prettifies JavaScript arrays and objects'"
+      [position]="'bottom-left'"
+      [closeOnClick]="false"
+      [autoHide]="true"
+      [autoHideDelay]="99999"
+      [animationShowDelay]="400"
+      [showDelay]="600"
+      [trigger]="'hover'"
+      [height]="25"
     >
-      Prettify
-    </jqxToggleButton>
+      <jqxToggleButton
+        #prettifyButton
+        (onClick)="onPrettify()"
+        [toggled]="true"
+      >
+        Prettify
+      </jqxToggleButton>
+    </jqxTooltip>
   </div>
   <div>
     <textarea readonly class="output-textarea">{{output}}</textarea>
