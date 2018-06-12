@@ -69,7 +69,38 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         );
         return;
       }
+
+      case MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE: {
+        this.createNewFileInTree(message.data);
+        return;
+      }
     }
+  }
+
+  delay() {
+    return new Promise((resolve, reject) => {
+      setTimeout(
+        () => {
+          resolve();
+        }, 100
+      );
+    });
+  }
+
+  createNewFileInTree(relativePath: string) {
+    const fileName = UtilsService.resolveFileName(relativePath);
+    const path = UtilsService.resolvePathOnly(fileName, relativePath);
+    this.expandFromRoot(relativePath).then(this.delay).then(
+      () => {
+
+        let item = NexlSourcesService.makeNewFileItem(path, fileName);
+        const parentItem = this.findItemByRelativePath(path);
+        this.insertFileItemInner(item, parentItem);
+        const treeItem = this.findItemByRelativePath(relativePath);
+        this.updateItem(item.value);
+        this.tree.selectItem(treeItem);
+      }
+    );
   }
 
   createExamplesFile() {
@@ -78,7 +109,8 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
     let item = NexlSourcesService.makeNewFileItem('', EXAMPLES_FILE_NAME);
-    this.insertFileItem(item, EXAMPLES_JS);
+    this.insertFileItem(item);
+    this.sendOpenNewTabMessage(item, EXAMPLES_JS);
   }
 
   tabClosed(relativePath: string) {
@@ -251,7 +283,12 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
-        this.messageService.sendMessage(MESSAGE_TYPE.JS_FILES_TREE_RELOADED);
+
+        // the [this.treeSource = data] assignment doesn't really updates tree instantly, tree still empty, therefore we need a little delay
+        setTimeout(
+          () => {
+            this.messageService.sendMessage(MESSAGE_TYPE.JS_FILES_TREE_RELOADED);
+          }, 100);
       },
       (err) => {
         this.globalComponentsService.notification.openError('Failed to resolve nexl sources list\nReason : ' + err.statusText);
@@ -558,7 +595,15 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.expandFromChild(treeItem);
   }
 
-  insertFileItem(item, text?: string) {
+  sendOpenNewTabMessage(item, text?: string) {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_NEW_TAB, {
+      relativePath: item.value.relativePath,
+      label: item.value.label,
+      body: text === undefined ? '' : text
+    });
+  }
+
+  insertFileItem(item) {
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
       this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] item is already exists');
       return;
@@ -566,13 +611,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     this.insertFileItemInner(item, this.rightClickSelectedElement);
     this.updateSelectExpandItem(item);
-
-    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_JS_FILE, {
-      relativePath: item.value.relativePath,
-      label: item.value.label,
-      body: text === undefined ? '' : text
-    });
-
   }
 
   insertFileItemInner(item: any, parentItem: any) {
@@ -632,11 +670,13 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.loadChildItems(this.rightClickSelectedElement.element).then(
           () => {
             this.insertFileItem(item);
+            this.sendOpenNewTabMessage(item);
           }).catch(_ => _);
         return;
       }
 
       this.insertFileItem(item);
+      this.sendOpenNewTabMessage(item);
     });
   }
 
@@ -898,6 +938,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       oldRelativePath: data.item2Move.value.relativePath,
       oldLabel: data.item2Move.value.label,
       newRelativePath: data.targetRelativePath,
+      newLabel: UtilsService.resolveFileName(data.targetRelativePath,),
       isDir: data.item2Move.value.isDir
     });
 

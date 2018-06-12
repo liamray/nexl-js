@@ -85,7 +85,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.CREATE_JS_FILE: {
+      case MESSAGE_TYPE.OPEN_NEW_TAB: {
         this.createJSFile(message.data);
         return;
       }
@@ -699,8 +699,21 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
         return current.then(
           () => {
+            // is newly created file ?
+            if (newItem[ATTR_IS_NEW_FILE]) {
+              this.createJSFile({
+                relativePath: data.relativePath,
+                label: UtilsService.resolveFileName(data.relativePath),
+                body: newItem['tab-content']
+              });
+              this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE, data.relativePath);
+              return Promise.resolve();
+            }
+
+            // it's an existing file, loading from server
             return this.loadJSFile(data).then(
               (idSeqNr: number) => {
+                // updating it's content if needed
                 if (newItem[IS_CHANGED]) {
                   this.setTabContent(idSeqNr, newItem['tab-content']);
                 }
