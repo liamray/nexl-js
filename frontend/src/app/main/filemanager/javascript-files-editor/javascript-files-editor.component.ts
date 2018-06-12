@@ -105,6 +105,25 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         this.jsFilesTreeReloaded();
         return;
       }
+
+      case MESSAGE_TYPE.TREE_ITEM_EXPANDED: {
+        this.treeItemExpanded(message.data);
+        return;
+      }
+    }
+  }
+
+  treeItemExpanded(relativePath: string) {
+    const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
+    if (tabInfo === undefined) {
+      return;
+    }
+
+    if (this.isTabChanged(tabInfo.idSeqNr)) {
+      this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
+        isChanged: true,
+        relativePath: this.getTabContentAttr(tabInfo.idSeqNr, RELATIVE_PATH)
+      });
     }
   }
 
@@ -166,6 +185,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
       }
     );
+  }
+
+  setTabContent(idSeqNr: string | number, content: string) {
+    ace.edit(TAB_CONTENT + idSeqNr).setValue(content);
   }
 
   getTabContent(idSeqNr: string) {
@@ -470,7 +493,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
           data.body = content.body;
           this.loadJSFileInner(data);
           this.globalComponentsService.loader.close();
-          resolve();
+          resolve(data.idSeqNr);
         },
         (err) => {
           this.globalComponentsService.loader.close();
@@ -582,7 +605,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // binding click on tool tip
     $(`#${TITLE_TOOLTIP}${data.idSeqNr}`).click(
       () => {
-        this.messageService.sendMessage(MESSAGE_TYPE.SELECT_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
+        this.messageService.sendMessage(MESSAGE_TYPE.EXPAND_FROM_ROOT, data.relativePath);
       });
   }
 
@@ -670,7 +693,13 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
         return current.then(
           () => {
-            return this.loadJSFile(data);
+            return this.loadJSFile(data).then(
+              (idSeqNr: number) => {
+                if (newItem[IS_CHANGED]) {
+                  this.setTabContent(idSeqNr, newItem['tab-content']);
+                }
+                return Promise.resolve();
+              });
           });
       }, Promise.resolve());
   }

@@ -68,7 +68,7 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     window['showExamples'] = () => {
-      throw 'Imlement me !';
+      throw 'Implement me !';
     };
 
     // loading server info

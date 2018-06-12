@@ -3,6 +3,8 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  TREE_ITEM_EXPANDED,
+  EXPAND_FROM_ROOT,
   JS_FILES_TREE_RELOADED,
   UPDATE_UI,
   OPEN_CHANGE_PASSWORD_WINDOW,
@@ -23,7 +25,6 @@ export enum MESSAGE_TYPE {
   CONTENT_AREA_RESIZED, // splitters don't produce a "resize window" broadcast message, so application need to dispatch that itself in order to ace editor adjust it's editing area ( there is also another bug when maximizing window, ace editor doesn't get a resize window message )
   CLOSE_DELETED_TABS,
   CLOSE_ALL_TABS,
-  SELECT_ITEM_IN_TREE,
   TAB_CONTENT_CHANGED,
   TABS_COUNT_CHANGED,
   TAB_CLOSED,

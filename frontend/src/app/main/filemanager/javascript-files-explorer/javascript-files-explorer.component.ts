@@ -39,11 +39,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.SELECT_ITEM_IN_TREE: {
-        this.selectItemInTree(message.data);
-        return;
-      }
-
       case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
         this.updateItem(message.data);
         return;
@@ -63,6 +58,15 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         if (this.hasReadPermission) {
           this.refreshTreeSource();
         }
+        return;
+      }
+
+      case MESSAGE_TYPE.EXPAND_FROM_ROOT: {
+        this.expandFromRoot(message.data).then(
+          () => {
+            this.messageService.sendMessage(MESSAGE_TYPE.TREE_ITEM_EXPANDED, message.data);
+          }
+        );
         return;
       }
     }
@@ -117,11 +121,68 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     });
   }
 
-  expandItem(item: any) {
+  // iterates over sub directories from child to root and expands them
+  expandFromChild(item: any) {
     while (item.parentElement !== null) {
       this.tree.expandItem(item);
       item = item.parentElement;
     }
+  }
+
+  selectItemPromised(relativePath: string) {
+    return new Promise(
+      (resolve, reject) => {
+        const treeItem = this.findItemByRelativePath(relativePath);
+        if (treeItem !== undefined) {
+          this.tree.selectItem(treeItem);
+        }
+
+        resolve();
+      });
+  }
+
+  // sequentially expands path hierarchy from root
+  expandFromRoot(item: string) {
+    const SLASH = UtilsService.SERVER_INFO.SLASH;
+
+    // splitting path
+    const items: any = item.split(SLASH);
+
+    // first empty item related to preceding slash, removing it if present
+    if (items.length > 0 && items[0] === '') {
+      items.shift();
+    }
+
+    // it should be at least two items
+    if (items.length < 2) {
+      return this.selectItemPromised(item);
+    }
+
+    // removing first element
+    const firstItem = items.shift();
+
+    // iterating over rest elements and expanding
+    let finalPromise = items.reduce(
+      (currentPromise, newItem) => {
+        return currentPromise.then(
+          (currentItem) => {
+            const item = this.findItemByRelativePath(currentItem);
+            return this.loadChildItems(item).then(
+              () => {
+                this.tree.expandItem(item);
+                return Promise.resolve(`${currentItem}${SLASH}${newItem}`);
+              });
+          });
+      },
+      Promise.resolve(`${UtilsService.SERVER_INFO.SLASH}${firstItem}`)
+    );
+
+    finalPromise = finalPromise || Promise.resolve();
+
+    return finalPromise.then(
+      () => {
+        return this.selectItemPromised(item);
+      });
   }
 
   findItemByRelativePath(relativePath: string) {
@@ -137,16 +198,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return item;
       }
     }
-  }
-
-  selectItemInTree(relativePath: string) {
-    const item = this.findItemByRelativePath(relativePath);
-    if (item === undefined) {
-      return;
-    }
-
-    this.expandItem(item);
-    this.tree.selectItem(item);
   }
 
   readPermissionChanged(status: any) {
@@ -406,36 +457,35 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   onExpand(event: any) {
     let item = event.args.element;
-    this.loadChildItems(item);
+    this.loadChildItems(item).catch(_ => _);
   }
 
-  loadChildItems(item: any, callback?: () => void) {
-    const element: any = this.tree.getItem(item);
-    const value: any = element.value;
-    if (!value.mustLoadChildItems) {
-      if (callback) {
-        callback();
+  loadChildItems(item: any) {
+    return new Promise((resolve, reject) => {
+      const element: any = this.tree.getItem(item);
+      const value: any = element.value;
+      if (!value.mustLoadChildItems) {
+        resolve();
+        return;
       }
-      return;
-    }
 
-    value.mustLoadChildItems = false;
-    const $element = $(item);
-    const child = $element.find('ul:first').children()[0];
-    this.nexlSourcesService.listNexlSources(value.relativePath).subscribe(
-      (data: any) => {
-        this.tree.removeItem(child);
-        this.tree.addTo(data, item);
-        if (callback) {
-          callback();
+      value.mustLoadChildItems = false;
+      const child = element.nextItem;
+      this.nexlSourcesService.listNexlSources(value.relativePath).subscribe(
+        (data: any) => {
+          this.tree.removeItem(child);
+          this.tree.addTo(data, item);
+          resolve();
+        },
+        (err) => {
+          this.tree.removeItem(child);
+          this.globalComponentsService.notification.openError('Failed to read directory content\nReason\n' + err.statusText);
+          console.log(err);
+          reject();
         }
-      },
-      (err) => {
-        this.tree.removeItem(child);
-        this.globalComponentsService.notification.openError('Failed to read directory content\nReason\n' + err.statusText);
-        console.log(err);
-      }
-    );
+      );
+
+    });
   }
 
   newDirInner(newDirName: string) {
@@ -505,7 +555,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const treeItem = this.findItemByRelativePath(item.value.relativePath);
     this.updateItem(item.value);
     this.tree.selectItem(treeItem);
-    this.expandItem(treeItem);
+    this.expandFromChild(treeItem);
   }
 
   insertFileItem(item, text?: string) {
@@ -579,9 +629,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       // is item still not expanded ?
       if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
-        this.loadChildItems(this.rightClickSelectedElement.element, () => {
-          this.insertFileItem(item);
-        });
+        this.loadChildItems(this.rightClickSelectedElement.element).then(
+          () => {
+            this.insertFileItem(item);
+          }).catch(_ => _);
         return;
       }
 
@@ -839,7 +890,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     // expanding in UI
     if (data.dropItem !== undefined) {
-      this.expandItem(data.dropItem.element);
+      this.expandFromChild(data.dropItem.element);
     }
 
     // updating tabs
@@ -894,9 +945,11 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.loadChildItems(data.dropItem.element, () => {
-      this.moveItemInner(data);
-    });
+    this.loadChildItems(data.dropItem.element).then(
+      () => {
+        this.moveItemInner(data);
+      }
+    ).catch(_ => _);
   }
 
   onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
