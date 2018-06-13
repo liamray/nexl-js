@@ -663,6 +663,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         tab['tab-content'] = this.getTabContent(idSeqNr);
       }
 
+      // accoding to docs the this.tabs.val() returns string
+      if (this.tabs.val() === index.toString()) {
+        tab['active'] = true;
+      }
+
       tabs2Save.push(tab);
     }
 
@@ -673,18 +678,19 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   loadTabsFromLocalStorage() {
     // loading tabs
     let loadedTabs = LocalStorageService.loadObj(TABS);
+    let activeTab;
     loadedTabs.reduce(
-      (current, newItem) => {
-        if (newItem[ATTR_IS_NEW_FILE]) {
-          // creating new file ...
-        }
-
+      (current, newItem, index) => {
         const data: any = {};
         data.relativePath = newItem[RELATIVE_PATH];
         data.label = UtilsService.resolveFileName(data.relativePath);
 
         return current.then(
           () => {
+            if (newItem['active'] === true) {
+              activeTab = index;
+            }
+
             // is newly created file ?
             if (newItem[ATTR_IS_NEW_FILE]) {
               this.createJSFile({
@@ -706,6 +712,12 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
                 return Promise.resolve();
               });
           });
-      }, Promise.resolve());
+      }, Promise.resolve()).then(
+      () => {
+        if (activeTab !== undefined) {
+          this.tabs.val(activeTab);
+        }
+      }
+    );
   }
 }
