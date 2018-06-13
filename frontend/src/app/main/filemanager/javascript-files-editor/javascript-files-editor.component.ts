@@ -87,6 +87,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.OPEN_NEW_TAB: {
         this.createJSFile(message.data);
+        this.saveTabs2LocalStorage();
         return;
       }
 
@@ -97,7 +98,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.REQUEST_CURRENT_TAB: {
-        this.sendCurrentTabInfo(message.data);
+        this.sendCurrentTabInfo();
         return;
       }
 
@@ -110,25 +111,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         this.jsFilesTreeReloaded();
         return;
       }
-
-      case MESSAGE_TYPE.TREE_ITEM_EXPANDED: {
-        this.treeItemExpanded(message.data);
-        return;
-      }
-    }
-  }
-
-  treeItemExpanded(relativePath: string) {
-    const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
-    if (tabInfo === undefined) {
-      return;
-    }
-
-    if (this.isTabChanged(tabInfo.idSeqNr)) {
-      this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
-        isChanged: true,
-        relativePath: this.getTabContentAttr(tabInfo.idSeqNr, RELATIVE_PATH)
-      });
     }
   }
 
@@ -140,6 +122,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.firstTimeLoad = false;
     // loading tabs from local storage
     this.loadTabsFromLocalStorage();
+
     // starting timer to store tabs to the local storage
     setInterval(
       () => {
@@ -216,7 +199,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     return $('#' + TITLE_TEXT + idSeqNr).text(text);
   }
 
-  sendCurrentTabInfo(shortInfo: boolean) {
+  sendCurrentTabInfo() {
     const tabNr = this.tabs.val();
     if (tabNr < 0) {
       // sending empty data
@@ -557,7 +540,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
   closeTab(event: any) {
     const idSeqNr = event.target.parentElement.getAttribute(ID_SEQ_NR);
-    this.closeTabInner(idSeqNr).then();
+    this.closeTabInner(idSeqNr).then(
+      () => {
+        this.saveTabs2LocalStorage();
+      }
+    );
   }
 
   closeTabInner(idSeqNr: number) {
@@ -592,7 +579,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // binding close action
     $(`#${TITLE_CLOSE_ICON}${data.idSeqNr}`).click((event) => {
       this.closeTab(event);
-      this.saveTabs2LocalStorage();
     });
 
     // binding tooltip
@@ -611,7 +597,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // binding click on tool tip
     $(`#${TITLE_TOOLTIP}${data.idSeqNr}`).click(
       () => {
-        this.messageService.sendMessage(MESSAGE_TYPE.EXPAND_FROM_ROOT, data.relativePath);
+        this.messageService.sendMessage(MESSAGE_TYPE.EXPAND_FROM_ROOT, this.getTooltipText(data.idSeqNr));
       });
   }
 

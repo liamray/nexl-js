@@ -7,7 +7,6 @@ import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxex
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {NexlSourcesService} from "../../services/nexl-sources.service";
 import {UtilsService} from "../../services/utils.service";
-import {EXAMPLES_FILE_NAME, EXAMPLES_JS} from "./examples.js";
 
 @Component({
   selector: '.app-javascript-files-explorer',
@@ -49,11 +48,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.CREATE_EXAMPLES_FILE: {
-        this.createExamplesFile();
-        return;
-      }
-
       case MESSAGE_TYPE.RELOAD_JS_FILES: {
         if (this.hasReadPermission) {
           this.refreshTreeSource();
@@ -62,11 +56,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.EXPAND_FROM_ROOT: {
-        this.expandFromRoot(message.data).then(
-          () => {
-            this.messageService.sendMessage(MESSAGE_TYPE.TREE_ITEM_EXPANDED, message.data);
-          }
-        );
+        this.expandFromRootRoot(message.data);
         return;
       }
 
@@ -77,40 +67,36 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
   }
 
-  delay() {
-    return new Promise((resolve, reject) => {
-      setTimeout(
-        () => {
-          resolve();
-        }, 100
-      );
-    });
+  selectItem(relativePath: string) {
+    const treeItem = this.findItemByRelativePath(relativePath);
+    if (treeItem !== undefined) {
+      this.tree.selectItem(treeItem);
+    }
+  }
+
+  expandFromRootRoot(relativePath: string) {
+    this.loadTreeItemsHierarchy(relativePath, true).then(
+      () => {
+        this.selectItem(relativePath);
+      }
+    );
+
   }
 
   createNewFileInTree(relativePath: string) {
     const fileName = UtilsService.resolveFileName(relativePath);
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
-    this.expandFromRoot(relativePath).then(this.delay).then(
-      () => {
 
+    this.loadTreeItemsHierarchy(path, false).then(
+      () => {
         let item = NexlSourcesService.makeNewFileItem(path, fileName);
         const parentItem = this.findItemByRelativePath(path);
         this.insertFileItemInner(item, parentItem);
-        const treeItem = this.findItemByRelativePath(relativePath);
+        item.value.isChanged = true;
+        item.value.isNewFile = true;
         this.updateItem(item.value);
-        this.tree.selectItem(treeItem);
       }
     );
-  }
-
-  createExamplesFile() {
-    if (this.hasWritePermission !== true) {
-      this.globalComponentsService.notification.openError('No write permissions to create a [' + EXAMPLES_FILE_NAME + '] file');
-      return;
-    }
-    let item = NexlSourcesService.makeNewFileItem('', EXAMPLES_FILE_NAME);
-    this.insertFileItem(item);
-    this.sendOpenNewTabMessage(item, EXAMPLES_JS);
   }
 
   tabClosed(relativePath: string) {
@@ -153,68 +139,57 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     });
   }
 
-  // iterates over sub directories from child to root and expands them
-  expandFromChild(item: any) {
-    while (item.parentElement !== null) {
-      this.tree.expandItem(item);
-      item = item.parentElement;
+  expandItem(item: any, isExpand: boolean) {
+    if (isExpand === true) {
+      this.tree.expandItem(item)
     }
   }
 
-  selectItemPromised(relativePath: string) {
-    return new Promise(
-      (resolve, reject) => {
-        const treeItem = this.findItemByRelativePath(relativePath);
-        if (treeItem !== undefined) {
-          this.tree.selectItem(treeItem);
-        }
-
-        resolve();
-      });
-  }
-
   // sequentially expands path hierarchy from root
-  expandFromRoot(item: string) {
+  loadTreeItemsHierarchy(relativePath: string, isExpand: boolean) {
     const SLASH = UtilsService.SERVER_INFO.SLASH;
 
     // splitting path
-    const items: any = item.split(SLASH);
+    const items: any = relativePath.split(SLASH);
 
     // first empty item related to preceding slash, removing it if present
     if (items.length > 0 && items[0] === '') {
       items.shift();
     }
 
-    // it should be at least two items
-    if (items.length < 2) {
-      return this.selectItemPromised(item);
+    if (items.length < 1) {
+      return Promise.resolve();
     }
 
-    // removing first element
-    const firstItem = items.shift();
-
     // iterating over rest elements and expanding
-    let finalPromise = items.reduce(
+    const finalPromise = items.reduce(
       (currentPromise, newItem) => {
         return currentPromise.then(
           (currentItem) => {
-            const item = this.findItemByRelativePath(currentItem);
+            const nextItem = `${currentItem}${SLASH}${newItem}`;
+
+            const item = this.findItemByRelativePath(nextItem);
+            if (item === undefined || item.value.isDir !== true) {
+              return Promise.resolve(nextItem);
+            }
+
+            if (item.value.mustLoadChildItems !== true) {
+              this.expandItem(item, isExpand);
+              return Promise.resolve(nextItem);
+            }
+
             return this.loadChildItems(item).then(
               () => {
-                this.tree.expandItem(item);
-                return Promise.resolve(`${currentItem}${SLASH}${newItem}`);
+                this.expandItem(item, isExpand);
+                return Promise.resolve(nextItem);
               });
+
           });
       },
-      Promise.resolve(`${UtilsService.SERVER_INFO.SLASH}${firstItem}`)
+      Promise.resolve('')
     );
 
-    finalPromise = finalPromise || Promise.resolve();
-
-    return finalPromise.then(
-      () => {
-        return this.selectItemPromised(item);
-      });
+    return finalPromise || Promise.resolve();
   }
 
   findItemByRelativePath(relativePath: string) {
@@ -500,6 +475,12 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   loadChildItems(item: any) {
     return new Promise((resolve, reject) => {
       const element: any = this.tree.getItem(item);
+
+      if (element === null) {
+        resolve();
+        return;
+      }
+
       const value: any = element.value;
       if (!value.mustLoadChildItems) {
         resolve();
@@ -592,7 +573,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const treeItem = this.findItemByRelativePath(item.value.relativePath);
     this.updateItem(item.value);
     this.tree.selectItem(treeItem);
-    this.expandFromChild(treeItem);
   }
 
   sendOpenNewTabMessage(item, text?: string) {
@@ -601,16 +581,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       label: item.value.label,
       body: text === undefined ? '' : text
     });
-  }
-
-  insertFileItem(item) {
-    if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + item.value.relativePath + '] item is already exists');
-      return;
-    }
-
-    this.insertFileItemInner(item, this.rightClickSelectedElement);
-    this.updateSelectExpandItem(item);
   }
 
   insertFileItemInner(item: any, parentItem: any) {
@@ -647,6 +617,31 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.tree.addBefore(item, childItems[index]);
   }
 
+  newFileInner(newFileName: string) {
+    if (newFileName === undefined) {
+      return;
+    }
+
+    if (!UtilsService.isFileNameValid(newFileName)) {
+      this.globalComponentsService.notification.openError('The [' + newFileName + '] file name contains forbidden characters');
+      return;
+    }
+
+    const item: any = NexlSourcesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+
+    this.loadChildItems(this.rightClickSelectedElement).then(
+      () => {
+        if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
+          this.globalComponentsService.notification.openError(`The [${item.value.relativePath}] item is already exists`);
+          return;
+        }
+
+        this.insertFileItemInner(item, this.rightClickSelectedElement);
+        this.updateSelectExpandItem(item);
+        this.sendOpenNewTabMessage(item);
+      }
+    );
+  }
 
   newFile() {
     if (this.hasWritePermission !== true) {
@@ -654,29 +649,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (newFileName: string) => {
-      if (newFileName === undefined) {
-        return;
-      }
-
-      if (!UtilsService.isFileNameValid(newFileName)) {
-        this.globalComponentsService.notification.openError('The [' + newFileName + '] file name contains forbidden characters');
-        return;
-      }
-
-      let item = NexlSourcesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
-
-      // is item still not expanded ?
-      if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.mustLoadChildItems === true) {
-        this.loadChildItems(this.rightClickSelectedElement.element).then(
-          () => {
-            this.insertFileItem(item);
-            this.sendOpenNewTabMessage(item);
-          }).catch(_ => _);
-        return;
-      }
-
-      this.insertFileItem(item);
-      this.sendOpenNewTabMessage(item);
+      this.newFileInner(newFileName);
     });
   }
 
@@ -928,11 +901,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     this.tree.removeItem(data.item2Move);
 
-    // expanding in UI
-    if (data.dropItem !== undefined) {
-      this.expandFromChild(data.dropItem.element);
-    }
-
     // updating tabs
     this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {
       oldRelativePath: data.item2Move.value.relativePath,
@@ -956,12 +924,13 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     this.globalComponentsService.loader.open();
 
+    // new files don't need to be moved in file system
     if (data.item2Move.value.isNewFile === true) {
       this.moveItemInnerInner(data);
       return;
     }
 
-    // move on server
+    // move in file system
     this.nexlSourcesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
       () => {
         this.moveItemInnerInner(data);

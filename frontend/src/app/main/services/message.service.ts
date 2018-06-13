@@ -4,7 +4,6 @@ import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
   CREATE_NEW_FILE_IN_TREE,
-  TREE_ITEM_EXPANDED,
   EXPAND_FROM_ROOT,
   JS_FILES_TREE_RELOADED,
   UPDATE_UI,
@@ -29,7 +28,7 @@ export enum MESSAGE_TYPE {
   TAB_CONTENT_CHANGED,
   TABS_COUNT_CHANGED,
   TAB_CLOSED,
-  CREATE_EXAMPLES_FILE,
+  VIEW_EXAMPLES,
   ITEM_MOVED,
   REQUEST_CURRENT_TAB, // requests current tab's data
   GET_CURRENT_TAB // returns currently opened tab's releativePath and tab content if tab changed

@@ -63,7 +63,7 @@ export class MainMenuComponent implements AfterViewInit {
   }
 
   createExamplesFile() {
-    this.messageService.sendMessage(MESSAGE_TYPE.CREATE_EXAMPLES_FILE);
+    this.messageService.sendMessage(MESSAGE_TYPE.VIEW_EXAMPLES);
   }
 
   toggleArgsWindow() {
