@@ -1,32 +1,62 @@
 const uuidv4 = require('uuid/v4');
 
 const confMgmt = require('./conf-mgmt');
+const utils = require('./utils');
 const bcrypt = require('./bcryptx');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
 
-function isAdmin(user) {
+function isAdminInner(user) {
 	return confMgmt.getCached(confMgmt.CONF_FILES.ADMINS).indexOf(user) >= 0;
+}
+
+function isAdmin(user) {
+	const loggedInUsername = (user === utils.GUEST_USER) ? utils.GUEST_USER : utils.LOGGED_IN_USER;
+	return isAdminInner(utils.GUEST_USER) || isAdminInner(loggedInUsername) || isAdminInner(user);
+}
+
+function retrievePermission(permission, type) {
+	if (permission === undefined) {
+		return false;
+	}
+
+	const result = permission[type];
+	if (result === undefined) {
+		return false;
+	}
+
+	return result;
 }
 
 // type is a permission type ( for example 'read' | 'write' )
 // value is the expected value to check
-function hasPermission(user, type, value) {
+function hasPermission(user, type) {
 	if (isAdmin(user)) {
 		return true;
 	}
 
 	const permissions = confMgmt.getCached(confMgmt.CONF_FILES.PERMISSIONS);
-	return permissions[user] && permissions[user][type] === value;
+
+	// permission for [guest] user
+	const guestUserPermission = permissions[utils.GUEST_USER];
+
+	// permissions for [loggedin] user
+	let loggedInUserPermission = (user === utils.GUEST_USER) ? permissions[utils.GUEST_USER] : permissions[utils.LOGGED_IN_USER];
+
+	// permissions for [user]
+	const userPermission = permissions[user];
+
+	// summarizing all permissions
+	return retrievePermission(guestUserPermission, type) || retrievePermission(loggedInUserPermission, type) || retrievePermission(userPermission, type);
 }
 
 function hasReadPermission(user) {
-	return hasPermission(user, READ_PERMISSION, true);
+	return hasPermission(user, READ_PERMISSION);
 }
 
 function hasWritePermission(user) {
-	return hasPermission(user, WRITE_PERMISSION, true);
+	return hasPermission(user, WRITE_PERMISSION);
 }
 
 function status(user) {
