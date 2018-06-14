@@ -15,6 +15,7 @@ import {
 import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
+import {UtilsService} from "../../services/utils.service";
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -152,12 +153,21 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   itemMoved(data: any) {
+    // for directories
     if (data.isDir === true) {
-      return;
+      if (UtilsService.pathIndexOf(this.relativePath, data.oldRelativePath) !== 0) {
+        return;
+      }
+
+      this.relativePath = data.newRelativePath + this.relativePath.substr(data.oldRelativePath.length);
     }
 
-    this.relativePath = data.newRelativePath;
+    // for files
+    if (data.isDir !== true) {
+      this.relativePath = data.newRelativePath;
+    }
 
+    // updating
     const item = this.tabsInfo[data.oldRelativePath];
     if (item !== undefined) {
       delete this.tabsInfo[data.oldRelativePath];
