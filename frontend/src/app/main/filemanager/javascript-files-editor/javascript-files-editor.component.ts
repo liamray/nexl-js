@@ -248,7 +248,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       const relativePath = data.newRelativePath + tabRelativePath.substr(oldRelativePath.length);
       this.setTabTitleAttr(index, RELATIVE_PATH, relativePath);
       this.setTabContentAttr(idSeqNr, RELATIVE_PATH, relativePath);
-      this.setTitleText(idSeqNr, data.newLabel);
       this.setTooltipText(idSeqNr, relativePath);
     }
   }
