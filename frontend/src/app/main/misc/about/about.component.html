@@ -1,0 +1,47 @@
+<jqxWindow
+  #about
+  [autoOpen]="false"
+  [isModal]="true"
+  [resizable]="false"
+  [showCloseButton]="true"
+  [title]="'About nexl'"
+  [width]="500"
+  [height]="215"
+  [initContent]="initContent"
+>
+
+  <div #windowContent>
+
+    <div style="text-align: center">
+      <img src="./nexl/site/images/nexl-logo.png">
+    </div>
+
+    <div>
+      <div>
+        nexl-js version [{{nexlVersion}}]
+      </div>
+      <div>
+        Author : Liam Ray
+      </div>
+      <div>
+        Home page : <a href="http://www.nexl-js.com" target="_blank">http://www.nexl-js.com</a>
+      </div>
+    </div>
+
+
+    <div style="float: right; position: relative; top: -30px;">
+      <jqxButton [height]='32'
+                 [width]="94"
+                 [textImageRelation]='"imageBeforeText"'
+                 [textPosition]='"center"'
+                 (click)="about.close();"
+                 [auto-create]="false"
+                 [imgSrc]='"./nexl/site/images/ok.png"'
+                 #okButton
+      >
+        Ok
+      </jqxButton>
+    </div>
+  </div>
+
+</jqxWindow>

@@ -85,4 +85,8 @@ export class MainMenuComponent implements AfterViewInit {
   openSettingsWindow() {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_SETTINGS_WINDOW);
   }
+
+  openAboutWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_ABOUT_WINDOW);
+  }
 }

@@ -42,7 +42,6 @@ import {AssignPermissionsComponent} from './settingsdialogs/permissions/assignpe
 import {LoaderComponent} from './misc/loader/loader.component';
 import {GlobalComponentsService} from "./services/global-components.service";
 import {SettingsComponent} from './settingsdialogs/settings/settings.component';
-import {SplashscreenComponent} from './misc/splashscreen/splashscreen.component';
 import {HttpRequestService} from "./services/http.requests.service";
 import {AuthService} from "./services/auth.service";
 import {NexlSourcesService} from "./services/nexl-sources.service";
@@ -60,6 +59,8 @@ import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
 import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
+import {SplashscreenComponent} from "./misc/splashscreen/splashscreen.component";
+import {AboutComponent} from "./misc/about/about.component";
 
 
 @NgModule({
@@ -111,7 +112,8 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
     InputBoxComponent,
     MessageBoxComponent,
     ConfirmBoxComponent,
-    ArgsComponent
+    ArgsComponent,
+    AboutComponent
   ],
 
   imports: [
