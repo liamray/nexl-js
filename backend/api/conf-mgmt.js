@@ -275,7 +275,7 @@ function setupDefaultValues(data, fileName) {
 	return data;
 }
 
-function loadInnerInner(fullPath, fileName) {
+function loadInner(fullPath, fileName) {
 	return fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
 		(fileBody) => {
 			// JSONing. The JSON must be an object which contains config version and the data itself
@@ -312,7 +312,7 @@ function isConfFileDeclared(fileName) {
 	return false;
 }
 
-function loadInner(fileName) {
+function load(fileName) {
 	logger.log.debug('Loading config from [%s] file', fileName);
 
 	if (!isConfFileDeclared(fileName)) {
@@ -326,9 +326,10 @@ function loadInner(fileName) {
 		(isExists) => {
 			if (isExists) {
 				logger.log.debug('The [%s] file exists', fileName);
-				return loadInnerInner(fullPath, fileName);
+				return loadInner(fullPath, fileName);
 			}
 
+			// file doesn't exist, loading defaults
 			return new Promise(
 				(resolve, reject) => {
 					logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
@@ -343,20 +344,6 @@ function loadInner(fileName) {
 				});
 		});
 }
-
-function load(fileName) {
-	// is cached ?
-	if (CACHE[fileName] !== undefined) {
-		logger.log.debug('Loading [%s] from cache', fileName);
-		let data = CACHE[fileName];
-		data = setupDefaultValues(data, fileName);
-		return Promise.resolve(data);
-	}
-
-	logger.log.debug('The [%s] file is not in cache. Loading from file', fileName);
-	return loadInner(fileName);
-}
-
 
 function save(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
@@ -509,27 +496,24 @@ function createNexlHomeDirectoryIfNeeded() {
 }
 
 function createNexlSourcesDirIfNeeded() {
-	return loadSettings().then(
-		(settings) => {
-			const nexlSourcesDir = settings[SETTINGS.NEXL_SOURCES_DIR];
-			return fsx.exists(nexlSourcesDir).then(
-				(isExists) => {
-					if (!isExists) {
-						logger.log.info('The [%s] nexl sources dir doesn\'t exist. Creating...', nexlSourcesDir);
-						return fsx.mkdir(nexlSourcesDir);
-					}
+	const nexlSourcesDir = CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
 
-					return fsx.stat(nexlSourcesDir).then(
-						(stat) => {
-							if (stat.isDirectory()) {
-								logger.log.debug('The [%s] nexl sources dir exists', nexlSourcesDir);
-								return Promise.resolve();
-							} else {
-								logger.log.error('The [%s] nexl sources directory points to existing file ( or something else ). Recreate it as a directory or use another nexl sources directory ', nexlSourcesDir);
-								return Promise.reject('nexl sources directory probably points to existing file or something else');
-							}
-						}
-					);
+	return fsx.exists(nexlSourcesDir).then(
+		(isExists) => {
+			if (!isExists) {
+				logger.log.info('The [%s] nexl sources dir doesn\'t exist. Creating...', nexlSourcesDir);
+				return fsx.mkdir(nexlSourcesDir);
+			}
+
+			return fsx.stat(nexlSourcesDir).then(
+				(stat) => {
+					if (stat.isDirectory()) {
+						logger.log.debug('The [%s] nexl sources dir exists', nexlSourcesDir);
+						return Promise.resolve();
+					} else {
+						logger.log.error('The [%s] nexl sources directory points to existing file ( or something else ). Recreate it as a directory or use another nexl sources directory ', nexlSourcesDir);
+						return Promise.reject('nexl sources directory probably points to existing file or something else');
+					}
 				}
 			);
 		}
@@ -537,7 +521,13 @@ function createNexlSourcesDirIfNeeded() {
 }
 
 function reloadCache() {
-	throw 'Implement me !';
+	const promises = [];
+	for (let key in CONF_FILES) {
+		const val = CONF_FILES[key];
+		promises.push(Promise.resolve(val).then(load));
+	}
+
+	return Promise.all(promises);
 }
 
 // --------------------------------------------------------------------------------

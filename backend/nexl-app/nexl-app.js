@@ -263,11 +263,20 @@ class NexlApp {
 		logger.log.level = 'info';
 
 		// creating nexl home dir if doesn't exist
-		this.printWelcomeMessage().then(confMgmt.createNexlHomeDirectoryIfNeeded).then(confMgmt.initSettings).then(logger.init).then(confMgmt.initTokens).then(confMgmt.initPermissions).then(confMgmt.initPasswords).then(confMgmt.initAdmins).then(confMgmt.createNexlSourcesDirIfNeeded).then(
-			() => {
-				this.applyInterceptors();
-				this.startNexlServer();
-			}).catch(
+		this.printWelcomeMessage()
+			.then(confMgmt.createNexlHomeDirectoryIfNeeded)
+			.then(confMgmt.initSettings)
+			.then(logger.init)
+			.then(confMgmt.initTokens)
+			.then(confMgmt.initPermissions)
+			.then(confMgmt.initPasswords)
+			.then(confMgmt.initAdmins)
+			.then(confMgmt.createNexlSourcesDirIfNeeded)
+			.then(
+				() => {
+					this.applyInterceptors();
+					this.startNexlServer();
+				}).catch(
 			(err) => {
 				console.log(err);
 				process.exit(1);
