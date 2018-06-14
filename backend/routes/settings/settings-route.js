@@ -22,42 +22,37 @@ router.post('/load', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Loading settings for [%s] user', username);
 
-	security.isAdmin(username).then((isAdmin) => {
-		if (!isAdmin) {
-			logger.log.error('The [%s] user doesn\'t have admin permissions to load settings', username);
-			return Promise.reject('admin permissions required');
-		}
+	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to load settings', username);
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
 
-		return confMgmt.loadSettings().then(
-			(settings) => {
-				settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
-				res.send(settings);
-			});
-	}).catch((err) => {
-		logger.log.error('Failed to load settings. Reason : [%s]', err);
-		utils.sendError(res, err);
-	});
+	const settings = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS);
+	settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
+	res.send(settings)
 });
 
 router.post('/save', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug('Saving settings for [%s] user', username);
 
-	security.isAdmin(username).then((isAdmin) => {
-		if (!isAdmin) {
-			logger.log.error('The [%s] user doesn\'t have admin permissions to save settings', username);
-			return Promise.reject('admin permissions required');
-		}
+	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to save settings', username);
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
 
-		const data = req.body;
-		delete data[NEXL_HOME_DIR];
+	const data = req.body;
+	delete data[NEXL_HOME_DIR];
+	logger.log.level = data['log-level'];
 
-		logger.log.level = data['log-level'];
-		return confMgmt.saveSettings(data).then(() => res.send({}));
-	}).catch((err) => {
-		logger.log.error('Failed to save settings. Reason : [%s]', err);
-		utils.sendError(res, err);
-	});
+	return confMgmt.saveSettings(data).then(
+		() => res.send({})).catch(
+		(err) => {
+			logger.log.error('Failed to save settings. Reason : [%s]', err);
+			utils.sendError(res, err);
+		});
 });
 
 router.post('/*', function (req, res, next) {

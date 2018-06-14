@@ -429,11 +429,13 @@ function initTokens() {
 
 	return isConfFileExists(CONF_FILES.TOKENS).then(
 		(isExists) => {
-			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-				logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-				return security.generateTokenAndSave(utils.ADMIN_USER);
+			if (isExists) {
+				return load(CONF_FILES.TOKENS); // preloading tokens
 			}
+
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+			logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+			return security.generateTokenAndSave(utils.ADMIN_USER);
 		}
 	)
 }
@@ -443,15 +445,17 @@ function initPermissions() {
 
 	return isConfFileExists(CONF_FILES.PERMISSIONS).then(
 		(isExists) => {
-			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER);
-				const permission = {};
-				permission[utils.GUEST_USER] = {
-					read: true,
-					write: true
-				};
-				return save(permission, CONF_FILES.PERMISSIONS);
+			if (isExists) {
+				return load(CONF_FILES.PERMISSIONS); // preloading permissions
 			}
+
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for [%s] user', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER);
+			const permission = {};
+			permission[utils.GUEST_USER] = {
+				read: true,
+				write: true
+			};
+			return save(permission, CONF_FILES.PERMISSIONS);
 		}
 	)
 }
@@ -468,11 +472,14 @@ function initAdmins() {
 
 	return isConfFileExists(CONF_FILES.ADMINS).then(
 		(isExists) => {
-			if (!isExists) {
-				logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USER);
-				const admins = [utils.ADMIN_USER];
-				return save(admins, CONF_FILES.ADMINS);
+			if (isExists) {
+				return load(CONF_FILES.ADMINS); // preloading admins
 			}
+
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USER);
+			const admins = [utils.ADMIN_USER];
+			return save(admins, CONF_FILES.ADMINS);
+
 		}
 	)
 }
@@ -529,6 +536,9 @@ function createNexlSourcesDirIfNeeded() {
 	);
 }
 
+function reloadCache() {
+	throw 'Implement me !';
+}
 
 // --------------------------------------------------------------------------------
 module.exports.ENCODING_UTF8 = ENCODING_UTF8;
@@ -555,5 +565,7 @@ module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
 module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
 module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
 
-module.exports.invalidateCache = (fileName) => CACHE[fileName] = undefined;
+module.exports.getCached = (fileName) => CACHE[fileName];
+
+module.exports.reloadCache = reloadCache;
 // --------------------------------------------------------------------------------

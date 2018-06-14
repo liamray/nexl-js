@@ -34,41 +34,42 @@ router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Generating token for [%s] user', loggedInUsername);
 
-	security.isAdmin(loggedInUsername).then((isAdmin) => {
-		if (!isAdmin) {
-			logger.log.error('Cannot generate new token. admin permissions required');
-			return Promise.reject('admin permissions required');
-		}
+	// only admins can generate token
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('Cannot generate new token. admin permissions required');
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
 
-		const username = req.body.username;
-		if (username.length < 1) {
-			logger.log.error('Cannot generate new token. Username cannot be empty');
-			return Promise.reject('Username cannot be empty');
-		}
+	// validating username
+	const username = req.body.username;
+	if (username.length < 1) {
+		logger.log.error('Cannot generate new token. Username cannot be empty');
+		utils.sendError(res, 'Username cannot be empty');
+		return;
+	}
 
-		return security.generateTokenAndSave(username).then((token) => {
+	// generating new token
+	return security.generateTokenAndSave(username).then(
+		(token) => {
 			res.send({
 				token: token
 			});
-		});
 
-	}).catch((err) => {
-		logger.log.error('Failed to generate a new token. Reason : [%s]', err);
-		utils.sendError(res, err);
-	});
+		}).catch(
+		(err) => {
+			logger.log.error('Failed to generate a new token. Reason : [%s]', err);
+			utils.sendError(res, err);
+		});
 
 });
 
 router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
-	security.status(username).then((status) => {
-		status['isLoggedIn'] = username !== utils.GUEST_USER;
-		status['username'] = username;
-		res.send(status);
-	}).catch((err) => {
-		logger.log.error('Failed to resolve a status for [%s] user. Reason : [%s]', username, err);
-		utils.sendError(res, err);
-	});
+	const status = security.status(username);
+	status['isLoggedIn'] = username !== utils.GUEST_USER;
+	status['username'] = username;
+	res.send(status);
 });
 
 router.post('/login', function (req, res) {

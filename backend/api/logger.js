@@ -8,34 +8,34 @@ function logFormatter(options) {
 }
 
 function init() {
-	return confMgmt.loadSettings(confMgmt.CONF_FILES.SETTINGS).then(
-		(settings) => {
-			// removing existing console transport
-			winston.remove(winston.transports.Console);
+	// loading settings
+	const settings = confMgmt.getNexlSettingsCached();
 
-			// add new console transport
-			winston.add(winston.transports.Console, {
-				formatter: logFormatter
-			});
+	// removing existing console transport
+	winston.remove(winston.transports.Console);
 
-			// loading log setting
-			// adding file transport
-			winston.add(winston.transports.File, {
-				filename: settings[confMgmt.SETTINGS.LOG_FILE_LOCATION],
-				formatter: logFormatter,
-				json: false,
-				tailable: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
-				maxsize: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
-				maxFiles: settings[confMgmt.SETTINGS.LOG_ROTATE_FILES_COUNT]
-			});
+	// add new console transport
+	winston.add(winston.transports.Console, {
+		formatter: logFormatter
+	});
 
-			// setting up log level
-			winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
+	// loading log setting
+	// adding file transport
+	winston.add(winston.transports.File, {
+		filename: settings[confMgmt.SETTINGS.LOG_FILE_LOCATION],
+		formatter: logFormatter,
+		json: false,
+		tailable: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
+		maxsize: settings[confMgmt.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
+		maxFiles: settings[confMgmt.SETTINGS.LOG_ROTATE_FILES_COUNT]
+	});
 
-			winston.debug('Log is set up');
+	// setting up log level
+	winston.level = settings[confMgmt.SETTINGS.LOG_LEVEL];
 
-			return Promise.resolve();
-		});
+	winston.debug('Log is set up');
+
+	return Promise.resolve();
 }
 
 function isLogLevel(level) {
