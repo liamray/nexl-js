@@ -168,7 +168,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   tabContentChanged(tabInfo: any) {
-    this.tabsInfo[tabInfo.relativePath] = tabInfo.isChanged;
+    this.tabsInfo[tabInfo.relativePath] = tabInfo;
   }
 
   tabSelected(relativePath: string) {
@@ -429,12 +429,18 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     });
   }
 
-  onUrlClick() {
-    if (this.tabsInfo[this.relativePath] !== true) {
-      window.open(this.urlEncoded);
-      return false;
-    }
+  onUrlClickWhenNewFile() {
+    const opts = {
+      title: 'Information',
+      label: `The [${this.relativePath}] JavaScript file was newly created and not saved. It doesn't exist on server and not accessible outside. First save this file and after that you can access it by URL`,
+      callback: (dontShowAgain: boolean) => {
+      }
+    };
 
+    this.globalComponentsService.messageBox.open(opts);
+  }
+
+  onUrlClickWhenJSChanged() {
     if (LocalStorageService.loadRaw(OPEN_URL_WARNING_MESSAGE) === false.toString()) {
       window.open(this.urlEncoded);
       return false;
@@ -442,7 +448,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
     const opts = {
       title: 'Information',
-      label: `Please note the [${this.relativePath}] JavaScript file was modified. You can get different result until you save it`,
+      label: `Please note the [${this.relativePath}] JavaScript file was modified. You can get different results until you save it`,
       checkBoxText: 'Don\'t show this message again',
       callback: (dontShowAgain: boolean) => {
         window.open(this.urlEncoded);
@@ -451,6 +457,24 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     };
 
     this.globalComponentsService.messageBox.open(opts);
+  }
+
+  onUrlClick() {
+    // is new file ?
+    if (this.tabsInfo[this.relativePath] !== undefined && this.tabsInfo[this.relativePath].isNewFile === true) {
+      this.onUrlClickWhenNewFile();
+      return false;
+    }
+
+    // is changed ?
+    if (this.tabsInfo[this.relativePath] !== undefined && this.tabsInfo[this.relativePath].isChanged === true) {
+      this.onUrlClickWhenJSChanged();
+      return false;
+    }
+
+    // opening URL
+    window.open(this.urlEncoded);
+
     return false;
   }
 
