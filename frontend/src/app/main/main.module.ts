@@ -59,7 +59,6 @@ import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
 import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
-import {SplashscreenComponent} from "./misc/splashscreen/splashscreen.component";
 import {AboutComponent} from "./misc/about/about.component";
 
 
@@ -106,7 +105,6 @@ import {AboutComponent} from "./misc/about/about.component";
     LoaderComponent,
     SettingsComponent,
     AppearanceComponent,
-    SplashscreenComponent,
     RegisterComponent,
     NotificationComponent,
     InputBoxComponent,
