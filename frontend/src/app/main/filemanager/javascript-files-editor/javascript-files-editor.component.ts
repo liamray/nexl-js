@@ -641,6 +641,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
     const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_SELECTED, relativePath);
+
+    this.saveTabs2LocalStorage();
   }
 
   sendTabsCountMsg() {
@@ -663,8 +665,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         tab['tab-content'] = this.getTabContent(idSeqNr);
       }
 
-      // accoding to docs the this.tabs.val() returns string
-      if (this.tabs.val() === index.toString()) {
+      // according to docs the this.tabs.val() returns string, but sometimes it number ? WTF ???
+      if (this.tabs.val().toString() === index.toString()) {
         tab['active'] = true;
       }
 

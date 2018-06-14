@@ -83,10 +83,9 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   }
 
-  createNewFileInTree(relativePath: string) {
+  createNewFileInTreeInner(relativePath: string) {
     const fileName = UtilsService.resolveFileName(relativePath);
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
-
     this.loadTreeItemsHierarchy(path, false).then(
       () => {
         let item = NexlSourcesService.makeNewFileItem(path, fileName);
@@ -97,6 +96,32 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.updateItem(item.value);
       }
     );
+  }
+
+  createNewFileInTree(relativePath: string) {
+    // is file exists ?
+    if (this.findItemByRelativePath(relativePath) === undefined) {
+      this.createNewFileInTreeInner(relativePath);
+      return;
+    }
+
+    // renaming item
+    const newRelativePath = relativePath + '.' + Math.random();
+    this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, {
+      oldRelativePath: relativePath,
+      oldLabel: UtilsService.resolveFileName(relativePath),
+      newRelativePath: newRelativePath,
+      newLabel: UtilsService.resolveFileName(newRelativePath),
+      isDir: false
+    });
+
+    // marking old file as unmodified
+    this.updateItem({
+      relativePath: relativePath,
+      isChanged: false
+    });
+
+    this.createNewFileInTreeInner(newRelativePath);
   }
 
   tabClosed(relativePath: string) {
