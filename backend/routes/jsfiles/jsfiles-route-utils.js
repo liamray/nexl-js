@@ -24,7 +24,7 @@ function sortFilesFunc(a, b) {
 	return 0;
 }
 
-function getNexlSourceFileFullPath(relativePath) {
+function getJSFileFullPath(relativePath) {
 	if (!utils.isFilePathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
@@ -40,7 +40,7 @@ function getNexlSourceFileFullPath(relativePath) {
 	return Promise.resolve(fullPath);
 }
 
-function getNexlSourceDirFullPath(relativePath) {
+function getJSFilesRootDirPath(relativePath) {
 	if (!utils.isDirPathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
@@ -81,7 +81,7 @@ function makeFileItem(item, relativePath) {
 	}
 }
 
-function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
+function assembleItemsPromised(relativePath, jsFilesRootDir, items) {
 	return Promise.resolve().then(() => {
 			let files = [];
 			let dirs = [];
@@ -97,7 +97,7 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 					return Promise.reject('Unacceptable path');
 				}
 
-				const fullPath = path.join(nexlSourcesDir, itemRelativePath);
+				const fullPath = path.join(jsFilesRootDir, itemRelativePath);
 				const promise = fsx.stat(fullPath).then(
 					(stats) => {
 						if (stats.isDirectory()) {
@@ -127,8 +127,8 @@ function assembleItemsPromised(relativePath, nexlSourcesDir, items) {
 	);
 }
 
-function loadNexlSource(relativePath) {
-	return getNexlSourceFileFullPath(relativePath).then(
+function loadJSFile(relativePath) {
+	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
 			return fsx.exists(fullPath).then(
 				(isExists) => {
@@ -144,8 +144,8 @@ function loadNexlSource(relativePath) {
 	);
 }
 
-function saveNexlSource(relativePath, content) {
-	return getNexlSourceFileFullPath(relativePath).then(
+function saveJSFile(relativePath, content) {
+	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
 			const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
 			return fsx.writeFile(fullPath, content, {encoding: encoding});
@@ -153,14 +153,14 @@ function saveNexlSource(relativePath, content) {
 	);
 }
 
-function listNexlSources(relativePath) {
-	return getNexlSourceDirFullPath(relativePath).then(fsx.readdir).then(
+function listJSFiles(relativePath) {
+	return getJSFilesRootDirPath(relativePath).then(fsx.readdir).then(
 		(items) => assembleItemsPromised(relativePath, confMgmt.getNexlSourcesDir(), items)
 	);
 }
 
 function mkdir(relativePath) {
-	return getNexlSourceFileFullPath(relativePath).then(
+	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
 			return fsx.exists(fullPath).then((isExists) => {
 				if (isExists) {
@@ -174,11 +174,11 @@ function mkdir(relativePath) {
 }
 
 function deleteItem(relativePath) {
-	return getNexlSourceFileFullPath(relativePath).then(fsx.deleteItem);
+	return getJSFileFullPath(relativePath).then(fsx.deleteItem);
 }
 
 function rename(oldRelativePath, newRelativePath) {
-	return getNexlSourceFileFullPath(newRelativePath).then(
+	return getJSFileFullPath(newRelativePath).then(
 		(newFullPath) => {
 			return fsx.exists(newFullPath).then(
 				(isExists) => {
@@ -187,7 +187,7 @@ function rename(oldRelativePath, newRelativePath) {
 						return Promise.reject('Item with the same name already exists');
 					}
 
-					return getNexlSourceFileFullPath(oldRelativePath).then(
+					return getJSFileFullPath(oldRelativePath).then(
 						(oldFullPath) => {
 							return fsx.rename(oldFullPath, newFullPath);
 						}
@@ -225,9 +225,9 @@ function moveInner(sourceStuff, destStuff) {
 }
 
 function move(source, dest) {
-	return getNexlSourceFileFullPath(source).then(
+	return getJSFileFullPath(source).then(
 		(sourceFullPath) => {
-			return getNexlSourceDirFullPath(dest).then(
+			return getJSFilesRootDirPath(dest).then(
 				(destFullPath) => {
 					return moveInner(sourceFullPath, destFullPath);
 				}
@@ -237,9 +237,9 @@ function move(source, dest) {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.listNexlSources = listNexlSources;
-module.exports.loadNexlSource = loadNexlSource;
-module.exports.saveNexlSource = saveNexlSource;
+module.exports.listJSFiles = listJSFiles;
+module.exports.loadJSFile = loadJSFile;
+module.exports.saveJSFile = saveJSFile;
 module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;

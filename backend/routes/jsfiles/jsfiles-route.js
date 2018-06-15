@@ -159,7 +159,7 @@ router.post('/list-jsfiles', function (req, res, next) {
 	}
 
 
-	return jsfilesRouteUtils.listNexlSources(relativePath)
+	return jsfilesRouteUtils.listJSFiles(relativePath)
 		.then(data => res.send(data))
 		.catch(
 			(err) => {
@@ -181,7 +181,7 @@ router.post('/load-jsfile', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.loadNexlSource(relativePath)
+	return jsfilesRouteUtils.loadJSFile(relativePath)
 		.then(data => res.send(data))
 		.catch(
 			(err) => {
@@ -212,7 +212,7 @@ router.post('/save-jsfile', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.saveNexlSource(relativePath, content)
+	return jsfilesRouteUtils.saveJSFile(relativePath, content)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {
