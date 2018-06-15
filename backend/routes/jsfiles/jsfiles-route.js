@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const j79 = require('j79-utils');
 
-const jsfilesRouteUtils = require('./jsfiles-route-utils');
+const jsfilesUtils = require('../../api/jsfiles-utils');
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const logger = require('../../api/logger');
@@ -39,7 +39,7 @@ router.post('/move', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.move(source, dest)
+	return jsfilesUtils.move(source, dest)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {
@@ -77,7 +77,7 @@ router.post('/rename', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.rename(relativePath, newRelativePath)
+	return jsfilesUtils.rename(relativePath, newRelativePath)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {
@@ -106,7 +106,7 @@ router.post('/delete', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.deleteItem(relativePath)
+	return jsfilesUtils.deleteItem(relativePath)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {
@@ -136,7 +136,7 @@ router.post('/make-dir', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.mkdir(relativePath)
+	return jsfilesUtils.mkdir(relativePath)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {
@@ -159,7 +159,7 @@ router.post('/list-jsfiles', function (req, res, next) {
 	}
 
 
-	return jsfilesRouteUtils.listJSFiles(relativePath)
+	return jsfilesUtils.listJSFiles(relativePath)
 		.then(data => res.send(data))
 		.catch(
 			(err) => {
@@ -181,7 +181,7 @@ router.post('/load-jsfile', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.loadJSFile(relativePath)
+	return jsfilesUtils.loadJSFile(relativePath)
 		.then(data => res.send(data))
 		.catch(
 			(err) => {
@@ -212,7 +212,7 @@ router.post('/save-jsfile', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesRouteUtils.saveJSFile(relativePath, content)
+	return jsfilesUtils.saveJSFile(relativePath, content)
 		.then(() => res.send({}))
 		.catch(
 			(err) => {

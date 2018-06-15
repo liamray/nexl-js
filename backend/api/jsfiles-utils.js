@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const fsx = require('../../api/fsx');
-const logger = require('../../api/logger');
-const confMgmt = require('../../api/conf-mgmt');
-const utils = require('../../api/utils');
+const fsx = require('./fsx');
+const logger = require('./logger');
+const confMgmt = require('./conf-mgmt');
+const utils = require('./utils');
 
 const CHILD_ITEM = [
 	{
