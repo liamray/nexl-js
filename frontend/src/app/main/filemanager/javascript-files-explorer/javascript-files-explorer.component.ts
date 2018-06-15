@@ -5,8 +5,8 @@ import * as $ from 'jquery';
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {GlobalComponentsService} from "../../services/global-components.service";
-import {NexlSourcesService} from "../../services/nexl-sources.service";
 import {UtilsService} from "../../services/utils.service";
+import {JSFilesService} from "../../services/js-files.service";
 
 @Component({
   selector: '.app-javascript-files-explorer',
@@ -25,7 +25,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   treeSource = [];
   rightClickSelectedElement: any;
 
-  constructor(private nexlSourcesService: NexlSourcesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
+  constructor(private jsFilesService: JSFilesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
     this.messageService.getMessage().subscribe(message => {
       this.handleMessages(message);
     });
@@ -88,7 +88,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
     this.loadTreeItemsHierarchy(path, false).then(
       () => {
-        let item = NexlSourcesService.makeNewFileItem(path, fileName);
+        let item = JSFilesService.makeNewFileItem(path, fileName);
         const parentItem = this.findItemByRelativePath(path);
         this.insertFileItemInner(item, parentItem);
         item.value.isChanged = true;
@@ -279,7 +279,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   refreshTreeSource() {
     this.treeSource = [];
 
-    this.nexlSourcesService.listNexlSources().subscribe(
+    this.jsFilesService.listNexlSources().subscribe(
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
@@ -424,7 +424,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      this.nexlSourcesService.rename(this.rightClickSelectedElement.value.relativePath, data.newRelativePath).subscribe(
+      this.jsFilesService.rename(this.rightClickSelectedElement.value.relativePath, data.newRelativePath).subscribe(
         () => {
           this.renameInner(data);
         },
@@ -514,7 +514,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       value.mustLoadChildItems = false;
       const child = element.nextItem;
-      this.nexlSourcesService.listNexlSources(value.relativePath).subscribe(
+      this.jsFilesService.listNexlSources(value.relativePath).subscribe(
         (data: any) => {
           this.tree.removeItem(child);
           this.tree.addTo(data, item);
@@ -550,9 +550,9 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     this.globalComponentsService.loader.open();
 
-    this.nexlSourcesService.makeDir(newDirRelativePath).subscribe(
+    this.jsFilesService.makeDir(newDirRelativePath).subscribe(
       () => {
-        this.insertDirItem(NexlSourcesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
+        this.insertDirItem(JSFilesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Created new directory');
       },
@@ -580,7 +580,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   deleteItemInnerInner(targetItem: any) {
     this.globalComponentsService.loader.open();
-    this.nexlSourcesService.deleteItem(targetItem.value.relativePath).subscribe(
+    this.jsFilesService.deleteItem(targetItem.value.relativePath).subscribe(
       () => {
         this.tree.removeItem(targetItem);
         this.closeDeletedTabs(targetItem.value);
@@ -652,7 +652,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    const item: any = NexlSourcesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+    const item: any = JSFilesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
 
     this.loadChildItems(this.rightClickSelectedElement).then(
       () => {
@@ -846,7 +846,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveFileItem(data: any) {
     // creating root item
-    const item2Add: any = NexlSourcesService.makeNewFileItem(data.dropPath, data.item2Move.value.label);
+    const item2Add: any = JSFilesService.makeNewFileItem(data.dropPath, data.item2Move.value.label);
     item2Add.value.isChanged = data.item2Move.value.isChanged;
     item2Add.value.isNewFile = data.item2Move.value.isNewFile;
 
@@ -873,7 +873,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       // is dir ?
       if (item.value.isDir === true) {
-        newItem = NexlSourcesService.makeEmptyDirItem(newRelativePath, item.value.label);
+        newItem = JSFilesService.makeEmptyDirItem(newRelativePath, item.value.label);
         newItem.value.mustLoadChildItems = item.value.mustLoadChildItems;
         // does it have sub items ?
         if (newItem.value.mustLoadChildItems !== true) {
@@ -883,7 +883,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       // is file ?
       if (item.value.isDir !== true) {
-        newItem = NexlSourcesService.makeNewFileItem(newRelativePath, item.value.label);
+        newItem = JSFilesService.makeNewFileItem(newRelativePath, item.value.label);
         newItem.value.isChanged = item.value.isChanged;
         newItem.value.isNewFile = item.value.isNewFile;
         if (newItem.value.isChanged === true) {
@@ -899,7 +899,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveDirItem(data: any) {
     // creating root item
-    const item2Add: any = NexlSourcesService.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
+    const item2Add: any = JSFilesService.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
 
     // collecting existing items under the item2Move item
     const allItems = this.tree.getItems();
@@ -956,7 +956,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     // move in file system
-    this.nexlSourcesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
+    this.jsFilesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
       () => {
         this.moveItemInnerInner(data);
       },

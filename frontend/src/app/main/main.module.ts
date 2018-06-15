@@ -44,7 +44,6 @@ import {GlobalComponentsService} from "./services/global-components.service";
 import {SettingsComponent} from './settingsdialogs/settings/settings.component';
 import {HttpRequestService} from "./services/http.requests.service";
 import {AuthService} from "./services/auth.service";
-import {NexlSourcesService} from "./services/nexl-sources.service";
 import {MessageService} from "./services/message.service";
 import {RegisterComponent} from "./authdialogs/register/register.component";
 import {GenerateTokenComponent} from "./authdialogs/generatetoken/generatetoken.component";
@@ -60,6 +59,7 @@ import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel
 import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {AboutComponent} from "./misc/about/about.component";
+import {JSFilesService} from "./services/js-files.service";
 
 
 @NgModule({
@@ -123,7 +123,7 @@ import {AboutComponent} from "./misc/about/about.component";
   providers: [
     GlobalComponentsService,
     AuthService,
-    NexlSourcesService,
+    JSFilesService,
     HttpRequestService,
     MessageService,
     LocalStorageService,

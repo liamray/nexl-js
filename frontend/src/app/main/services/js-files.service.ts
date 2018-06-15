@@ -13,7 +13,7 @@ const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
 
 @Injectable()
-export class NexlSourcesService {
+export class JSFilesService {
   constructor(private httpClient: HttpClient) {
   }
 
@@ -56,7 +56,7 @@ export class NexlSourcesService {
 
   static substIcons(json: any) {
     json.forEach((item) => {
-      NexlSourcesService.substIcon(item);
+      JSFilesService.substIcon(item);
     });
   }
 
@@ -66,7 +66,7 @@ export class NexlSourcesService {
     };
     return this.httpClient.post<any>(LIST_NEXL_SOURCES_URL, params).map(
       (data) => {
-        NexlSourcesService.substIcons(data);
+        JSFilesService.substIcons(data);
         return data;
       }
     );
