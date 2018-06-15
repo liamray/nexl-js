@@ -20,7 +20,7 @@ const notFoundInterceptor = require('../interceptors/404-interceptor');
 const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
 
 const root = require('../routes/root/root-route');
-const sourcesRoute = require('../routes/sources/sources-route');
+const jsFilesRoute = require('../routes/jsfiles/jsfiles-route');
 const general = require('../routes/general/general-route');
 const authRoute = require('../routes/auth/auth-route');
 const permissionsRoute = require('../routes/permissions/permissions-route');
@@ -80,7 +80,7 @@ class NexlApp {
 
 		// nexl routes
 		this.nexlApp.use('/', root);
-		this.nexlApp.use('/nexl/sources/', sourcesRoute);
+		this.nexlApp.use('/nexl/jsfiles/', jsFilesRoute);
 		this.nexlApp.use('/nexl/auth/', authRoute);
 		this.nexlApp.use('/nexl/permissions/', permissionsRoute);
 		this.nexlApp.use('/nexl/settings/', settingsRoute);

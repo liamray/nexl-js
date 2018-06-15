@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const j79 = require('j79-utils');
 
-const sources = require('./sources-route-impl');
+const jsfilesRouteUtils = require('./jsfiles-route-utils');
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const logger = require('../../api/logger');
@@ -39,7 +39,8 @@ router.post('/move', function (req, res, next) {
 		return;
 	}
 
-	return sources.move(source, dest).then(() => res.send({}))
+	return jsfilesRouteUtils.move(source, dest)
+		.then(() => res.send({}))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, err);
@@ -76,7 +77,8 @@ router.post('/rename', function (req, res, next) {
 		return;
 	}
 
-	return sources.rename(relativePath, newRelativePath).then(() => res.send({}))
+	return jsfilesRouteUtils.rename(relativePath, newRelativePath)
+		.then(() => res.send({}))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, err);
@@ -104,7 +106,8 @@ router.post('/delete', function (req, res, next) {
 		return;
 	}
 
-	return sources.deleteItem(relativePath).then(() => res.send({}))
+	return jsfilesRouteUtils.deleteItem(relativePath)
+		.then(() => res.send({}))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -133,7 +136,8 @@ router.post('/make-dir', function (req, res, next) {
 		return;
 	}
 
-	return sources.mkdir(relativePath).then(() => res.send({}))
+	return jsfilesRouteUtils.mkdir(relativePath)
+		.then(() => res.send({}))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -142,9 +146,9 @@ router.post('/make-dir', function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// list-nexl-source
+// list-jsfiles
 //////////////////////////////////////////////////////////////////////////////
-router.post('/list-nexl-sources', function (req, res, next) {
+router.post('/list-jsfiles', function (req, res, next) {
 	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
 
@@ -155,7 +159,8 @@ router.post('/list-nexl-sources', function (req, res, next) {
 	}
 
 
-	return sources.listNexlSources(relativePath).then(data => res.send(data))
+	return jsfilesRouteUtils.listNexlSources(relativePath)
+		.then(data => res.send(data))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to list nexl sources for [%s] user. Reason : [%s]', username, err);
@@ -164,9 +169,9 @@ router.post('/list-nexl-sources', function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// load-nexl-source
+// load-jsfile
 //////////////////////////////////////////////////////////////////////////////
-router.post('/load-nexl-source', function (req, res, next) {
+router.post('/load-jsfile', function (req, res, next) {
 	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
 
@@ -176,7 +181,8 @@ router.post('/load-nexl-source', function (req, res, next) {
 		return;
 	}
 
-	return sources.loadNexlSource(relativePath).then(data => res.send(data))
+	return jsfilesRouteUtils.loadNexlSource(relativePath)
+		.then(data => res.send(data))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to load a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -185,9 +191,9 @@ router.post('/load-nexl-source', function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// save-nexl-source
+// save-jsfile
 //////////////////////////////////////////////////////////////////////////////
-router.post('/save-nexl-source', function (req, res, next) {
+router.post('/save-jsfile', function (req, res, next) {
 	let relativePath = req.body['relativePath'];
 	let content = req.body['content'];
 
@@ -206,7 +212,8 @@ router.post('/save-nexl-source', function (req, res, next) {
 		return;
 	}
 
-	return sources.saveNexlSource(relativePath, content).then(() => res.send({}))
+	return jsfilesRouteUtils.saveNexlSource(relativePath, content)
+		.then(() => res.send({}))
 		.catch(
 			(err) => {
 				logger.log.error('Failed to save a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);

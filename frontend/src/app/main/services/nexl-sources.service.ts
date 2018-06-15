@@ -3,11 +3,11 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
-const LIST_NEXL_SOURCES_URL = UtilsService.prefixNexlUrl('/sources/list-nexl-sources');
-const MAKE_DIR = UtilsService.prefixNexlUrl('/sources/make-dir');
-const DELETE_ITEM = UtilsService.prefixNexlUrl('/sources/delete');
-const RENAME_ITEM = UtilsService.prefixNexlUrl('/sources/rename');
-const MOVE_ITEM = UtilsService.prefixNexlUrl('/sources/move');
+const LIST_NEXL_SOURCES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-jsfiles');
+const MAKE_DIR = UtilsService.prefixNexlUrl('/jsfiles/make-dir');
+const DELETE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/delete');
+const RENAME_ITEM = UtilsService.prefixNexlUrl('/jsfiles/rename');
+const MOVE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/move');
 
 const DIR_ICON = './nexl/site/images/dir.png';
 const FILE_ICON = './nexl/site/images/js-file.png';
