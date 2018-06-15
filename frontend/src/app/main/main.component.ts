@@ -9,6 +9,7 @@ import {UtilsService} from "./services/utils.service";
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';
 export const F8 = 'F8';
+export const ALT_F7 = 'ALT_F7';
 
 @Component({
   selector: 'app-main',
@@ -20,11 +21,18 @@ export class MainComponent implements OnInit {
   constructor(private authService: AuthService, private messageService: MessageService, private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
   }
 
+  // todo : improve this code
   discoverKeyCombination(event) {
     if (event.ctrlKey || event.metaKey) {
       switch (String.fromCharCode(event.which).toLowerCase()) {
         case 's':
           return CTRL_S;
+      }
+    }
+
+    if (event.altKey || event.metaKey) {
+      if (event.which === 118) {
+        return ALT_F7;
       }
     }
 
@@ -60,6 +68,12 @@ export class MainComponent implements OnInit {
           case F9 : {
             event.preventDefault();
             this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
+            return;
+          }
+
+          case ALT_F7 : {
+            event.preventDefault();
+            this.messageService.sendMessage(MESSAGE_TYPE.FIND_FILE);
             return;
           }
         }

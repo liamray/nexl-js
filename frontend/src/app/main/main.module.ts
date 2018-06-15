@@ -60,6 +60,7 @@ import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {AboutComponent} from "./misc/about/about.component";
 import {JSFilesService} from "./services/js-files.service";
+import {FindFileComponent} from "./misc/findfile/findfile.component";
 
 
 @NgModule({
@@ -111,7 +112,8 @@ import {JSFilesService} from "./services/js-files.service";
     MessageBoxComponent,
     ConfirmBoxComponent,
     ArgsComponent,
-    AboutComponent
+    AboutComponent,
+    FindFileComponent
   ],
 
   imports: [

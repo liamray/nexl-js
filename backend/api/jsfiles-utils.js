@@ -312,5 +312,5 @@ module.exports.rename = rename;
 module.exports.move = move;
 
 module.exports.cacheJSFiles = cacheJSFiles;
-module.exports.JS_FILES_CACHED = JS_FILES_CACHE;
+module.exports.listAllJSFiles = () => JS_FILES_CACHE;
 // --------------------------------------------------------------------------------

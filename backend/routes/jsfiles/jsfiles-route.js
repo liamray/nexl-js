@@ -14,7 +14,15 @@ const router = express.Router();
 // list-all-jsfiles
 //////////////////////////////////////////////////////////////////////////////
 router.post('/list-all-jsfiles', function (req, res, next) {
-	res.send(jsfilesUtils.JS_FILES_CACHED);
+	const username = utils.getLoggedInUsername(req);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to list all JavaScript files', username);
+		utils.sendError(res, 'No read permissions');
+		return;
+	}
+
+	res.send(jsfilesUtils.listAllJSFiles());
 });
 
 //////////////////////////////////////////////////////////////////////////////
