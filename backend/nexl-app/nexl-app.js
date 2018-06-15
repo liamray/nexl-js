@@ -10,6 +10,7 @@ const util = require('util');
 const figlet = require('figlet');
 
 const confMgmt = require('../api/conf-mgmt');
+const jsFilesUtils = require('../api/jsfiles-utils');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
 const fsx = require('../api/fsx');
@@ -272,6 +273,7 @@ class NexlApp {
 			.then(confMgmt.initPasswords)
 			.then(confMgmt.initAdmins)
 			.then(confMgmt.createNexlSourcesDirIfNeeded)
+			.then(jsFilesUtils.cacheJSFiles)
 			.then(
 				() => {
 					this.applyInterceptors();

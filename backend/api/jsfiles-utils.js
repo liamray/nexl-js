@@ -1,11 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const j79 = require('j79-utils');
 
 const fsx = require('./fsx');
 const logger = require('./logger');
 const confMgmt = require('./conf-mgmt');
 const utils = require('./utils');
+
+let JS_FILES_CACHE = [];
 
 const CHILD_ITEM = [
 	{
@@ -154,9 +157,10 @@ function saveJSFile(relativePath, content) {
 }
 
 function listJSFiles(relativePath) {
-	return getJSFilesRootDirPath(relativePath).then(fsx.readdir).then(
-		(items) => assembleItemsPromised(relativePath, confMgmt.getNexlSourcesDir(), items)
-	);
+	return getJSFilesRootDirPath(relativePath).then(fsx.readdir)
+		.then(
+			(items) => assembleItemsPromised(relativePath, confMgmt.getNexlSourcesDir(), items)
+		);
 }
 
 function mkdir(relativePath) {
@@ -236,6 +240,68 @@ function move(source, dest) {
 	);
 }
 
+function gatherAllFiles(dir) {
+	return fsx.readdir(dir)
+		.then(
+			(items) => {
+				const promises = [];
+				items.forEach(
+					(item) => {
+						const fullPath = path.join(dir, item);
+						const promise = fsx.stat(fullPath).then(
+							(stats) => {
+								if (stats.isFile()) {
+									return Promise.resolve(fullPath);
+								}
+
+								if (stats.isDirectory()) {
+									return gatherAllFiles(fullPath);
+								}
+
+								logger.log.warn('Unknown FS object [%s] ( not a file or directory ). Skipping...', fullPath);
+								return Promise.resolve();
+							}
+						);
+						promises.push(promise);
+					}
+				);
+
+				let result = [];
+				return Promise.all(promises).then(
+					(allResult) => {
+						allResult.forEach(
+							(item) => {
+								if (j79.isArray(item)) {
+									result = result.concat(item);
+								}
+
+								if (j79.isString(item)) {
+									result.push(item);
+								}
+							}
+						);
+
+						return Promise.resolve(result);
+					}
+				);
+			}
+		);
+}
+
+function cacheJSFiles() {
+	const jsFilesRootDir = confMgmt.getNexlSourcesDir();
+
+	logger.log.info('Caching JavaScript file names located in [%s] directory', jsFilesRootDir);
+
+	return gatherAllFiles(jsFilesRootDir).then(
+		(result) => {
+			JS_FILES_CACHE = result;
+			logger.log.info('Found and cached [%s] files located in [%s] directory', JS_FILES_CACHE.length, jsFilesRootDir);
+			return Promise.resolve();
+		}
+	);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.listJSFiles = listJSFiles;
 module.exports.loadJSFile = loadJSFile;
@@ -244,4 +310,7 @@ module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
+
+module.exports.cacheJSFiles = cacheJSFiles;
+module.exports.JS_FILES_CACHED = JS_FILES_CACHE;
 // --------------------------------------------------------------------------------
