@@ -19,6 +19,7 @@ export class FindFileComponent implements OnInit {
 
   source: string[] = [];
   hasReadPermission: boolean = false;
+  unsavedTabs: string[] = [];
 
   constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService, private jsFilesService: JSFilesService) {
     this.messageService.getMessage().subscribe(
@@ -33,9 +34,47 @@ export class FindFileComponent implements OnInit {
             this.hasReadPermission = message.data.hasReadPermission;
             return;
           }
+
+          case MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE: {
+            this.addUnsavedTab(message.data);
+            return;
+          }
+
+          case MESSAGE_TYPE.OPEN_NEW_TAB: {
+            this.addUnsavedTab(message.data.relativePath);
+            return;
+          }
+
+          case MESSAGE_TYPE.TAB_CLOSED: {
+            this.removeUnsavedTab(message.data);
+            return;
+          }
+
+          case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
+            if (message.data.isNewFile === false) {
+              this.removeUnsavedTab(message.data.relativePath);
+            }
+            if (message.data.isNewFile === true) {
+              this.addUnsavedTab(message.data.relativePath);
+            }
+            return;
+          }
         }
       }
     );
+  }
+
+  removeUnsavedTab(relativePath: string) {
+    let index;
+    while ((index = this.unsavedTabs.indexOf(relativePath)) >= 0) {
+      this.unsavedTabs.splice(index, 1);
+    }
+  }
+
+  addUnsavedTab(relativePath: string) {
+    if (this.unsavedTabs.indexOf(relativePath) < 0) {
+      this.unsavedTabs.push(relativePath);
+    }
   }
 
   findFile() {
@@ -48,7 +87,7 @@ export class FindFileComponent implements OnInit {
 
     this.jsFilesService.listAllJSFiles().subscribe(
       (allJSFiles) => {
-        this.source = allJSFiles;
+        this.source = this.unsavedTabs.concat(allJSFiles);
         this.globalComponentsService.loader.close();
         this.findFileWindow.open();
       },

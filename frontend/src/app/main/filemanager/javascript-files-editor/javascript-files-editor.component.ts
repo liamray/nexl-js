@@ -261,9 +261,9 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   createJSFile(data) {
-    const nexlSource = this.loadJSFileInner(data);
-    this.changeFileStatus(nexlSource.idSeqNr, true);
-    this.setNewFile(nexlSource.idSeqNr, true);
+    const jsFile = this.loadJSFileInner(data);
+    this.changeFileStatus(jsFile.idSeqNr, true);
+    this.setNewFile(jsFile.idSeqNr, true);
   }
 
   closeAllTabs() {
