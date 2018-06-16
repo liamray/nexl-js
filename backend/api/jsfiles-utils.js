@@ -153,7 +153,19 @@ function saveJSFile(relativePath, content) {
 			const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
 			return fsx.writeFile(fullPath, content, {encoding: encoding});
 		}
-	);
+	)
+		.then(cacheJSFiles);
+	/*
+			.then( // updating cache
+				() => {
+					if (JS_FILES_CACHE.indexOf(relativePath) < 0) {
+						JS_FILES_CACHE.push(relativePath);
+					}
+
+					JS_FILES_CACHE.sort();
+				}
+			);
+	*/
 }
 
 function listJSFiles(relativePath) {
@@ -178,7 +190,23 @@ function mkdir(relativePath) {
 }
 
 function deleteItem(relativePath) {
-	return getJSFileFullPath(relativePath).then(fsx.deleteItem);
+	return getJSFileFullPath(relativePath)
+		.then(fsx.deleteItem)
+		.then(cacheJSFiles);
+	/*
+			.then(
+				// updating cache
+				() => {
+					JS_FILES_CACHE.forEach(
+						(item, index) => {
+							if (item.indexOf(relativePath) === 0) {
+								JS_FILES_CACHE.splice(index, 1);
+							}
+						}
+					);
+				}
+			);
+	*/
 }
 
 function rename(oldRelativePath, newRelativePath) {
@@ -200,7 +228,26 @@ function rename(oldRelativePath, newRelativePath) {
 				}
 			);
 		}
-	);
+	)
+		.then(cacheJSFiles);
+	/*
+			.then(
+				// updating cache
+				() => {
+					JS_FILES_CACHE.forEach(
+						(item, index) => {
+							if (item.indexOf(oldRelativePath) === 0) {
+								JS_FILES_CACHE[index] = newRelativePath;
+							}
+						}
+					);
+
+					JS_FILES_CACHE.sort();
+
+					return Promise.resolve();
+				}
+			);
+	*/
 }
 
 function moveInner(sourceStuff, destStuff) {
@@ -237,7 +284,26 @@ function move(source, dest) {
 				}
 			);
 		}
-	);
+	)
+		.then(cacheJSFiles);
+
+	/*
+				// updating cache
+				() => {
+					JS_FILES_CACHE.forEach(
+						(item, index) => {
+							if (item.indexOf(source) === 0) {
+								const baseName = path.basename(source);
+								JS_FILES_CACHE[index] = path.join(path.sep, dest, baseName);
+							}
+						}
+					);
+
+					JS_FILES_CACHE.sort();
+
+					return Promise.resolve();
+				}
+	*/
 }
 
 function gatherAllFiles(relativePath) {
@@ -297,6 +363,7 @@ function cacheJSFiles() {
 	return gatherAllFiles(path.sep).then(
 		(result) => {
 			JS_FILES_CACHE = result;
+			JS_FILES_CACHE.sort();
 			logger.log.info('Found and cached [%s] files located in [%s] directory', JS_FILES_CACHE.length, jsFilesRootDir);
 			return Promise.resolve();
 		}

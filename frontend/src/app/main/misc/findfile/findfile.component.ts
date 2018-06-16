@@ -59,6 +59,21 @@ export class FindFileComponent implements OnInit {
             }
             return;
           }
+
+          case MESSAGE_TYPE.ITEM_MOVED: {
+            this.itemMoved(message.data);
+            return;
+          }
+        }
+      }
+    );
+  }
+
+  itemMoved(data: any) {
+    this.unsavedTabs.forEach(
+      (item, index) => {
+        if (item.indexOf(data.oldRelativePath) === 0) {
+          this.unsavedTabs[index] = data.newRelativePath + item.substr(data.oldRelativePath.length);
         }
       }
     );
@@ -132,6 +147,10 @@ export class FindFileComponent implements OnInit {
   }
 
   loadJSFile() {
+    if (this.source.indexOf(this.input.val()) < 0) {
+      return;
+    }
+
     this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
       relativePath: this.input.val()
     });

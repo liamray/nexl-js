@@ -3,7 +3,7 @@ const router = express.Router();
 
 const utils = require('../../api/utils');
 const security = require('../../api/security');
-const cmdLineArgs = require('../../api/cmd-line-args');
+const jsFilesUtils = require('../../api/jsfiles-utils');
 const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
@@ -46,9 +46,17 @@ router.post('/save', function (req, res, next) {
 	const data = req.body;
 	delete data[NEXL_HOME_DIR];
 	logger.log.level = data['log-level'];
+	const jsRootDir = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
 
 	return confMgmt.saveSettings(data).then(
-		() => res.send({})).catch(
+		() => {
+			res.send({});
+			// is js root dir was changed ?
+			if (jsRootDir !== data[confMgmt.SETTINGS.NEXL_SOURCES_DIR]) {
+				// reloading cache
+				jsFilesUtils.cacheJSFiles();
+			}
+		}).catch(
 		(err) => {
 			logger.log.error('Failed to save settings. Reason : [%s]', err);
 			utils.sendError(res, err);
