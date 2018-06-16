@@ -40,6 +40,7 @@ export class MainMenuComponent implements AfterViewInit {
   }
 
   updateSaveMenuItem() {
+    this.mainMenu.disable('main-menu-find-file', !this.hasWritePermission);
     this.mainMenu.disable('main-menu-save', this.tabsCount < 1 || !this.hasWritePermission);
     this.mainMenu.disable('main-menu-close-all', this.tabsCount < 1);
 

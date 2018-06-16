@@ -136,8 +136,8 @@ function loadJSFile(relativePath) {
 			return fsx.exists(fullPath).then(
 				(isExists) => {
 					if (!isExists) {
-						logger.log.error('The [%s] nexl source file doesn\'t exist', fullPath);
-						return Promise.reject('nexl sources dir doesn\'t exist !');
+						logger.log.error('The [%s] JavaScript file doesn\'t exist', fullPath);
+						return Promise.reject('JavaScript file doesn\'t exist !');
 					}
 
 					const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
@@ -240,25 +240,27 @@ function move(source, dest) {
 	);
 }
 
-function gatherAllFiles(dir) {
-	return fsx.readdir(dir)
+function gatherAllFiles(relativePath) {
+	const jsFilesRootDir = confMgmt.getNexlSourcesDir();
+	const listItemsFullPath = path.join(jsFilesRootDir, relativePath);
+	return fsx.readdir(listItemsFullPath)
 		.then(
 			(items) => {
 				const promises = [];
 				items.forEach(
 					(item) => {
-						const fullPath = path.join(dir, item);
-						const promise = fsx.stat(fullPath).then(
+						const itemFullPath = path.join(listItemsFullPath, item);
+						const promise = fsx.stat(itemFullPath).then(
 							(stats) => {
 								if (stats.isFile()) {
-									return Promise.resolve(fullPath);
+									return Promise.resolve(path.join(relativePath, item));
 								}
 
 								if (stats.isDirectory()) {
-									return gatherAllFiles(fullPath);
+									return gatherAllFiles(path.join(relativePath, item));
 								}
 
-								logger.log.warn('Unknown FS object [%s] ( not a file or directory ). Skipping...', fullPath);
+								logger.log.warn('Unknown FS object [%s] ( not a file or directory ). Skipping...', itemFullPath);
 								return Promise.resolve();
 							}
 						);
@@ -290,10 +292,9 @@ function gatherAllFiles(dir) {
 
 function cacheJSFiles() {
 	const jsFilesRootDir = confMgmt.getNexlSourcesDir();
-
 	logger.log.info('Caching JavaScript file names located in [%s] directory', jsFilesRootDir);
 
-	return gatherAllFiles(jsFilesRootDir).then(
+	return gatherAllFiles(path.sep).then(
 		(result) => {
 			JS_FILES_CACHE = result;
 			logger.log.info('Found and cached [%s] files located in [%s] directory', JS_FILES_CACHE.length, jsFilesRootDir);

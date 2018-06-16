@@ -17,19 +17,33 @@ export class FindFileComponent implements OnInit {
   @ViewChild('okButton') okButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  source: string[] = ['aaa', 'bbb', 'ccc'];
+  source: string[] = [];
+  hasReadPermission: boolean = false;
 
   constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService, private jsFilesService: JSFilesService) {
     this.messageService.getMessage().subscribe(
       (message) => {
-        if (message.type === MESSAGE_TYPE.FIND_FILE) {
-          this.findFile();
+        switch (message.type) {
+          case MESSAGE_TYPE.FIND_FILE : {
+            this.findFile();
+            return;
+          }
+
+          case MESSAGE_TYPE.AUTH_CHANGED : {
+            this.hasReadPermission = message.data.hasReadPermission;
+            return;
+          }
         }
       }
     );
   }
 
   findFile() {
+    if (!this.hasReadPermission) {
+      return;
+    }
+
+    this.input.val('');
     this.globalComponentsService.loader.open();
 
     this.jsFilesService.listAllJSFiles().subscribe(
@@ -61,6 +75,7 @@ export class FindFileComponent implements OnInit {
 
   onKeyPress(event) {
     if (event.keyCode === 13) {
+      this.loadJSFile();
     }
   }
 
@@ -70,5 +85,17 @@ export class FindFileComponent implements OnInit {
   };
 
   onOk() {
+    this.loadJSFile();
+  }
+
+  onSelect(event: any) {
+    this.loadJSFile();
+  }
+
+  loadJSFile() {
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
+      relativePath: this.input.val()
+    });
+    this.findFileWindow.close();
   }
 }

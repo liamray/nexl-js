@@ -827,8 +827,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
-      relativePath: item.value.relativePath,
-      label: item.value.label
+      relativePath: item.value.relativePath
     });
   }
 

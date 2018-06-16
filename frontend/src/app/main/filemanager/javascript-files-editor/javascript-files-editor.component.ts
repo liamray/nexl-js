@@ -464,6 +464,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   loadJSFile(data: any) {
+    data.label = UtilsService.resolveFileName(data.relativePath);
+
     return new Promise((resolve, reject) => {
       // is tab already opened ?
       const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
@@ -684,7 +686,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       (current, newItem, index) => {
         const data: any = {};
         data.relativePath = newItem[RELATIVE_PATH];
-        data.label = UtilsService.resolveFileName(data.relativePath);
 
         return current.then(
           () => {
