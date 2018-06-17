@@ -58,7 +58,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --nexl-home=/path/to/nexl/home/dir</span><br/> This might be usefull if you need to start multiple nexl server instances<br/> By default nexl home dir located in [${HOME}/.nexl] directory </p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -66,13 +66,13 @@
 
               <div style="clear: both"></div>
 
-              <!--nexl sources dir-->
+              <!--js files root dir-->
               <div class="item">
-                <label>nexl sources dir</label>
+                <label>JS files root dir</label>
                 <jqxInput
-                  id="nexlSourcesDir"
-                  name="nexlSourcesDir"
-                  [(ngModel)]="settings['nexl-sources-dir']"
+                  id="jsFilesRootDir"
+                  name="jsFilesRootDir"
+                  [(ngModel)]="settings['js-files-root-dir']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -80,22 +80,22 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
-                  [content]="'<p style=\'text-align: left;\'>nexl sources directory contains JavaScript files to be exposed by nexl server via REST<br/> Those files appear in [nexl sources explorer] window<br/> For example, the [weight] variable from [examples.js] file located in the nexl sources dir<br/> will be exposed via REST in the following way :<br/> <span style=\'margin-left:30px; font-style: italic\'>http://your-nexl-server:8080/examples.js?expression=${weight}</span> </p>'">
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>JavaScript files root dir points to your configuration files directory<br/>This directory exposed via REST and you can see and manage those files in JS files explorer</p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
               </div>
 
               <div style="clear: both"></div>
 
-              <!--nexl sources encoding-->
+              <!--js files encoding-->
               <div class="item" style="margin-top: 15px;">
-                <label>nexl sources encoding</label>
+                <label>JS files encoding</label>
                 <jqxDropDownList
                   style="margin-top: -4px;"
-                  name="nexlSourcesEncoding"
-                  #nexlSourcesEncoding
-                  [(ngModel)]="settings['nexl-sources-encoding']"
+                  name="jsFilesEncoding"
+                  #jsFilesEncoding
+                  [(ngModel)]="settings['js-files-encoding']"
                   [width]="width - 50"
                   [height]="25"
                   [dropDownHeight]="53"
@@ -106,7 +106,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -129,7 +129,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -151,7 +151,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -176,7 +176,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -198,7 +198,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -222,7 +222,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -244,7 +244,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -266,7 +266,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -288,7 +288,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -314,7 +314,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -338,7 +338,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -360,7 +360,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
@@ -382,7 +382,7 @@
               <div class="tooltip">
                 <jqxTooltip
                   [position]="'mouse'"
-                  [autoHideDelay]="100000"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>

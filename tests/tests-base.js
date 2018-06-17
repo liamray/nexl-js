@@ -28,7 +28,7 @@ const conf = {
 	version: version,
 	data: {}
 };
-conf.data[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSoucesDir;
+conf.data[confMgmt.SETTINGS.JS_FILES_ROOT_DIR] = nexlSoucesDir;
 const settingsFile = path.join(nexlHomeDir, confMgmt.CONF_FILES.SETTINGS);
 // updating nexl source dir in settings
 fs.writeFileSync(settingsFile, JSON.stringify(conf, null, 2), confMgmt.ENCODING_UTF8);
@@ -40,7 +40,7 @@ module.exports = require('../backend/api/logger').init().then(
 	() => {
 		return Promise.resolve({
 			NEXL_HOME_DIR: confMgmt.NEXL_HOME_DIR,
-			NEXL_SOURCES_DIR: nexlSoucesDir
+			JS_FILES_ROOT_DIR: nexlSoucesDir
 		});
 	}
 );

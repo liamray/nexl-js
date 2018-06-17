@@ -46,13 +46,13 @@ router.post('/save', function (req, res, next) {
 	const data = req.body;
 	delete data[NEXL_HOME_DIR];
 	logger.log.level = data['log-level'];
-	const jsRootDir = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.NEXL_SOURCES_DIR];
+	const jsRootDir = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.JS_FILES_ROOT_DIR];
 
 	return confMgmt.saveSettings(data).then(
 		() => {
 			res.send({});
 			// is js root dir was changed ?
-			if (jsRootDir !== data[confMgmt.SETTINGS.NEXL_SOURCES_DIR]) {
+			if (jsRootDir !== data[confMgmt.SETTINGS.JS_FILES_ROOT_DIR]) {
 				// reloading cache
 				jsFilesUtils.cacheJSFiles();
 			}

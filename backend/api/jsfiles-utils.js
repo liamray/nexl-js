@@ -140,7 +140,7 @@ function loadJSFile(relativePath) {
 						return Promise.reject('JavaScript file doesn\'t exist !');
 					}
 
-					const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+					const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.JS_FILES_ENCODING];
 					return fsx.readFile(fullPath, {encoding: encoding});
 				});
 		}
@@ -150,7 +150,7 @@ function loadJSFile(relativePath) {
 function saveJSFile(relativePath, content) {
 	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
-			const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.NEXL_SOURCES_ENCODING];
+			const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.JS_FILES_ENCODING];
 			return fsx.writeFile(fullPath, content, {encoding: encoding});
 		}
 	)

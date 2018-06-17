@@ -131,7 +131,7 @@ function start() {
 
 		settings[confMgmt.SETTINGS.HTTP_PORT] = TEST_PORT;
 		settings[confMgmt.SETTINGS.HTTP_BINDING] = TEST_HOST;
-		settings[confMgmt.SETTINGS.NEXL_SOURCES_DIR] = nexlSourcesDir;
+		settings[confMgmt.SETTINGS.JS_FILES_ROOT_DIR] = nexlSourcesDir;
 
 		return confMgmt.saveSettings(settings).then(() => {
 			return startInner();

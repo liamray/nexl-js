@@ -32,8 +32,8 @@ const CONF_FILES = {
 // --------------------------------------------------------------------------------
 // available options for SETTINGS
 const SETTINGS = {
-	NEXL_SOURCES_DIR: 'nexl-sources-dir',
-	NEXL_SOURCES_ENCODING: 'nexl-sources-encoding',
+	JS_FILES_ROOT_DIR: 'js-files-root-dir',
+	JS_FILES_ENCODING: 'js-files-encoding',
 	HTTP_TIMEOUT: 'http-timeout-sec',
 	LDAP_URL: 'ldap-url',
 
@@ -56,8 +56,8 @@ const DEF_VALUES = {};
 
 // SETTINGS default values
 DEF_VALUES[CONF_FILES.SETTINGS] = {};
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR] = () => path.join(osHomeDir(), 'nexl-sources');
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_ENCODING] = ENCODING_UTF8;
+DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(osHomeDir(), 'nexl-js-files');
+DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ENCODING] = ENCODING_UTF8;
 DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_TIMEOUT] = 10;
 DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_BINDING] = 'localhost';
 DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_PORT] = 8080;
@@ -88,12 +88,12 @@ const VALIDATION_SCHEMAS = {};
 // --------------------------------------------------------------------------------
 // SETTINGS validations
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS] = {};
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR] = (val) => {
+VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
 	if (!j79.isString(val) || val.length < 1) {
 		return 'nexl sources dir must be a non empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_ENCODING] = (val) => {
+VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ENCODING] = (val) => {
 	if (AVAILABLE_ENCODINGS.indexOf(val) < 0) {
 		return 'nexl sources encoding must be one of the following : [' + AVAILABLE_ENCODINGS.join(',') + ']';
 	}
@@ -420,9 +420,14 @@ function initTokens() {
 				return load(CONF_FILES.TOKENS); // preloading tokens
 			}
 
-			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-			logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-			return security.generateTokenAndSave(utils.ADMIN_USER);
+			return save({}, CONF_FILES.TOKENS)
+				.then(() => {
+						logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+						logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
+						return security.generateTokenAndSave(utils.ADMIN_USER);
+					}
+				);
+
 		}
 	)
 }
@@ -500,7 +505,7 @@ function createNexlHomeDirectoryIfNeeded() {
 }
 
 function createNexlSourcesDirIfNeeded() {
-	const nexlSourcesDir = CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
+	const nexlSourcesDir = CACHE[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
 
 	return fsx.exists(nexlSourcesDir).then(
 		(isExists) => {
@@ -556,7 +561,7 @@ module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
 
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
-module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.NEXL_SOURCES_DIR];
+module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
 module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
 
 module.exports.getCached = (fileName) => CACHE[fileName];

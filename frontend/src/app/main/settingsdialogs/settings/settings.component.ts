@@ -17,7 +17,7 @@ export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
   @ViewChild('validator') validator: jqxValidator;
-  @ViewChild('nexlSourcesEncoding') nexlSourcesEncoding: any;
+  @ViewChild('jsFilesEncoding') jsFilesEncoding: any;
   @ViewChild('httpTimeout') httpTimeout: any;
   @ViewChild('httpBinding') httpBiding: any;
   @ViewChild('httpPort') httpPort: any;
@@ -33,7 +33,7 @@ export class SettingsComponent {
 
   settings: any = {};
   isAdmin = false;
-  nexlSourcesDirBefore: string;
+  jsFilesRootDirBefore: string;
   isSaving = false;
   width = 190;
   encodings = [];
@@ -41,7 +41,7 @@ export class SettingsComponent {
 
   validationRules =
     [
-      {input: '#nexlSourcesDir', message: 'nexl sources dir is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#jsFilesRootDir', message: 'JS files root dir is required!', action: 'keyup, blur', rule: 'required'},
       {
         input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
@@ -104,7 +104,7 @@ export class SettingsComponent {
   }
 
   openInner() {
-    this.nexlSourcesDirBefore = undefined;
+    this.jsFilesRootDirBefore = undefined;
 
     // loading data
     this.http.post({}, '/settings/load', 'json').subscribe(
@@ -112,8 +112,8 @@ export class SettingsComponent {
         this.settings = data.body;
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings['log-level']);
-        this.nexlSourcesEncoding.val(this.settings['nexl-sources-encoding']);
-        this.nexlSourcesDirBefore = this.settings['nexl-sources-dir'];
+        this.jsFilesEncoding.val(this.settings['js-files-encoding']);
+        this.jsFilesRootDirBefore = this.settings['js-files-root-dir'];
         this.settingsWindow.open();
       },
       err => {
@@ -179,7 +179,7 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.notification.openSuccess('Updated settings');
-        if (this.nexlSourcesDirBefore !== this.settings['nexl-sources-dir']) {
+        if (this.jsFilesRootDirBefore !== this.settings['js-files-root-dir']) {
           this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
         }
       },
