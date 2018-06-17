@@ -203,7 +203,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
               return Promise.resolve(nextItem);
             }
 
-            return this.loadChildItems(item).then(
+            return this.loadChildItemsFromServer(item).then(
               () => {
                 this.expandItem(item, isExpand);
                 return Promise.resolve(nextItem);
@@ -494,10 +494,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   onExpand(event: any) {
     let item = event.args.element;
-    this.loadChildItems(item).catch(_ => _);
+    this.loadChildItemsFromServer(item).catch(_ => _);
   }
 
-  loadChildItems(item: any) {
+  loadChildItemsFromServer(item: any) {
     return new Promise((resolve, reject) => {
       const element: any = this.tree.getItem(item);
 
@@ -654,7 +654,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     const item: any = JSFilesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
 
-    this.loadChildItems(this.rightClickSelectedElement).then(
+    this.loadChildItemsFromServer(this.rightClickSelectedElement).then(
       () => {
         if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
           this.globalComponentsService.notification.openError(`The [${item.value.relativePath}] item is already exists`);
@@ -854,44 +854,52 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.updateSelectExpandItem(item2Add);
   }
 
-  collectChildItems(rootItem: any, allItems: any[], changedFileItems: any[], dropItemRelativePath: string) {
+  treeItem2Json(item: any) {
+    let label;
+    if (item.value === null || item.value === undefined) {
+      label = item.label;
+    } else {
+      label = item.value.label;
+    }
+
+    const result: any = {
+      label: label,
+      icon: item.icon,
+    };
+
+    result.value = item.value;
+
+    return result;
+  }
+
+  fixItemRelativePath(item: any, rootItem: any, droppedItemRelativePath: string) {
+    if (item.value === null || item.value === undefined) {
+      return;
+    }
+    item.value.relativePath = droppedItemRelativePath + UtilsService.SERVER_INFO.SLASH + rootItem.value.label + item.value.relativePath.substr(rootItem.value.relativePath.length);
+  }
+
+  collectChildItemsAndFixPath(rootItem: any, subItem: any, droppedItemRelativePath: string, changedFilesList: string[]) {
     const result = [];
+    const firstLevelItems = this.getFirstLevelChildren(subItem);
 
-    allItems.forEach((item) => {
-      if (!item.value) {
-        return;
+    for (let index = 0; index < firstLevelItems.length; index++) {
+      let item: any = firstLevelItems[index];
+
+      item = this.treeItem2Json(firstLevelItems[index]);
+
+      if (item.value !== undefined && item.value !== null && item.value.isDir === true) {
+        item.items = this.collectChildItemsAndFixPath(rootItem, this.findItemByRelativePath(item.value.relativePath), droppedItemRelativePath, changedFilesList);
       }
 
-      const path = UtilsService.resolvePathOnly(item.value.label, item.value.relativePath);
-      if (!UtilsService.isPathEqual(path, rootItem.relativePath)) {
-        return;
+      this.fixItemRelativePath(item, rootItem, droppedItemRelativePath);
+
+      if (item.value !== undefined && item.value !== null && item.value.isNewFile === true) {
+        changedFilesList.push(item);
       }
 
-      let newItem;
-      const newRelativePath = dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + rootItem.label;
-
-      // is dir ?
-      if (item.value.isDir === true) {
-        newItem = JSFilesService.makeEmptyDirItem(newRelativePath, item.value.label);
-        newItem.value.mustLoadChildItems = item.value.mustLoadChildItems;
-        // does it have sub items ?
-        if (newItem.value.mustLoadChildItems !== true) {
-          newItem.items = this.collectChildItems(newItem, allItems, changedFileItems, dropItemRelativePath + UtilsService.SERVER_INFO.SLASH + item.value.label);
-        }
-      }
-
-      // is file ?
-      if (item.value.isDir !== true) {
-        newItem = JSFilesService.makeNewFileItem(newRelativePath, item.value.label);
-        newItem.value.isChanged = item.value.isChanged;
-        newItem.value.isNewFile = item.value.isNewFile;
-        if (newItem.value.isChanged === true) {
-          changedFileItems.push(newItem);
-        }
-      }
-
-      result.push(newItem);
-    });
+      result.push(item);
+    }
 
     return result;
   }
@@ -901,19 +909,15 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const item2Add: any = JSFilesService.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
 
     // collecting existing items under the item2Move item
-    const allItems = this.tree.getItems();
-    const changedFileItems = [];
-    let childItems = this.collectChildItems(data.item2Move.value, allItems, changedFileItems, data.dropPath);
-    if (childItems.length > 0) {
-      item2Add.items = childItems;
-      item2Add.value.mustLoadChildItems = false;
-    }
+    const changedFilesList = [];
+    item2Add.items = this.collectChildItemsAndFixPath(data.item2Move, data.item2Move, data.dropPath, changedFilesList);
+    item2Add.value.mustLoadChildItems = data.item2Move.value.mustLoadChildItems;
 
     // adding to the
     this.insertDirItem(item2Add, data.dropItem);
 
     // updating changed files
-    this.updateItems(changedFileItems);
+    this.updateItems(changedFilesList);
   }
 
   moveItemInnerInner(data) {
@@ -979,7 +983,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.loadChildItems(data.dropItem.element).then(
+    this.loadChildItemsFromServer(data.dropItem.element).then(
       () => {
         this.moveItemInner(data);
       }
