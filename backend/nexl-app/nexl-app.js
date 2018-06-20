@@ -272,7 +272,7 @@ class NexlApp {
 			.then(confMgmt.initPermissions)
 			.then(confMgmt.initPasswords)
 			.then(confMgmt.initAdmins)
-			.then(confMgmt.createNexlSourcesDirIfNeeded)
+			.then(confMgmt.createJSFilesRootDirIfNeeded)
 			.then(jsFilesUtils.cacheJSFiles)
 			.then(
 				() => {

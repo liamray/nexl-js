@@ -47,7 +47,7 @@ function assembleNexlParams(httpParams) {
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
 
-	const fullPath = path.join(confMgmt.getNexlSourcesDir(), httpParams.relativePath);
+	const fullPath = path.join(confMgmt.getJSFilesRootDir(), httpParams.relativePath);
 	if (!utils.isFilePathValid(fullPath)) {
 		logger.log.error('Got unacceptable path [%s]', fullPath);
 		throw 'Unacceptable path ( relative path contains restricted characters )';

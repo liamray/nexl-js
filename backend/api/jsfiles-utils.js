@@ -33,7 +33,7 @@ function getJSFileFullPath(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	const fullPath = path.join(confMgmt.getNexlSourcesDir(), relativePath || '');
+	const fullPath = path.join(confMgmt.getJSFilesRootDir(), relativePath || '');
 
 	if (!utils.isFilePathValid(fullPath)) {
 		logger.log.error('The [%s] path is unacceptable', fullPath);
@@ -49,7 +49,7 @@ function getJSFilesRootDirPath(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	const fullPath = path.join(confMgmt.getNexlSourcesDir(), relativePath || '');
+	const fullPath = path.join(confMgmt.getJSFilesRootDir(), relativePath || '');
 
 	if (!utils.isDirPathValid(fullPath)) {
 		logger.log.error('The [%s] path is unacceptable', fullPath);
@@ -171,7 +171,7 @@ function saveJSFile(relativePath, content) {
 function listJSFiles(relativePath) {
 	return getJSFilesRootDirPath(relativePath).then(fsx.readdir)
 		.then(
-			(items) => assembleItemsPromised(relativePath, confMgmt.getNexlSourcesDir(), items)
+			(items) => assembleItemsPromised(relativePath, confMgmt.getJSFilesRootDir(), items)
 		);
 }
 
@@ -307,7 +307,7 @@ function move(source, dest) {
 }
 
 function gatherAllFiles(relativePath) {
-	const jsFilesRootDir = confMgmt.getNexlSourcesDir();
+	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
 	const listItemsFullPath = path.join(jsFilesRootDir, relativePath);
 	return fsx.readdir(listItemsFullPath)
 		.then(
@@ -357,7 +357,7 @@ function gatherAllFiles(relativePath) {
 }
 
 function cacheJSFiles() {
-	const jsFilesRootDir = confMgmt.getNexlSourcesDir();
+	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
 	logger.log.info('Caching JavaScript file names located in [%s] directory', jsFilesRootDir);
 
 	return gatherAllFiles(path.sep).then(

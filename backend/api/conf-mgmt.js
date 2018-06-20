@@ -4,6 +4,8 @@ const fsx = require('./fsx');
 const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
+const ActiveDirectory = require('activedirectory');
+
 const version = require('./../../package.json').version;
 
 const cmdLineArgs = require('./cmd-line-args');
@@ -17,7 +19,8 @@ const ENCODING_ASCII = 'ascii';
 const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
-let CACHE = {};
+let ALL_SETTINGS_CACHED = {};
+let ACTIVE_DIRECTORY_OBJ;
 
 // --------------------------------------------------------------------------------
 // files
@@ -36,6 +39,9 @@ const SETTINGS = {
 	JS_FILES_ENCODING: 'js-files-encoding',
 	HTTP_TIMEOUT: 'http-timeout-sec',
 	LDAP_URL: 'ldap-url',
+	LDAP_BASEDN: 'ldap-base-dn',
+	LDAP_USERNAME: 'ldap-username',
+	LDAP_PASSWORD: 'ldap-password',
 
 	HTTP_BINDING: 'http-binding',
 	HTTP_PORT: 'http-port',
@@ -90,12 +96,12 @@ const VALIDATION_SCHEMAS = {};
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS] = {};
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
 	if (!j79.isString(val) || val.length < 1) {
-		return 'nexl sources dir must be a non empty string';
+		return 'JS files root dir dir must be a non empty string';
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ENCODING] = (val) => {
 	if (AVAILABLE_ENCODINGS.indexOf(val) < 0) {
-		return 'nexl sources encoding must be one of the following : [' + AVAILABLE_ENCODINGS.join(',') + ']';
+		return 'JS files encoding must be one of the following : [' + AVAILABLE_ENCODINGS.join(',') + ']';
 	}
 };
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_TIMEOUT] = (val) => {
@@ -296,7 +302,7 @@ function loadInner(fullPath, fileName) {
 			let result = setupDefaultValues(data, fileName);
 
 			// updating cache
-			CACHE[fileName] = result;
+			ALL_SETTINGS_CACHED[fileName] = result;
 
 			return Promise.resolve(result);
 		});
@@ -338,7 +344,7 @@ function load(fileName) {
 					let result = substDefValues(DEF_VALUES[fileName]);
 
 					// updating cache
-					CACHE[fileName] = result;
+					ALL_SETTINGS_CACHED[fileName] = result;
 
 					resolve(result)
 				});
@@ -371,7 +377,7 @@ function save(data, fileName) {
 			}
 
 			// updating cache
-			CACHE[fileName] = data;
+			ALL_SETTINGS_CACHED[fileName] = data;
 
 			// saving...
 			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
@@ -504,24 +510,24 @@ function createNexlHomeDirectoryIfNeeded() {
 		});
 }
 
-function createNexlSourcesDirIfNeeded() {
-	const nexlSourcesDir = CACHE[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
+function createJSFilesRootDirIfNeeded() {
+	const jsFilesRootDir = ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
 
-	return fsx.exists(nexlSourcesDir).then(
+	return fsx.exists(jsFilesRootDir).then(
 		(isExists) => {
 			if (!isExists) {
-				logger.log.info('The [%s] nexl sources dir doesn\'t exist. Creating...', nexlSourcesDir);
-				return fsx.mkdir(nexlSourcesDir);
+				logger.log.info('The [%s] JS files root dir doesn\'t exist. Creating...', jsFilesRootDir);
+				return fsx.mkdir(jsFilesRootDir);
 			}
 
-			return fsx.stat(nexlSourcesDir).then(
+			return fsx.stat(jsFilesRootDir).then(
 				(stat) => {
 					if (stat.isDirectory()) {
-						logger.log.debug('The [%s] nexl sources dir exists', nexlSourcesDir);
+						logger.log.debug('The [%s] js files root dir exists', jsFilesRootDir);
 						return Promise.resolve();
 					} else {
-						logger.log.error('The [%s] nexl sources directory points to existing file ( or something else ). Recreate it as a directory or use another nexl sources directory ', nexlSourcesDir);
-						return Promise.reject('nexl sources directory probably points to existing file or something else');
+						logger.log.error('The [%s] js files root directory points to existing file ( or something else ). Recreate it as a directory or use another directory ', jsFilesRootDir);
+						return Promise.reject('JS files root directory probably points to existing file or something else');
 					}
 				}
 			);
@@ -529,7 +535,29 @@ function createNexlSourcesDirIfNeeded() {
 	);
 }
 
+function getADObject() {
+	if (ACTIVE_DIRECTORY_OBJ !== undefined) {
+		return ACTIVE_DIRECTORY_OBJ;
+	}
+
+	const conf = {
+		url: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL],
+		baseDN: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASEDN],
+		username: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_USERNAME],
+		password: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_PASSWORD]
+	};
+
+	if (conf.url === undefined) {
+		return undefined;
+	}
+
+	return ACTIVE_DIRECTORY_OBJ = new ActiveDirectory(conf);
+}
+
+
 function reloadCache() {
+	ACTIVE_DIRECTORY_OBJ = undefined;
+
 	const promises = [];
 	for (let key in CONF_FILES) {
 		const val = CONF_FILES[key];
@@ -547,7 +575,7 @@ module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 
 module.exports.init = init;
 module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
-module.exports.createNexlSourcesDirIfNeeded = createNexlSourcesDirIfNeeded;
+module.exports.createJSFilesRootDirIfNeeded = createJSFilesRootDirIfNeeded;
 module.exports.initSettings = initSettings;
 module.exports.initTokens = initTokens;
 module.exports.initPermissions = initPermissions;
@@ -561,10 +589,12 @@ module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
 
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
-module.exports.getNexlSourcesDir = () => CACHE[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
-module.exports.getNexlSettingsCached = () => CACHE[CONF_FILES.SETTINGS];
+module.exports.getJSFilesRootDir = () => ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
+module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS];
 
-module.exports.getCached = (fileName) => CACHE[fileName];
+module.exports.getCached = (fileName) => ALL_SETTINGS_CACHED[fileName];
 
 module.exports.reloadCache = reloadCache;
+
+module.exports.getADObject = getADObject;
 // --------------------------------------------------------------------------------
