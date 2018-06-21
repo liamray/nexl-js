@@ -25,6 +25,12 @@ export class SettingsComponent {
   @ViewChild('httpsPort') httpsPort: any;
   @ViewChild('sslKeyLocation') sslKeyLocation: any;
   @ViewChild('sslCertLocation') sslCertLocation: any;
+
+  @ViewChild('ldapUrl') ldapUrl: any;
+  @ViewChild('ldapBaseDN') ldapBaseDN: any;
+  @ViewChild('ldapUsername') ldapUsername: any;
+  @ViewChild('ldapPassword') ldapPassword: any;
+
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;

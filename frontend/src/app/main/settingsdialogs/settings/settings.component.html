@@ -156,6 +156,64 @@
                   <img src='./nexl/site/images/tooltip.png'/>
                 </jqxTooltip>
               </div>
+
+              <div class="item">
+                <label>LDAP Base DN</label>
+                <jqxInput
+                  id="ldapBaseDN"
+                  name="ldapBaseDN"
+                  [(ngModel)]="settings['ldap-base-dn']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div class="item">
+                <label>LDAP Username</label>
+                <jqxInput
+                  id="ldapUsername"
+                  name="ldapUsername"
+                  [(ngModel)]="settings['ldap-username']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div class="item">
+                <label>LDAP Password</label>
+                <jqxInput
+                  id="ldapPassword"
+                  name="ldapPassword"
+                  [(ngModel)]="settings['ldap-password']"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/images/tooltip.png'/>
+                </jqxTooltip>
+              </div>
+
             </div>
             <!-- ------------------------------------------------------------------------------ -->
             <!--Bindings & SSL-->

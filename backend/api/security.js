@@ -187,7 +187,7 @@ function isPasswordValid(username, password) {
 	return findLDAPUser(username)
 		.then(user => {
 			if (user === undefined) {
-				logger.log.debug('The [%s] found via LDAP', username);
+				logger.log.debug('The [%s] user not found via LDAP', username);
 				return Promise.resolve(false);
 			}
 
