@@ -279,7 +279,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   refreshTreeSource() {
     this.treeSource = [];
 
-    this.jsFilesService.listNexlSources().subscribe(
+    this.jsFilesService.listJSFiles().subscribe(
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
@@ -291,7 +291,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
           }, 100);
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to resolve nexl sources list\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to resolve list JS files\nReason : ' + err.statusText);
         console.log(err);
       }
     );
@@ -514,7 +514,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       value.mustLoadChildItems = false;
       const child = element.nextItem;
-      this.jsFilesService.listNexlSources(value.relativePath).subscribe(
+      this.jsFilesService.listJSFiles(value.relativePath).subscribe(
         (data: any) => {
           this.tree.removeItem(child);
           this.tree.addTo(data, item);

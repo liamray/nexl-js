@@ -61,7 +61,7 @@ export class JSFilesService {
     });
   }
 
-  listNexlSources(relativePath?: string) {
+  listJSFiles(relativePath?: string) {
     const params = {
       relativePath: relativePath || UtilsService.SERVER_INFO.SLASH
     };

@@ -344,7 +344,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to save nexl source\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to save JS file\nReason : ' + err.statusText);
         console.log(err);
         if (callback !== undefined) {
           callback(false);
@@ -486,7 +486,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openError('Failed to read nexl source content\nReason : ' + err.statusText);
+          this.globalComponentsService.notification.openError('Failed to read JS file content\nReason : ' + err.statusText);
           console.log(err);
           reject();
         }
