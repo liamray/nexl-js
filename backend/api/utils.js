@@ -8,7 +8,7 @@ const path = require('path');
 const SECRET = uuidv4();
 
 const GUEST_USER = 'guest';
-const LOGGED_IN_USER = 'loggedin';
+const AUTHENTICATED = 'authenticated';
 const ADMIN_USER = 'admin';
 
 function encrypt(username) {
@@ -78,7 +78,7 @@ function isFilePathValid(relativePath) {
 
 // --------------------------------------------------------------------------------
 module.exports.GUEST_USER = GUEST_USER;
-module.exports.LOGGED_IN_USER = LOGGED_IN_USER;
+module.exports.AUTHENTICATED = AUTHENTICATED;
 module.exports.ADMIN_USER = ADMIN_USER;
 
 module.exports.generateRandomBytes = generateRandomBytes;

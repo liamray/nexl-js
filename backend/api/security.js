@@ -13,7 +13,7 @@ function isAdminInner(user) {
 }
 
 function isAdmin(user) {
-	const loggedInUsername = (user === utils.GUEST_USER) ? utils.GUEST_USER : utils.LOGGED_IN_USER;
+	const loggedInUsername = (user === utils.GUEST_USER) ? utils.GUEST_USER : utils.AUTHENTICATED;
 	return isAdminInner(utils.GUEST_USER) || isAdminInner(loggedInUsername) || isAdminInner(user);
 }
 
@@ -43,7 +43,7 @@ function hasPermission(user, type) {
 	const guestUserPermission = permissions[utils.GUEST_USER];
 
 	// permissions for [loggedin] user
-	let loggedInUserPermission = (user === utils.GUEST_USER) ? permissions[utils.GUEST_USER] : permissions[utils.LOGGED_IN_USER];
+	let loggedInUserPermission = (user === utils.GUEST_USER) ? permissions[utils.GUEST_USER] : permissions[utils.AUTHENTICATED];
 
 	// permissions for [user]
 	const userPermission = permissions[user];

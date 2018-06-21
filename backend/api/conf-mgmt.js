@@ -447,13 +447,13 @@ function initPermissions() {
 				return load(CONF_FILES.PERMISSIONS); // preloading permissions
 			}
 
-			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for the following users : [%s, %s]', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER, utils.LOGGED_IN_USER);
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for the following users : [%s, %s]', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER, utils.AUTHENTICATED);
 			const permission = {};
 			permission[utils.GUEST_USER] = {
 				read: true,
 				write: true
 			};
-			permission[utils.LOGGED_IN_USER] = {
+			permission[utils.AUTHENTICATED] = {
 				read: true,
 				write: true
 			};
