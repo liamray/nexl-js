@@ -149,9 +149,9 @@ function isPasswordValid(username, password) {
 	};
 
 	return ldapUtils(opts).then(
-		Promise.resolve(true)
+		_ => Promise.resolve(true)
 	).catch(
-		Promise.resolve(false)
+		_ => Promise.resolve(false)
 	);
 }
 
