@@ -4,6 +4,7 @@ const confMgmt = require('./conf-mgmt');
 const utils = require('./utils');
 const bcrypt = require('./bcryptx');
 const logger = require('./logger');
+const ldapUtils = require('./ldap-utils');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
@@ -123,50 +124,6 @@ function changePassword(username, currentPassword, newPassword) {
 		});
 }
 
-function findLDAPUser(username) {
-	return new Promise(
-		(resolve, reject) => {
-			confMgmt.getADObject().findUser(username, true, (err, user) => {
-				if (err) {
-					logger.log.error('LDAP error. Reason : %s', utils.formatErr(err));
-					reject('Internal LDAP error');
-					return;
-				}
-
-				if (!user) {
-					logger.log.error('The [%s] user was not found in LDAP', username);
-					resolve(undefined);
-					return;
-				}
-
-				resolve(user);
-			});
-		}
-	);
-}
-
-function authenticateLDAPUser(username, password) {
-	return new Promise(
-		(resolve, reject) => {
-			confMgmt.getADObject().authenticate(username, password, (err, auth) => {
-				if (err) {
-					logger.log.error('LDAP error. Reason : %s', utils.formatErr(err));
-					reject('Internal LDAP error');
-					return;
-				}
-
-				if (auth) {
-					logger.log.debug('The [%s] user is successfully authenticated via LDAP', username);
-					resolve(true);
-				} else {
-					logger.log.error('Bad password for [%s] user', username);
-					reject(false);
-				}
-			});
-		}
-	);
-}
-
 function isPasswordValid(username, password) {
 	const passwords = confMgmt.getCached(confMgmt.CONF_FILES.PASSWORDS);
 	const hash = passwords[username];
@@ -177,23 +134,25 @@ function isPasswordValid(username, password) {
 		return bcrypt.compare(password, hash);
 	}
 
-	if (confMgmt.getADObject() === undefined) {
+	// no LDAP ? good bye
+	const ldapSettings = confMgmt.getLDAPSettings();
+	if (ldapSettings === undefined) {
 		return Promise.resolve(false);
 	}
 
 	logger.log.debug('The [%s] user is not present in nexl internal directory. Trying to authenticate via LDAP', username);
 
-	// searching user in LDAP
-	return findLDAPUser(username)
-		.then(user => {
-			if (user === undefined) {
-				logger.log.debug('The [%s] user not found via LDAP', username);
-				return Promise.resolve(false);
-			}
+	const opts = {
+		ldap: ldapSettings,
+		username: username,
+		password: password
+	};
 
-			// authenticating user in LDAP
-			return authenticateLDAPUser(user.userPrincipalName, password);
-		});
+	return ldapUtils(opts).then(
+		Promise.resolve(true)
+	).catch(
+		Promise.resolve(false)
+	);
 }
 
 // --------------------------------------------------------------------------------

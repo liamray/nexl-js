@@ -4,7 +4,6 @@ const fsx = require('./fsx');
 const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
-const ActiveDirectory = require('activedirectory');
 
 const version = require('./../../package.json').version;
 
@@ -20,7 +19,6 @@ const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 let NEXL_HOME_DIR;
 let ALL_SETTINGS_CACHED = {};
-let ACTIVE_DIRECTORY_OBJ;
 
 // --------------------------------------------------------------------------------
 // files
@@ -42,6 +40,7 @@ const SETTINGS = {
 	LDAP_BASEDN: 'ldap-base-dn',
 	LDAP_USERNAME: 'ldap-username',
 	LDAP_PASSWORD: 'ldap-password',
+	LDAP_FIND_BY: 'ldap-find-by',
 
 	HTTP_BINDING: 'http-binding',
 	HTTP_PORT: 'http-port',
@@ -114,6 +113,7 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL] = () => true;
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASEDN] = () => true;
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_USERNAME] = () => true;
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_PASSWORD] = () => true;
+VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY] = () => true;
 VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_BINDING] = (val) => {
 	if (!j79.isString(val)) {
 		return 'HTTP binding must be a string';
@@ -538,23 +538,20 @@ function createJSFilesRootDirIfNeeded() {
 	);
 }
 
-function getADObject() {
-	if (ACTIVE_DIRECTORY_OBJ !== undefined) {
-		return ACTIVE_DIRECTORY_OBJ;
-	}
-
-	const conf = {
+function getLDAPSettings() {
+	let ldapSettings = {
 		url: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL],
-		baseDN: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASEDN],
-		username: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_USERNAME],
-		password: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_PASSWORD]
+		adSuffix: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASEDN],
+		userPrincipalName: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_USERNAME],
+		password: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_PASSWORD],
+		findBy: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY]
 	};
 
-	if (conf.url === undefined) {
+	if (ldapSettings.url === undefined || ldapSettings.adSuffix === undefined) {
 		return undefined;
 	}
 
-	return ACTIVE_DIRECTORY_OBJ = new ActiveDirectory(conf);
+	return ldapSettings;
 }
 
 
@@ -599,5 +596,5 @@ module.exports.getCached = (fileName) => ALL_SETTINGS_CACHED[fileName];
 
 module.exports.reloadCache = reloadCache;
 
-module.exports.getADObject = getADObject;
+module.exports.getLDAPSettings = getLDAPSettings;
 // --------------------------------------------------------------------------------

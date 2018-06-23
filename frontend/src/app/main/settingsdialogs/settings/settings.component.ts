@@ -30,6 +30,7 @@ export class SettingsComponent {
   @ViewChild('ldapBaseDN') ldapBaseDN: any;
   @ViewChild('ldapUsername') ldapUsername: any;
   @ViewChild('ldapPassword') jqxPasswordInputComponent: any;
+  @ViewChild('ldapFindBy') ldapFindBy: any;
 
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
