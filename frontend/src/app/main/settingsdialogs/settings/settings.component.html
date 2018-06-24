@@ -177,11 +177,11 @@
               </div>
 
               <div class="item">
-                <label>LDAP Username</label>
+                <label>LDAP Bind DN</label>
                 <jqxInput
-                  id="ldapUsername"
-                  name="ldapUsername"
-                  [(ngModel)]="settings['ldap-username']"
+                  id="ldapBindDN"
+                  name="ldapBindDN"
+                  [(ngModel)]="settings['ldap-bind-dn']"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -196,11 +196,11 @@
               </div>
 
               <div class="item">
-                <label>LDAP Password</label>
+                <label>LDAP Bind Password</label>
                 <jqxPasswordInput
-                  id="ldapPassword"
-                  name="ldapPassword"
-                  [(ngModel)]="settings['ldap-password']"
+                  id="ldapBindPassword"
+                  name="ldapBindPassword"
+                  [(ngModel)]="settings['ldap-bind-password']"
                   [width]="width"
                   [height]="25">
                 </jqxPasswordInput>

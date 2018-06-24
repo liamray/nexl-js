@@ -28,8 +28,8 @@ export class SettingsComponent {
 
   @ViewChild('ldapUrl') ldapUrl: any;
   @ViewChild('ldapBaseDN') ldapBaseDN: any;
-  @ViewChild('ldapUsername') ldapUsername: any;
-  @ViewChild('ldapPassword') jqxPasswordInputComponent: any;
+  @ViewChild('ldapBindDN') ldapBindDN: any;
+  @ViewChild('ldapBindPassword') ldapBindPassword: any;
   @ViewChild('ldapFindBy') ldapFindBy: any;
 
   @ViewChild('logLevel') logLevel: any;
