@@ -680,7 +680,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
   loadTabsFromLocalStorage() {
     // loading tabs
-    let loadedTabs = LocalStorageService.loadObj(TABS);
+    let loadedTabs = LocalStorageService.loadObj(TABS, []);
     let activeTab;
     loadedTabs.reduce(
       (current, newItem, index) => {

@@ -328,9 +328,9 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       }
 
       if (JavaScriptFilesExplorerComponent.isRightClick(event)) {
-        this.handleRightClick(target);
+        this.handleRightClick(target, event);
       } else {
-        this.handleLeftClick(target);
+        this.handleLeftClick(target, event);
       }
 
       return false;
@@ -678,7 +678,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     });
   }
 
-  private handleRightClick(target: any) {
+  private handleRightClick(target: any, event: any) {
     // is right click on empty area ?
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
@@ -814,7 +814,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     return result;
   }
 
-  private handleLeftClick(target: any) {
+  private handleLeftClick(target: any, event: any) {
     this.popupMenu.close();
 
     if (target === undefined) {
