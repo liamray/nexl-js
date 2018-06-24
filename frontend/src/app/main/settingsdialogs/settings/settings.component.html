@@ -3,7 +3,7 @@
            [isModal]="true"
            [resizable]="false"
            [width]="600"
-           [height]="420"
+           [height]="400"
            [initContent]="initContent"
            (onOpen)="onOpen()"
 >
@@ -27,7 +27,7 @@
 
         <jqxRibbon #ribbon
                    [width]="'100%'"
-                   [height]="'330px'"
+                   [height]="'315px'"
                    [auto-create]="false"
                    [animationType]="'none'"
                    [selectionMode]="'click'"
@@ -36,6 +36,7 @@
         >
           <ul id="header" style="width: 150px;">
             <li>General</li>
+            <li>LDAP</li>
             <li>Bindings & SSL</li>
             <li>Logger</li>
           </ul>
@@ -136,7 +137,11 @@
               </div>
 
               <div style="clear: both"></div>
+            </div>
 
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--LDAP-->
+            <div>
               <!--LDAP auth-->
               <div class="item">
                 <label>LDAP URL</label>
@@ -234,6 +239,7 @@
               </div>
 
             </div>
+
             <!-- ------------------------------------------------------------------------------ -->
             <!--Bindings & SSL-->
             <div>
