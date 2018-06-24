@@ -3,7 +3,6 @@ const logger = require('./logger');
 const utils = require('./utils');
 
 DN = 'dn';
-SAM_ACCOUNT_NAME = 'sAMAccountName';
 
 function unbind(client) {
 	client.unbind(err => {
@@ -44,12 +43,12 @@ function bindDirectly(client, opts, resolve, reject) {
 function search(client, opts) {
 	return new Promise(
 		(resolve, reject) => {
-			let filter = utils.isEmptyStr(opts.ldap.findBy) ? `${SAM_ACCOUNT_NAME}=${opts.username}` : `${opts.ldap.findBy}=${opts.username}`;
+			let filter = utils.isEmptyStr(opts.ldap.findBy) ? `(|(sAMAccountName=${opts.username})(userPrincipalName=${opts.username}))` : `${opts.ldap.findBy}=${opts.username}`;
 
 			const searchOptions = {
 				scope: "sub",
 				filter: filter,
-				attributes: ['userPrincipalName']
+				attributes: ['dn']
 			};
 
 			const result = [];

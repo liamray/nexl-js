@@ -75,10 +75,6 @@ function isFilePathValid(relativePath) {
 	return relativePath.match(BAD_FILE_PATH) === null;
 }
 
-function isEmpty(str) {
-	return str === null || str === undefined || str === '';
-}
-
 // --------------------------------------------------------------------------------
 module.exports.GUEST_USER = GUEST_USER;
 module.exports.AUTHENTICATED = AUTHENTICATED;
@@ -95,6 +91,4 @@ module.exports.isEmptyStr = isEmptyStr;
 
 module.exports.isFilePathValid = isFilePathValid;
 module.exports.isDirPathValid = isDirPathValid;
-
-module.exports.isEmpty = isEmpty;
 // --------------------------------------------------------------------------------
