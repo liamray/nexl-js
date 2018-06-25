@@ -27,19 +27,6 @@ function bind(client, bindDN, bindPassword) {
 	);
 }
 
-// binds directly by opts.username and opts.password ( not by ldap's username and password )
-function bindDirectly(client, opts, resolve, reject) {
-	return bind(client, opts.username, opts.password)
-		.then(_ => {
-			unbind(client);
-			resolve();
-		})
-		.catch(_ => {
-			unbind(client);
-			reject();
-		});
-}
-
 function search(client, opts) {
 	return new Promise(
 		(resolve, reject) => {
@@ -107,23 +94,26 @@ function authUser(opts) {
 				reject(err);
 			});
 
-			// bindDN not provided ? trying to bind ( authenticate ) directly by opts.username and opts.password
-			if (utils.isEmptyStr(opts.ldap.bindDN)) {
-				// binding to username & password
-				bindDirectly(client, opts, resolve, reject);
-				return;
+			let promise;
+			if (!utils.isEmptyStr(opts.ldap.bindDN) && !utils.isEmptyStr(opts.ldap.bindPassword)) {
+				// binding to bindDN if AD doesn't allow anonymous connection
+				promise = bind(client, opts.ldap.bindDN, opts.ldap.bindPassword);
+			} else {
+				promise = Promise.resolve();
 			}
 
-			// binding to bindDN
-			bind(client, opts.ldap.bindDN, opts.ldap.bindPassword)
-				.then(_ => search(client, opts))
+			promise.then(_ => search(client, opts))
 				.then(userDN => bind(client, userDN, opts.password))
 				.then(_ => {
+					logger.log.debug(`The [${opts.username}] user is successfully authenticated in LDAP`);
 					unbind(client);
 					resolve();
 				})
-				// previous stuff didn't work, trying to bind directly
-				.catch(_ => bindDirectly(client, opts, resolve, reject));
+				.catch(err => {
+					logger.log.error(`Failed to authenticated [${opts.username}] user in LDAP. Reason : [%s]`, utils.formatErr(err));
+					unbind(client);
+					reject();
+				});
 		}
 	);
 }
