@@ -71,7 +71,6 @@ export class PermissionsComponent implements AfterViewInit {
   }
 
   save() {
-    this.permissionsWindow.close();
     this.globalComponentsService.loader.open();
 
     this.permissions.admins = this.admins.get();
@@ -80,11 +79,15 @@ export class PermissionsComponent implements AfterViewInit {
     this.http.post(this.permissions, '/permissions/save', 'json').subscribe(
       val => {
         this.globalComponentsService.loader.close();
+        this.permissionsWindow.close();
         this.globalComponentsService.notification.openSuccess('Updated permissions');
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to save permissions list. Reason\n' + err.statusText);
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Failed to update permissions. Reason : ${err.statusText}`,
+        });
         console.log(err);
       });
   }

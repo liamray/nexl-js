@@ -179,12 +179,12 @@ export class SettingsComponent {
       return;
     }
 
-    this.settingsWindow.close();
     this.globalComponentsService.loader.open();
 
     this.http.post(this.settings, '/settings/save', 'json').subscribe(
       () => {
         this.globalComponentsService.loader.close();
+        this.settingsWindow.close();
         this.globalComponentsService.notification.openSuccess('Updated settings');
         if (this.jsFilesRootDirBefore !== this.settings['js-files-root-dir']) {
           this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
@@ -192,7 +192,10 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to save settings\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Failed to save settings. Reason : ${err.statusText}`,
+        });
         console.log(err);
       });
   }
