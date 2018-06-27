@@ -296,6 +296,12 @@ class NexlApp {
 	}
 }
 
+// prevent nodejs from crashing
+process.on('uncaughtException', function (err) {
+	console.error(err);
+	console.log("Node NOT Exiting...");
+});
+
 // --------------------------------------------------------------------------------
 module.exports = NexlApp;
 // --------------------------------------------------------------------------------
