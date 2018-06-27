@@ -1,0 +1,57 @@
+<jqxWindow #usersWindow
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="630"
+           [height]="400"
+           [initContent]="initContent"
+           (onOpen)="onOpen()"
+>
+
+  <div>
+    <img src="./nexl/site/images/account.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Users</span>
+  </div>
+
+  <div>
+
+    <div style="margin: 5px;">
+      <div style="float:left">
+        Click
+        <jqxButton (click)="addNewItem()">here</jqxButton>
+        to add a new empty record&nbsp;
+      </div>
+
+      <div style="clear: both; height: 5px;"></div>
+
+      <jqxGrid
+        #usersGrid
+        [source]="usersDataAdapter"
+        [columns]="usersColumns"
+        [width]="'100%'"
+        [height]="280"
+        [columnsheight]="55"
+        [filterable]="false"
+        [sortable]="true"
+        [editable]="true"
+        (onCellvaluechanged)="onChange()"
+        [enablebrowserselection]="true"
+      ></jqxGrid>
+    </div>
+
+    <div style="float:right;">
+      <jqxButton [height]='32'
+                 [width]="94"
+                 [textImageRelation]='"imageBeforeText"'
+                 [textPosition]='"center"'
+                 (click)="settingsWindow.close()"
+                 [imgSrc]='"./nexl/site/images/close.png"'
+                 [auto-create]="false"
+                 (onClick)="usersWindow.close()"
+                 #closeButton>
+        Close
+      </jqxButton>
+    </div>
+
+  </div>
+</jqxWindow>

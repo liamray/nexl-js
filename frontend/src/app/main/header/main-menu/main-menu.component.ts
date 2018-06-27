@@ -25,6 +25,7 @@ export class MainMenuComponent implements AfterViewInit {
         const status = message.data;
         this.mainMenu.disable('main-menu-permissions', !status.isAdmin);
         this.mainMenu.disable('main-menu-settings', !status.isAdmin);
+        this.mainMenu.disable('main-menu-users', !status.isAdmin);
         this.hasReadPermission = status.hasReadPermission;
         this.hasWritePermission = status.hasWritePermission;
         this.updateSaveMenuItem();
@@ -46,8 +47,6 @@ export class MainMenuComponent implements AfterViewInit {
 
     this.mainMenu.disable('main-menu-arguments', this.tabsCount < 1 || !this.hasReadPermission);
     this.mainMenu.disable('main-menu-evaluate', this.tabsCount < 1 || !this.hasReadPermission);
-
-    this.mainMenu.disable('main-menu-wizard', true);
   }
 
   ngAfterViewInit(): void {
@@ -93,5 +92,9 @@ export class MainMenuComponent implements AfterViewInit {
 
   findFile() {
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_FILE);
+  }
+
+  openUsersWindow() {
+    this.messageService.sendMessage(MESSAGE_TYPE.USERS_WINDOW);
   }
 }

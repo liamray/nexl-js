@@ -61,6 +61,7 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
 import {AboutComponent} from "./misc/about/about.component";
 import {JSFilesService} from "./services/js-files.service";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
+import {UsersComponent} from "./settingsdialogs/users/users.component";
 
 
 @NgModule({
@@ -105,6 +106,7 @@ import {FindFileComponent} from "./misc/findfile/findfile.component";
     AssignPermissionsComponent,
     LoaderComponent,
     SettingsComponent,
+    UsersComponent,
     AppearanceComponent,
     RegisterComponent,
     NotificationComponent,

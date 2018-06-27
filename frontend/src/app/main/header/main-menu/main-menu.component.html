@@ -33,6 +33,10 @@
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/permissions.png'/><span>Permissions</span>
         </li>
+        <li (click)="this.openUsersWindow()" id="main-menu-users">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/account.png'/><span>Users</span>
+        </li>
         <li (click)="this.openSettingsWindow()" id="main-menu-settings">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/settings.png'/><span>Settings</span>
@@ -52,10 +56,6 @@
         <li (click)="evaluateNexlExpression()" id="main-menu-evaluate">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/images/eval.png'/><span>Evaluate ( F9 )</span>
-        </li>
-        <li  id="main-menu-wizard">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/assemble.png'/><span>Wizard</span>
         </li>
       </ul>
     </li>
