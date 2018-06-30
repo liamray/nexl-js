@@ -5,6 +5,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
+import {UtilsService} from "../../services/utils.service";
 
 
 @Component({
@@ -25,7 +26,6 @@ export class UsersComponent {
       localdata: [],
       datafields: [
         {name: 'user', type: 'string'},
-        {name: 'token', type: 'string'},
         {name: 'disabled', type: 'boolean'}
       ],
       datatype: 'array'
@@ -37,27 +37,15 @@ export class UsersComponent {
         text: 'Username',
         datafield: 'user',
         align: 'center',
-        width: '100px',
+        width: '180px',
         cellclassname: function (row, column, value, data) {
           return data.disabled ? 'disabledItem' : '';
         }
       },
       {
-        text: 'Token',
-        datafield: 'token',
+        text: 'Password',
         align: 'center',
-        width: '300px',
-        cellendedit: function (row) {
-          return false;
-        },
-        cellclassname: function (row, column, value, data) {
-          return data.disabled ? 'disabledItem' : '';
-        }
-      },
-      {
-        text: 'Reset<br/>user',
-        align: 'center',
-        width: 70,
+        width: 80,
         sortable: false,
         editable: false,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
@@ -71,7 +59,7 @@ export class UsersComponent {
             width: '100%',
             height: 27,
             template: 'default',
-            imgSrc: './nexl/site/images/reset.png',
+            imgSrc: './nexl/site/images/password.png',
             imgWidth: 16,
             imgHeight: 16,
             imgPosition: 'center',
@@ -81,7 +69,7 @@ export class UsersComponent {
           let resetButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           resetButton.addEventHandler('click', (): void => {
-            this.onChange();
+            this.showToken(row.bounddata.uid);
           });
 
           this.counter++;
@@ -94,7 +82,7 @@ export class UsersComponent {
         align: 'center',
         sortable: false,
         editable: false,
-        width: 70,
+        width: 80,
         height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
@@ -120,7 +108,7 @@ export class UsersComponent {
             let clickedButton = value;
             row.bounddata.disabled = !row.bounddata.disabled;
             this.usersGrid.refresh();
-            this.onChange();
+            this.enableDisableUser(row.bounddata.uid);
           });
 
           this.counter++;
@@ -131,7 +119,7 @@ export class UsersComponent {
       {
         text: 'Remove',
         align: 'center',
-        width: 70,
+        width: 80,
         sortable: false,
         editable: false,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
@@ -155,8 +143,8 @@ export class UsersComponent {
           let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           deleteButton.addEventHandler('click', (): void => {
+            this.removeUser(row.bounddata.uid);
             this.usersGrid.deleterow(row.bounddata.uid);
-            this.onChange();
           });
 
           this.counter++;
@@ -194,7 +182,7 @@ export class UsersComponent {
     this.globalComponentsService.loader.open();
 
     // loading available values from server
-    this.http.post({}, '/settings/avail-values', 'json').subscribe(
+    this.http.post({}, '/auth/list-users', 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         this.usersWindow.open();
@@ -214,14 +202,60 @@ export class UsersComponent {
   onOpen() {
   }
 
-  onChange() {
+  onChange(event: any) {
+    const args = event.args;
+    if (args.datafield !== 'user') {
+      return;
+    }
+
+    if (!UtilsService.isValidUsername(args.newvalue)) {
+      this.globalComponentsService.messageBox.open({
+        title: 'Error',
+        label: 'Invalid user name',
+      });
+      return;
+    }
+
+    if (args.oldvalue === undefined) {
+      return;
+    }
+
+    // generating new token
+    this.globalComponentsService.loader.open();
+
+    // generating token
+    this.http.post({username: args.newvalue}, '/auth/generate-token', 'json').subscribe(
+      (data: any) => {
+        this.globalComponentsService.loader.close();
+        this.usersGrid.setcellvalue(args.rowindex, 'token', data.body.token);
+        this.usersGrid.refresh();
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Failed to generate new token. Reason : ${err.statusText}`,
+        });
+
+        console.log(err);
+      });
 
   }
 
   addNewItem() {
-    this.usersGrid.addrow(1, {
-      token: '3edd78b1-43d3-41a2-b9e8-a86dd3c1d163'
-    });
-    this.onChange();
+    this.usersGrid.addrow(1, {});
+  }
+
+
+  removeUser(row: any) {
+
+  }
+
+  showToken(row: any) {
+
+  }
+
+  enableDisableUser(row: any) {
+
   }
 }

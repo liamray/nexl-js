@@ -3,8 +3,23 @@ const express = require('express');
 const security = require('../../api/security');
 const utils = require('../../api/utils');
 const logger = require('../../api/logger');
+const confMgmt = require('../../api/conf-mgmt');
 
 const router = express.Router();
+
+router.post('/list-users', function (req, res) {
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug('Listing internal nexl users');
+
+	// only admins can perform this action
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('Cannot list internal nexl users, admin permissions required');
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	res.send([]);
+});
 
 router.post('/change-password', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
@@ -26,8 +41,6 @@ router.post('/change-password', function (req, res) {
 			utils.sendError(res, err);
 		}
 	);
-
-
 });
 
 router.post('/generate-token', function (req, res) {

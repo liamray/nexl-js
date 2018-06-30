@@ -2,8 +2,8 @@
            [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
-           [width]="630"
-           [height]="400"
+           [width]="460"
+           [height]="320"
            [initContent]="initContent"
            (onOpen)="onOpen()"
 >
@@ -29,12 +29,12 @@
         [source]="usersDataAdapter"
         [columns]="usersColumns"
         [width]="'100%'"
-        [height]="280"
+        [height]="200"
         [columnsheight]="55"
         [filterable]="false"
         [sortable]="true"
         [editable]="true"
-        (onCellvaluechanged)="onChange()"
+        (onCellvaluechanged)="onChange($event)"
         [enablebrowserselection]="true"
       ></jqxGrid>
     </div>
@@ -44,8 +44,7 @@
                  [width]="94"
                  [textImageRelation]='"imageBeforeText"'
                  [textPosition]='"center"'
-                 (click)="settingsWindow.close()"
-                 [imgSrc]='"./nexl/site/images/close.png"'
+                 [imgSrc]='"./nexl/site/images/ok.png"'
                  [auto-create]="false"
                  (onClick)="usersWindow.close()"
                  #closeButton>
