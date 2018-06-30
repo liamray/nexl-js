@@ -4,6 +4,7 @@ const fsx = require('./fsx');
 const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
+const uuidv4 = require('uuid/v4');
 
 const version = require('./../../package.json').version;
 
@@ -24,8 +25,8 @@ let ALL_SETTINGS_CACHED = {};
 // files
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
-	TOKENS: 'tokens.js', // tokens to register a user and reset password
 	PASSWORDS: 'passwords.js', // password for login
+	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
 	ADMINS: 'admins.js', // administrators list
 	PERMISSIONS: 'permissions.js' // permissions matrix
 };
@@ -80,11 +81,8 @@ DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY] = '';
 DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.SSL_CERT_LOCATION] = '';
 DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.SSL_KEY_LOCATION] = '';
 
-// TOKENS default values
-DEF_VALUES[CONF_FILES.TOKENS] = {};
-
 // PASSWORDS default values
-DEF_VALUES[CONF_FILES.PASSWORDS] = {};
+DEF_VALUES[CONF_FILES.USERS] = {};
 
 // ADMINS default values
 DEF_VALUES[CONF_FILES.ADMINS] = [];
@@ -181,23 +179,36 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = (val)
 };
 
 // --------------------------------------------------------------------------------
-// TOKENS validations
-VALIDATION_SCHEMAS[CONF_FILES.TOKENS] = {
-	'*': (val) => {
-		if (!j79.isString(val) || val.length < 1) {
-			return 'Each token item must be a non empty string';
-		}
-	}
-};
+// USERS validations
+VALIDATION_SCHEMAS[CONF_FILES.USERS] = {
+	'*': {
+		password: (val) => {
+			// todo : validate password
+			if (!j79.isString(val) || val.length < 1) {
+				return 'Bad password';
+			}
+		},
 
+		disabled: (val) => {
+			if (!j79.isBool(val)) {
+				return '[disabled] field must be of a boolean type';
+			}
+		},
 
-// --------------------------------------------------------------------------------
-// PASSWORDS validations
-VALIDATION_SCHEMAS[CONF_FILES.PASSWORDS] = {
-	'*': (val) => {
-		if (!j79.isString(val) || val.length < 1) {
-			return 'Each password item must be a non empty string';
-		}
+		token2ResetPassword: {
+			token: (val) => {
+				if (!j79.isString(val) || val.length < 1) {
+					return 'Token must be non empty string';
+				}
+			},
+			created: (val) => {
+				const parsed = Date.parse(val);
+				// is NaN ?
+				if (parsed !== parsed) {
+					return '[created] field must be a valid date string';
+				}
+			}
+		},
 	}
 };
 
@@ -427,27 +438,6 @@ function initSettings() {
 		});
 }
 
-function initTokens() {
-	logger.log.debug('Initializing tokens');
-
-	return isConfFileExists(CONF_FILES.TOKENS).then(
-		(isExists) => {
-			if (isExists) {
-				return load(CONF_FILES.TOKENS); // preloading tokens
-			}
-
-			return save({}, CONF_FILES.TOKENS)
-				.then(() => {
-						logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one and generating token for [%s] user', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-						logger.log.info('\n\n------> Use a token stored in [%s] file located in [%s] directory to register a [%s] account\n\n', CONF_FILES.TOKENS, NEXL_HOME_DIR, utils.ADMIN_USER);
-						return security.generateTokenAndSave(utils.ADMIN_USER);
-					}
-				);
-
-		}
-	)
-}
-
 function initPermissions() {
 	logger.log.debug('Initializing permissions');
 
@@ -472,11 +462,37 @@ function initPermissions() {
 	)
 }
 
-function initPasswords() {
-	logger.log.debug('Initializing passwords');
 
-	// preloading passwords to store them in cache
-	return load(CONF_FILES.PASSWORDS);
+function generateRegistrationToken() {
+	return {
+		token: uuidv4(),
+		created: utils.formatDate()
+	};
+}
+
+function initUsers() {
+	logger.log.debug('Initializing users');
+
+	return isConfFileExists(CONF_FILES.USERS)
+		.then((isExists) => {
+			if (isExists) {
+				// okay, file exists, preloading
+				return load(CONF_FILES.USERS);
+			}
+
+			logger.log.info(`The [${CONF_FILES.USERS}] file doesn't exist. Creating default file`);
+
+			// not exists, creating admin user and registration token
+			const users = {};
+			let token = generateRegistrationToken();
+			users[utils.ADMIN_USER] = {
+				token2ResetPassword: token
+			};
+
+			logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${utils.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expired just delete the [${CONF_FILES.USERS}] file located in [${NEXL_HOME_DIR}] directory and restart nexl app`);
+
+			return save(users, CONF_FILES.USERS);
+		});
 }
 
 function initAdmins() {
@@ -584,9 +600,8 @@ module.exports.init = init;
 module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
 module.exports.createJSFilesRootDirIfNeeded = createJSFilesRootDirIfNeeded;
 module.exports.initSettings = initSettings;
-module.exports.initTokens = initTokens;
 module.exports.initPermissions = initPermissions;
-module.exports.initPasswords = initPasswords;
+module.exports.initUsers = initUsers;
 module.exports.initAdmins = initAdmins;
 
 module.exports.load = load;

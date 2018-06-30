@@ -1,5 +1,3 @@
-const uuidv4 = require('uuid/v4');
-
 const confMgmt = require('./conf-mgmt');
 const utils = require('./utils');
 const bcrypt = require('./bcryptx');
@@ -8,6 +6,8 @@ const ldapUtils = require('./ldap-utils');
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
+
+const TOKEN_VALID_HOURS = 24;
 
 function isAdminInner(user) {
 	return confMgmt.getCached(confMgmt.CONF_FILES.ADMINS).indexOf(user) >= 0;
@@ -69,69 +69,83 @@ function status(user) {
 	};
 }
 
-function generateTokenAndSave(username) {
-	const token = uuidv4();
-	const tokens = confMgmt.getCached(confMgmt.CONF_FILES.TOKENS);
-	tokens[username] = token;
-	return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(
-		() => Promise.resolve(token)
-	);
+function isValidToken(username, userObj, token) {
+	// is user exists ?
+	if (userObj === undefined) {
+		return false;
+	}
+
+	// is same token ?
+	if (userObj.token2ResetPassword.token !== token) {
+		return false;
+	}
+
+	// is token expired ?
+	let tokenCreated = Date.parse(userObj.token2ResetPassword.created);
+	if (tokenCreated !== tokenCreated) { // is NaN ?
+		logger.log.error(`Failed to parse token creation date [${userObj.token2ResetPassword.created}] for [${username}] user`);
+		return false;
+	}
+
+	return tokenCreated + TOKEN_VALID_HOURS * 60 * 60 * 1000 > new Date().getTime();
 }
 
 function resetPassword(username, password, token) {
-	const tokens = confMgmt.getCached(confMgmt.CONF_FILES.TOKENS);
-	if (tokens[username] !== token) {
+	let users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const userObj = users[username];
+
+	if (!isValidToken(username, userObj, token)) {
 		return Promise.reject('Bad token');
 	}
 
 	// token was applied, removing it
-	delete tokens[username];
+	delete userObj.token2ResetPassword.created;
+	delete userObj.token2ResetPassword.token;
 
-	// and storing
-	return confMgmt.save(tokens, confMgmt.CONF_FILES.TOKENS).then(
-		() => {
-			// loading existing passwords table
-			const passwords = confMgmt.getCached(confMgmt.CONF_FILES.PASSWORDS);
-			// generating new hash
-			return bcrypt.hash(password).then(
-				(hash) => {
-					passwords[username] = hash;
-					// updating passwords
-					return confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
-				});
-		}
-	);
+	// generating new hash for password
+	return bcrypt.hash(password)
+		.then((hash) => {
+			userObj.password = hash;
+			return confMgmt.save(users, confMgmt.CONF_FILES.USERS);
+		});
 }
 
 function changePassword(username, currentPassword, newPassword) {
-	const passwords = confMgmt.getCached(confMgmt.CONF_FILES.PASSWORDS);
-	if (!passwords[username]) {
-		return Promise.reject('User doesn\'t exist');
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const user = users[username];
+	if (user === undefined) {
+		logger.log.error(`Change password action is rejected because [${username}] user doesn't exist`);
+		return Promise.reject('Bad credentials');
 	}
 
-	return isPasswordValid(username, currentPassword).then(
-		(isValid) => {
+	// checking for existing password
+	return bcrypt.compare(currentPassword, user.password)
+		.then((isValid) => {
 			if (!isValid) {
-				return Promise.reject('Wrong current password');
+				logger.log.error(`Change password action is rejected. Reason : bad existing password for [${username}] user`);
+				return Promise.reject('Bad existing password');
 			}
 
-			// updating hash
-			return bcrypt.hash(newPassword).then(
-				(hash) => {
-					passwords[username] = hash;
-					return confMgmt.save(passwords, confMgmt.CONF_FILES.PASSWORDS);
+			// creating new hash
+			return bcrypt.hash(newPassword)
+				.then((hash) => {
+					user.password = hash;
+					return confMgmt.save(users, confMgmt.CONF_FILES.USERS);
 				});
 		});
 }
 
 function isPasswordValid(username, password) {
-	const passwords = confMgmt.getCached(confMgmt.CONF_FILES.PASSWORDS);
-	const hash = passwords[username];
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const user = users[username];
 
 	// is user present in password.js file ?
-	if (hash !== undefined) {
-		logger.log.debug('The [%s] user is present in nexl internal directory', username);
-		return bcrypt.compare(password, hash);
+	if (user !== undefined) {
+		logger.log.debug(`The [${username}] user is a nexl internal user. Validating password`);
+		if (user.password === undefined) {
+			return Promise.reject('Bad credentials');
+		}
+		return bcrypt.compare(password, user.password);
 	}
 
 	// no LDAP ? good bye
@@ -161,8 +175,9 @@ module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
 module.exports.status = status;
 
-module.exports.generateTokenAndSave = generateTokenAndSave;
 module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
+
+module.exports.TOKEN_VALID_HOURS = TOKEN_VALID_HOURS;
 // --------------------------------------------------------------------------------

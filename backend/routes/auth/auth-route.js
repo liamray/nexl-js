@@ -43,6 +43,7 @@ router.post('/change-password', function (req, res) {
 	);
 });
 
+// todo : consider remove this method
 router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Generating token for [%s] user', loggedInUsername);
