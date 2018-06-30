@@ -140,7 +140,7 @@ function isPasswordValid(username, password) {
 	const user = users[username];
 
 	// is user present in password.js file ?
-	if (user !== undefined) {
+	if (user !== undefined && user.disabled !== true) {
 		logger.log.debug(`The [${username}] user is a nexl internal user. Validating password`);
 		if (user.password === undefined) {
 			return Promise.reject('Bad credentials');

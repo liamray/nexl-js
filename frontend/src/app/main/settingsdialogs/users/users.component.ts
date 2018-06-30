@@ -25,7 +25,7 @@ export class UsersComponent {
     {
       localdata: [],
       datafields: [
-        {name: 'user', type: 'string'},
+        {name: 'username', type: 'string'},
         {name: 'disabled', type: 'boolean'}
       ],
       datatype: 'array'
@@ -35,7 +35,7 @@ export class UsersComponent {
     [
       {
         text: 'Username',
-        datafield: 'user',
+        datafield: 'username',
         align: 'center',
         width: '180px',
         cellclassname: function (row, column, value, data) {
@@ -173,6 +173,20 @@ export class UsersComponent {
       });
   }
 
+  setGridData(data: any) {
+    this.usersSource.localdata = [];
+
+    for (let key in data) {
+      this.usersSource.localdata.push({
+        username: key,
+        disabled: data[key].disabled
+      });
+    }
+
+    this.usersGrid.updatebounddata();
+
+  }
+
   open() {
     if (!this.isAdmin) {
       return;
@@ -185,6 +199,7 @@ export class UsersComponent {
     this.http.post({}, '/auth/list-users', 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
+        this.setGridData(data.body);
         this.usersWindow.open();
       },
       err => {
@@ -204,7 +219,7 @@ export class UsersComponent {
 
   onChange(event: any) {
     const args = event.args;
-    if (args.datafield !== 'user') {
+    if (args.datafield !== 'username') {
       return;
     }
 

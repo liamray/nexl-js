@@ -141,11 +141,11 @@ class NexlApp {
 	};
 
 	httpListen() {
-		logger.log.info('nexl HTTP server is up and listening on [%s:%s]', this.httpServer.address().address, this.httpServer.address().port);
+		logger.log.importantMessage('info', 'nexl HTTP server is up and listening on [%s:%s]', this.httpServer.address().address, this.httpServer.address().port);
 	};
 
 	httpsListen() {
-		logger.log.info('nexl HTTPS server is up and listening on [%s:%s]', this.httpsServer.address().address, this.httpsServer.address().port);
+		logger.log.importantMessage('info', 'nexl HTTPS server is up and listening on [%s:%s]', this.httpsServer.address().address, this.httpsServer.address().port);
 	};
 
 	startHTTP(settings) {

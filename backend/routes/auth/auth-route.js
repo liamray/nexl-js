@@ -18,7 +18,16 @@ router.post('/list-users', function (req, res) {
 		return;
 	}
 
-	res.send([]);
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const usersPeeled = {};
+	for (let key in users) {
+		const user = users[key];
+		usersPeeled[key] = {
+			disabled: user.disabled || false
+		};
+	}
+
+	res.send(usersPeeled);
 });
 
 router.post('/change-password', function (req, res) {
