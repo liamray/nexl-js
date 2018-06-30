@@ -47,7 +47,7 @@ class NexlApp {
 	printWelcomeMessage() {
 		return new Promise(
 			(resolve, reject) => {
-				figlet.text('nexl ' + version, {font: 'doom'}, function (err, data) {
+				figlet.text('nexl ' + version, {font: 'Doom'}, function (err, data) {
 					if (err) {
 						reject(err);
 						return;
