@@ -144,7 +144,7 @@ export class UsersComponent {
           let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           deleteButton.addEventHandler('click', (): void => {
-            this.removeUser(row);
+            this.removeUser(row.bounddata.uid);
 
           });
 
@@ -269,6 +269,10 @@ export class UsersComponent {
     const username = this.usersGrid.getcellvalue(row.bounddata.uid, 'username');
     const isDisabled = !row.bounddata.disabled;
 
+    if (username === undefined || username === null || username.length < 1) {
+      return;
+    }
+
     this.globalComponentsService.loader.open();
 
     // generating token
@@ -292,6 +296,11 @@ export class UsersComponent {
   removeUser(rowNr: any) {
     const username = this.usersGrid.getcellvalue(rowNr, 'username');
 
+    if (username === undefined || username === null || username.length < 1) {
+      this.usersGrid.deleterow(rowNr);
+      return;
+    }
+
     this.globalComponentsService.loader.open();
 
     // generating token
@@ -313,6 +322,10 @@ export class UsersComponent {
 
   showToken(rowNr: number) {
     const username = this.usersGrid.getcellvalue(rowNr, 'username');
+
+    if (username === undefined || username === null || username.length < 1) {
+      return;
+    }
 
     this.globalComponentsService.loader.open();
 
