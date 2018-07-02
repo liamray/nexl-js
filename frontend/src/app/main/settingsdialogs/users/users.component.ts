@@ -40,6 +40,10 @@ export class UsersComponent {
         width: '180px',
         cellclassname: function (row, column, value, data) {
           return data.disabled ? 'disabledItem' : '';
+        },
+        cellendedit: (rowNr, b, c, oldValue, newValue, f) => {
+          this.onChange(rowNr, oldValue, newValue);
+          return true;
         }
       },
       {
@@ -204,7 +208,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to load settings\nReason : ' + err.statusText);
+        this.globalComponentsService.notification.openError('Failed to load users list\nReason : ' + err.statusText);
         console.log(err);
       }
     );
@@ -217,39 +221,43 @@ export class UsersComponent {
   onOpen() {
   }
 
-  onChange(event: any) {
-    const args = event.args;
-    if (args.datafield !== 'username') {
-      return;
-    }
+  setCellValueDelayed(rowNr: number, cellName: string, cellValue: string) {
+    setTimeout(() => {
+      this.usersGrid.setcellvalue(rowNr, cellName, cellValue);
+      this.usersGrid.refresh();
+    }, 10);
+  }
 
-    if (!UtilsService.isValidUsername(args.newvalue)) {
+  onChange(rowNr: number, oldValue: string, newValue: string) {
+    if (!UtilsService.isValidUsername(newValue)) {
       this.globalComponentsService.messageBox.open({
         title: 'Error',
         label: 'Invalid user name',
       });
+      this.setCellValueDelayed(rowNr, 'username', oldValue);
       return;
     }
 
-    if (args.oldvalue === undefined) {
-      return;
-    }
+    const userData = {
+      createUsername: newValue,
+      removeUsername: oldValue
+    };
 
     // generating new token
     this.globalComponentsService.loader.open();
 
     // generating token
-    this.http.post({username: args.newvalue}, '/auth/generate-token', 'json').subscribe(
+    this.http.post(userData, '/auth/create-user', 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
-        this.usersGrid.setcellvalue(args.rowindex, 'token', data.body.token);
-        this.usersGrid.refresh();
+        return true;
       },
       err => {
+        this.setCellValueDelayed(rowNr, 'username', oldValue);
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.open({
           title: 'Error',
-          label: `Failed to generate new token. Reason : ${err.statusText}`,
+          label: `Failed to create a [${newValue}] user. Reason : ${err.statusText}`,
         });
 
         console.log(err);

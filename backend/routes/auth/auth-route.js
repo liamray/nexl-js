@@ -7,6 +7,37 @@ const confMgmt = require('../../api/conf-mgmt');
 
 const router = express.Router();
 
+router.post('/create-user', function (req, res) {
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug(`Create new user ( this doesn't have a password and must register )`);
+
+	// only admins can perform this action
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('Cannot create new user, admin permissions required');
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const createUsername = req.body.createUsername;
+	const removeUsername = req.body.removeUsername;
+
+	// todo : validate createUsername !!!
+
+	delete users[removeUsername];
+	users[createUsername] = {};
+
+	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+		.then(res.send({}))
+		.catch(
+			(err) => {
+				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', createUsername, utils.formatErr(err));
+				utils.sendError(res, err);
+			}
+		);
+
+});
+
 router.post('/list-users', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Listing internal nexl users');
