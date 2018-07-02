@@ -7,9 +7,43 @@ const confMgmt = require('../../api/conf-mgmt');
 
 const router = express.Router();
 
+router.post('/enable-disable-user', function (req, res) {
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug(`Enabling/disabling user`);
+
+	// only admins can perform this action
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('Cannot enable/disable, admin permissions required');
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const username = req.body.username;
+	const isDisabled = req.body.isDisabled;
+
+	if (users[username] === undefined) {
+		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
+		utils.sendError(res, `User doesn't exist`);
+		return;
+	}
+
+	users[username].disabled = isDisabled;
+
+	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+		.then(res.send({}))
+		.catch(
+			(err) => {
+				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
+				utils.sendError(res, err);
+			}
+		);
+
+});
+
 router.post('/create-user', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug(`Create new user ( this doesn't have a password and must register )`);
+	logger.log.debug(`Creating new user ( this doesn't have a password and must register )`);
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
@@ -32,6 +66,33 @@ router.post('/create-user', function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', createUsername, utils.formatErr(err));
+				utils.sendError(res, err);
+			}
+		);
+
+});
+
+router.post('/remove-user', function (req, res) {
+	const loggedInUsername = utils.getLoggedInUsername(req);
+	logger.log.debug(`Removing existing user`);
+
+	// only admins can perform this action
+	if (!security.isAdmin(loggedInUsername)) {
+		logger.log.error('Cannot create new user, admin permissions required');
+		utils.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const username = req.body.username;
+
+	delete users[username];
+
+	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+		.then(res.send({}))
+		.catch(
+			(err) => {
+				logger.log.error('Failed to remove a [%s] user. Reason : [%s]', username, utils.formatErr(err));
 				utils.sendError(res, err);
 			}
 		);
@@ -169,6 +230,15 @@ router.post('/register', function (req, res) {
 	});
 });
 
+router.post('/*', function (req, res) {
+	logger.log.error(`Unknown route [${req.baseUrl}]`);
+	utils.sendError(res, `Unknown route`, 404);
+});
+
+router.get('/*', function (req, res) {
+	logger.log.error(`Unknown route [${req.baseUrl}]`);
+	utils.sendError(res, `Unknown route`, 404);
+});
 // --------------------------------------------------------------------------------
 module.exports = router;
 // --------------------------------------------------------------------------------

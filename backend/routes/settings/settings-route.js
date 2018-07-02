@@ -63,12 +63,14 @@ router.post('/save', function (req, res, next) {
 		});
 });
 
-router.post('/*', function (req, res, next) {
-	utils.sendError(res, 'Service not found', 404);
+router.post('/*', function (req, res) {
+	logger.log.error(`Unknown route [${req.baseUrl}]`);
+	utils.sendError(res, `Unknown route`, 404);
 });
 
-router.get('/*', function (req, res, next) {
-	utils.sendError(res, 'Service not found', 404);
+router.get('/*', function (req, res) {
+	logger.log.error(`Unknown route [${req.baseUrl}]`);
+	utils.sendError(res, `Unknown route`, 404);
 });
 
 // --------------------------------------------------------------------------------

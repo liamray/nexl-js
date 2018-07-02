@@ -73,7 +73,7 @@ export class UsersComponent {
           let resetButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           resetButton.addEventHandler('click', (): void => {
-            this.showToken(row.bounddata.uid);
+            // this.showToken(row.bounddata.uid);
           });
 
           this.counter++;
@@ -109,10 +109,7 @@ export class UsersComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            let clickedButton = value;
-            row.bounddata.disabled = !row.bounddata.disabled;
-            this.usersGrid.refresh();
-            this.enableDisableUser(row.bounddata.uid);
+            this.enableDisableUser(row);
           });
 
           this.counter++;
@@ -147,8 +144,8 @@ export class UsersComponent {
           let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           deleteButton.addEventHandler('click', (): void => {
-            this.removeUser(row.bounddata.uid);
-            this.usersGrid.deleterow(row.bounddata.uid);
+            this.removeUser(row);
+
           });
 
           this.counter++;
@@ -262,23 +259,57 @@ export class UsersComponent {
 
         console.log(err);
       });
-
   }
 
   addNewItem() {
     this.usersGrid.addrow(1, {});
   }
 
-
-  removeUser(row: any) {
-
-  }
-
-  showToken(row: any) {
-
-  }
-
   enableDisableUser(row: any) {
+    const username = this.usersGrid.getcellvalue(row.bounddata.uid, 'username');
+    const isDisabled = !row.bounddata.disabled;
 
+    this.globalComponentsService.loader.open();
+
+    // generating token
+    this.http.post({username: username, isDisabled: isDisabled}, '/auth/enable-disable-user', 'json').subscribe(
+      (data: any) => {
+        row.bounddata.disabled = !row.bounddata.disabled;
+        this.usersGrid.refresh();
+        this.globalComponentsService.loader.close();
+        return true;
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Failed to enable/disable [${username}] user. Reason : ${err.statusText}`,
+        });
+
+        console.log(err);
+      });
+  }
+
+  removeUser(rowNr: any) {
+    const username = this.usersGrid.getcellvalue(rowNr, 'username');
+
+    this.globalComponentsService.loader.open();
+
+    // generating token
+    this.http.post({username: username}, '/auth/remove-user', 'json').subscribe(
+      (data: any) => {
+        this.usersGrid.deleterow(rowNr);
+        this.globalComponentsService.loader.close();
+        return true;
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Failed to remove a [${username}] user. Reason : ${err.statusText}`,
+        });
+
+        console.log(err);
+      });
   }
 }
