@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const j79 = require('j79-utils');
-const path = require('path');
+
 
 // is a password to encrypt/decrypt tokens
 const SECRET = uuidv4();
@@ -106,6 +106,13 @@ function formatDate() {
 	return `${date} ${time}`;
 }
 
+function generateNewToken() {
+	return {
+		token: uuidv4(),
+		created: formatDate()
+	};
+}
+
 
 // --------------------------------------------------------------------------------
 module.exports.GUEST_USER = GUEST_USER;
@@ -124,5 +131,5 @@ module.exports.isEmptyStr = isEmptyStr;
 module.exports.isFilePathValid = isFilePathValid;
 module.exports.isDirPathValid = isDirPathValid;
 
-module.exports.formatDate = formatDate;
+module.exports.generateNewToken = generateNewToken;
 // --------------------------------------------------------------------------------

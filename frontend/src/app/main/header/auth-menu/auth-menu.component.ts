@@ -45,10 +45,6 @@ export class AuthMenuComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_REGISTER_WINDOW);
   }
 
-  openGenerateTokenWindow() {
-    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_GENERATE_TOKEN_WINDOW);
-  }
-
   openChangePasswordWindow() {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_CHANGE_PASSWORD_WINDOW);
   }

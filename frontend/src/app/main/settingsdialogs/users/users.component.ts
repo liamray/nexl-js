@@ -73,7 +73,7 @@ export class UsersComponent {
           let resetButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           resetButton.addEventHandler('click', (): void => {
-            // this.showToken(row.bounddata.uid);
+            this.showToken(row.bounddata.uid);
           });
 
           this.counter++;
@@ -277,7 +277,6 @@ export class UsersComponent {
         row.bounddata.disabled = !row.bounddata.disabled;
         this.usersGrid.refresh();
         this.globalComponentsService.loader.close();
-        return true;
       },
       err => {
         this.globalComponentsService.loader.close();
@@ -300,13 +299,37 @@ export class UsersComponent {
       (data: any) => {
         this.usersGrid.deleterow(rowNr);
         this.globalComponentsService.loader.close();
-        return true;
       },
       err => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.open({
           title: 'Error',
           label: `Failed to remove a [${username}] user. Reason : ${err.statusText}`,
+        });
+
+        console.log(err);
+      });
+  }
+
+  showToken(rowNr: number) {
+    const username = this.usersGrid.getcellvalue(rowNr, 'username');
+
+    this.globalComponentsService.loader.open();
+
+    // generating token
+    this.http.post({username: username}, '/auth/generate-token', 'json').subscribe(
+      (data: any) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.open({
+          title: 'Information',
+          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token}`,
+        });
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.open({
+          title: 'Error',
+          label: `Operation failed. Reason : ${err.statusText}`,
         });
 
         console.log(err);

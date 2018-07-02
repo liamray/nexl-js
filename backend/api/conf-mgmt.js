@@ -4,7 +4,6 @@ const fsx = require('./fsx');
 const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
-const uuidv4 = require('uuid/v4');
 
 const version = require('./../../package.json').version;
 
@@ -462,14 +461,6 @@ function initPermissions() {
 	)
 }
 
-
-function generateRegistrationToken() {
-	return {
-		token: uuidv4(),
-		created: utils.formatDate()
-	};
-}
-
 function initUsers() {
 	logger.log.debug('Initializing users');
 
@@ -484,7 +475,7 @@ function initUsers() {
 
 			// not exists, creating admin user and registration token
 			const users = {};
-			let token = generateRegistrationToken();
+			let token = utils.generateNewToken();
 			users[utils.ADMIN_USER] = {
 				token2ResetPassword: token
 			};

@@ -144,7 +144,6 @@ router.post('/change-password', function (req, res) {
 	);
 });
 
-// todo : consider remove this method
 router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	logger.log.debug('Generating token for [%s] user', loggedInUsername);
@@ -156,26 +155,28 @@ router.post('/generate-token', function (req, res) {
 		return;
 	}
 
-	// validating username
+	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
 	const username = req.body.username;
-	if (username.length < 1) {
-		logger.log.error('Cannot generate new token. Username cannot be empty');
-		utils.sendError(res, 'Username cannot be empty');
+
+	if (users[username] === undefined) {
+		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
+		utils.sendError(res, `User doesn't exist`);
 		return;
 	}
 
-	// generating new token
-	return security.generateTokenAndSave(username).then(
-		(token) => {
-			res.send({
-				token: token
-			});
+	users[username].token2ResetPassword = utils.generateNewToken();
 
-		}).catch(
-		(err) => {
-			logger.log.error('Failed to generate a new token. Reason : [%s]', err);
-			utils.sendError(res, err);
-		});
+	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+		.then(_ => {
+			res.send(users[username].token2ResetPassword)
+		})
+		.catch(
+			(err) => {
+				users[username].token2ResetPassword = undefined;
+				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
+				utils.sendError(res, err);
+			}
+		);
 
 });
 
@@ -215,9 +216,17 @@ router.post('/register', function (req, res) {
 	const token = req.body.token;
 
 	Promise.resolve().then(() => {
+		// todo : proper password validation
 		if (password.length < 1) {
 			logger.log.error('Password cannot be empty');
 			return Promise.reject('Password cannot be empty');
+		}
+
+		const userObj = confMgmt.getCached(confMgmt.CONF_FILES.USERS)[username];
+		if (userObj.disabled === true) {
+			logger.log.error(`Failed to register a [${username}]. Reason : user is disabled !`);
+			utils.sendError(res, 'User is disabled');
+			return;
 		}
 
 		return security.resetPassword(username, password, token).then(() => {
@@ -225,7 +234,7 @@ router.post('/register', function (req, res) {
 			res.send({});
 		})
 	}).catch((err) => {
-		logger.log.error('Failed to register a [%s] user. Reason : [%s]', err);
+		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);
 		utils.sendError(res, err);
 	});
 });
