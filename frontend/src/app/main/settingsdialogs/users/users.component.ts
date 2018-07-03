@@ -293,14 +293,7 @@ export class UsersComponent {
       });
   }
 
-  removeUser(rowNr: any) {
-    const username = this.usersGrid.getcellvalue(rowNr, 'username');
-
-    if (username === undefined || username === null || username.length < 1) {
-      this.usersGrid.deleterow(rowNr);
-      return;
-    }
-
+  removeUserUnner(rowNr: number, username: string) {
     this.globalComponentsService.loader.open();
 
     // generating token
@@ -320,6 +313,30 @@ export class UsersComponent {
       });
   }
 
+  removeUser(rowNr: any) {
+    const username = this.usersGrid.getcellvalue(rowNr, 'username');
+
+    if (username === undefined || username === null || username.length < 1) {
+      this.usersGrid.deleterow(rowNr);
+      return;
+    }
+
+    // confirmation about unsaved data
+    const opts = {
+      title: `Confirm user remove`,
+      label: `Are you sure you want to remove a [${username}] user ?`,
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed !== true) {
+          return;
+        }
+
+        this.removeUserUnner(rowNr, username);
+      },
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
+  }
+
   showToken(rowNr: number) {
     const username = this.usersGrid.getcellvalue(rowNr, 'username');
 
@@ -335,7 +352,7 @@ export class UsersComponent {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.open({
           title: 'Information',
-          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token}`,
+          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token} This token expires in 24 hour(s)`,
         });
       },
       err => {
