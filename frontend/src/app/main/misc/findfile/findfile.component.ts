@@ -109,7 +109,7 @@ export class FindFileComponent implements OnInit {
       (err) => {
         console.log(err);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to resolve JS files list from server\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve JS files list from server. Reason : [${err.statusText}]`);
       }
     );
   }

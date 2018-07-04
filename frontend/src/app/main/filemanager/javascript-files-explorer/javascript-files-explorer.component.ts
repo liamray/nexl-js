@@ -291,7 +291,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
           }, 100);
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to resolve list JS files\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve JavaScript file list. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );
@@ -382,7 +382,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.itemMoved(data);
 
     this.globalComponentsService.loader.close();
-    this.globalComponentsService.notification.openSuccess('Item renamed');
   }
 
   renameItem() {
@@ -402,7 +401,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       }
 
       if (!UtilsService.isFileNameValid(newLabel)) {
-        this.globalComponentsService.notification.openError('The [' + newLabel + '] file name contains forbidden characters');
+        this.globalComponentsService.messageBox.openSimple('Error', `The [${newLabel}] file name contains forbidden characters`);
         return;
       }
 
@@ -429,7 +428,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
           this.renameInner(data);
         },
         (err) => {
-          this.globalComponentsService.notification.openError('Failed to rename item\nReason\n' + err.statusText);
+          this.globalComponentsService.messageBox.openSimple('Error', 'Failed to rename item. Reason : [${err.statusText}]');
           this.globalComponentsService.loader.close();
           console.log(err);
         }
@@ -522,7 +521,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         },
         (err) => {
           this.tree.removeItem(child);
-          this.globalComponentsService.notification.openError('Failed to read directory content\nReason\n' + err.statusText);
+          this.globalComponentsService.messageBox.openSimple('Error', `Failed to read directory content. Reason : [${err.statusText}]`);
           console.log(err);
           reject();
         }
@@ -537,14 +536,14 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     if (!UtilsService.isFileNameValid(newDirName)) {
-      this.globalComponentsService.notification.openError('The [' + newDirName + '] directory name contains forbidden characters');
+      this.globalComponentsService.messageBox.openSimple('Error', `The [${newDirName}] directory name contains forbidden characters`);
       return;
     }
 
     const newDirRelativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
 
     if (this.findItemByRelativePath(newDirRelativePath) !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + newDirRelativePath + '] item is already exists');
+      this.globalComponentsService.messageBox.openSimple('Error', `The [${newDirRelativePath}] item is already exists`);
       return;
     }
 
@@ -554,11 +553,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       () => {
         this.insertDirItem(JSFilesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openSuccess('Created new directory');
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to create a new directory\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to create a new directory. Reason : [${err.statusText}]`);
       }
     );
   }
@@ -585,11 +583,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.tree.removeItem(targetItem);
         this.closeDeletedTabs(targetItem.value);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openSuccess('Deleted [' + this.itemType() + ']');
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to delete an item\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to delete an item. Reason : [${err.statusText}]`);
       }
     );
   }
@@ -648,7 +645,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     if (!UtilsService.isFileNameValid(newFileName)) {
-      this.globalComponentsService.notification.openError('The [' + newFileName + '] file name contains forbidden characters');
+      this.globalComponentsService.messageBox.openSimple('Error', `The [${newFileName}] file name contains forbidden characters`);
       return;
     }
 
@@ -657,7 +654,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.loadChildItemsFromServer(this.rightClickSelectedElement).then(
       () => {
         if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-          this.globalComponentsService.notification.openError(`The [${item.value.relativePath}] item is already exists`);
+          this.globalComponentsService.messageBox.openSimple('Error', `The [${item.value.relativePath}] item is already exists`);
           return;
         }
 
@@ -946,7 +943,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     data.targetRelativePath = data.dropPath + UtilsService.SERVER_INFO.SLASH + data.item2Move.value.label;
     const targetItemCandidate = this.findItemByRelativePath(data.targetRelativePath);
     if (targetItemCandidate !== undefined) {
-      this.globalComponentsService.notification.openError('The [' + data.dropPath + UtilsService.SERVER_INFO.SLASH + '] directory already contains a [' + data.item2Move.value.label + '] item');
+      this.globalComponentsService.messageBox.openSimple('Error', 'The [' + data.dropPath + UtilsService.SERVER_INFO.SLASH + '] directory already contains a [' + data.item2Move.value.label + '] item');
       return;
     }
 
@@ -965,7 +962,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       },
       (err) => {
         console.log(err);
-        this.globalComponentsService.notification.openError(err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', err.statusText);
         this.globalComponentsService.loader.close();
       }
     );
@@ -993,7 +990,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
-      this.globalComponentsService.notification.openError('No write permissions to move an item');
+      this.globalComponentsService.messageBox.openSimple('Error', 'No write permissions to move an item');
       return false;
     }
 

@@ -125,7 +125,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to load settings\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load settings. Reason : [${err.statusText}]`);
         console.log(err);
       });
 
@@ -153,7 +153,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to load settings\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load settings. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );
@@ -185,7 +185,6 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.settingsWindow.close();
-        this.globalComponentsService.notification.openSuccess('Updated settings');
         if (this.jsFilesRootDirBefore !== this.settings['js-files-root-dir']) {
           this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
         }

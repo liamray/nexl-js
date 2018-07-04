@@ -548,7 +548,10 @@ function createJSFilesRootDirIfNeeded() {
 				}
 			);
 		}
-	);
+	).then(_ => {
+		logger.log.importantMessage('info', `JavaScript files home dir is [${jsFilesRootDir}]`);
+		return Promise.resolve();
+	});
 }
 
 function getLDAPSettings() {

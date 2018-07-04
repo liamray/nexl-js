@@ -43,7 +43,7 @@ export class AuthService {
         this.messageService.sendMessage(MESSAGE_TYPE.AUTH_CHANGED, status.body);
       },
       (err) => {
-        this.globalComponentsService.notification.openError('Failed to resolve server status\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve server status. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );

@@ -333,7 +333,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
     this.http.post({relativePath: relativePath, content: content}, '/jsfiles/save-jsfile', 'text').subscribe(
       (content: any) => {
-        this.globalComponentsService.notification.openSuccess('File saved !');
         this.globalComponentsService.loader.close();
         this.changeFileStatus(tabInfo.idSeqNr, false);
         this.setNewFile(tabInfo.idSeqNr, false);
@@ -344,7 +343,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to save JS file\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to save JS file. Reason : [${err.statusText}]`);
         console.log(err);
         if (callback !== undefined) {
           callback(false);
@@ -486,7 +485,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openError('Failed to read JS file content\nReason : ' + err.statusText);
+          this.globalComponentsService.messageBox.openSimple('Error', `Failed to load JavaScript file content. Reason : [${err.statusText}]`);
           console.log(err);
           reject();
         }

@@ -82,7 +82,6 @@ export class LoginComponent {
       .subscribe(
         response => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.notification.openInfo('Logged in as [' + this.username + ']');
           this.loginWindow.close();
           this.authService.refreshStatus();
         },
@@ -96,7 +95,7 @@ export class LoginComponent {
   initContent = () => {
     this.loginButton.createComponent();
     this.cancelButton.createComponent();
-  }
+  };
 
   onOpen() {
     this.usernameRef.focus();

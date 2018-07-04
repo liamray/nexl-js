@@ -65,7 +65,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to load permissions list\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load permissions list. Reason : [${err.statusText}]`);
         console.log(err);
       });
   }
@@ -80,7 +80,6 @@ export class PermissionsComponent implements AfterViewInit {
       val => {
         this.globalComponentsService.loader.close();
         this.permissionsWindow.close();
-        this.globalComponentsService.notification.openSuccess('Updated permissions');
       },
       err => {
         this.globalComponentsService.loader.close();

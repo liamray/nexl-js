@@ -100,7 +100,7 @@ export class ChangePasswordComponent {
   initContent = () => {
     this.okButton.createComponent();
     this.cancelButton.createComponent();
-  }
+  };
 
   onKeyPress(event) {
     this.displayErrorMessage();

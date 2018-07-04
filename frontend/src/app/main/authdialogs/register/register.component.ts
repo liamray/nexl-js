@@ -106,7 +106,7 @@ export class RegisterComponent {
   initContent = () => {
     this.registerButton.createComponent();
     this.cancelButton.createComponent();
-  }
+  };
 
   onOpen() {
     this.usernameRef.focus();

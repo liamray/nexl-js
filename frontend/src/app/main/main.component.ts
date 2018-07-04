@@ -94,7 +94,7 @@ export class MainComponent implements OnInit {
       },
       (err) => {
         console.log(err);
-        this.globalComponentsService.notification.openError('Failed to load data from server\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load data from server. Reason : [${err.statusText}]`);
       }
     );
 

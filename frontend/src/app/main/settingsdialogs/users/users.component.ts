@@ -205,7 +205,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openError('Failed to load users list\nReason : ' + err.statusText);
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load users list. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );

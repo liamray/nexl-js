@@ -48,4 +48,14 @@ export class MessageBoxComponent implements OnInit {
     $('#messageBoxTitle').text(opts.title);
     this.window.open();
   }
+
+  // todo : use it where needed !
+  openSimple(title: string, text: string) {
+    const opts = {
+      title: title,
+      label: text,
+    };
+
+    this.open(opts);
+  }
 }
