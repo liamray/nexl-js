@@ -9,7 +9,14 @@ const router = express.Router();
 
 router.post('/enable-disable-user', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug(`Enabling/disabling user`);
+	const username = req.body.username;
+	const isDisabled = req.body.isDisabled;
+
+	if (isDisabled === true) {
+		logger.log.debug(`Disabling a [${username}] user by [${loggedInUsername}] user`);
+	} else {
+		logger.log.debug(`Enabling a [${username}] user by [${loggedInUsername}] user`);
+	}
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
@@ -19,8 +26,6 @@ router.post('/enable-disable-user', function (req, res) {
 	}
 
 	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
-	const username = req.body.username;
-	const isDisabled = req.body.isDisabled;
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
@@ -31,7 +36,10 @@ router.post('/enable-disable-user', function (req, res) {
 	users[username].disabled = isDisabled;
 
 	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
-		.then(res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully enabled/disabled a [${username}] user by [${loggedInUsername}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
@@ -41,9 +49,12 @@ router.post('/enable-disable-user', function (req, res) {
 
 });
 
-router.post('/create-user', function (req, res) {
+router.post('/rename-user', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug(`Creating new user ( this doesn't have a password and must register )`);
+	const newUsername = req.body.newUsername;
+	const oldUsername = req.body.oldUsername;
+
+	logger.log.debug(`Renaming a [${oldUsername}] user to [${newUsername}] by [${loggedInUsername}]`);
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
@@ -53,19 +64,20 @@ router.post('/create-user', function (req, res) {
 	}
 
 	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
-	const createUsername = req.body.createUsername;
-	const removeUsername = req.body.removeUsername;
 
-	// todo : validate createUsername !!!
+	// todo : validate newUsername !!!
 
-	delete users[removeUsername];
-	users[createUsername] = {};
+	delete users[oldUsername];
+	users[newUsername] = {};
 
 	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
-		.then(res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully renamed a [${oldUsername}] user to [${newUsername}] by [${loggedInUsername}]`);
+		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', createUsername, utils.formatErr(err));
+				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', newUsername, utils.formatErr(err));
 				utils.sendError(res, err);
 			}
 		);
@@ -74,7 +86,9 @@ router.post('/create-user', function (req, res) {
 
 router.post('/remove-user', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug(`Removing existing user`);
+	const username = req.body.username;
+
+	logger.log.debug(`Removing a [${username}] user by [${loggedInUsername}] user`);
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
@@ -84,12 +98,14 @@ router.post('/remove-user', function (req, res) {
 	}
 
 	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
-	const username = req.body.username;
 
 	delete users[username];
 
 	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
-		.then(res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully removed a [${username}] user by [${loggedInUsername}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to remove a [%s] user. Reason : [%s]', username, utils.formatErr(err));
@@ -101,7 +117,8 @@ router.post('/remove-user', function (req, res) {
 
 router.post('/list-users', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug('Listing internal nexl users');
+
+	logger.log.debug(`Listing existing nexl users by [${loggedInUsername}] user`);
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
@@ -120,11 +137,13 @@ router.post('/list-users', function (req, res) {
 	}
 
 	res.send(usersPeeled);
+	logger.log.debug(`Successfully listed existing nexl users by [${loggedInUsername}] user`);
 });
 
 router.post('/change-password', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug('Changing password for [%s] user', loggedInUsername);
+
+	logger.log.debug(`Changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
 
 	Promise.resolve().then(() => {
 		if (loggedInUsername === utils.GUEST_USER) {
@@ -133,7 +152,7 @@ router.post('/change-password', function (req, res) {
 		}
 
 		return security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword).then(() => {
-			logger.log.debug('Password has been changed for [%s] user', loggedInUsername);
+			logger.log.debug(`Successfully changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
 			res.send({});
 		});
 	}).catch(
@@ -146,7 +165,9 @@ router.post('/change-password', function (req, res) {
 
 router.post('/generate-token', function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
-	logger.log.debug('Generating token for [%s] user', loggedInUsername);
+	const username = req.body.username;
+
+	logger.log.debug(`Generating registration token for [${username}] user by [${loggedInUsername}] user`);
 
 	// only admins can generate token
 	if (!security.isAdmin(loggedInUsername)) {
@@ -156,7 +177,6 @@ router.post('/generate-token', function (req, res) {
 	}
 
 	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
-	const username = req.body.username;
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
@@ -168,7 +188,8 @@ router.post('/generate-token', function (req, res) {
 
 	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
 		.then(_ => {
-			res.send(users[username].token2ResetPassword)
+			res.send(users[username].token2ResetPassword);
+			logger.log.debug(`Successfully generated registration token for [${username}] user by [${loggedInUsername}] user`);
 		})
 		.catch(
 			(err) => {
@@ -182,6 +203,7 @@ router.post('/generate-token', function (req, res) {
 
 router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
+	logger.log.debug(`Resolving status for [${username}] user by [${username}] user`);
 	const status = security.status(username);
 	status['isLoggedIn'] = username !== utils.GUEST_USER;
 	status['username'] = username;
@@ -190,6 +212,8 @@ router.post('/resolve-status', function (req, res) {
 
 router.post('/login', function (req, res) {
 	const username = req.body.username;
+
+	logger.log.debug(`Logging in with  [${username}] user`);
 
 	security.isPasswordValid(username, req.body.password).then((isValid) => {
 		if (!isValid) {
@@ -203,6 +227,7 @@ router.post('/login', function (req, res) {
 		// send it back to the client
 		res.send(token);
 		res.end();
+		logger.log.debug(`Successfully logged in with  [${username}] user`);
 
 	}).catch((err) => {
 		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
@@ -214,6 +239,8 @@ router.post('/register', function (req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	const token = req.body.token;
+
+	logger.log.debug(`Registering/resetting password for [${username}] user`);
 
 	Promise.resolve().then(() => {
 		// todo : proper password validation
@@ -230,8 +257,8 @@ router.post('/register', function (req, res) {
 		}
 
 		return security.resetPassword(username, password, token).then(() => {
-			logger.log.debug('Password was reset for [%s] user', username);
 			res.send({});
+			logger.log.debug(`Successfully Registered/reset password for [${username}] user`);
 		})
 	}).catch((err) => {
 		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);

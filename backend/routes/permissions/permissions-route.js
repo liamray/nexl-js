@@ -9,9 +9,10 @@ const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
 const logger = require('../../api/logger');
 
-router.post('/load', function (req, res, next) {
+router.post('/load', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
-	logger.log.debug('Loading permissions for [%s] user', username);
+
+	logger.log.debug(`Loading all permissions by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('Cannot load permissions because the [%s] user doesn\'t have admin permissions', username);
@@ -24,11 +25,13 @@ router.post('/load', function (req, res, next) {
 		assignPermissions: confMgmt.getCached(confMgmt.CONF_FILES.PERMISSIONS)
 	});
 
+	logger.log.debug(`Successfully loaded all permissions by [${username}] user`);
 });
 
 router.post('/save', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
-	logger.log.debug('Saving permissions for [%s] user', username);
+
+	logger.log.debug(`Saving all permissions by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('Cannot save permissions because the [%s] user doesn\'t have admin permissions', username);
@@ -40,7 +43,10 @@ router.post('/save', function (req, res, next) {
 	const assignPermissions = req.body.assignPermissions;
 
 	return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS).then(() => {
-		return confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => res.send({}));
+		return confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => {
+			res.send({});
+			logger.log.debug(`Successfully saved all permissions by [${username}] user`);
+		});
 	}).catch(
 		(err) => {
 			logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);

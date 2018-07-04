@@ -18,9 +18,10 @@ router.post('/avail-values', function (req, res, next) {
 	res.send(data);
 });
 
-router.post('/load', function (req, res, next) {
+router.post('/load', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
-	logger.log.debug('Loading settings for [%s] user', username);
+
+	logger.log.debug(`Loading nexl server settings by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('The [%s] user doesn\'t have admin permissions to load settings', username);
@@ -30,12 +31,13 @@ router.post('/load', function (req, res, next) {
 
 	const settings = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS);
 	settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
-	res.send(settings)
+	res.send(settings);
+	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
 });
 
 router.post('/save', function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
-	logger.log.debug('Saving settings for [%s] user', username);
+	logger.log.debug(`Saving nexl server settings by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('The [%s] user doesn\'t have admin permissions to save settings', username);
@@ -51,6 +53,8 @@ router.post('/save', function (req, res, next) {
 	return confMgmt.saveSettings(data).then(
 		() => {
 			res.send({});
+			logger.log.debug(`Successfully saved nexl server settings by [${username}] user`);
+
 			// is js root dir was changed ?
 			if (jsRootDir !== data[confMgmt.SETTINGS.JS_FILES_ROOT_DIR]) {
 				// reloading cache

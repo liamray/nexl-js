@@ -13,8 +13,9 @@ const router = express.Router();
 //////////////////////////////////////////////////////////////////////////////
 // list-all-jsfiles
 //////////////////////////////////////////////////////////////////////////////
-router.post('/list-all-jsfiles', function (req, res, next) {
+router.post('/list-all-jsfiles', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
+	logger.log.debug(`Listing all JavaScript files by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to list all JavaScript files', username);
@@ -23,14 +24,18 @@ router.post('/list-all-jsfiles', function (req, res, next) {
 	}
 
 	res.send(jsfilesUtils.listAllJSFiles());
+	logger.log.debug(`Successfully listed all JavaScript files by [${username}] user`);
 });
 
 //////////////////////////////////////////////////////////////////////////////
 // move item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/move', function (req, res, next) {
-	let source = req.body['source'];
-	let dest = req.body['dest'];
+router.post('/move', function (req, res) {
+	const username = utils.getLoggedInUsername(req);
+	const source = req.body['source'];
+	const dest = req.body['dest'];
+
+	logger.log.debug(`Moving a [${source}] item to [${dest}] by [${username}] user`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(source) || source.length < 1) {
@@ -46,8 +51,6 @@ router.post('/move', function (req, res, next) {
 		return;
 	}
 
-	const username = utils.getLoggedInUsername(req);
-
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to move items', username);
 		utils.sendError(res, 'No write permissions');
@@ -55,7 +58,10 @@ router.post('/move', function (req, res, next) {
 	}
 
 	return jsfilesUtils.move(source, dest)
-		.then(() => res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully moved a [${source}] item to [${dest}] by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, err);
@@ -66,9 +72,12 @@ router.post('/move', function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 // rename item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/rename', function (req, res, next) {
-	let relativePath = req.body['relativePath'];
-	let newRelativePath = req.body['newRelativePath'];
+router.post('/rename', function (req, res) {
+	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'];
+	const newRelativePath = req.body['newRelativePath'];
+
+	logger.log.debug(`Renaming a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -84,8 +93,6 @@ router.post('/rename', function (req, res, next) {
 		return;
 	}
 
-	const username = utils.getLoggedInUsername(req);
-
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to rename items', username);
 		utils.sendError(res, 'No write permissions');
@@ -93,7 +100,10 @@ router.post('/rename', function (req, res, next) {
 	}
 
 	return jsfilesUtils.rename(relativePath, newRelativePath)
-		.then(() => res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully renamed a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, err);
@@ -104,8 +114,11 @@ router.post('/rename', function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 // delete item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/delete', function (req, res, next) {
-	let relativePath = req.body['relativePath'];
+router.post('/delete', function (req, res) {
+	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'];
+
+	logger.log.debug(`Deleting a [${relativePath}] item by [${username}] user`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -114,7 +127,6 @@ router.post('/delete', function (req, res, next) {
 		return;
 	}
 
-	const username = utils.getLoggedInUsername(req);
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to delete items', username);
 		utils.sendError(res, 'No write permissions');
@@ -122,7 +134,10 @@ router.post('/delete', function (req, res, next) {
 	}
 
 	return jsfilesUtils.deleteItem(relativePath)
-		.then(() => res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully deleted a [${relativePath}] item by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -134,7 +149,10 @@ router.post('/delete', function (req, res, next) {
 // make-dir
 //////////////////////////////////////////////////////////////////////////////
 router.post('/make-dir', function (req, res, next) {
-	let relativePath = req.body['relativePath'];
+	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'];
+
+	logger.log.debug(`Creating a [${relativePath}] directory by [${username}] user`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -143,8 +161,6 @@ router.post('/make-dir', function (req, res, next) {
 		return;
 	}
 
-	const username = utils.getLoggedInUsername(req);
-
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to create new directory', username);
 		utils.sendError(res, 'No write permissions');
@@ -152,7 +168,10 @@ router.post('/make-dir', function (req, res, next) {
 	}
 
 	return jsfilesUtils.mkdir(relativePath)
-		.then(() => res.send({}))
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Successfully created a [${relativePath}] directory by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -164,8 +183,10 @@ router.post('/make-dir', function (req, res, next) {
 // list-jsfiles
 //////////////////////////////////////////////////////////////////////////////
 router.post('/list-jsfiles', function (req, res, next) {
-	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'] || path.sep;
+
+	logger.log.debug(`Listing JavaScript files in [${relativePath}] directory by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to list nexl sources', username);
@@ -175,7 +196,10 @@ router.post('/list-jsfiles', function (req, res, next) {
 
 
 	return jsfilesUtils.listJSFiles(relativePath)
-		.then(data => res.send(data))
+		.then(data => {
+			res.send(data);
+			logger.log.debug(`Successfully listed JavaScript files in [${relativePath}] directory by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to list nexl sources for [%s] user. Reason : [%s]', username, err);
@@ -187,8 +211,10 @@ router.post('/list-jsfiles', function (req, res, next) {
 // load-jsfile
 //////////////////////////////////////////////////////////////////////////////
 router.post('/load-jsfile', function (req, res, next) {
-	const relativePath = req.body['relativePath'] || path.sep;
 	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'] || path.sep;
+
+	logger.log.debug(`Loading content of [${relativePath}] JavaScript file by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to load nexl source', username);
@@ -197,7 +223,10 @@ router.post('/load-jsfile', function (req, res, next) {
 	}
 
 	return jsfilesUtils.loadJSFile(relativePath)
-		.then(data => res.send(data))
+		.then(data => {
+			res.send(data);
+			logger.log.debug(`Successfully loaded content of [${relativePath}] JavaScript file by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to load a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
@@ -209,8 +238,11 @@ router.post('/load-jsfile', function (req, res, next) {
 // save-jsfile
 //////////////////////////////////////////////////////////////////////////////
 router.post('/save-jsfile', function (req, res, next) {
-	let relativePath = req.body['relativePath'];
-	let content = req.body['content'];
+	const username = utils.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'];
+	const content = req.body['content'];
+
+	logger.log.debug(`Saving content of [${relativePath}] JavaScript file by [${username}] user`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -219,7 +251,6 @@ router.post('/save-jsfile', function (req, res, next) {
 		return;
 	}
 
-	const username = utils.getLoggedInUsername(req);
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to save nexl source items', username);
@@ -228,7 +259,10 @@ router.post('/save-jsfile', function (req, res, next) {
 	}
 
 	return jsfilesUtils.saveJSFile(relativePath, content)
-		.then(() => res.send({}))
+		.then(() => {
+			res.send({});
+			logger.log.debug(`Successfully saved content of [${relativePath}] JavaScript file by [${username}] user`);
+		})
 		.catch(
 			(err) => {
 				logger.log.error('Failed to save a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);

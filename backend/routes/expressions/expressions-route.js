@@ -119,10 +119,17 @@ function nexlize(httpParams, req, res) {
 	}
 
 	res.end();
+
+	if (logger.isLogLevel('debug')) {
+		const username = utils.getLoggedInUsername(req);
+		logger.log.debug(`Successfully evaluated nexl expression by [${username}]`);
+	}
 }
 
 router.get('/*', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
+
+	logger.log.debug(`Going to evaluate nexl expression by [${username}] user ( GET request )`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to evaluate nexl expression', username);
@@ -137,6 +144,9 @@ router.get('/*', function (req, res) {
 
 router.post('/*', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
+
+	logger.log.debug(`Going to evaluate nexl expression by [${username}] user ( POST request )`);
+
 	const status = security.status(username);
 
 	if (!status.hasReadPermission) {

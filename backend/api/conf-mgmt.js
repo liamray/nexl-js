@@ -351,7 +351,6 @@ function load(fileName) {
 	return Promise.resolve(fullPath).then(fsx.exists).then(
 		(isExists) => {
 			if (isExists) {
-				logger.log.debug('The [%s] file exists', fileName);
 				return loadInner(fullPath, fileName);
 			}
 

@@ -236,15 +236,15 @@ export class UsersComponent {
     }
 
     const userData = {
-      createUsername: newValue,
-      removeUsername: oldValue
+      newUsername: newValue,
+      oldUsername: oldValue
     };
 
     // generating new token
     this.globalComponentsService.loader.open();
 
     // generating token
-    this.http.post(userData, '/auth/create-user', 'json').subscribe(
+    this.http.post(userData, '/auth/rename-user', 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         return true;
