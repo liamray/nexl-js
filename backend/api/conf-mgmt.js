@@ -430,6 +430,8 @@ function initSettings() {
 					if (isExists) {
 						return Promise.resolve();
 					} else {
+						const settingsFileFullPath = path.join(NEXL_HOME_DIR, CONF_FILES.SETTINGS);
+						logger.log.info(`Loading DEFAULT SETTINGS. Probably you have to adjust your HTTP binding and port. Edit the [${settingsFileFullPath}] settings file if needed and then restart nexl server`);
 						return saveSettings(settings);
 					}
 				});
