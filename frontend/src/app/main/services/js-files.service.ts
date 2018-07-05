@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
-const LIST_NEXL_SOURCES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-jsfiles');
+const LIST_JS_FILES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-jsfiles');
 const LIST_ALL_JS_FILES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-all-jsfiles');
 const MAKE_DIR = UtilsService.prefixNexlUrl('/jsfiles/make-dir');
 const DELETE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/delete');
@@ -65,7 +65,7 @@ export class JSFilesService {
     const params = {
       relativePath: relativePath || UtilsService.SERVER_INFO.SLASH
     };
-    return this.httpClient.post<any>(LIST_NEXL_SOURCES_URL, params).map(
+    return this.httpClient.post<any>(LIST_JS_FILES_URL, params).map(
       (data) => {
         JSFilesService.substIcons(data);
         return data;
