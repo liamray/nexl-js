@@ -103,6 +103,34 @@ function readdir(fullPath) {
 	});
 }
 
+function collectItemStat(item, basePath) {
+	const itemFullPath = path.join(basePath, item);
+
+	return stat(itemFullPath)
+		.then((itemStat) => {
+			return Promise.resolve({
+				isDir: itemStat.isDirectory(),
+				isFile: itemStat.isFile(),
+				name: item,
+				path: basePath,
+				fullPath: itemFullPath
+			});
+		});
+}
+
+function readdirEx(fullPath) {
+	return readdir(fullPath)
+		.then((items) => {
+			const promises = [];
+
+			items.forEach((item) => {
+				promises.push(collectItemStat(item, fullPath));
+			});
+
+			return Promise.all(promises);
+		});
+}
+
 function deleteItem(fullPath) {
 	return fsextra.remove(fullPath)
 		.then(() => {
@@ -143,6 +171,7 @@ module.exports.readFile = readFile;
 module.exports.writeFile = writeFile;
 module.exports.stat = stat;
 module.exports.readdir = readdir;
+module.exports.readdirEx = readdirEx;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
