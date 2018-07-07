@@ -1,17 +1,33 @@
 .jqx-loader {
-  z-index: 102 !important;
+  z-index: 111 !important;
 }
 
 .jqx-loader-modal {
+  z-index: 110 !important;
+}
+
+.first-level-dialog {
+  z-index: 105 !important;
+}
+
+.first-level-dialog + .jqx-window-modal {
+  z-index: 104 !important;
+}
+
+.second-level-dialog {
+  z-index: 107 !important;
+}
+
+.second-level-dialog + .jqx-window-modal {
+  z-index: 106 !important;
+}
+
+.main-window {
   z-index: 101 !important;
 }
 
-.jqx-window {
+.main-window + .jqx-window-modal {
   z-index: 100 !important;
-}
-
-.jqx-window-modal {
-  z-index: 99 !important;
 }
 
 .ace_editor {
