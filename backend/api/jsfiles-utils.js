@@ -7,6 +7,7 @@ const fsx = require('./fsx');
 const logger = require('./logger');
 const confMgmt = require('./conf-mgmt');
 const utils = require('./utils');
+const uiConstants = require('../common/ui-constants');
 
 let JS_FILES_CACHE = [];
 
@@ -304,6 +305,12 @@ function move(source, dest) {
 					return Promise.resolve();
 				}
 	*/
+}
+
+function gatherAllFiles2(fullPath) {
+	const searchFrom = fullPath === undefined ? confMgmt.getJSFilesRootDir() : fullPath;
+	fsx.readdirEx(searchFrom)
+		.then();
 }
 
 function gatherAllFiles(relativePath) {

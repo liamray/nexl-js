@@ -6,3 +6,5 @@ interface NodeModule {
 }
 
 declare var ace: any;
+
+declare var UI_CONSTANTS: any;

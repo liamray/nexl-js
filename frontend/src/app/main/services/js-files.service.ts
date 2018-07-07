@@ -10,8 +10,8 @@ const DELETE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/delete');
 const RENAME_ITEM = UtilsService.prefixNexlUrl('/jsfiles/rename');
 const MOVE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/move');
 
-const DIR_ICON = './nexl/site/images/dir.png';
-const FILE_ICON = './nexl/site/images/js-file.png';
+const DIR_ICON = UI_CONSTANTS.DIR_ICON;
+const FILE_ICON = UI_CONSTANTS.FILE_ICON;
 
 @Injectable()
 export class JSFilesService {
