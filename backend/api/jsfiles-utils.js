@@ -309,8 +309,7 @@ function move(source, dest) {
 
 function gatherAllFiles2(fullPath) {
 	const searchFrom = fullPath === undefined ? confMgmt.getJSFilesRootDir() : fullPath;
-	fsx.readdirEx(searchFrom)
-		.then();
+	fsx.readdirEx(searchFrom);
 }
 
 function gatherAllFiles(relativePath) {
