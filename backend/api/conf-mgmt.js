@@ -24,7 +24,6 @@ let ALL_SETTINGS_CACHED = {};
 // files
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
-	PASSWORDS: 'passwords.js', // password for login
 	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
 	ADMINS: 'admins.js', // administrators list
 	PERMISSIONS: 'permissions.js' // permissions matrix
@@ -88,9 +87,6 @@ DEF_VALUES[CONF_FILES.ADMINS] = [];
 
 // PERMISSIONS default values
 DEF_VALUES[CONF_FILES.PERMISSIONS] = {};
-
-// PASSWORDS default values
-DEF_VALUES[CONF_FILES.PASSWORDS] = {};
 
 
 // --------------------------------------------------------------------------------

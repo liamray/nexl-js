@@ -6,9 +6,7 @@ const confConsts = require('../../backend/common/conf-constants');
 const settings = {};
 settings[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = testAPI.createNexlJSFilesTmpDir();
 settings[confConsts.SETTINGS.LOG_LEVEL] = 'error';
-testAPI.createNexlHomeDir(settings);
-
-testAPI.createAnySettingsFile(confConsts.CONF_FILES.ADMINS, []);
+testAPI.createNexlHomeDir(settings, null, [], null);
 
 // now can include nexl api
 const confMgmt = require('../../backend/api/conf-mgmt');

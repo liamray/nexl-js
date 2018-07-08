@@ -47,7 +47,7 @@ function createAnySettingsFile(fileName, fileContent) {
 
 }
 
-function createNexlHomeDir(settings) {
+function createNexlHomeDir(settings, users, admins, permissions) {
 	// creating TMP_ROOT_DIR if doesn't exist
 	if (!fs.existsSync(TMP_DIR_ROOT)) {
 		fs.mkdirSync(TMP_DIR_ROOT);
@@ -66,8 +66,19 @@ function createNexlHomeDir(settings) {
 	process.argv.push(`--${confConsts.NEXL_HOME_DEF}=${NEXL_HOME_DIR}`);
 
 	const finalSettings = deepMerge(DEFAULT_SETTINGS, settings || {});
-
 	createAnySettingsFile(confConsts.CONF_FILES.SETTINGS, finalSettings);
+
+	if (users) {
+		createAnySettingsFile(confConsts.CONF_FILES.USERS, users);
+	}
+
+	if (admins) {
+		createAnySettingsFile(confConsts.CONF_FILES.ADMINS, admins);
+	}
+
+	if (permissions) {
+		createAnySettingsFile(confConsts.CONF_FILES.PERMISSIONS, permissions);
+	}
 }
 
 function createNexlJSFilesTmpDir() {
@@ -90,5 +101,4 @@ function createNexlJSFilesTmpDir() {
 // --------------------------------------------------------------------------------
 module.exports.createNexlHomeDir = createNexlHomeDir;
 module.exports.createNexlJSFilesTmpDir = createNexlJSFilesTmpDir;
-module.exports.createAnySettingsFile = createAnySettingsFile;
 // --------------------------------------------------------------------------------

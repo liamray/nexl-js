@@ -8,7 +8,6 @@ if (typeof module === 'undefined') {
 
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
-	PASSWORDS: 'passwords.js', // password for login
 	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
 	ADMINS: 'admins.js', // administrators list
 	PERMISSIONS: 'permissions.js' // permissions matrix
