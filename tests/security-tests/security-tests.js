@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const testAPI = require('../tests-api');
 const confConsts = require('../../backend/common/conf-constants');
 
@@ -6,24 +8,25 @@ settings[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = testAPI.createNexlJSFilesTmpDi
 settings[confConsts.SETTINGS.LOG_LEVEL] = 'error';
 testAPI.createNexlHomeDir(settings);
 
+testAPI.createAnySettingsFile(confConsts.CONF_FILES.ADMINS, []);
+
 // now can include nexl api
 const confMgmt = require('../../backend/api/conf-mgmt');
 const logger = require('../../backend/api/logger');
 const security = require('../../backend/api/security');
-const assert = require('assert');
 
 confMgmt.init();
-
-confMgmt.initSettings()
+confMgmt.reloadCache()
 	.then(logger.init)
-	.then(confMgmt.initUsers)
-	.then(confMgmt.initPermissions)
-	.then(confMgmt.initAdmins)
 	.then(() => {
 		test();
 	});
 
 function test() {
-	let isAdmin = security.isAdmin('admin');
-	console.log(isAdmin);
+	assert(!security.isAdmin('admin'));
+
+	confMgmt.save(['admin'], confConsts.CONF_FILES.ADMINS)
+		.then(() => {
+			assert(security.isAdmin('admin'));
+		});
 }

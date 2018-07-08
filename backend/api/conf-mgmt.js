@@ -89,6 +89,9 @@ DEF_VALUES[CONF_FILES.ADMINS] = [];
 // PERMISSIONS default values
 DEF_VALUES[CONF_FILES.PERMISSIONS] = {};
 
+// PASSWORDS default values
+DEF_VALUES[CONF_FILES.PASSWORDS] = {};
+
 
 // --------------------------------------------------------------------------------
 // validation schemas
@@ -574,8 +577,6 @@ function getLDAPSettings() {
 
 
 function reloadCache() {
-	ACTIVE_DIRECTORY_OBJ = undefined;
-
 	const promises = [];
 	for (let key in CONF_FILES) {
 		const val = CONF_FILES[key];

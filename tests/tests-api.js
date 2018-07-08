@@ -35,6 +35,18 @@ DEFAULT_SETTINGS[confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = 9999;
 
 // --------------------------------------------------------------------------------
 
+function createAnySettingsFile(fileName, fileContent) {
+	const fullFileName = path.join(NEXL_HOME_DIR, fileName);
+
+	const fd = fs.openSync(fullFileName, 'w');
+
+	fs.writeSync(fd, JSON.stringify({
+		"version": "tests",
+		"data": fileContent
+	}, null, 2), 'UTF-8');
+
+}
+
 function createNexlHomeDir(settings) {
 	// creating TMP_ROOT_DIR if doesn't exist
 	if (!fs.existsSync(TMP_DIR_ROOT)) {
@@ -55,12 +67,7 @@ function createNexlHomeDir(settings) {
 
 	const finalSettings = deepMerge(DEFAULT_SETTINGS, settings || {});
 
-	const settingsFile = path.join(NEXL_HOME_DIR, confConsts.CONF_FILES.SETTINGS);
-	const fd = fs.openSync(settingsFile, 'w');
-	fs.writeSync(fd, JSON.stringify({
-		"version": "tests",
-		"data": finalSettings
-	}, null, 2), 'UTF-8');
+	createAnySettingsFile(confConsts.CONF_FILES.SETTINGS, finalSettings);
 }
 
 function createNexlJSFilesTmpDir() {
@@ -83,4 +90,5 @@ function createNexlJSFilesTmpDir() {
 // --------------------------------------------------------------------------------
 module.exports.createNexlHomeDir = createNexlHomeDir;
 module.exports.createNexlJSFilesTmpDir = createNexlJSFilesTmpDir;
+module.exports.createAnySettingsFile = createAnySettingsFile;
 // --------------------------------------------------------------------------------
