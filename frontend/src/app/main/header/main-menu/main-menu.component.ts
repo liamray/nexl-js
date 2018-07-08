@@ -52,6 +52,7 @@ export class MainMenuComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.mainMenu.disable('main-menu-permissions', true);
     this.mainMenu.disable('main-menu-settings', true);
+    this.mainMenu.disable('main-menu-users', true);
   }
 
   saveJSFile() {
