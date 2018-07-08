@@ -294,7 +294,7 @@ deepThisTest = {
 	}
 };
 
-'@ examples/example.js';
+'@ ../examples/example.js';
 
 deepObject = {
 	cars: {name: 'AYS'},

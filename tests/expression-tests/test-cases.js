@@ -2,7 +2,7 @@ module.exports = [];
 
 module.exports.push({
 	request: {
-		source: '//nexl-source1.js',
+		source: '//expressions-test/file1.js',
 		args: {
 			expression: '${}'
 		}
@@ -17,7 +17,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/../nexl-source1.js',
+		source: '/../expressions-test/file1.js',
 		args: {
 			expression: '${}'
 		}
@@ -32,7 +32,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/c:\\nexl-source1.js',
+		source: '/c:\\expressions-test/file1.js',
 		args: {
 			expression: '${}'
 		}
@@ -41,13 +41,13 @@ module.exports.push({
 	result: {
 		expectedHeader: undefined,
 		expectedStatusCode: 500,
-		expectedResult: 'The [nexl-source1.js] nexl source file doesn\'t exist'
+		expectedResult: 'The [file1.js] nexl source file doesn\'t exist'
 	}
 });
 
 module.exports.push({
 	request: {
-		source: '//nexl-source1.js',
+		source: '//expressions-test/file1.js',
 		args: {
 			expression: '${}'
 		}
@@ -62,7 +62,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD}'
 		}
@@ -77,7 +77,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD~K}'
 		}
@@ -92,7 +92,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${HOSTS.APP_SERVER_INTERFACES.PROD.FIRST[0]}'
 		}
@@ -107,7 +107,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${@11:num}'
 		}
@@ -122,7 +122,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${}'
 		}
@@ -137,7 +137,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${:null}'
 		}
@@ -152,7 +152,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${*}'
 		}
@@ -167,7 +167,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${*Please provide something}'
 		}
@@ -182,7 +182,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: ''
 		}
@@ -197,7 +197,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {}
 	},
 
@@ -210,7 +210,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			test1: '0312 Hello'
 		}
@@ -225,7 +225,7 @@ module.exports.push({
 
 module.exports.push({
 	request: {
-		source: '/nexl-source1.js',
+		source: '/expressions-test/file1.js',
 		args: {
 			expression: '${arr1&\n} ${arr1&\t}'
 		}
