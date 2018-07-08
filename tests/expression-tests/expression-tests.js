@@ -1,22 +1,45 @@
-// test \n and \t args
+// todo : test \n and \t args
 
-let testCases = require('./test-cases/test-cases.js');
 const http = require('http');
-const util = require('util');
 const path = require('path');
+const util = require('util');
 const queryString = require('querystring');
-const confMgmt = require('../../backend/api/conf-mgmt');
-const cmdLineArgs = require('../../backend/api/cmd-line-args');
-const logger = require('../../backend/api/logger');
-const NexlApp = require('../../backend/nexl-app/nexl-app');
+
+const testAPI = require('../tests-api');
+const confConsts = require('../../backend/common/conf-constants');
 
 const TEST_HOST = 'localhost';
 const TEST_PORT = 8989;
 
-class NexlTestApp extends NexlApp {
-	initCongMgmt() {
-	}
-}
+const settings = {};
+settings[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = path.join(__dirname, '../nexl-js-files-4-tests');
+settings[confConsts.SETTINGS.LOG_LEVEL] = 'info';
+settings[confConsts.SETTINGS.HTTP_BINDING] = TEST_HOST;
+settings[confConsts.SETTINGS.HTTP_PORT] = TEST_PORT;
+
+testAPI.createNexlHomeDir(settings);
+
+// now can include nexl api
+const confMgmt = require('../../backend/api/conf-mgmt');
+const logger = require('../../backend/api/logger');
+const testCases = require('./test-cases.js');
+const NexlApp = require('../../backend/nexl-app/nexl-app');
+
+let NEXL_APP;
+
+start()
+	.then(
+		_ => {
+			logger.log.importantMessage('info', 'ALL Tests are PASSED !!!');
+			NEXL_APP.stop();
+		}).catch(
+	(err) => {
+		logger.log.importantMessage('error', 'Tests are failed !');
+		logger.log.importantMessage('error', err);
+		NEXL_APP.stop();
+	});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function testCaseInner(options, testCase) {
 	return new Promise((resolve, reject) => {
@@ -100,10 +123,10 @@ function test(requestParams, testCase) {
 	});
 }
 
-function startInner() {
+function start() {
 	// starting nexl-server
-	this.nexlApp = new NexlTestApp();
-	this.nexlApp.start();
+	NEXL_APP = new NexlApp();
+	NEXL_APP.start();
 
 	const promises = [];
 
@@ -119,33 +142,4 @@ function startInner() {
 	return Promise.all(promises);
 }
 
-function start() {
-	const workingDir = process.cwd();
-	const nexlHomeDir = path.join(workingDir, '.nexl');
-	const nexlSourcesDir = path.join(workingDir, 'nexl-sources');
-	process.argv.push(util.format('--%s=%s', cmdLineArgs.NEXL_HOME_DEF, nexlHomeDir));
-
-	confMgmt.init();
-
-	confMgmt.loadSettings().then(settings => {
-
-		settings[confMgmt.SETTINGS.HTTP_PORT] = TEST_PORT;
-		settings[confMgmt.SETTINGS.HTTP_BINDING] = TEST_HOST;
-		settings[confMgmt.SETTINGS.JS_FILES_ROOT_DIR] = nexlSourcesDir;
-
-		return confMgmt.saveSettings(settings).then(() => {
-			return startInner();
-		});
-	}).then(
-		(info) => {
-			logger.log.error('Tests are PASSED !!!');
-			this.nexlApp.stop();
-		}).catch(
-		(err) => {
-			logger.log.error('Tests are failed !');
-			logger.log.error(err);
-			this.nexlApp.stop();
-		});
-}
-
-start();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
