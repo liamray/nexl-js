@@ -20,7 +20,6 @@ settings[confConsts.SETTINGS.HTTP_PORT] = TEST_PORT;
 testAPI.createNexlHomeDir(settings);
 
 // now can include nexl api
-const confMgmt = require('../../backend/api/conf-mgmt');
 const logger = require('../../backend/api/logger');
 const testCases = require('./test-cases.js');
 const NexlApp = require('../../backend/nexl-app/nexl-app');
@@ -34,7 +33,7 @@ start()
 			NEXL_APP.stop();
 		}).catch(
 	(err) => {
-		logger.log.importantMessage('error', 'Tests are failed !');
+		logger.log.importantMessage('error', 'Tests are failed :(');
 		logger.log.importantMessage('error', err);
 		NEXL_APP.stop();
 	});
