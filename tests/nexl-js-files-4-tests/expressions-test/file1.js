@@ -3,7 +3,7 @@
  ********************************************************************************************/
 
 // importing from nexl-sources2.js ( for test purposes )
-'@ nexl-source2.js';
+'@ file2.js';
 
 cars = [
 	{name: 'Bugatti Veyron', speed: 268},
