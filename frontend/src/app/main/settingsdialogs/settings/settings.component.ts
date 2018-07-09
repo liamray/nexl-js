@@ -46,6 +46,8 @@ export class SettingsComponent {
   encodings = [];
   logLevels = [];
 
+  SETTINGS = CONF_CONSTANTS.SETTINGS;
+
   validationRules =
     [
       {input: '#jsFilesRootDir', message: 'JS files root dir is required!', action: 'keyup, blur', rule: 'required'},
@@ -92,7 +94,6 @@ export class SettingsComponent {
       }
     ];
 
-
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
@@ -118,9 +119,9 @@ export class SettingsComponent {
       (data: any) => {
         this.settings = data.body;
         this.globalComponentsService.loader.close();
-        this.logLevel.val(this.settings['log-level']);
-        this.jsFilesEncoding.val(this.settings['js-files-encoding']);
-        this.jsFilesRootDirBefore = this.settings['js-files-root-dir'];
+        this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
+        this.jsFilesEncoding.val(this.settings[this.SETTINGS.JS_FILES_ENCODING]);
+        this.jsFilesRootDirBefore = this.settings[this.SETTINGS.JS_FILES_ROOT_DIR];
         this.settingsWindow.open();
       },
       err => {
@@ -185,7 +186,7 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.settingsWindow.close();
-        if (this.jsFilesRootDirBefore !== this.settings['js-files-root-dir']) {
+        if (this.jsFilesRootDirBefore !== this.settings[this.SETTINGS.JS_FILES_ROOT_DIR]) {
           this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
         }
       },

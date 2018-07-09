@@ -48,7 +48,7 @@ router.post('/save', function (req, res, next) {
 
 	const data = req.body;
 	delete data[NEXL_HOME_DIR];
-	logger.log.level = data['log-level'];
+	logger.log.level = data[confConsts.SETTINGS.LOG_LEVEL];
 	const jsRootDir = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 
 	return confMgmt.saveSettings(data).then(
