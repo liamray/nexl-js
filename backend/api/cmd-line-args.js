@@ -1,12 +1,11 @@
 const commandLineArgs = require('command-line-args');
+const confConsts = require('../common/conf-constants');
 const util = require('util');
 const version = require('./../../package.json').version;
 
-const NEXL_HOME_DEF = 'nexl-home';
-
 const CMD_LINE_OPTS_DEF = [
 	{
-		name: NEXL_HOME_DEF,
+		name: confConsts.NEXL_HOME_DEF,
 		alias: 'n',
 		type: String,
 		desc: 'nexl home directory is where nexl stores all its settings ( [${HOME}/.nexl] is a default value )'
@@ -49,9 +48,8 @@ function printHelp() {
 		console.log(text);
 	}
 
-
 	// example
-	console.log('\nFor example :\n\tnexl --nexl-home=c:\\nexl-instance-2');
+	console.log(`\nFor example :\n\tnexl --${confConsts.NEXL_HOME_DEF}=c:\\nexl-instance-2`);
 }
 
 function handleArgs() {
@@ -83,5 +81,4 @@ function handleArgs() {
 
 // --------------------------------------------------------------------------------
 module.exports.init = handleArgs;
-module.exports.NEXL_HOME_DEF = NEXL_HOME_DEF;
 // --------------------------------------------------------------------------------

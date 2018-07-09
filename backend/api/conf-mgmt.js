@@ -375,7 +375,7 @@ function saveSettings(settings) {
 
 function init() {
 	let cmdLineOpts = cmdLineArgs.init();
-	NEXL_HOME_DIR = cmdLineOpts[cmdLineArgs.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
+	NEXL_HOME_DIR = cmdLineOpts[confConsts.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 }
 
 function isConfFileExists(fileName) {
@@ -476,7 +476,7 @@ function createNexlHomeDirectoryIfNeeded() {
 							logger.log.debug('The [%s] nexl home directory exists', NEXL_HOME_DIR);
 							return Promise.resolve();
 						} else {
-							logger.log.error('The [%s] nexl home directory points to existing file ( or something else ). Recreate it as a directory or use another nexl home directory in the following way :\nnexl --nexl-home=/path/to/nexl/home/directory', NEXL_HOME_DIR);
+							logger.log.error(`The [${NEXL_HOME_DIR}] nexl home directory points to existing file ( or something else ). Recreate it as a directory or use another nexl home directory in the following way :\nnexl --${confConsts.NEXL_HOME_DEF}=/path/to/nexl/home/directory`);
 							return Promise.reject('nexl home directory probably points to existing file or something else');
 						}
 					});

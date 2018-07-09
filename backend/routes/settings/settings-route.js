@@ -8,8 +8,6 @@ const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
 const logger = require('../../api/logger');
 
-const NEXL_HOME_DIR = 'nexl-home-dir';
-
 router.post('/avail-values', function (req, res, next) {
 	const data = {
 		logLevels: logger.getAvailLevels(),
@@ -31,7 +29,7 @@ router.post('/load', function (req, res) {
 	}
 
 	const settings = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS);
-	settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
+	settings[confConsts.NEXL_HOME_DEF] = confMgmt.getNexlHomeDir();
 	res.send(settings);
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
 });
@@ -47,7 +45,7 @@ router.post('/save', function (req, res, next) {
 	}
 
 	const data = req.body;
-	delete data[NEXL_HOME_DIR];
+	delete data[confConsts.NEXL_HOME_DEF];
 	logger.log.level = data[confConsts.SETTINGS.LOG_LEVEL];
 	const jsRootDir = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 
