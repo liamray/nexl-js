@@ -1,11 +1,3 @@
-// --------------------------------------------------------------------------------
-// frontend module export support
-if (typeof module === 'undefined') {
-	module = {};
-	module.exports = {};
-}
-// --------------------------------------------------------------------------------
-
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
 	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
@@ -47,13 +39,18 @@ const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 
 
 // --------------------------------------------------------------------------------
-module.exports.CONF_FILES = CONF_FILES;
-module.exports.SETTINGS = SETTINGS;
-module.exports.NEXL_HOME_DEF = NEXL_HOME_DEF;
+const CONF_CONSTANTS = {};
+CONF_CONSTANTS.CONF_FILES = CONF_FILES;
+CONF_CONSTANTS.SETTINGS = SETTINGS;
+CONF_CONSTANTS.NEXL_HOME_DEF = NEXL_HOME_DEF;
 
-module.exports.ENCODING_UTF8 = ENCODING_UTF8;
-module.exports.ENCODING_ASCII = ENCODING_ASCII;
-module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
+CONF_CONSTANTS.ENCODING_UTF8 = ENCODING_UTF8;
+CONF_CONSTANTS.ENCODING_ASCII = ENCODING_ASCII;
+CONF_CONSTANTS.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
 
-CONF_CONSTANTS = module.exports;
 // --------------------------------------------------------------------------------
+
+// backend module support
+if (typeof module !== 'undefined') {
+	module.exports = CONF_CONSTANTS;
+}

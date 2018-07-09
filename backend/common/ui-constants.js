@@ -1,13 +1,10 @@
-// --------------------------------------------------------------------------------
-// frontend module export support
-if (typeof module === 'undefined') {
-	module = {};
-	module.exports = {};
-}
-// --------------------------------------------------------------------------------
+const UI_CONSTANTS = {};
+UI_CONSTANTS.DIR_ICON = './nexl/site/images/dir.png';
+UI_CONSTANTS.FILE_ICON = './nexl/site/images/js-file.png';
 
 // --------------------------------------------------------------------------------
-module.exports.DIR_ICON = './nexl/site/images/dir.png';
-module.exports.FILE_ICON = './nexl/site/images/js-file.png';
-const UI_CONSTANTS = module.exports;
-// --------------------------------------------------------------------------------
+
+// backend module support
+if (typeof module !== 'undefined') {
+	module.exports = UI_CONSTANTS;
+}
