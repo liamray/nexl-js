@@ -3,13 +3,10 @@ const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const j79 = require('j79-utils');
 
+const securityConsts = require('../common/security-constants');
 
 // is a password to encrypt/decrypt tokens
 const SECRET = uuidv4();
-
-const GUEST_USER = 'guest';
-const AUTHENTICATED = 'authenticated';
-const ADMIN_USER = 'admin';
 
 function encrypt(username) {
 	return jwt.encode(username, SECRET);
@@ -25,7 +22,7 @@ function getLoggedInUsername(req) {
 	try {
 		username = jwt.decode(token, SECRET);
 	} catch (e) {
-		return GUEST_USER;
+		return securityConsts.GUEST_USER;
 	}
 
 	return username;
@@ -115,10 +112,6 @@ function generateNewToken() {
 
 
 // --------------------------------------------------------------------------------
-module.exports.GUEST_USER = GUEST_USER;
-module.exports.AUTHENTICATED = AUTHENTICATED;
-module.exports.ADMIN_USER = ADMIN_USER;
-
 module.exports.generateRandomBytes = generateRandomBytes;
 module.exports.getLoggedInUsername = getLoggedInUsername;
 module.exports.sendError = sendError;

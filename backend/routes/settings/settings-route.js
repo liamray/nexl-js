@@ -5,6 +5,7 @@ const utils = require('../../api/utils');
 const security = require('../../api/security');
 const jsFilesUtils = require('../../api/jsfiles-utils');
 const confMgmt = require('../../api/conf-mgmt');
+const confConsts = require('../../common/conf-constants');
 const logger = require('../../api/logger');
 
 const NEXL_HOME_DIR = 'nexl-home-dir';
@@ -12,7 +13,7 @@ const NEXL_HOME_DIR = 'nexl-home-dir';
 router.post('/avail-values', function (req, res, next) {
 	const data = {
 		logLevels: logger.getAvailLevels(),
-		encodings: confMgmt.AVAILABLE_ENCODINGS
+		encodings: confConsts.AVAILABLE_ENCODINGS
 	};
 
 	res.send(data);
@@ -29,7 +30,7 @@ router.post('/load', function (req, res) {
 		return;
 	}
 
-	const settings = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS);
+	const settings = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS);
 	settings[NEXL_HOME_DIR] = confMgmt.getNexlHomeDir();
 	res.send(settings);
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
@@ -48,7 +49,7 @@ router.post('/save', function (req, res, next) {
 	const data = req.body;
 	delete data[NEXL_HOME_DIR];
 	logger.log.level = data['log-level'];
-	const jsRootDir = confMgmt.getCached(confMgmt.CONF_FILES.SETTINGS)[confMgmt.SETTINGS.JS_FILES_ROOT_DIR];
+	const jsRootDir = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 
 	return confMgmt.saveSettings(data).then(
 		() => {
@@ -56,7 +57,7 @@ router.post('/save', function (req, res, next) {
 			logger.log.debug(`Successfully saved nexl server settings by [${username}] user`);
 
 			// is js root dir was changed ?
-			if (jsRootDir !== data[confMgmt.SETTINGS.JS_FILES_ROOT_DIR]) {
+			if (jsRootDir !== data[confConsts.SETTINGS.JS_FILES_ROOT_DIR]) {
 				// reloading cache
 				jsFilesUtils.cacheJSFiles();
 			}

@@ -25,7 +25,9 @@
       ],
       "scripts": [
         "nexl/site/ace/ace.js",
-        "../../backend/common/ui-constants.js"
+        "../../backend/common/ui-constants.js",
+        "../../backend/common/conf-constants.js",
+        "../../backend/common/security-constants.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

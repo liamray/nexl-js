@@ -1,92 +1,55 @@
 const path = require('path');
 const fs = require('fs');
 const fsx = require('./fsx');
-const util = require('util');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
 
 const version = require('./../../package.json').version;
 
+const confConsts = require('../common/conf-constants');
+const securityConsts = require('../common/security-constants');
 const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
 const security = require('./security');
 const logger = require('./logger');
 const schemaValidation = require('./schema-validation');
 
-const ENCODING_UTF8 = 'utf8';
-const ENCODING_ASCII = 'ascii';
-const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
-
 let NEXL_HOME_DIR;
 let ALL_SETTINGS_CACHED = {};
-
-// --------------------------------------------------------------------------------
-// files
-const CONF_FILES = {
-	SETTINGS: 'settings.js', // general settings
-	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
-	ADMINS: 'admins.js', // administrators list
-	PERMISSIONS: 'permissions.js' // permissions matrix
-};
-
-// --------------------------------------------------------------------------------
-// available options for SETTINGS
-const SETTINGS = {
-	JS_FILES_ROOT_DIR: 'js-files-root-dir',
-	JS_FILES_ENCODING: 'js-files-encoding',
-	HTTP_TIMEOUT: 'http-timeout-sec',
-	LDAP_URL: 'ldap-url',
-	LDAP_BASE_DN: 'ldap-base-dn',
-	LDAP_BIND_DN: 'ldap-bind-dn',
-	LDAP_BIND_PASSWORD: 'ldap-bind-password',
-	LDAP_FIND_BY: 'ldap-find-by',
-
-	HTTP_BINDING: 'http-binding',
-	HTTP_PORT: 'http-port',
-	HTTPS_BINDING: 'https-binding',
-	HTTPS_PORT: 'https-port',
-	SSL_CERT_LOCATION: 'ssl-cert-location',
-	SSL_KEY_LOCATION: 'ssl-key-location',
-
-	LOG_FILE_LOCATION: 'log-file-location',
-	LOG_LEVEL: 'log-level',
-	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
-	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count'
-};
 
 // --------------------------------------------------------------------------------
 // default values
 const DEF_VALUES = {};
 
 // SETTINGS default values
-DEF_VALUES[CONF_FILES.SETTINGS] = {};
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(osHomeDir(), 'nexl-js-files');
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ENCODING] = ENCODING_UTF8;
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_TIMEOUT] = 10;
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_BINDING] = 'localhost';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTP_PORT] = 8080;
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTPS_BINDING] = 'localhost';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.HTTPS_PORT] = 443;
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LOG_FILE_LOCATION] = () => path.join(NEXL_HOME_DIR, 'nexl.log');
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LOG_LEVEL] = 'info';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = 999;
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILE_SIZE] = 0; // not rotating
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASE_DN] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_DN] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_PASSWORD] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.SSL_CERT_LOCATION] = '';
-DEF_VALUES[CONF_FILES.SETTINGS][SETTINGS.SSL_KEY_LOCATION] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS] = {};
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(osHomeDir(), 'nexl-js-files');
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = confConsts.ENCODING_UTF8;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = 10;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = 'localhost';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = 8080;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = 'localhost';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = 443;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = () => path.join(NEXL_HOME_DIR, 'nexl.log');
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = 'info';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = 999;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = 0; // not rotating
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
 
 // PASSWORDS default values
-DEF_VALUES[CONF_FILES.USERS] = {};
+DEF_VALUES[confConsts.CONF_FILES.USERS] = {};
 
 // ADMINS default values
-DEF_VALUES[CONF_FILES.ADMINS] = [];
+DEF_VALUES[confConsts.CONF_FILES.ADMINS] = [];
 
 // PERMISSIONS default values
-DEF_VALUES[CONF_FILES.PERMISSIONS] = {};
+DEF_VALUES[confConsts.CONF_FILES.PERMISSIONS] = {};
 
 
 // --------------------------------------------------------------------------------
@@ -95,45 +58,45 @@ const VALIDATION_SCHEMAS = {};
 
 // --------------------------------------------------------------------------------
 // SETTINGS validations
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS] = {};
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
 	if (!j79.isString(val) || val.length < 1) {
 		return 'JS files root dir dir must be a non empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ENCODING] = (val) => {
-	if (AVAILABLE_ENCODINGS.indexOf(val) < 0) {
-		return 'JS files encoding must be one of the following : [' + AVAILABLE_ENCODINGS.join(',') + ']';
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = (val) => {
+	if (confConsts.AVAILABLE_ENCODINGS.indexOf(val) < 0) {
+		return 'JS files encoding must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_TIMEOUT] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => {
 	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'HTTP timeout must be a positive integer';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL] = () => true;
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASE_DN] = () => true;
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_DN] = () => true;
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_PASSWORD] = () => true;
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY] = () => true;
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_BINDING] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = () => true;
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = () => true;
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = () => true;
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = () => true;
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = () => true;
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = (val) => {
 	if (!j79.isString(val)) {
 		return 'HTTP binding must be a string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTP_PORT] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = (val) => {
 	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'HTTP port be a positive integer';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTPS_BINDING] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = (val) => {
 	if (val !== undefined && !j79.isString(val)) {
 		return 'HTTPS binding must be a string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTPS_PORT] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = (val) => {
 	if (val === undefined || val === '') {
 		return;
 	}
@@ -143,33 +106,33 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.HTTPS_PORT] = (val) => {
 		return 'HTTPS port must be a positive integer';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.SSL_CERT_LOCATION] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = (val) => {
 	if (val !== undefined && !j79.isString(val)) {
 		return 'SSL certificate location must be a non empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.SSL_KEY_LOCATION] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = (val) => {
 	if (val !== undefined && !j79.isString(val)) {
 		return 'SSL key location must be a non empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_FILE_LOCATION] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = (val) => {
 	if (utils.isEmptyStr(val)) {
 		return 'Log file location must be a nont empty string';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_LEVEL] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) => {
 	if (!j79.isString(val) && logger.getAvailLevels().indexOf(val) < 0) {
 		return 'Log level must be of the following : [' + logger.getAvailLevels().join(',') + ']';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => {
 	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'Log rotate file size must be a positive integer';
 	}
 };
-VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => {
 	val = parseInt(val);
 	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
 		return 'Log rotate files count must be a positive integer';
@@ -178,7 +141,7 @@ VALIDATION_SCHEMAS[CONF_FILES.SETTINGS][SETTINGS.LOG_ROTATE_FILES_COUNT] = (val)
 
 // --------------------------------------------------------------------------------
 // USERS validations
-VALIDATION_SCHEMAS[CONF_FILES.USERS] = {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.USERS] = {
 	'*': {
 		password: (val) => {
 			// todo : validate password
@@ -213,7 +176,7 @@ VALIDATION_SCHEMAS[CONF_FILES.USERS] = {
 
 // --------------------------------------------------------------------------------
 // ADMINS validations
-VALIDATION_SCHEMAS[CONF_FILES.ADMINS] = [
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.ADMINS] = [
 	(val) => {
 		if (!j79.isString(val) || val.length < 1) {
 			return 'Each admin item must be a non empty string';
@@ -224,7 +187,7 @@ VALIDATION_SCHEMAS[CONF_FILES.ADMINS] = [
 
 // --------------------------------------------------------------------------------
 // PERMISSIONS validations
-VALIDATION_SCHEMAS[CONF_FILES.PERMISSIONS] = {
+VALIDATION_SCHEMAS[confConsts.CONF_FILES.PERMISSIONS] = {
 	'*': {
 		read: (val) => {
 			if (!j79.isBool(val)) {
@@ -301,7 +264,7 @@ function setupDefaultValues(data, fileName) {
 }
 
 function loadInner(fullPath, fileName) {
-	return fsx.readFile(fullPath, {encoding: ENCODING_UTF8}).then(
+	return fsx.readFile(fullPath, {encoding: confConsts.ENCODING_UTF8}).then(
 		(fileBody) => {
 			// JSONing. The JSON must be an object which contains config version and the data itself
 			let conf;
@@ -328,8 +291,8 @@ function loadInner(fullPath, fileName) {
 }
 
 function isConfFileDeclared(fileName) {
-	for (let key in CONF_FILES) {
-		if (CONF_FILES[key] === fileName) {
+	for (let key in confConsts.CONF_FILES) {
+		if (confConsts.CONF_FILES[key] === fileName) {
 			return true;
 		}
 	}
@@ -398,16 +361,16 @@ function save(data, fileName) {
 			ALL_SETTINGS_CACHED[fileName] = data;
 
 			// saving...
-			return fsx.writeFile(fullPath, conf, {encoding: ENCODING_UTF8});
+			return fsx.writeFile(fullPath, conf, {encoding: confConsts.ENCODING_UTF8});
 		});
 }
 
 function loadSettings() {
-	return load(CONF_FILES.SETTINGS);
+	return load(confConsts.CONF_FILES.SETTINGS);
 }
 
 function saveSettings(settings) {
-	return save(settings, CONF_FILES.SETTINGS);
+	return save(settings, confConsts.CONF_FILES.SETTINGS);
 }
 
 function init() {
@@ -422,14 +385,14 @@ function isConfFileExists(fileName) {
 function initSettings() {
 	logger.log.debug('Initializing settings');
 
-	return isConfFileExists(CONF_FILES.SETTINGS).then(
+	return isConfFileExists(confConsts.CONF_FILES.SETTINGS).then(
 		(isExists) => {
 			return loadSettings().then(
 				(settings) => {
 					if (isExists) {
 						return Promise.resolve();
 					} else {
-						const settingsFileFullPath = path.join(NEXL_HOME_DIR, CONF_FILES.SETTINGS);
+						const settingsFileFullPath = path.join(NEXL_HOME_DIR, confConsts.CONF_FILES.SETTINGS);
 						logger.log.info(`Loading DEFAULT SETTINGS. Probably you have to adjust your HTTP binding and port. Edit the [${settingsFileFullPath}] settings file if needed and then restart nexl server`);
 						return saveSettings(settings);
 					}
@@ -440,23 +403,23 @@ function initSettings() {
 function initPermissions() {
 	logger.log.debug('Initializing permissions');
 
-	return isConfFileExists(CONF_FILES.PERMISSIONS).then(
+	return isConfFileExists(confConsts.CONF_FILES.PERMISSIONS).then(
 		(isExists) => {
 			if (isExists) {
-				return load(CONF_FILES.PERMISSIONS); // preloading permissions
+				return load(confConsts.CONF_FILES.PERMISSIONS); // preloading permissions
 			}
 
-			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for the following users : [%s, %s]', CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, utils.GUEST_USER, utils.AUTHENTICATED);
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a default permissions for the following users : [%s, %s]', confConsts.CONF_FILES.PERMISSIONS, NEXL_HOME_DIR, securityConsts.GUEST_USER, securityConsts.AUTHENTICATED);
 			const permission = {};
-			permission[utils.GUEST_USER] = {
+			permission[securityConsts.GUEST_USER] = {
 				read: true,
 				write: true
 			};
-			permission[utils.AUTHENTICATED] = {
+			permission[securityConsts.AUTHENTICATED] = {
 				read: true,
 				write: true
 			};
-			return save(permission, CONF_FILES.PERMISSIONS);
+			return save(permission, confConsts.CONF_FILES.PERMISSIONS);
 		}
 	)
 }
@@ -464,40 +427,40 @@ function initPermissions() {
 function initUsers() {
 	logger.log.debug('Initializing users');
 
-	return isConfFileExists(CONF_FILES.USERS)
+	return isConfFileExists(confConsts.CONF_FILES.USERS)
 		.then((isExists) => {
 			if (isExists) {
 				// okay, file exists, preloading
-				return load(CONF_FILES.USERS);
+				return load(confConsts.CONF_FILES.USERS);
 			}
 
-			logger.log.info(`The [${CONF_FILES.USERS}] file doesn't exist. Creating default file`);
+			logger.log.info(`The [${confConsts.CONF_FILES.USERS}] file doesn't exist. Creating default file`);
 
 			// not exists, creating admin user and registration token
 			const users = {};
 			let token = utils.generateNewToken();
-			users[utils.ADMIN_USER] = {
+			users[securityConsts.ADMIN_USER] = {
 				token2ResetPassword: token
 			};
 
-			logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${utils.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expired just delete the [${CONF_FILES.USERS}] file located in [${NEXL_HOME_DIR}] directory and restart nexl app`);
+			logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${securityConsts.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expired just delete the [${confConsts.CONF_FILES.USERS}] file located in [${NEXL_HOME_DIR}] directory and restart nexl app`);
 
-			return save(users, CONF_FILES.USERS);
+			return save(users, confConsts.CONF_FILES.USERS);
 		});
 }
 
 function initAdmins() {
 	logger.log.debug('Initializing admins conf');
 
-	return isConfFileExists(CONF_FILES.ADMINS).then(
+	return isConfFileExists(confConsts.CONF_FILES.ADMINS).then(
 		(isExists) => {
 			if (isExists) {
-				return load(CONF_FILES.ADMINS); // preloading admins
+				return load(confConsts.CONF_FILES.ADMINS); // preloading admins
 			}
 
-			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', CONF_FILES.ADMINS, NEXL_HOME_DIR, utils.ADMIN_USER);
-			const admins = [utils.ADMIN_USER];
-			return save(admins, CONF_FILES.ADMINS);
+			logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] user', confConsts.CONF_FILES.ADMINS, NEXL_HOME_DIR, securityConsts.ADMIN_USER);
+			const admins = [securityConsts.ADMIN_USER];
+			return save(admins, confConsts.CONF_FILES.ADMINS);
 
 		}
 	)
@@ -528,7 +491,7 @@ function createNexlHomeDirectoryIfNeeded() {
 }
 
 function createJSFilesRootDirIfNeeded() {
-	const jsFilesRootDir = ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
+	const jsFilesRootDir = ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 
 	return fsx.exists(jsFilesRootDir).then(
 		(isExists) => {
@@ -557,11 +520,11 @@ function createJSFilesRootDirIfNeeded() {
 
 function getLDAPSettings() {
 	let ldapSettings = {
-		url: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_URL],
-		baseDN: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BASE_DN],
-		bindDN: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_DN],
-		bindPassword: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_BIND_PASSWORD],
-		findBy: ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.LDAP_FIND_BY]
+		url: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL],
+		baseDN: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN],
+		bindDN: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN],
+		bindPassword: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD],
+		findBy: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY]
 	};
 
 	if (ldapSettings.url === undefined) {
@@ -574,8 +537,8 @@ function getLDAPSettings() {
 
 function reloadCache() {
 	const promises = [];
-	for (let key in CONF_FILES) {
-		const val = CONF_FILES[key];
+	for (let key in confConsts.CONF_FILES) {
+		const val = confConsts.CONF_FILES[key];
 		promises.push(Promise.resolve(val).then(load));
 	}
 
@@ -583,11 +546,6 @@ function reloadCache() {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.ENCODING_UTF8 = ENCODING_UTF8;
-module.exports.CONF_FILES = CONF_FILES;
-module.exports.SETTINGS = SETTINGS;
-module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
-
 module.exports.init = init;
 module.exports.createNexlHomeDirectoryIfNeeded = createNexlHomeDirectoryIfNeeded;
 module.exports.createJSFilesRootDirIfNeeded = createJSFilesRootDirIfNeeded;
@@ -603,8 +561,8 @@ module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
 
 module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
-module.exports.getJSFilesRootDir = () => ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS][SETTINGS.JS_FILES_ROOT_DIR];
-module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[CONF_FILES.SETTINGS];
+module.exports.getJSFilesRootDir = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR];
+module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS];
 
 module.exports.getCached = (fileName) => ALL_SETTINGS_CACHED[fileName];
 

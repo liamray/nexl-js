@@ -6,8 +6,8 @@ const j79 = require('j79-utils');
 const fsx = require('./fsx');
 const logger = require('./logger');
 const confMgmt = require('./conf-mgmt');
+const confConsts = require('../common/conf-constants');
 const utils = require('./utils');
-const uiConstants = require('../common/ui-constants');
 
 let JS_FILES_CACHE = [];
 
@@ -141,7 +141,7 @@ function loadJSFile(relativePath) {
 						return Promise.reject('JavaScript file doesn\'t exist !');
 					}
 
-					const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.JS_FILES_ENCODING];
+					const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 					return fsx.readFile(fullPath, {encoding: encoding});
 				});
 		}
@@ -151,7 +151,7 @@ function loadJSFile(relativePath) {
 function saveJSFile(relativePath, content) {
 	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
-			const encoding = confMgmt.getNexlSettingsCached()[confMgmt.SETTINGS.JS_FILES_ENCODING];
+			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 			return fsx.writeFile(fullPath, content, {encoding: encoding});
 		}
 	)

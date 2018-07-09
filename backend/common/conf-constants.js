@@ -41,10 +41,19 @@ const SETTINGS = {
 // --------------------------------------------------------------------------------
 
 const NEXL_HOME_DEF = 'nexl-home';
+const ENCODING_UTF8 = 'utf8';
+const ENCODING_ASCII = 'ascii';
+const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
+
 
 // --------------------------------------------------------------------------------
 module.exports.CONF_FILES = CONF_FILES;
 module.exports.SETTINGS = SETTINGS;
 module.exports.NEXL_HOME_DEF = NEXL_HOME_DEF;
+
+module.exports.ENCODING_UTF8 = ENCODING_UTF8;
+module.exports.ENCODING_ASCII = ENCODING_ASCII;
+module.exports.AVAILABLE_ENCODINGS = AVAILABLE_ENCODINGS;
+
 CONF_CONSTANTS = module.exports;
 // --------------------------------------------------------------------------------

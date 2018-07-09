@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const util = require('util');
-const j79 = require('j79-utils');
-
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
+const confConsts = require('../../common/conf-constants');
 const logger = require('../../api/logger');
 
 router.post('/load', function (req, res) {
@@ -21,8 +19,8 @@ router.post('/load', function (req, res) {
 	}
 
 	res.send({
-		admins: confMgmt.getCached(confMgmt.CONF_FILES.ADMINS),
-		assignPermissions: confMgmt.getCached(confMgmt.CONF_FILES.PERMISSIONS)
+		admins: confMgmt.getCached(confConsts.CONF_FILES.ADMINS),
+		assignPermissions: confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS)
 	});
 
 	logger.log.debug(`Successfully loaded all permissions by [${username}] user`);
@@ -42,8 +40,8 @@ router.post('/save', function (req, res, next) {
 	const admins = req.body.admins;
 	const assignPermissions = req.body.assignPermissions;
 
-	return confMgmt.save(admins, confMgmt.CONF_FILES.ADMINS).then(() => {
-		return confMgmt.save(assignPermissions, confMgmt.CONF_FILES.PERMISSIONS).then(() => {
+	return confMgmt.save(admins, confConsts.CONF_FILES.ADMINS).then(() => {
+		return confMgmt.save(assignPermissions, confConsts.CONF_FILES.PERMISSIONS).then(() => {
 			res.send({});
 			logger.log.debug(`Successfully saved all permissions by [${username}] user`);
 		});

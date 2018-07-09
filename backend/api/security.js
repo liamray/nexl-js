@@ -1,4 +1,6 @@
 const confMgmt = require('./conf-mgmt');
+const confConsts = require('../common/conf-constants');
+const securityConsts = require('../common/security-constants');
 const utils = require('./utils');
 const bcrypt = require('./bcryptx');
 const logger = require('./logger');
@@ -10,12 +12,12 @@ const WRITE_PERMISSION = 'write';
 const TOKEN_VALID_HOURS = 24;
 
 function isAdminInner(user) {
-	return confMgmt.getCached(confMgmt.CONF_FILES.ADMINS).indexOf(user) >= 0;
+	return confMgmt.getCached(confConsts.CONF_FILES.ADMINS).indexOf(user) >= 0;
 }
 
 function isAdmin(user) {
-	const loggedInUsername = (user === utils.GUEST_USER) ? utils.GUEST_USER : utils.AUTHENTICATED;
-	return isAdminInner(utils.GUEST_USER) || isAdminInner(loggedInUsername) || isAdminInner(user);
+	const loggedInUsername = (user === securityConsts.GUEST_USER) ? securityConsts.GUEST_USER : securityConsts.AUTHENTICATED;
+	return isAdminInner(securityConsts.GUEST_USER) || isAdminInner(loggedInUsername) || isAdminInner(user);
 }
 
 function retrievePermission(permission, type) {
@@ -38,13 +40,13 @@ function hasPermission(user, type) {
 		return true;
 	}
 
-	const permissions = confMgmt.getCached(confMgmt.CONF_FILES.PERMISSIONS);
+	const permissions = confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS);
 
 	// permission for [guest] user
-	const guestUserPermission = permissions[utils.GUEST_USER];
+	const guestUserPermission = permissions[securityConsts.GUEST_USER];
 
 	// permissions for [loggedin] user
-	let loggedInUserPermission = (user === utils.GUEST_USER) ? permissions[utils.GUEST_USER] : permissions[utils.AUTHENTICATED];
+	let loggedInUserPermission = (user === securityConsts.GUEST_USER) ? permissions[securityConsts.GUEST_USER] : permissions[securityConsts.AUTHENTICATED];
 
 	// permissions for [user]
 	const userPermission = permissions[user];
@@ -91,7 +93,7 @@ function isValidToken(username, userObj, token) {
 }
 
 function resetPassword(username, password, token) {
-	let users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	let users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const userObj = users[username];
 
 	if (!isValidToken(username, userObj, token)) {
@@ -106,12 +108,12 @@ function resetPassword(username, password, token) {
 	return bcrypt.hash(password)
 		.then((hash) => {
 			userObj.password = hash;
-			return confMgmt.save(users, confMgmt.CONF_FILES.USERS);
+			return confMgmt.save(users, confConsts.CONF_FILES.USERS);
 		});
 }
 
 function changePassword(username, currentPassword, newPassword) {
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const user = users[username];
 	if (user === undefined) {
 		logger.log.error(`Change password action is rejected because [${username}] user doesn't exist`);
@@ -130,13 +132,13 @@ function changePassword(username, currentPassword, newPassword) {
 			return bcrypt.hash(newPassword)
 				.then((hash) => {
 					user.password = hash;
-					return confMgmt.save(users, confMgmt.CONF_FILES.USERS);
+					return confMgmt.save(users, confConsts.CONF_FILES.USERS);
 				});
 		});
 }
 
 function isPasswordValid(username, password) {
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const user = users[username];
 
 	// is user present in password.js file ?

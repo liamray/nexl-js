@@ -4,6 +4,8 @@ const security = require('../../api/security');
 const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 const confMgmt = require('../../api/conf-mgmt');
+const confConsts = require('../../common/conf-constants');
+const securityConsts = require('../../common/security-constants');
 
 const router = express.Router();
 
@@ -25,7 +27,7 @@ router.post('/enable-disable-user', function (req, res) {
 		return;
 	}
 
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
@@ -35,7 +37,7 @@ router.post('/enable-disable-user', function (req, res) {
 
 	users[username].disabled = isDisabled;
 
-	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully enabled/disabled a [${username}] user by [${loggedInUsername}] user`);
@@ -63,14 +65,14 @@ router.post('/rename-user', function (req, res) {
 		return;
 	}
 
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	// todo : validate newUsername !!!
 
 	delete users[oldUsername];
 	users[newUsername] = {};
 
-	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully renamed a [${oldUsername}] user to [${newUsername}] by [${loggedInUsername}]`);
@@ -97,11 +99,11 @@ router.post('/remove-user', function (req, res) {
 		return;
 	}
 
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	delete users[username];
 
-	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully removed a [${username}] user by [${loggedInUsername}] user`);
@@ -127,7 +129,7 @@ router.post('/list-users', function (req, res) {
 		return;
 	}
 
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const usersPeeled = {};
 	for (let key in users) {
 		const user = users[key];
@@ -146,7 +148,7 @@ router.post('/change-password', function (req, res) {
 	logger.log.debug(`Changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
 
 	Promise.resolve().then(() => {
-		if (loggedInUsername === utils.GUEST_USER) {
+		if (loggedInUsername === securityConsts.GUEST_USER) {
 			logger.log.error('You must be logged in to change your password');
 			return Promise.reject('Not logged in');
 		}
@@ -176,7 +178,7 @@ router.post('/generate-token', function (req, res) {
 		return;
 	}
 
-	const users = confMgmt.getCached(confMgmt.CONF_FILES.USERS);
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
@@ -186,7 +188,7 @@ router.post('/generate-token', function (req, res) {
 
 	users[username].token2ResetPassword = utils.generateNewToken();
 
-	confMgmt.save(users, confMgmt.CONF_FILES.USERS)
+	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send(users[username].token2ResetPassword);
 			logger.log.debug(`Successfully generated registration token for [${username}] user by [${loggedInUsername}] user`);
@@ -205,7 +207,7 @@ router.post('/resolve-status', function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug(`Resolving status for [${username}] user by [${username}] user`);
 	const status = security.status(username);
-	status['isLoggedIn'] = username !== utils.GUEST_USER;
+	status['isLoggedIn'] = username !== securityConsts.GUEST_USER;
 	status['username'] = username;
 	res.send(status);
 });
@@ -249,7 +251,7 @@ router.post('/register', function (req, res) {
 			return Promise.reject('Password cannot be empty');
 		}
 
-		const userObj = confMgmt.getCached(confMgmt.CONF_FILES.USERS)[username];
+		const userObj = confMgmt.getCached(confConsts.CONF_FILES.USERS)[username];
 		if (userObj.disabled === true) {
 			logger.log.error(`Failed to register a [${username}]. Reason : user is disabled !`);
 			utils.sendError(res, 'User is disabled');

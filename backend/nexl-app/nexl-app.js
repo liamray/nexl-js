@@ -10,6 +10,7 @@ const util = require('util');
 const figlet = require('figlet');
 
 const confMgmt = require('../api/conf-mgmt');
+const confConsts = require('../common/conf-constants');
 const jsFilesUtils = require('../api/jsfiles-utils');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
@@ -105,11 +106,11 @@ class NexlApp {
 		// handling specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				logger.log.error('Cannot start HTTP server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpBinding, this.httpPort, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confMgmt.SETTINGS.HTTP_BINDING, confMgmt.SETTINGS.HTTP_PORT);
+				logger.log.error('Cannot start HTTP server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpBinding, this.httpPort, utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				logger.log.error('The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpPort, this.httpBinding, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confMgmt.SETTINGS.HTTP_BINDING, confMgmt.SETTINGS.HTTP_PORT);
+				logger.log.error('The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpPort, this.httpBinding, utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
 				process.exit(1);
 				break;
 			default:
@@ -127,11 +128,11 @@ class NexlApp {
 		// handling specific listen errors with friendly messages
 		switch (error.code) {
 			case 'EACCES':
-				logger.log.error('Cannot start HTTPS server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpsBinding, this.httpsPort, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT);
+				logger.log.error('Cannot start HTTPS server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpsBinding, this.httpsPort, utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
 				process.exit(1);
 				break;
 			case 'EADDRINUSE':
-				logger.log.error('The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpsPort, this.httpsBinding, utils.formatErr(error), confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT);
+				logger.log.error('The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', this.httpsPort, this.httpsBinding, utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
 				process.exit(1);
 				break;
 			default:
@@ -149,8 +150,8 @@ class NexlApp {
 	};
 
 	startHTTP(settings) {
-		this.httpBinding = settings[confMgmt.SETTINGS.HTTP_BINDING];
-		this.httpPort = settings[confMgmt.SETTINGS.HTTP_PORT];
+		this.httpBinding = settings[confConsts.SETTINGS.HTTP_BINDING];
+		this.httpPort = settings[confConsts.SETTINGS.HTTP_PORT];
 
 		// creating http server
 		try {
@@ -226,13 +227,13 @@ class NexlApp {
 	}
 
 	startHTTPS(settings) {
-		this.httpsBinding = settings[confMgmt.SETTINGS.HTTPS_BINDING];
-		this.httpsPort = settings[confMgmt.SETTINGS.HTTPS_PORT];
-		this.sslCert = settings[confMgmt.SETTINGS.SSL_CERT_LOCATION];
-		this.sslKey = settings[confMgmt.SETTINGS.SSL_KEY_LOCATION];
+		this.httpsBinding = settings[confConsts.SETTINGS.HTTPS_BINDING];
+		this.httpsPort = settings[confConsts.SETTINGS.HTTPS_PORT];
+		this.sslCert = settings[confConsts.SETTINGS.SSL_CERT_LOCATION];
+		this.sslKey = settings[confConsts.SETTINGS.SSL_KEY_LOCATION];
 
 		if (utils.isEmptyStr(this.httpsBinding) && utils.isEmptyStr(this.httpsPort) && utils.isEmptyStr(this.sslCert) && utils.isEmptyStr(this.sslKey)) {
-			logger.log.error('HTTPS listener will not be started. To start HTTPS listener provide the following settings : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
+			logger.log.error('HTTPS listener will not be started. To start HTTPS listener provide the following settings : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT, confConsts.SETTINGS.SSL_KEY_LOCATION, confConsts.SETTINGS.SSL_CERT_LOCATION, confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
 			return;
 		}
 
@@ -241,7 +242,7 @@ class NexlApp {
 			return;
 		}
 
-		logger.log.warn('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confMgmt.SETTINGS.HTTPS_BINDING, confMgmt.SETTINGS.HTTPS_PORT, confMgmt.SETTINGS.SSL_KEY_LOCATION, confMgmt.SETTINGS.SSL_CERT_LOCATION, confMgmt.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
+		logger.log.warn('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT, confConsts.SETTINGS.SSL_KEY_LOCATION, confConsts.SETTINGS.SSL_CERT_LOCATION, confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
 	}
 
 	startNexlServer() {

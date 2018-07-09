@@ -8,3 +8,5 @@ interface NodeModule {
 declare var ace: any;
 
 declare var UI_CONSTANTS: any;
+declare var CONF_CONSTANTS: any;
+declare var SECURITY_CONSTANTS: any;
