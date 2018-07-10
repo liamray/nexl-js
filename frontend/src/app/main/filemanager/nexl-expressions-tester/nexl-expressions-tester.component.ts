@@ -213,8 +213,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
     let data: any = {};
 
-    if (tabInfo.nexlSourceContent !== undefined) {
-      data['nexl-source-content'] = tabInfo.nexlSourceContent;
+    if (tabInfo.nexlJSFileContent !== undefined) {
+      data['nexl-source-content'] = tabInfo.nexlJSFileContent;
     }
 
     if (this.nexlExpression.val() !== '') {

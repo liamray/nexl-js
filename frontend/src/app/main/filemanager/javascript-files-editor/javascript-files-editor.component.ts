@@ -214,7 +214,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
 
     if (this.isTabChanged(idSeqNr)) {
-      data.nexlSourceContent = this.getTabContent(idSeqNr);
+      data.nexlJSFileContent = this.getTabContent(idSeqNr);
     }
 
     this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB, data);

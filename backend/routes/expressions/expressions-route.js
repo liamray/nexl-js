@@ -53,7 +53,7 @@ function assembleNexlParams(httpParams) {
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
 
-	let nexlSource = {};
+	const nexlSource = {};
 
 	// ignoring content for GET method. Altered nexl source works only for POST method
 	if (httpParams.method.toUpperCase() === 'POST' && httpParams.content !== undefined) {
