@@ -55,7 +55,7 @@ function assembleNexlParams(httpParams) {
 
 	const nexlSource = {};
 
-	// ignoring content for GET method. Altered nexl source works only for POST method
+	// ignoring content for GET method. Altered nexl js file works only for POST method
 	if (httpParams.method.toUpperCase() === 'POST' && httpParams.content !== undefined) {
 		nexlSource.asText = {};
 		nexlSource.asText['text'] = httpParams.content;

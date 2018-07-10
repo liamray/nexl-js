@@ -2,7 +2,7 @@
  * data
  ********************************************************************************************/
 
-// importing from nexl-sources2.js ( for test purposes )
+// importing from file2.js ( for test purposes )
 '@ file2.js';
 
 cars = [
