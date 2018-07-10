@@ -181,7 +181,7 @@ router.post('/generate-token', function (req, res) {
 	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	if (users[username] === undefined) {
-		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
+		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesn't exist`);
 		utils.sendError(res, `User doesn't exist`);
 		return;
 	}
@@ -190,7 +190,10 @@ router.post('/generate-token', function (req, res) {
 
 	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
-			res.send(users[username].token2ResetPassword);
+			res.send({
+				token: users[username].token2ResetPassword.token,
+				tokenValidHours: security.TOKEN_VALID_HOURS
+			});
 			logger.log.debug(`Successfully generated registration token for [${username}] user by [${loggedInUsername}] user`);
 		})
 		.catch(

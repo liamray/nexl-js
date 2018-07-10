@@ -243,7 +243,7 @@ export class UsersComponent {
     // generating new token
     this.globalComponentsService.loader.open();
 
-    // generating token
+    // renaming user
     this.http.post(userData, '/auth/rename-user', 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
@@ -275,7 +275,7 @@ export class UsersComponent {
 
     this.globalComponentsService.loader.open();
 
-    // generating token
+    // enabling/disabling user
     this.http.post({username: username, isDisabled: isDisabled}, '/auth/enable-disable-user', 'json').subscribe(
       (data: any) => {
         row.bounddata.disabled = !row.bounddata.disabled;
@@ -296,7 +296,7 @@ export class UsersComponent {
   removeUserUnner(rowNr: number, username: string) {
     this.globalComponentsService.loader.open();
 
-    // generating token
+    // removing user
     this.http.post({username: username}, '/auth/remove-user', 'json').subscribe(
       (data: any) => {
         this.usersGrid.deleterow(rowNr);
@@ -352,7 +352,7 @@ export class UsersComponent {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.open({
           title: 'Information',
-          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token} This token expires in 24 hour(s)`,
+          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token} This token expires in [${data.body.tokenValidHours}] hour(s)`,
         });
       },
       err => {
