@@ -2,6 +2,7 @@ const assert = require('assert');
 
 const testAPI = require('../tests-api');
 const confConsts = require('../../backend/common/conf-constants');
+const securityConsts = require('../../common/security-constants');
 
 const settings = {};
 settings[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = testAPI.createNexlJSFilesTmpDir();
@@ -21,10 +22,10 @@ confMgmt.reloadCache()
 	});
 
 function test() {
-	assert(!security.isAdmin('admin'));
+	assert(!security.isAdmin(securityConsts.ADMIN_USER));
 
-	confMgmt.save(['admin'], confConsts.CONF_FILES.ADMINS)
+	confMgmt.save([securityConsts.ADMIN_USER], confConsts.CONF_FILES.ADMINS)
 		.then(() => {
-			assert(security.isAdmin('admin'));
+			assert(security.isAdmin(securityConsts.ADMIN_USER));
 		});
 }

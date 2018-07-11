@@ -44,7 +44,7 @@ function testCaseInner(options, testCase) {
 	return new Promise((resolve, reject) => {
 		logger.log.info('Method : [%s], path : [%s]', options.method, options.path);
 		const req = http.request(options, function (res) {
-			res.setEncoding('utf8');
+			res.setEncoding(confConsts.ENCODING_UTF8);
 			let data = '';
 			res.on('data', function (chunk) {
 				data += chunk;

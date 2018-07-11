@@ -9,6 +9,8 @@ import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 export class AssignPermissionsComponent implements AfterViewInit {
   assignPermissions: jqxGridComponent;
 
+  tooltipText = `<p style='text-align: left;'>There are 2 special users : <u>${SECURITY_CONSTANTS.GUEST_USER}</u> and <u>${SECURITY_CONSTANTS.AUTHENTICATED}</u></p>`;
+
   constructor() {
   }
 

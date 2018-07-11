@@ -110,7 +110,7 @@ function authUser(opts) {
 					resolve();
 				})
 				.catch(err => {
-					logger.log.error(`Failed to authenticated [${opts.username}] user in LDAP. Reason : [%s]`, utils.formatErr(err));
+					logger.log.error(`Failed to authenticate a [${opts.username}] user in LDAP. Reason : [%s]`, utils.formatErr(err));
 					unbind(client);
 					reject();
 				});
