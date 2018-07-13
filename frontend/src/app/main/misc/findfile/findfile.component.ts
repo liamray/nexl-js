@@ -19,7 +19,6 @@ export class FindFileComponent implements OnInit {
 
   source: string[] = [];
   hasReadPermission: boolean = false;
-  unsavedTabs: string[] = [];
 
   constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService, private jsFilesService: JSFilesService) {
     this.messageService.getMessage().subscribe(
@@ -35,33 +34,8 @@ export class FindFileComponent implements OnInit {
             return;
           }
 
-          case MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE: {
-            this.addUnsavedTab(message.data);
-            return;
-          }
-
-          case MESSAGE_TYPE.OPEN_NEW_TAB: {
-            this.addUnsavedTab(message.data.relativePath);
-            return;
-          }
-
-          case MESSAGE_TYPE.TAB_CLOSED: {
-            this.removeUnsavedTab(message.data);
-            return;
-          }
-
-          case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
-            if (message.data.isNewFile === false) {
-              this.removeUnsavedTab(message.data.relativePath);
-            }
-            if (message.data.isNewFile === true) {
-              this.addUnsavedTab(message.data.relativePath);
-            }
-            return;
-          }
-
-          case MESSAGE_TYPE.ITEM_MOVED: {
-            this.itemMoved(message.data);
+          case MESSAGE_TYPE.SET_TREE_ITEMS: {
+            this.findFileInner(message.data);
             return;
           }
         }
@@ -69,27 +43,21 @@ export class FindFileComponent implements OnInit {
     );
   }
 
-  itemMoved(data: any) {
-    this.unsavedTabs.forEach(
-      (item, index) => {
-        if (item.indexOf(data.oldRelativePath) === 0) {
-          this.unsavedTabs[index] = data.newRelativePath + item.substr(data.oldRelativePath.length);
-        }
+  findFileInner(treeItems) {
+    this.source = [];
+    treeItems.forEach(item => {
+      // skipping directories, indexing files only
+      if (item.value.isDir === true) {
+        return;
       }
-    );
-  }
 
-  removeUnsavedTab(relativePath: string) {
-    let index;
-    while ((index = this.unsavedTabs.indexOf(relativePath)) >= 0) {
-      this.unsavedTabs.splice(index, 1);
-    }
-  }
+      this.source.push(item.value.relativePath);
+    });
 
-  addUnsavedTab(relativePath: string) {
-    if (this.unsavedTabs.indexOf(relativePath) < 0) {
-      this.unsavedTabs.push(relativePath);
-    }
+    this.source.sort();
+
+    this.globalComponentsService.loader.close();
+    this.findFileWindow.open();
   }
 
   findFile() {
@@ -100,18 +68,7 @@ export class FindFileComponent implements OnInit {
     this.input.val('');
     this.globalComponentsService.loader.open();
 
-    this.jsFilesService.listAllJSFiles().subscribe(
-      (allJSFiles) => {
-        this.source = this.unsavedTabs.concat(allJSFiles);
-        this.globalComponentsService.loader.close();
-        this.findFileWindow.open();
-      },
-      (err) => {
-        console.log(err);
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve JS files list from server. Reason : [${err.statusText}]`);
-      }
-    );
+    this.messageService.sendMessage(MESSAGE_TYPE.GET_TREE_ITEMS);
   }
 
   ngOnInit() {

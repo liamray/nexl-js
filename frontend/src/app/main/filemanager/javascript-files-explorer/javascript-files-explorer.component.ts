@@ -64,6 +64,11 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.createNewFileInTree(message.data);
         return;
       }
+
+      case MESSAGE_TYPE.GET_TREE_ITEMS: {
+        this.messageService.sendMessage(MESSAGE_TYPE.SET_TREE_ITEMS, this.tree.getItems());
+        return;
+      }
     }
   }
 

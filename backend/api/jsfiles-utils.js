@@ -1,12 +1,11 @@
-const fs = require('fs');
 const path = require('path');
-const util = require('util');
 const j79 = require('j79-utils');
 
 const fsx = require('./fsx');
 const logger = require('./logger');
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
+const uiConsts = require('../common/ui-constants');
 const utils = require('./utils');
 
 let JS_FILES_CACHE = [];
@@ -307,9 +306,106 @@ function move(source, dest) {
 	*/
 }
 
-function gatherAllFiles2(fullPath) {
-	const searchFrom = fullPath === undefined ? confMgmt.getJSFilesRootDir() : fullPath;
-	fsx.readdirEx(searchFrom);
+function listDirItems(fullPath) {
+	const dirItems = [];
+	const fileItems = [];
+
+	return fsx.readdir(fullPath)
+		.then(items => {
+			const promises = [];
+
+			items.forEach(item => {
+				const itemFullPath = path.join(fullPath, item);
+				const promise = fsx.stat(itemFullPath)
+					.then(itemStat => {
+						if (itemStat.isDirectory()) {
+							dirItems.push(item);
+						}
+
+						if (itemStat.isFile()) {
+							fileItems.push(item);
+						}
+					});
+
+				promises.push(promise);
+			});
+
+			return Promise.all(promises)
+				.then(items => {
+					return Promise.resolve({
+						dirs: dirItems,
+						files: fileItems
+					});
+				});
+		});
+}
+
+function makeDirItem2(item, relativePath, subDirItems) {
+	return {
+		label: item,
+		items: subDirItems,
+		icon: uiConsts.DIR_ICON,
+		value: {
+			relativePath: path.join(relativePath, item),
+			label: item,
+			mustLoadChildItems: false,
+			isDir: true
+		}
+	};
+}
+
+function makeFileItem2(item, relativePath) {
+	return {
+		label: item,
+		icon: uiConsts.FILE_ICON,
+		value: {
+			relativePath: path.join(relativePath, item),
+			label: item,
+			mustLoadChildItems: false,
+			isDir: false
+		}
+	};
+}
+
+// todo : cache it !
+function gatherAllFiles2(relativePath) {
+	relativePath = relativePath || '';
+	relativePath = path.join(path.sep, relativePath);
+	const searchFrom = path.join(confMgmt.getJSFilesRootDir(), relativePath);
+
+	if (!utils.isDirPathValid(searchFrom)) {
+		logger.log.error(`Got unacceptable path [${searchFrom}]. This path is invalid or points outside a nexl JavaScript files root dir`);
+		return Promise.reject('Unacceptable path');
+	}
+
+	const result = [];
+	return listDirItems(searchFrom)
+		.then(currentDirItems => {
+
+			// iterating over dir items and resolve sub dir items with promises
+			const promises = [];
+			currentDirItems.dirs.forEach(item => {
+				const subDirRelativePath = path.join(relativePath, item);
+				const promise = gatherAllFiles2(subDirRelativePath)
+					.then(subDirItems => {
+						const dirItem = makeDirItem2(item, relativePath, subDirItems);
+						result.push(dirItem);
+					});
+				promises.push(promise);
+			});
+
+			// running promises to resolve sub dir items
+			return Promise.all(promises)
+				.then(x => {
+					// now iterating over file items and adding them to result
+					currentDirItems.files.forEach(item => {
+						const fileItem = makeFileItem2(item, relativePath);
+						result.push(fileItem);
+					});
+
+					return Promise.resolve(result);
+				});
+		});
 }
 
 function gatherAllFiles(relativePath) {
@@ -384,6 +480,8 @@ module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
+
+module.exports.gatherAllFiles2 = gatherAllFiles2;
 
 module.exports.cacheJSFiles = cacheJSFiles;
 module.exports.listAllJSFiles = () => JS_FILES_CACHE;

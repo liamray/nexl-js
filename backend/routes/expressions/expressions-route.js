@@ -159,8 +159,8 @@ router.post('/*', function (req, res) {
 	const httpParams = resolvePostParams(req);
 
 	if (!status.hasWritePermission && httpParams.content !== undefined) {
-		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression with altered nexl source', username);
-		utils.sendError(res, 'No write permissions to evaluate nexl expression with altered nexl source');
+		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression with altered nexl js file', username);
+		utils.sendError(res, 'No write permissions to evaluate nexl expression with altered js file');
 		return;
 	}
 

@@ -189,20 +189,19 @@ router.post('/list-jsfiles', function (req, res, next) {
 	logger.log.debug(`Listing JavaScript files in [${relativePath}] directory by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
-		logger.log.error('The [%s] user doesn\'t have read permissions to list nexl sources', username);
+		logger.log.error('The [%s] user doesn\'t have read permissions to list nexl JavaScript files', username);
 		utils.sendError(res, 'No read permissions');
 		return;
 	}
 
-
-	return jsfilesUtils.listJSFiles(relativePath)
+	return jsfilesUtils.gatherAllFiles2()
 		.then(data => {
 			res.send(data);
 			logger.log.debug(`Successfully listed JavaScript files in [${relativePath}] directory by [${username}] user`);
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to list nexl sources for [%s] user. Reason : [%s]', username, err);
+				logger.log.error('Failed to list nexl js files for [%s] user. Reason : [%s]', username, err);
 				utils.sendError(res, err);
 			});
 });
@@ -217,7 +216,7 @@ router.post('/load-jsfile', function (req, res, next) {
 	logger.log.debug(`Loading content of [${relativePath}] JavaScript file by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
-		logger.log.error('The [%s] user doesn\'t have read permissions to load nexl source', username);
+		logger.log.error('The [%s] user doesn\'t have read permissions to load JavaScript files', username);
 		utils.sendError(res, 'No read permissions');
 		return;
 	}
@@ -229,7 +228,7 @@ router.post('/load-jsfile', function (req, res, next) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to load a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
+				logger.log.error('Failed to load a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, err);
 				utils.sendError(res, err);
 			});
 });
@@ -253,7 +252,7 @@ router.post('/save-jsfile', function (req, res, next) {
 
 
 	if (!security.hasWritePermission(username)) {
-		logger.log.error('The [%s] user doesn\'t have write permissions to save nexl source items', username);
+		logger.log.error('The [%s] user doesn\'t have write permissions to save nexl JavaScript file', username);
 		utils.sendError(res, 'No write permissions');
 		return;
 	}
@@ -265,7 +264,7 @@ router.post('/save-jsfile', function (req, res, next) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to save a [%s] nexl source for [%s] user. Reason : [%s]', relativePath, username, err);
+				logger.log.error('Failed to save a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, err);
 				utils.sendError(res, err);
 			});
 });

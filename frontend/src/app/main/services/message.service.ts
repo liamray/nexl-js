@@ -3,6 +3,8 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  SET_TREE_ITEMS,
+  GET_TREE_ITEMS,
   USERS_WINDOW,
   FIND_FILE,
   OPEN_ABOUT_WINDOW,
