@@ -34,6 +34,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   hasWritePermission = false;
   fontSize: string;
   firstTimeLoad: boolean = true;
+  saveTabs2LocalStorageEnabled: boolean = false;
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
@@ -650,6 +651,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   saveTabs2LocalStorage() {
+    if (!this.saveTabs2LocalStorageEnabled) {
+      return;
+    }
+
     const tabs2Save = [];
 
     // iterating over tabs and gathering info
@@ -718,6 +723,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         if (activeTab !== undefined) {
           this.tabs.val(activeTab);
         }
+
+        this.saveTabs2LocalStorageEnabled = true;
       }
     );
   }
