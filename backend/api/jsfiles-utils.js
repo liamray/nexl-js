@@ -262,7 +262,7 @@ function listDirItems(fullPath) {
 		});
 }
 
-function makeDirItem2(item, relativePath, subDirItems) {
+function makeDirItem(item, relativePath, subDirItems) {
 	return {
 		label: item,
 		items: subDirItems,
@@ -276,7 +276,7 @@ function makeDirItem2(item, relativePath, subDirItems) {
 	};
 }
 
-function makeFileItem2(item, relativePath) {
+function makeFileItem(item, relativePath) {
 	return {
 		label: item,
 		icon: uiConsts.FILE_ICON,
@@ -289,8 +289,7 @@ function makeFileItem2(item, relativePath) {
 	};
 }
 
-// todo : cache it !
-function gatherAllFiles2(relativePath) {
+function gatherAllFiles(relativePath) {
 	relativePath = relativePath || '';
 	relativePath = path.join(path.sep, relativePath);
 	const searchFrom = path.join(confMgmt.getJSFilesRootDir(), relativePath);
@@ -308,9 +307,9 @@ function gatherAllFiles2(relativePath) {
 			const promises = [];
 			currentDirItems.dirs.forEach(item => {
 				const subDirRelativePath = path.join(relativePath, item);
-				const promise = gatherAllFiles2(subDirRelativePath)
+				const promise = gatherAllFiles(subDirRelativePath)
 					.then(subDirItems => {
-						const dirItem = makeDirItem2(item, relativePath, subDirItems);
+						const dirItem = makeDirItem(item, relativePath, subDirItems);
 						result.push(dirItem);
 					});
 				promises.push(promise);
@@ -321,7 +320,7 @@ function gatherAllFiles2(relativePath) {
 				.then(x => {
 					// now iterating over file items and adding them to result
 					currentDirItems.files.forEach(item => {
-						const fileItem = makeFileItem2(item, relativePath);
+						const fileItem = makeFileItem(item, relativePath);
 						result.push(fileItem);
 					});
 
@@ -334,7 +333,7 @@ function cacheJSFiles() {
 	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
 	logger.log.info(`Caching files list in [${jsFilesRootDir}] directory`);
 
-	return gatherAllFiles2().then(
+	return gatherAllFiles().then(
 		(result) => {
 			TREE_ITEMS = result;
 			logger.log.debug(`Files are gathered`);
@@ -352,7 +351,7 @@ module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
 
-module.exports.gatherAllFiles2 = gatherAllFiles2;
+module.exports.gatherAllFiles2 = gatherAllFiles;
 
 module.exports.cacheJSFiles = cacheJSFiles;
 module.exports.getTreeItems = () => TREE_ITEMS;
