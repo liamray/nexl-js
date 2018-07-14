@@ -4,7 +4,6 @@ import {UtilsService} from "../services/utils.service";
 import 'rxjs/Rx';
 
 const LIST_JS_FILES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-jsfiles');
-const LIST_ALL_JS_FILES_URL = UtilsService.prefixNexlUrl('/jsfiles/list-all-jsfiles');
 const MAKE_DIR = UtilsService.prefixNexlUrl('/jsfiles/make-dir');
 const DELETE_ITEM = UtilsService.prefixNexlUrl('/jsfiles/delete');
 const RENAME_ITEM = UtilsService.prefixNexlUrl('/jsfiles/rename');
@@ -71,10 +70,6 @@ export class JSFilesService {
         return data;
       }
     );
-  }
-
-  listAllJSFiles() {
-    return this.httpClient.post<any>(LIST_ALL_JS_FILES_URL, {});
   }
 
   makeDir(relativePath: string) {

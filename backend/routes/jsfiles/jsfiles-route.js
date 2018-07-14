@@ -11,23 +11,6 @@ const fsx = require('../../api/fsx');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
-// list-all-jsfiles
-//////////////////////////////////////////////////////////////////////////////
-router.post('/list-all-jsfiles', function (req, res) {
-	const username = utils.getLoggedInUsername(req);
-	logger.log.debug(`Listing all JavaScript files by [${username}] user`);
-
-	if (!security.hasReadPermission(username)) {
-		logger.log.error('The [%s] user doesn\'t have read permissions to list all JavaScript files', username);
-		utils.sendError(res, 'No read permissions');
-		return;
-	}
-
-	res.send(jsfilesUtils.listAllJSFiles());
-	logger.log.debug(`Successfully listed all JavaScript files by [${username}] user`);
-});
-
-//////////////////////////////////////////////////////////////////////////////
 // move item
 //////////////////////////////////////////////////////////////////////////////
 router.post('/move', function (req, res) {
@@ -194,16 +177,7 @@ router.post('/list-jsfiles', function (req, res, next) {
 		return;
 	}
 
-	return jsfilesUtils.gatherAllFiles2()
-		.then(data => {
-			res.send(data);
-			logger.log.debug(`Successfully listed JavaScript files in [${relativePath}] directory by [${username}] user`);
-		})
-		.catch(
-			(err) => {
-				logger.log.error('Failed to list nexl js files for [%s] user. Reason : [%s]', username, err);
-				utils.sendError(res, err);
-			});
+	res.send(jsfilesUtils.getTreeItems());
 });
 
 //////////////////////////////////////////////////////////////////////////////

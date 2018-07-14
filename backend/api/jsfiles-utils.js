@@ -8,14 +8,7 @@ const confConsts = require('../common/conf-constants');
 const uiConsts = require('../common/ui-constants');
 const utils = require('./utils');
 
-let JS_FILES_CACHE = [];
-
-const CHILD_ITEM = [
-	{
-		label: 'Loading...',
-		disabled: true
-	}
-];
+let TREE_ITEMS = [];
 
 function sortFilesFunc(a, b) {
 	if (a.label.toUpperCase() > b.label.toUpperCase()) {
@@ -57,77 +50,6 @@ function getJSFilesRootDirPath(relativePath) {
 	}
 
 	return Promise.resolve(fullPath);
-}
-
-function makeDirItem(item, relativePath) {
-	return {
-		label: item,
-		items: CHILD_ITEM.slice(),
-		value: {
-			relativePath: relativePath,
-			label: item,
-			mustLoadChildItems: true,
-			isDir: true
-		}
-	}
-}
-
-function makeFileItem(item, relativePath) {
-	return {
-		label: item,
-		value: {
-			relativePath: relativePath,
-			label: item,
-			mustLoadChildItems: false,
-			isDir: false
-		}
-	}
-}
-
-function assembleItemsPromised(relativePath, jsFilesRootDir, items) {
-	return Promise.resolve().then(() => {
-			let files = [];
-			let dirs = [];
-			const promises = [];
-
-			// gathering promises
-			for (let index in items) {
-				let item = items[index];
-
-				const itemRelativePath = path.join(relativePath, item);
-				if (!utils.isFilePathValid(itemRelativePath)) {
-					logger.log.error('The [%s] path is unacceptable', relativePath);
-					return Promise.reject('Unacceptable path');
-				}
-
-				const fullPath = path.join(jsFilesRootDir, itemRelativePath);
-				const promise = fsx.stat(fullPath).then(
-					(stats) => {
-						if (stats.isDirectory()) {
-							dirs.push(makeDirItem(item, itemRelativePath));
-						}
-
-						if (stats.isFile()) {
-							files.push(makeFileItem(item, itemRelativePath));
-						}
-
-						return Promise.resolve();
-					}
-				);
-
-				promises.push(promise);
-			}
-
-			// executing all promises
-			return Promise.all(promises).then(
-				() => {
-					files = files.sort(sortFilesFunc);
-					dirs = dirs.sort(sortFilesFunc);
-
-					return Promise.resolve([].concat(dirs).concat(files));
-				});
-		}
-	);
 }
 
 function loadJSFile(relativePath) {
@@ -408,65 +330,14 @@ function gatherAllFiles2(relativePath) {
 		});
 }
 
-function gatherAllFiles(relativePath) {
-	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
-	const listItemsFullPath = path.join(jsFilesRootDir, relativePath);
-	return fsx.readdir(listItemsFullPath)
-		.then(
-			(items) => {
-				const promises = [];
-				items.forEach(
-					(item) => {
-						const itemFullPath = path.join(listItemsFullPath, item);
-						const promise = fsx.stat(itemFullPath).then(
-							(stats) => {
-								if (stats.isFile()) {
-									return Promise.resolve(path.join(relativePath, item));
-								}
-
-								if (stats.isDirectory()) {
-									return gatherAllFiles(path.join(relativePath, item));
-								}
-
-								logger.log.warn('Unknown FS object [%s] ( not a file or directory ). Skipping...', itemFullPath);
-								return Promise.resolve();
-							}
-						);
-						promises.push(promise);
-					}
-				);
-
-				let result = [];
-				return Promise.all(promises).then(
-					(allResult) => {
-						allResult.forEach(
-							(item) => {
-								if (j79.isArray(item)) {
-									result = result.concat(item);
-								}
-
-								if (j79.isString(item)) {
-									result.push(item);
-								}
-							}
-						);
-
-						return Promise.resolve(result);
-					}
-				);
-			}
-		);
-}
-
 function cacheJSFiles() {
 	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
-	logger.log.info('Caching JavaScript file names located in [%s] directory', jsFilesRootDir);
+	logger.log.info(`Caching files list in [${jsFilesRootDir}] directory`);
 
-	return gatherAllFiles(path.sep).then(
+	return gatherAllFiles2().then(
 		(result) => {
-			JS_FILES_CACHE = result;
-			JS_FILES_CACHE.sort();
-			logger.log.info('Found and cached [%s] files located in [%s] directory', JS_FILES_CACHE.length, jsFilesRootDir);
+			TREE_ITEMS = result;
+			logger.log.debug(`Files are gathered`);
 			return Promise.resolve();
 		}
 	);
@@ -484,5 +355,5 @@ module.exports.move = move;
 module.exports.gatherAllFiles2 = gatherAllFiles2;
 
 module.exports.cacheJSFiles = cacheJSFiles;
-module.exports.listAllJSFiles = () => JS_FILES_CACHE;
+module.exports.getTreeItems = () => TREE_ITEMS;
 // --------------------------------------------------------------------------------
