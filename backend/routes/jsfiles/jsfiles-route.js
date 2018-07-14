@@ -6,14 +6,14 @@ const jsfilesUtils = require('../../api/jsfiles-utils');
 const utils = require('../../api/utils');
 const security = require('../../api/security');
 const logger = require('../../api/logger');
-const fsx = require('../../api/fsx');
+const restUtls = require('../../common/rest-urls');
 
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
 // move item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/move', function (req, res) {
+router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	const source = req.body['source'];
 	const dest = req.body['dest'];
@@ -55,7 +55,7 @@ router.post('/move', function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // rename item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/rename', function (req, res) {
+router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const newRelativePath = req.body['newRelativePath'];
@@ -97,7 +97,7 @@ router.post('/rename', function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // delete item
 //////////////////////////////////////////////////////////////////////////////
-router.post('/delete', function (req, res) {
+router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
@@ -131,7 +131,7 @@ router.post('/delete', function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // make-dir
 //////////////////////////////////////////////////////////////////////////////
-router.post('/make-dir', function (req, res, next) {
+router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
@@ -163,16 +163,15 @@ router.post('/make-dir', function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// list-jsfiles
+// get tree items hierarchy
 //////////////////////////////////////////////////////////////////////////////
-router.post('/list-jsfiles', function (req, res, next) {
+router.post(restUtls.JS_FILES.URLS.TREE_ITEMS, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
-	const relativePath = req.body['relativePath'] || path.sep;
 
-	logger.log.debug(`Listing JavaScript files in [${relativePath}] directory by [${username}] user`);
+	logger.log.debug(`Getting tree items hierarchy by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
-		logger.log.error('The [%s] user doesn\'t have read permissions to list nexl JavaScript files', username);
+		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
 		utils.sendError(res, 'No read permissions');
 		return;
 	}
@@ -183,7 +182,7 @@ router.post('/list-jsfiles', function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 // load-jsfile
 //////////////////////////////////////////////////////////////////////////////
-router.post('/load-jsfile', function (req, res, next) {
+router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'] || path.sep;
 
@@ -210,7 +209,7 @@ router.post('/load-jsfile', function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 // save-jsfile
 //////////////////////////////////////////////////////////////////////////////
-router.post('/save-jsfile', function (req, res, next) {
+router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const content = req.body['content'];

@@ -4,7 +4,6 @@ import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
-import {JSFilesService} from "../../services/js-files.service";
 
 @Component({
   selector: 'app-findfile',
@@ -20,7 +19,7 @@ export class FindFileComponent implements OnInit {
   source: string[] = [];
   hasReadPermission: boolean = false;
 
-  constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService, private jsFilesService: JSFilesService) {
+  constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {

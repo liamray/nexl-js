@@ -6,7 +6,10 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {UtilsService} from "../../services/utils.service";
-import {JSFilesService} from "../../services/js-files.service";
+import {HttpClient} from "@angular/common/http";
+
+const DIR_ICON = UI_CONSTANTS.DIR_ICON;
+const FILE_ICON = UI_CONSTANTS.FILE_ICON;
 
 @Component({
   selector: '.app-javascript-files-explorer',
@@ -25,7 +28,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   treeSource = [];
   rightClickSelectedElement: any;
 
-  constructor(private jsFilesService: JSFilesService, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
+  constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private httpClient: HttpClient) {
     this.messageService.getMessage().subscribe(message => {
       this.handleMessages(message);
     });
@@ -50,7 +53,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.RELOAD_JS_FILES: {
         if (this.hasReadPermission) {
-          this.refreshTreeSource();
+          this.loadTreeItems();
         }
         return;
       }
@@ -93,7 +96,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
     this.loadTreeItemsHierarchy(path, false).then(
       () => {
-        let item = JSFilesService.makeNewFileItem(path, fileName);
+        let item = JavaScriptFilesExplorerComponent.makeNewFileItem(path, fileName);
         const parentItem = this.findItemByRelativePath(path);
         this.insertFileItemInner(item, parentItem);
         item.value.isChanged = true;
@@ -101,6 +104,34 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.updateItem(item.value);
       }
     );
+  }
+
+  static makeNewFileItem(relativePath: string, newFileName: string) {
+    return {
+      label: newFileName,
+      icon: FILE_ICON,
+      value: {
+        relativePath: relativePath + UtilsService.SERVER_INFO.SLASH + newFileName,
+        label: newFileName,
+        isDir: false,
+        isChanged: true,
+        isNewFile: true
+      }
+    };
+  }
+
+  static makeEmptyDirItem(relativePath: string, newDirName: string) {
+    return {
+      label: newDirName,
+      icon: DIR_ICON,
+      items: [],
+      value: {
+        relativePath: relativePath,
+        label: newDirName,
+        mustLoadChildItems: true,
+        isDir: true
+      }
+    };
   }
 
   createNewFileInTree(relativePath: string) {
@@ -208,11 +239,8 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
               return Promise.resolve(nextItem);
             }
 
-            return this.loadChildItemsFromServer(item).then(
-              () => {
-                this.expandItem(item, isExpand);
-                return Promise.resolve(nextItem);
-              });
+            this.expandItem(item, isExpand);
+            return Promise.resolve(nextItem);
 
           });
       },
@@ -246,7 +274,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.refreshTreeSource();
+    this.loadTreeItems();
   }
 
   updatePopupMenu() {
@@ -281,10 +309,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
   }
 
-  refreshTreeSource() {
+  loadTreeItems() {
     this.treeSource = [];
 
-    this.jsFilesService.listJSFiles().subscribe(
+    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.TREE_ITEMS, {}).subscribe(
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
@@ -428,7 +456,12 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      this.jsFilesService.rename(this.rightClickSelectedElement.value.relativePath, data.newRelativePath).subscribe(
+      const params = {
+        relativePath: this.rightClickSelectedElement.value.relativePath,
+        newRelativePath: data.newRelativePath
+      };
+
+      this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.RENAME, params).subscribe(
         () => {
           this.renameInner(data);
         },
@@ -496,45 +529,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     this.tree.addBefore(item2Add, childItems[index]);
   }
 
-  onExpand(event: any) {
-    let item = event.args.element;
-    this.loadChildItemsFromServer(item).catch(_ => _);
-  }
-
-  loadChildItemsFromServer(item: any) {
-    return new Promise((resolve, reject) => {
-      const element: any = this.tree.getItem(item);
-
-      if (element === null) {
-        resolve();
-        return;
-      }
-
-      const value: any = element.value;
-      if (!value.mustLoadChildItems) {
-        resolve();
-        return;
-      }
-
-      value.mustLoadChildItems = false;
-      const child = element.nextItem;
-      this.jsFilesService.listJSFiles(value.relativePath).subscribe(
-        (data: any) => {
-          this.tree.removeItem(child);
-          this.tree.addTo(data, item);
-          resolve();
-        },
-        (err) => {
-          this.tree.removeItem(child);
-          this.globalComponentsService.messageBox.openSimple('Error', `Failed to read directory content. Reason : [${err.statusText}]`);
-          console.log(err);
-          reject();
-        }
-      );
-
-    });
-  }
-
   newDirInner(newDirName: string) {
     if (newDirName === undefined) {
       return;
@@ -554,9 +548,12 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
     this.globalComponentsService.loader.open();
 
-    this.jsFilesService.makeDir(newDirRelativePath).subscribe(
+    let param = {
+      relativePath: newDirRelativePath
+    };
+    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.MAKE_DIR, param).subscribe(
       () => {
-        this.insertDirItem(JSFilesService.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
+        this.insertDirItem(JavaScriptFilesExplorerComponent.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
       },
       (err) => {
@@ -583,7 +580,11 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   deleteItemInnerInner(targetItem: any) {
     this.globalComponentsService.loader.open();
-    this.jsFilesService.deleteItem(targetItem.value.relativePath).subscribe(
+
+    const params = {
+      relativePath: targetItem.value.relativePath
+    };
+    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.DELETE, params).subscribe(
       () => {
         this.tree.removeItem(targetItem);
         this.closeDeletedTabs(targetItem.value);
@@ -654,20 +655,16 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    const item: any = JSFilesService.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+    const item: any = JavaScriptFilesExplorerComponent.makeNewFileItem(this.getRightClickDirPath(), newFileName);
 
-    this.loadChildItemsFromServer(this.rightClickSelectedElement).then(
-      () => {
-        if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-          this.globalComponentsService.messageBox.openSimple('Error', `The [${item.value.relativePath}] item is already exists`);
-          return;
-        }
+    if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
+      this.globalComponentsService.messageBox.openSimple('Error', `The [${item.value.relativePath}] item is already exists`);
+      return;
+    }
 
-        this.insertFileItemInner(item, this.rightClickSelectedElement);
-        this.updateSelectExpandItem(item);
-        this.sendOpenNewTabMessage(item);
-      }
-    );
+    this.insertFileItemInner(item, this.rightClickSelectedElement);
+    this.updateSelectExpandItem(item);
+    this.sendOpenNewTabMessage(item);
   }
 
   newFile() {
@@ -847,7 +844,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveFileItem(data: any) {
     // creating root item
-    const item2Add: any = JSFilesService.makeNewFileItem(data.dropPath, data.item2Move.value.label);
+    const item2Add: any = JavaScriptFilesExplorerComponent.makeNewFileItem(data.dropPath, data.item2Move.value.label);
     item2Add.value.isChanged = data.item2Move.value.isChanged;
     item2Add.value.isNewFile = data.item2Move.value.isNewFile;
 
@@ -908,7 +905,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveDirItem(data: any) {
     // creating root item
-    const item2Add: any = JSFilesService.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
+    const item2Add: any = JavaScriptFilesExplorerComponent.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
 
     // collecting existing items under the item2Move item
     const changedFilesList = [];
@@ -960,8 +957,12 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    // move in file system
-    this.jsFilesService.moveItem(data.item2Move.value.relativePath, data.dropPath).subscribe(
+    const params = {
+      source: data.item2Move.value.relativePath,
+      dest: data.dropPath
+    };
+
+    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.MOVE, params).subscribe(
       () => {
         this.moveItemInnerInner(data);
       },
@@ -985,11 +986,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.loadChildItemsFromServer(data.dropItem.element).then(
-      () => {
-        this.moveItemInner(data);
-      }
-    ).catch(_ => _);
+    this.moveItemInner(data);
   }
 
   onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {

@@ -8,6 +8,13 @@ export class UtilsService {
     return environment.nexlRootUrl + url;
   }
 
+  static prefixUrlObject(urlObject) {
+    for (let key in urlObject.URLS) {
+      // replacing url with full url
+      urlObject.URLS[key] = environment.nexlRootUrl + '/' + urlObject.PREFIX + urlObject.URLS[key];
+    }
+  }
+
   static prefixRootlUrl(url: string) {
     return environment.rootUrl + url;
   }
@@ -82,3 +89,5 @@ export class UtilsService {
     return typeof username === 'string' && username.match(/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/) !== null;
   }
 }
+
+UtilsService.prefixUrlObject(REST_URLS.JS_FILES);

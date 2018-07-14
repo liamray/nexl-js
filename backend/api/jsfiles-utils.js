@@ -90,13 +90,6 @@ function saveJSFile(relativePath, content) {
 	*/
 }
 
-function listJSFiles(relativePath) {
-	return getJSFilesRootDirPath(relativePath).then(fsx.readdir)
-		.then(
-			(items) => assembleItemsPromised(relativePath, confMgmt.getJSFilesRootDir(), items)
-		);
-}
-
 function mkdir(relativePath) {
 	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
@@ -108,7 +101,8 @@ function mkdir(relativePath) {
 
 				return fsx.mkdir(fullPath);
 			});
-		});
+		})
+		.then(cacheJSFiles);
 }
 
 function deleteItem(relativePath) {
@@ -299,7 +293,7 @@ function gatherAllFiles(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	const result = [];
+	const dirItems = [];
 	return listDirItems(searchFrom)
 		.then(currentDirItems => {
 
@@ -310,7 +304,7 @@ function gatherAllFiles(relativePath) {
 				const promise = gatherAllFiles(subDirRelativePath)
 					.then(subDirItems => {
 						const dirItem = makeDirItem(item, relativePath, subDirItems);
-						result.push(dirItem);
+						dirItems.push(dirItem);
 					});
 				promises.push(promise);
 			});
@@ -318,13 +312,18 @@ function gatherAllFiles(relativePath) {
 			// running promises to resolve sub dir items
 			return Promise.all(promises)
 				.then(x => {
-					// now iterating over file items and adding them to result
+					dirItems.sort(sortFilesFunc);
+					const fileItems = [];
+
+					// now iterating over file items
 					currentDirItems.files.forEach(item => {
 						const fileItem = makeFileItem(item, relativePath);
-						result.push(fileItem);
+						fileItems.push(fileItem);
 					});
 
-					return Promise.resolve(result);
+					fileItems.sort(sortFilesFunc);
+
+					return Promise.resolve(dirItems.concat(fileItems));
 				});
 		});
 }
@@ -343,7 +342,6 @@ function cacheJSFiles() {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.listJSFiles = listJSFiles;
 module.exports.loadJSFile = loadJSFile;
 module.exports.saveJSFile = saveJSFile;
 module.exports.mkdir = mkdir;

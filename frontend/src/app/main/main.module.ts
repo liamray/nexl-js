@@ -58,7 +58,6 @@ import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel
 import {MessageBoxComponent} from "./misc/messagebox/messagebox.component";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {AboutComponent} from "./misc/about/about.component";
-import {JSFilesService} from "./services/js-files.service";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
 import {UsersComponent} from "./settingsdialogs/users/users.component";
 
@@ -125,7 +124,6 @@ import {UsersComponent} from "./settingsdialogs/users/users.component";
   providers: [
     GlobalComponentsService,
     AuthService,
-    JSFilesService,
     HttpRequestService,
     MessageService,
     LocalStorageService,
