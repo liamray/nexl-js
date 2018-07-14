@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
-import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
 
 @Component({
   selector: 'app-findfile',
@@ -12,7 +12,7 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 })
 export class FindFileComponent implements OnInit {
   @ViewChild('findFileWindow') findFileWindow: jqxWindowComponent;
-  @ViewChild('input') input: jqxInputComponent;
+  @ViewChild('input') input: jqxComboBoxComponent;
   @ViewChild('okButton') okButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
@@ -77,31 +77,6 @@ export class FindFileComponent implements OnInit {
     this.input.focus();
   }
 
-  onClose() {
-  }
-
-  open() {
-  }
-
-  onKeyPress(event) {
-    if (event.keyCode === 13) {
-      this.loadJSFile();
-    }
-  }
-
-  initContent = () => {
-    this.okButton.createComponent();
-    this.cancelButton.createComponent();
-  };
-
-  onOk() {
-    this.loadJSFile();
-  }
-
-  onSelect(event: any) {
-    this.loadJSFile();
-  }
-
   loadJSFile() {
     if (this.source.indexOf(this.input.val()) < 0) {
       return;
@@ -111,5 +86,17 @@ export class FindFileComponent implements OnInit {
       relativePath: this.input.val()
     });
     this.findFileWindow.close();
+  }
+
+  open() {
+  }
+
+  initContent = () => {
+    this.okButton.createComponent();
+    this.cancelButton.createComponent();
+  };
+
+  onOk() {
+    this.loadJSFile();
   }
 }
