@@ -49,8 +49,7 @@ REST_URLS.SETTINGS = {
 	PREFIX: 'settings',
 	URLS: {
 		SAVE_SETTINGS: '/save',
-		LOAD_SETTINGS: '/load',
-		AVAILABLE_VALUES: '/avail-values'
+		LOAD_SETTINGS: '/load'
 	}
 };
 

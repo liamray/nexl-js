@@ -10,18 +10,6 @@ const restUrls = require('../../common/rest-urls');
 const logger = require('../../api/logger');
 
 //////////////////////////////////////////////////////////////////////////////
-// sends avail values to client ( will be removed in future )
-//////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.SETTINGS.URLS.AVAILABLE_VALUES, function (req, res, next) {
-	const data = {
-		logLevels: logger.getAvailLevels(),
-		encodings: confConsts.AVAILABLE_ENCODINGS
-	};
-
-	res.send(data);
-});
-
-//////////////////////////////////////////////////////////////////////////////
 // loads settings
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {

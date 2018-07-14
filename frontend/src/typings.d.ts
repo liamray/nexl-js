@@ -5,6 +5,11 @@ interface NodeModule {
   id: string;
 }
 
+declare module "*.json" {
+  const value: any;
+  export default value;
+}
+
 declare var ace: any;
 
 declare var UI_CONSTANTS: any;

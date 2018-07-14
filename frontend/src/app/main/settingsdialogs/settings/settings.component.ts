@@ -7,6 +7,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import * as LOG_LEVELS from '../../common/winston-log-levels.json';
 
 @Component({
   selector: 'app-settings',
@@ -45,8 +46,8 @@ export class SettingsComponent {
   jsFilesRootDirBefore: string;
   isSaving = false;
   width = 190;
-  encodings = [];
-  logLevels = [];
+  encodings = CONF_CONSTANTS.AVAILABLE_ENCODINGS;
+  logLevels = Object.keys(LOG_LEVELS);
 
   SETTINGS = CONF_CONSTANTS.SETTINGS;
   NEXL_HOME_DEF = CONF_CONSTANTS.NEXL_HOME_DEF;
@@ -114,7 +115,14 @@ export class SettingsComponent {
       });
   }
 
-  openInner() {
+  open() {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    // opening indicator
+    this.globalComponentsService.loader.open();
+
     this.jsFilesRootDirBefore = undefined;
 
     // loading data
@@ -132,35 +140,6 @@ export class SettingsComponent {
         this.globalComponentsService.messageBox.openSimple('Error', `Failed to load settings. Reason : [${err.statusText}]`);
         console.log(err);
       });
-
-  }
-
-  open() {
-    if (!this.isAdmin) {
-      return;
-    }
-
-    // opening indicator
-    this.globalComponentsService.loader.open();
-
-    if (this.encodings.length > 0 && this.logLevels.length > 0) {
-      this.openInner();
-      return;
-    }
-
-    // loading available values from server
-    this.http.post({}, REST_URLS.SETTINGS.URLS.AVAILABLE_VALUES, 'json').subscribe(
-      (data: any) => {
-        this.encodings = data.body.encodings;
-        this.logLevels = data.body.logLevels;
-        this.openInner();
-      },
-      err => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load settings. Reason : [${err.statusText}]`);
-        console.log(err);
-      }
-    );
   }
 
   initContent = () => {
