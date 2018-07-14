@@ -5,9 +5,13 @@ const utils = require('../../api/utils');
 const security = require('../../api/security');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
+const restUrls = require('../../common/rest-urls');
 const logger = require('../../api/logger');
 
-router.post('/load', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// loads permissions
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.PERMISSIONS.URLS.LOAD_PERMISSIONS, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 
 	logger.log.debug(`Loading all permissions by [${username}] user`);
@@ -26,7 +30,10 @@ router.post('/load', function (req, res) {
 	logger.log.debug(`Successfully loaded all permissions by [${username}] user`);
 });
 
-router.post('/save', function (req, res, next) {
+//////////////////////////////////////////////////////////////////////////////
+// saves permissions
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 
 	logger.log.debug(`Saving all permissions by [${username}] user`);
@@ -52,6 +59,9 @@ router.post('/save', function (req, res, next) {
 		});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// undeclared routes
+//////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
 	utils.sendError(res, `Unknown route`, 404);

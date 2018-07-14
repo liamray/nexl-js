@@ -4,12 +4,24 @@ REST_URLS.ROOT = 'nexl';
 
 REST_URLS.AUTH = {
 	PREFIX: 'auth',
-	URLS: {}
+	URLS: {
+		ENABLE_DISABLE_USER: '/enable-disable-user',
+		RENAME_USER: '/rename-user',
+		REMOVE_USER: '/remove-user',
+		LIST_USERS: '/list-users',
+		CHANGE_PASSWORD: '/change-password',
+		GENERATE_REGISTRATION_TOKEN: '/generate-token',
+		RESOLVE_USER_STATUS: '/resolve-status',
+		LOGIN: '/login',
+		REGISTER: '/register'
+	}
 };
 
 REST_URLS.GENERAL = {
 	PREFIX: 'general',
-	URLS: {}
+	URLS: {
+		INFO: '/info'
+	}
 };
 
 REST_URLS.JS_FILES = {
@@ -27,12 +39,19 @@ REST_URLS.JS_FILES = {
 
 REST_URLS.PERMISSIONS = {
 	PREFIX: 'permissions',
-	URLS: {}
+	URLS: {
+		LOAD_PERMISSIONS: '/load',
+		SAVE_PERMISSIONS: '/save'
+	}
 };
 
 REST_URLS.SETTINGS = {
 	PREFIX: 'settings',
-	URLS: {}
+	URLS: {
+		SAVE_SETTINGS: '/save',
+		LOAD_SETTINGS: '/load',
+		AVAILABLE_VALUES: '/avail-values'
+	}
 };
 
 // --------------------------------------------------------------------------------

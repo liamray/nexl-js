@@ -4,10 +4,6 @@ export class UtilsService {
   static SERVER_INFO: any;
   static IS_WIN: boolean;
 
-  static prefixNexlUrl(url: string) {
-    return environment.nexlRootUrl + url;
-  }
-
   static prefixUrlObject(urlObject) {
     for (let key in urlObject.URLS) {
       // replacing url with full url
@@ -90,4 +86,8 @@ export class UtilsService {
   }
 }
 
+UtilsService.prefixUrlObject(REST_URLS.AUTH);
+UtilsService.prefixUrlObject(REST_URLS.GENERAL);
 UtilsService.prefixUrlObject(REST_URLS.JS_FILES);
+UtilsService.prefixUrlObject(REST_URLS.PERMISSIONS);
+UtilsService.prefixUrlObject(REST_URLS.SETTINGS);

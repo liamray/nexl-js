@@ -15,7 +15,7 @@ export class HttpRequestService {
       body: data
     };
 
-    return this.httpClient.post<any>(UtilsService.prefixNexlUrl(url), data, opts);
+    return this.httpClient.post<any>(url, data, opts);
   }
 
   post2Root(data, url, responseType) {

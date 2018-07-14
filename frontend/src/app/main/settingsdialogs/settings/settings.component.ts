@@ -118,7 +118,7 @@ export class SettingsComponent {
     this.jsFilesRootDirBefore = undefined;
 
     // loading data
-    this.http.post({}, '/settings/load', 'json').subscribe(
+    this.http.post({}, REST_URLS.SETTINGS.URLS.LOAD_SETTINGS, 'json').subscribe(
       (data: any) => {
         this.settings = data.body;
         this.globalComponentsService.loader.close();
@@ -149,7 +149,7 @@ export class SettingsComponent {
     }
 
     // loading available values from server
-    this.http.post({}, '/settings/avail-values', 'json').subscribe(
+    this.http.post({}, REST_URLS.SETTINGS.URLS.AVAILABLE_VALUES, 'json').subscribe(
       (data: any) => {
         this.encodings = data.body.encodings;
         this.logLevels = data.body.logLevels;
@@ -185,7 +185,7 @@ export class SettingsComponent {
 
     this.globalComponentsService.loader.open();
 
-    this.http.post(this.settings, '/settings/save', 'json').subscribe(
+    this.http.post(this.settings, REST_URLS.SETTINGS.URLS.SAVE_SETTINGS, 'json').subscribe(
       () => {
         this.globalComponentsService.loader.close();
         this.settingsWindow.close();

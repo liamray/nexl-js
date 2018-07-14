@@ -6,9 +6,13 @@ const security = require('../../api/security');
 const jsFilesUtils = require('../../api/jsfiles-utils');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
+const restUrls = require('../../common/rest-urls');
 const logger = require('../../api/logger');
 
-router.post('/avail-values', function (req, res, next) {
+//////////////////////////////////////////////////////////////////////////////
+// sends avail values to client ( will be removed in future )
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.SETTINGS.URLS.AVAILABLE_VALUES, function (req, res, next) {
 	const data = {
 		logLevels: logger.getAvailLevels(),
 		encodings: confConsts.AVAILABLE_ENCODINGS
@@ -17,7 +21,10 @@ router.post('/avail-values', function (req, res, next) {
 	res.send(data);
 });
 
-router.post('/load', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// loads settings
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 
 	logger.log.debug(`Loading nexl server settings by [${username}] user`);
@@ -34,7 +41,10 @@ router.post('/load', function (req, res) {
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
 });
 
-router.post('/save', function (req, res, next) {
+//////////////////////////////////////////////////////////////////////////////
+// saves settings
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug(`Saving nexl server settings by [${username}] user`);
 
@@ -66,6 +76,9 @@ router.post('/save', function (req, res, next) {
 		});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// undeclared routes
+//////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
 	utils.sendError(res, `Unknown route`, 404);

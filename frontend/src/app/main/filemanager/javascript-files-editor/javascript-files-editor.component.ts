@@ -332,7 +332,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
     this.globalComponentsService.loader.open();
 
-    this.http.post({relativePath: relativePath, content: content}, '/jsfiles/save-jsfile', 'text').subscribe(
+    this.http.post({
+      relativePath: relativePath,
+      content: content
+    }, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'text').subscribe(
       (content: any) => {
         this.globalComponentsService.loader.close();
         this.changeFileStatus(tabInfo.idSeqNr, false);
@@ -477,7 +480,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       this.globalComponentsService.loader.open();
 
       // loading file content by relativePath
-      this.http.post({relativePath: data.relativePath}, '/jsfiles/load-jsfile', 'text').subscribe(
+      this.http.post({relativePath: data.relativePath}, REST_URLS.JS_FILES.URLS.LOAD_JS_FILE, 'text').subscribe(
         (content: any) => {
           data.body = content.body;
           this.loadJSFileInner(data);

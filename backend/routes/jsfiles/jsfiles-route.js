@@ -242,6 +242,9 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 			});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// undeclared routes
+//////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
 	utils.sendError(res, `Unknown route`, 404);

@@ -6,11 +6,6 @@ import {MESSAGE_TYPE, MessageService} from "./message.service";
 import {GlobalComponentsService} from "./global-components.service";
 import {CREDENTIALS, LocalStorageService} from "./localstorage.service";
 
-const LOGIN_URL = UtilsService.prefixNexlUrl('/auth/login');
-const REGISTER_URL = UtilsService.prefixNexlUrl('/auth/register');
-const RESOLVE_STATUS = UtilsService.prefixNexlUrl('/auth/resolve-status');
-const CHANGE_PASSWORD = UtilsService.prefixNexlUrl('/auth/change-password');
-
 @Injectable()
 export class AuthService {
   constructor(private httpClient: HttpClient, private messageService: MessageService, private globalComponentsService: GlobalComponentsService) {
@@ -26,7 +21,7 @@ export class AuthService {
       observe: 'response',
       responseType: 'json'
     };
-    return this.httpClient.post<any>(CHANGE_PASSWORD, params, opts);
+    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.CHANGE_PASSWORD, params, opts);
   }
 
   resolveStatus() {
@@ -34,7 +29,7 @@ export class AuthService {
       observe: 'response',
       responseType: 'json'
     };
-    return this.httpClient.post<any>(RESOLVE_STATUS, {}, opts);
+    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.RESOLVE_USER_STATUS, {}, opts);
   }
 
   refreshStatus() {
@@ -60,7 +55,7 @@ export class AuthService {
       responseType: 'text'
     };
 
-    return this.httpClient.post<any>(LOGIN_URL, params, opts).map(response => {
+    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.LOGIN, params, opts).map(response => {
       LocalStorageService.storeRaw(CREDENTIALS, response['body']);
       return response;
     });
@@ -78,7 +73,7 @@ export class AuthService {
       responseType: 'text'
     };
 
-    return this.httpClient.post<any>(REGISTER_URL, params, opts);
+    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.REGISTER, params, opts);
   }
 
   getToken(): any {

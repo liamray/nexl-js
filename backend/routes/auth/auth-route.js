@@ -5,11 +5,15 @@ const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
+const restUrls = require('../../common/rest-urls');
 const securityConsts = require('../../common/security-constants');
 
 const router = express.Router();
 
-router.post('/enable-disable-user', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// enable/disable user
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	const username = req.body.username;
 	const isDisabled = req.body.isDisabled;
@@ -51,7 +55,10 @@ router.post('/enable-disable-user', function (req, res) {
 
 });
 
-router.post('/rename-user', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// rename user
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	const newUsername = req.body.newUsername;
 	const oldUsername = req.body.oldUsername;
@@ -86,7 +93,10 @@ router.post('/rename-user', function (req, res) {
 
 });
 
-router.post('/remove-user', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// remove user
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	const username = req.body.username;
 
@@ -117,7 +127,10 @@ router.post('/remove-user', function (req, res) {
 
 });
 
-router.post('/list-users', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// list users
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.LIST_USERS, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 
 	logger.log.debug(`Listing existing nexl users by [${loggedInUsername}] user`);
@@ -142,7 +155,10 @@ router.post('/list-users', function (req, res) {
 	logger.log.debug(`Successfully listed existing nexl users by [${loggedInUsername}] user`);
 });
 
-router.post('/change-password', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// change password
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 
 	logger.log.debug(`Changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
@@ -165,7 +181,10 @@ router.post('/change-password', function (req, res) {
 	);
 });
 
-router.post('/generate-token', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// generate registration token
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) {
 	const loggedInUsername = utils.getLoggedInUsername(req);
 	const username = req.body.username;
 
@@ -206,7 +225,10 @@ router.post('/generate-token', function (req, res) {
 
 });
 
-router.post('/resolve-status', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// resolve user status ( is logged in and what permission he has )
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.RESOLVE_USER_STATUS, function (req, res) {
 	const username = utils.getLoggedInUsername(req);
 	logger.log.debug(`Resolving status for [${username}] user by [${username}] user`);
 	const status = security.status(username);
@@ -215,7 +237,10 @@ router.post('/resolve-status', function (req, res) {
 	res.send(status);
 });
 
-router.post('/login', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// log in
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.LOGIN, function (req, res) {
 	const username = req.body.username;
 
 	logger.log.debug(`Logging in with  [${username}] user`);
@@ -240,7 +265,10 @@ router.post('/login', function (req, res) {
 	});
 });
 
-router.post('/register', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// register
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.REGISTER, function (req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	const token = req.body.token;
@@ -271,6 +299,9 @@ router.post('/register', function (req, res) {
 	});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// undeclared router
+//////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
 	utils.sendError(res, `Unknown route`, 404);

@@ -7,11 +7,13 @@ const j79 = require('j79-utils');
 const version = require('./../../../package.json').version;
 
 const utils = require('../../api/utils');
-const security = require('../../api/security');
-const confMgmt = require('../../api/conf-mgmt');
+const restUrls = require('../../common/rest-urls');
 const logger = require('../../api/logger');
 
-router.post('/info', function (req, res) {
+//////////////////////////////////////////////////////////////////////////////
+// sends server info
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.GENERAL.URLS.INFO, function (req, res) {
 	logger.log.debug(`Resolving server information`);
 
 	res.send({
@@ -21,6 +23,9 @@ router.post('/info', function (req, res) {
 	});
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// undeclared routes
+//////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
 	utils.sendError(res, `Unknown route`, 404);
