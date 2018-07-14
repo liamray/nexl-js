@@ -11,6 +11,7 @@ const figlet = require('figlet');
 
 const confMgmt = require('../api/conf-mgmt');
 const confConsts = require('../common/conf-constants');
+const restUrls = require('../common/rest-urls');
 const jsFilesUtils = require('../api/jsfiles-utils');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
@@ -21,7 +22,7 @@ const expressionsRoute = require('../routes/expressions/expressions-route');
 const notFoundInterceptor = require('../interceptors/404-interceptor');
 const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
 
-const root = require('../routes/root/root-route');
+const staticSite = require('../routes/root/root-route');
 const jsFilesRoute = require('../routes/jsfiles/jsfiles-route');
 const general = require('../routes/general/general-route');
 const authRoute = require('../routes/auth/auth-route');
@@ -81,13 +82,13 @@ class NexlApp {
 		this.nexlApp.use(express.static(path.join(__dirname, '../../site')));
 
 		// nexl routes
-		this.nexlApp.use('/', root);
-		this.nexlApp.use('/nexl/jsfiles/', jsFilesRoute);
-		this.nexlApp.use('/nexl/auth/', authRoute);
-		this.nexlApp.use('/nexl/permissions/', permissionsRoute);
-		this.nexlApp.use('/nexl/settings/', settingsRoute);
-		this.nexlApp.use('/nexl/general/', general);
-		this.nexlApp.use('/nexl/', reservedRoute);
+		this.nexlApp.use('/', staticSite);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.JS_FILES.PREFIX}/`, jsFilesRoute);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.AUTH.PREFIX}/`, authRoute);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.PERMISSIONS.PREFIX}/`, permissionsRoute);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.SETTINGS.PREFIX}/`, settingsRoute);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.GENERAL.PREFIX}/`, general);
+		this.nexlApp.use(`/${restUrls.ROOT}/`, reservedRoute);
 		this.nexlApp.use('/', expressionsRoute);
 
 		// catch 404 and forward to error handler

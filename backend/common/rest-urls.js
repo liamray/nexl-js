@@ -2,9 +2,15 @@ const REST_URLS = {};
 
 REST_URLS.ROOT = 'nexl';
 
-REST_URLS.AUTH = {};
+REST_URLS.AUTH = {
+	PREFIX: 'auth',
+	URLS: {}
+};
 
-REST_URLS.GENERAL = {};
+REST_URLS.GENERAL = {
+	PREFIX: 'general',
+	URLS: {}
+};
 
 REST_URLS.JS_FILES = {
 	PREFIX: 'jsfiles',
@@ -19,9 +25,15 @@ REST_URLS.JS_FILES = {
 	}
 };
 
-REST_URLS.PERMISSIONS = {};
+REST_URLS.PERMISSIONS = {
+	PREFIX: 'permissions',
+	URLS: {}
+};
 
-REST_URLS.SETTINGS = {};
+REST_URLS.SETTINGS = {
+	PREFIX: 'settings',
+	URLS: {}
+};
 
 // --------------------------------------------------------------------------------
 
