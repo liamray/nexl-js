@@ -8,6 +8,7 @@ import {UtilsService} from "./services/utils.service";
 
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';
+export const F7 = 'F7';
 export const F8 = 'F8';
 export const ALT_F7 = 'ALT_F7';
 
@@ -36,6 +37,10 @@ export class MainComponent implements OnInit {
       }
     }
 
+    if (event.which === 118) {
+      return F7;
+    }
+
     if (event.which === 119) {
       return F8;
     }
@@ -56,6 +61,12 @@ export class MainComponent implements OnInit {
           case CTRL_S: {
             this.messageService.sendMessage(MESSAGE_TYPE.SAVE_JS_FILE);
             event.preventDefault();
+            return;
+          }
+
+          case F7 : {
+            event.preventDefault();
+            this.messageService.sendMessage(MESSAGE_TYPE.PRETTIFY_FILE);
             return;
           }
 

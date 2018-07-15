@@ -43,6 +43,7 @@ export class MainMenuComponent implements AfterViewInit {
   updateSaveMenuItem() {
     this.mainMenu.disable('main-menu-find-file', !this.hasWritePermission);
     this.mainMenu.disable('main-menu-save', this.tabsCount < 1 || !this.hasWritePermission);
+    this.mainMenu.disable('main-menu-prettify', this.tabsCount < 1 || !this.hasWritePermission);
     this.mainMenu.disable('main-menu-close-all', this.tabsCount < 1);
 
     this.mainMenu.disable('main-menu-arguments', this.tabsCount < 1 || !this.hasReadPermission);
@@ -53,6 +54,7 @@ export class MainMenuComponent implements AfterViewInit {
     this.mainMenu.disable('main-menu-permissions', true);
     this.mainMenu.disable('main-menu-settings', true);
     this.mainMenu.disable('main-menu-users', true);
+    this.mainMenu.disable('main-menu-prettify', true);
   }
 
   saveJSFile() {
@@ -97,5 +99,9 @@ export class MainMenuComponent implements AfterViewInit {
 
   openUsersWindow() {
     this.messageService.sendMessage(MESSAGE_TYPE.USERS_WINDOW);
+  }
+
+  prettifyFile() {
+    this.messageService.sendMessage(MESSAGE_TYPE.PRETTIFY_FILE);
   }
 }

@@ -7,7 +7,11 @@
       <ul style="width:175px;">
         <li (click)="saveJSFile()" id="main-menu-save">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/save.png'/><span>Save</span>
+               src='./nexl/site/images/save.png'/><span>Save ( Ctrl + S )</span>
+        </li>
+        <li (click)="prettifyFile()" id="main-menu-prettify">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/images/prettify.png'/><span>Prettify file ( F7 )</span>
         </li>
         <li (click)="findFile()" id="main-menu-find-file">
           <img style='float: left; margin-right: 5px;'

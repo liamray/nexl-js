@@ -112,7 +112,29 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         this.jsFilesTreeReloaded();
         return;
       }
+
+      case MESSAGE_TYPE.PRETTIFY_FILE: {
+        this.prettifyFile();
+        return;
+      }
     }
+  }
+
+  prettifyFile() {
+    const tabNr = this.tabs.val();
+    if (tabNr < 0) {
+      return;
+    }
+
+    const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
+    const editor = ace.edit(TAB_CONTENT + idSeqNr);
+    const cursorPos = editor.getCursorPosition();
+
+    let tabContent = editor.getValue();
+    tabContent = jsBeautify(tabContent);
+
+    editor.setValue(tabContent);
+    editor.gotoLine(cursorPos.row + 1, cursorPos.column);
   }
 
   jsFilesTreeReloaded() {
@@ -177,7 +199,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   setTabContent(idSeqNr: string | number, content: string) {
-    ace.edit(TAB_CONTENT + idSeqNr).setValue(content);
+    ace.edit(TAB_CONTENT + idSeqNr).setValue(content, -1);
   }
 
   getTabContent(idSeqNr: string) {
