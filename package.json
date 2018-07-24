@@ -38,7 +38,7 @@
     "url": "https://github.com/liamray/nexl-js.git"
   },
   "scripts": {
-    "start": "node ./bin/nexl"
+    "nexl": "node ./bin/nexl"
   },
   "bin": {
     "nexl": "bin/nexl"
