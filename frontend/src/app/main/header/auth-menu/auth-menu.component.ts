@@ -16,6 +16,7 @@ export class AuthMenuComponent implements AfterViewInit {
   subscription: Subscription;
   isLoginVisible = true;
   username = '';
+  isAdmin = false;
 
   constructor(private messageService: MessageService, private authService: AuthService, private globalComponentsService: GlobalComponentsService) {
     this.subscription = this.messageService.getMessage().subscribe(message => {
@@ -24,6 +25,7 @@ export class AuthMenuComponent implements AfterViewInit {
         this.isLoginVisible = !status.isLoggedIn;
         this.username = status.username;
         this.authMenu.disable('menu-generate-token', !status.isAdmin);
+        this.isAdmin = status.isAdmin;
       }
     });
   }
