@@ -1,4 +1,14 @@
 .item {
-    float: left;
-    margin-left: 5px;
+  float: left;
+  margin-left: 5px;
+}
+
+.user-or-admin-icon {
+  padding-right: 3px;
+}
+
+.username {
+  position: relative;
+  top: -3px;
+  padding-right: 4px;
 }

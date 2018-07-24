@@ -31,15 +31,17 @@
 </div>
 
 <div class="item" [style.display]="isLoginVisible ? 'none' : ''">
-  <jqxMenu #authMenuRef [height]="30" [showTopLevelArrows]="true">
+  <jqxMenu #authMenuRef [height]="31" [showTopLevelArrows]="true">
     <ul>
       <li id="menu-direction">
 
-        <img src='./nexl/site/icons/crown.png' [style.display]="isAdmin === true ? 'inline' : 'none'"
-             class="icon-in-header"/>
-        <img src='./nexl/site/icons/user.png' [style.display]="!isAdmin === true ? 'inline' : 'none'"
-             class="icon-in-header"/>
-        <span style="position: relative; top: -3px; padding-right: 2px;">Hello, {{ username }}</span>
+        <span>
+          <img src='./nexl/site/icons/crown.png' [style.display]="isAdmin === true ? 'inline' : 'none'"
+               class="user-or-admin-icon"/>
+          <img src='./nexl/site/icons/user.png' [style.display]="!isAdmin === true ? 'inline' : 'none'"
+               class="user-or-admin-icon"/>
+          <span class="username">Hello, {{ username }}</span>
+        </span>
         <ul style="width:160px;">
           <li (click)="openChangePasswordWindow()">
             <img style='float: left; margin-right: 5px;'
