@@ -2,7 +2,6 @@
            class="first-level-dialog"
            [autoOpen]="false"
            [width]="450"
-           (onClose)="onClose()"
            [height]="110"
            [initContent]="initContent"
            (onOpen)="onOpen()"
@@ -34,7 +33,7 @@
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
                    (click)="findFileWindow.close()"
-                   [imgSrc]='"./nexl/site/images/close.png"'
+                   [imgSrc]='"./nexl/site/icons/remove.png"'
                    [auto-create]="false"
                    #cancelButton>
           Cancel
@@ -47,7 +46,7 @@
                    [textPosition]='"center"'
                    (click)="onOk()"
                    [auto-create]="false"
-                   [imgSrc]='"./nexl/site/images/ok.png"'
+                   [imgSrc]='"./nexl/site/icons/ok.png"'
                    #okButton
         >
           Ok

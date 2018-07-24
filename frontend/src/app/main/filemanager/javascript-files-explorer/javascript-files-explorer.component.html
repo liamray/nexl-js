@@ -20,7 +20,7 @@
       [trigger]="'hover'"
       [height]="25"
     >
-      <img src='./nexl/site/images/lock.png'
+      <img src='./nexl/site/icons/lock.png'
            [style.display]="hasReadPermission === true && hasWritePermission !== true ? 'inline' : 'none'"
            class="icon-in-header"/>
     </jqxTooltip>
@@ -39,7 +39,7 @@
       [trigger]="'hover'"
       [height]="25"
     >
-      <img src='./nexl/site/images/admin.png' [style.display]="isAdmin === true ? 'inline' : 'none'"
+      <img src='./nexl/site/icons/crown.png' [style.display]="isAdmin === true ? 'inline' : 'none'"
            class="icon-in-header"/>
 
     </jqxTooltip>
@@ -61,19 +61,19 @@
       <ul>
         <li (click)="newDir()" id="popup-new-dir">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/new-dir.png'/><span>New Dir</span>
+               src='./nexl/site/icons/add-dir.png'/><span>New Dir</span>
         </li>
         <li (click)="newFile()" id="popup-new-file">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/new-file.png'/><span>New File</span>
+               src='./nexl/site/icons/add-file.png'/><span>New File</span>
         </li>
         <li (click)="renameItem()" id="popup-rename-item">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/rename.png'/><span>Rename</span>
+               src='./nexl/site/icons/rename.png'/><span>Rename</span>
         </li>
         <li (click)="deleteItem()" id="popup-delete-item">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/images/delete.png'/><span>Delete</span>
+               src='./nexl/site/icons/remove.png'/><span>Delete</span>
         </li>
       </ul>
     </jqxMenu>

@@ -49,9 +49,9 @@ const URL_TEMPLATE = `
     </div>
     
     <div id="tooltipEmptyExpressionExplanation" style="padding-top: 15px;">
-        <img src='./nexl/site/images/tip.png' style="position: relative; top: 2px;"/>
+        <img src='./nexl/site/icons/info.png' style="position: relative; top: 2px;"/>
         Please note empty nexl expression is evaluated to undefined value.<br/>
-        <img src='./nexl/site/images/tip.png' style="position: relative; top: 2px;"/>
+        <img src='./nexl/site/icons/info.png' style="position: relative; top: 2px;"/>
         You can specify automatically executed nexl expression in your JavaScript file in the following way :<br/>
         <span style="padding-top: 5px; padding-left: 150px; font-weight: bold;">nexl.defaultExpression = '\${myExpression...}';</span>  
     </div>

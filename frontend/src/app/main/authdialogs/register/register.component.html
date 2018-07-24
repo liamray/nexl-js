@@ -10,7 +10,7 @@
 >
 
   <div>
-    <img src="./nexl/site/images/register.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <img src="./nexl/site/icons/add-user.png" style="position: relative; top: 2px; margin-left: 3px;">
     <span style="position: relative; top: -1px;margin-left: 1px;">Register/Reset password</span>
   </div>
 
@@ -88,7 +88,7 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/close.png"'
+              [imgSrc]='"./nexl/site/icons/remove.png"'
               [auto-create]="false"
               (onClick)="this.registerWindow.close();"
               #cancelButton>
@@ -101,7 +101,7 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/register.png"'
+              [imgSrc]='"./nexl/site/icons/add-user.png"'
               [disabled]="username === '' || password === '' || token === '' || password !== confirmPassword"
               [auto-create]="false"
               (click)="register()"

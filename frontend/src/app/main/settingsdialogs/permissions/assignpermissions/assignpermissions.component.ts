@@ -68,7 +68,7 @@ export class AssignPermissionsComponent implements AfterViewInit {
             width: '100%',
             height: 27,
             template: 'default',
-            imgSrc: './nexl/site/images/delete.png',
+            imgSrc: './nexl/site/icons/remove.png',
             imgWidth: 16,
             imgHeight: 16,
             imgPosition: 'center',

@@ -10,7 +10,7 @@
 >
 
   <div>
-    <img src="./nexl/site/images/login.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <img src="./nexl/site/icons/login.png" style="position: relative; top: 2px; margin-left: 3px;">
     <span style="position: relative; top: -1px;margin-left: 1px;">nexl login</span>
   </div>
 
@@ -55,7 +55,7 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/close.png"'
+              [imgSrc]='"./nexl/site/icons/remove.png"'
               [auto-create]="false"
               #cancelButton
               (onClick)="this.loginWindow.close();"
@@ -69,7 +69,7 @@
               [width]="94"
               [textImageRelation]='"imageBeforeText"'
               [textPosition]='"center"'
-              [imgSrc]='"./nexl/site/images/login.png"'
+              [imgSrc]='"./nexl/site/icons/login.png"'
               [disabled]="username === '' || password === ''"
               [auto-create]="false"
               (click)="login()"

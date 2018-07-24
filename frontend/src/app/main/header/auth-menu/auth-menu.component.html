@@ -6,7 +6,7 @@
                (click)='openRegisterWindow()'
                [textImageRelation]='"imageBeforeText"'
                [textPosition]='"left"'
-               [imgSrc]='"./nexl/site/images/register.png"'
+               [imgSrc]='"./nexl/site/icons/add-user.png"'
     >
       Register/Reset
     </jqxButton>
@@ -22,7 +22,7 @@
                (click)='openLoginWindow()'
                [textImageRelation]='"imageBeforeText"'
                [textPosition]='"left"'
-               [imgSrc]='"./nexl/site/images/login.png"'
+               [imgSrc]='"./nexl/site/icons/login.png"'
     >
       nexl login
     </jqxButton>
@@ -38,11 +38,11 @@
         <ul style="width:160px;">
           <li (click)="openChangePasswordWindow()">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/images/change-password.png'/><span>Change password</span>
+                 src='./nexl/site/icons/reset-password.png'/><span>Change password</span>
           </li>
           <li (click)="logout()">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/images/logout.png'/><span>Logout</span>
+                 src='./nexl/site/icons/logout.png'/><span>Logout</span>
           </li>
         </ul>
       </li>

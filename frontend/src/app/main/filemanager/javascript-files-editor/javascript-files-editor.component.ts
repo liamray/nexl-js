@@ -530,8 +530,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     const modified = `<span style="color:red;display: none;" id="${TITLE_MODIFICATION_ICON}${data.idSeqNr}">*&nbsp;</span>`;
     const theTitle = `<span style="position:relative; top: -2px;" id="${TITLE_TEXT}${data.idSeqNr}">${data.label}</span>`;
     const readOnlyIconDisplay = this.hasWritePermission ? 'none' : 'inline-block';
-    const readOnlyIcon = `<img style="position:relative; top: 1px; margin-right: 3px;display:${readOnlyIconDisplay}" src="./nexl/site/images/lock.png" id="${TITLE_READ_ONLY_ICON}${data.idSeqNr}"/>`;
-    const closeIcon = `<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/images/close-tab.png" id="${TITLE_CLOSE_ICON}${data.idSeqNr}"/>`;
+    const readOnlyIcon = `<img style="position:relative; top: 1px; margin-right: 3px;display:${readOnlyIconDisplay}" src="./nexl/site/icons/lock.png" id="${TITLE_READ_ONLY_ICON}${data.idSeqNr}"/>`;
+    const closeIcon = `<img style="position:relative; top: 2px; left: 4px;" src="./nexl/site/icons/close.png" id="${TITLE_CLOSE_ICON}${data.idSeqNr}"/>`;
     const attrs = {
       id: `${TITLE_ID}${data.idSeqNr}`
     };
