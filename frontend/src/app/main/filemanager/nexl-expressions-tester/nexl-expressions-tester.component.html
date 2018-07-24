@@ -25,7 +25,7 @@
         </jqxTooltip>
       </div>
 
-      <div style="width:calc(100% - 240px); height:25px;float: left;">
+      <div style="width:calc(100% - 245px); height:25px;float: left;">
         <jqxInput
           #nexlExpression
           [width]="'100%'"
@@ -73,35 +73,11 @@
         >
           <jqxButton
             #argsButton
-            [width]='27'
+            [width]='60'
             [height]='27'
             class="nexl-expression-buttons"
             [imgSrc]='"./nexl/site/icons/cmd-line.png"'
             (onClick)="args()"
-            [disabled]="true"
-          >
-          </jqxButton>
-        </jqxTooltip>
-      </div>
-
-      <div class="nexl-expression-buttons">
-        <jqxTooltip
-          [position]="'bottom-left'"
-          [content]="'<p style=\'text-align: left;\'>nexl expressions wizard</p>'"
-          [closeOnClick]="false"
-          [autoHide]="true"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="'hover'"
-        >
-          <jqxButton
-            #assembleButton
-            [width]='27'
-            [height]='27'
-            class="nexl-expression-buttons"
-            [imgSrc]='"./nexl/site/icons/assemble.png"'
-            (onClick)="assemble()"
             [disabled]="true"
           >
           </jqxButton>

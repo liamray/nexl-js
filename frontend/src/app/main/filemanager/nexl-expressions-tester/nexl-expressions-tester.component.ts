@@ -70,7 +70,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;
 
   @ViewChild('evalButton') evalButton: jqxButtonComponent;
-  @ViewChild('assembleButton') assembleButton: jqxButtonComponent;
   @ViewChild('argsButton') argsButton: jqxButtonComponent;
 
   @ViewChild('argsWindow') argsWindow: ArgsComponent;
@@ -261,13 +260,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     }
   }
 
-  assemble() {
-    if (this.isDisabled()) {
-      return;
-    }
-
-  }
-
   args() {
     if (this.isDisabled()) {
       return;
@@ -295,7 +287,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.nexlExpression.disabled(isDisabled);
     this.evalButton.disabled(isDisabled);
     this.argsButton.disabled(isDisabled);
-    this.assembleButton.disabled(true);
 
     this.prettifyButton.disabled(this.isDisabled());
 
