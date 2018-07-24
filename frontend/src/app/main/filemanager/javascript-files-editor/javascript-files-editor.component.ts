@@ -131,7 +131,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     const cursorPos = editor.getCursorPosition();
 
     let tabContent = editor.getValue();
-    tabContent = jsBeautify(tabContent);
+    const opts = {"indent_with_tabs": true};
+    tabContent = jsBeautify(tabContent, opts);
 
     editor.setValue(tabContent);
     editor.gotoLine(cursorPos.row + 1, cursorPos.column);
