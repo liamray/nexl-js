@@ -13,13 +13,13 @@ const logger = require('../../api/logger');
 // loads settings
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Loading nexl server settings by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('The [%s] user doesn\'t have admin permissions to load settings', username);
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -33,12 +33,12 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 // saves settings
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	logger.log.debug(`Saving nexl server settings by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('The [%s] user doesn\'t have admin permissions to save settings', username);
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -60,7 +60,7 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 		}).catch(
 		(err) => {
 			logger.log.error('Failed to save settings. Reason : [%s]', err);
-			utils.sendError(res, err);
+			security.sendError(res, err);
 		});
 });
 
@@ -69,12 +69,12 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 router.get('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 // --------------------------------------------------------------------------------

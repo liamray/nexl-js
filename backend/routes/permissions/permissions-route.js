@@ -12,13 +12,13 @@ const logger = require('../../api/logger');
 // loads permissions
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.PERMISSIONS.URLS.LOAD_PERMISSIONS, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Loading all permissions by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('Cannot load permissions because the [%s] user doesn\'t have admin permissions', username);
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -34,13 +34,13 @@ router.post(restUrls.PERMISSIONS.URLS.LOAD_PERMISSIONS, function (req, res) {
 // saves permissions
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Saving all permissions by [${username}] user`);
 
 	if (!security.isAdmin(username)) {
 		logger.log.error('Cannot save permissions because the [%s] user doesn\'t have admin permissions', username);
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -55,7 +55,7 @@ router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next
 	}).catch(
 		(err) => {
 			logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);
-			utils.sendError(res, err);
+			security.sendError(res, err);
 		});
 });
 
@@ -64,12 +64,12 @@ router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next
 //////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 router.get('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 // --------------------------------------------------------------------------------

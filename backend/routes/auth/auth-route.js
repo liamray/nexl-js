@@ -14,7 +14,7 @@ const router = express.Router();
 // enable/disable user
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 	const isDisabled = req.body.isDisabled;
 
@@ -27,7 +27,7 @@ router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
 		logger.log.error('Cannot enable/disable, admin permissions required');
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -35,7 +35,7 @@ router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesnt exist`);
-		utils.sendError(res, `User doesn't exist`);
+		security.sendError(res, `User doesn't exist`);
 		return;
 	}
 
@@ -49,7 +49,7 @@ router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			}
 		);
 
@@ -59,7 +59,7 @@ router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 // rename user
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 	const newUsername = req.body.newUsername;
 	const oldUsername = req.body.oldUsername;
 
@@ -68,7 +68,7 @@ router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
 		logger.log.error('Cannot create new user, admin permissions required');
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -87,7 +87,7 @@ router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', newUsername, utils.formatErr(err));
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			}
 		);
 
@@ -97,7 +97,7 @@ router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
 // remove user
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 
 	logger.log.debug(`Removing a [${username}] user by [${loggedInUsername}] user`);
@@ -105,7 +105,7 @@ router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
 		logger.log.error('Cannot create new user, admin permissions required');
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -121,7 +121,7 @@ router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to remove a [%s] user. Reason : [%s]', username, utils.formatErr(err));
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			}
 		);
 
@@ -131,14 +131,14 @@ router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
 // list users
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.LIST_USERS, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Listing existing nexl users by [${loggedInUsername}] user`);
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
 		logger.log.error('Cannot list internal nexl users, admin permissions required');
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -159,7 +159,7 @@ router.post(restUrls.AUTH.URLS.LIST_USERS, function (req, res) {
 // change password
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
 
@@ -176,7 +176,7 @@ router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
 	}).catch(
 		(err) => {
 			logger.log.error('Failed to change password for [%s] user. Reason : [%s]', loggedInUsername, err);
-			utils.sendError(res, err);
+			security.sendError(res, err);
 		}
 	);
 });
@@ -185,7 +185,7 @@ router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
 // generate registration token
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) {
-	const loggedInUsername = utils.getLoggedInUsername(req);
+	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 
 	logger.log.debug(`Generating registration token for [${username}] user by [${loggedInUsername}] user`);
@@ -193,7 +193,7 @@ router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) 
 	// only admins can generate token
 	if (!security.isAdmin(loggedInUsername)) {
 		logger.log.error('Cannot generate new token. admin permissions required');
-		utils.sendError(res, 'admin permissions required');
+		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
@@ -201,7 +201,7 @@ router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) 
 
 	if (users[username] === undefined) {
 		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesn't exist`);
-		utils.sendError(res, `User doesn't exist`);
+		security.sendError(res, `User doesn't exist`);
 		return;
 	}
 
@@ -219,7 +219,7 @@ router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) 
 			(err) => {
 				users[username].token2ResetPassword = undefined;
 				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			}
 		);
 
@@ -229,7 +229,7 @@ router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) 
 // resolve user status ( is logged in and what permission he has )
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.AUTH.URLS.RESOLVE_USER_STATUS, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	logger.log.debug(`Resolving status for [${username}] user by [${username}] user`);
 	const status = security.status(username);
 	status['isLoggedIn'] = username !== securityConsts.GUEST_USER;
@@ -251,18 +251,23 @@ router.post(restUrls.AUTH.URLS.LOGIN, function (req, res) {
 			return Promise.reject('Bad credentials');
 		}
 
-		// encoding
-		const token = utils.encrypt(username);
+		security.addLoginItem(username, res);
 
-		// send it back to the client
-		res.send(token);
-		res.end();
+		res.send({});
 		logger.log.debug(`Successfully logged in with  [${username}] user`);
 
 	}).catch((err) => {
 		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
-		utils.sendError(res, err);
+		security.sendError(res, err);
 	});
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// log out
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUrls.AUTH.URLS.LOGOUT, function (req, res) {
+	security.logout(req, res);
+	res.send({});
 });
 
 //////////////////////////////////////////////////////////////////////////////
@@ -285,7 +290,7 @@ router.post(restUrls.AUTH.URLS.REGISTER, function (req, res) {
 		const userObj = confMgmt.getCached(confConsts.CONF_FILES.USERS)[username];
 		if (userObj.disabled === true) {
 			logger.log.error(`Failed to register a [${username}]. Reason : user is disabled !`);
-			utils.sendError(res, 'User is disabled');
+			security.sendError(res, 'User is disabled');
 			return;
 		}
 
@@ -295,7 +300,7 @@ router.post(restUrls.AUTH.URLS.REGISTER, function (req, res) {
 		})
 	}).catch((err) => {
 		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);
-		utils.sendError(res, err);
+		security.sendError(res, err);
 	});
 });
 
@@ -304,12 +309,12 @@ router.post(restUrls.AUTH.URLS.REGISTER, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 router.get('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 // --------------------------------------------------------------------------------
 module.exports = router;

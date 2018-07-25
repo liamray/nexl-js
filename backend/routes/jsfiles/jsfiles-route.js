@@ -14,7 +14,7 @@ const router = express.Router();
 // move item
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const source = req.body['source'];
 	const dest = req.body['dest'];
 
@@ -23,20 +23,20 @@ router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 	// validating ( must not empty string )
 	if (!j79.isString(source) || source.length < 1) {
 		logger.log.error('Invalid source item');
-		utils.sendError(res, 'Invalid source item');
+		security.sendError(res, 'Invalid source item');
 		return;
 	}
 
 	// validating
 	if (!j79.isString(dest)) {
 		logger.log.error('Invalid dest item');
-		utils.sendError(res, 'Invalid dest item');
+		security.sendError(res, 'Invalid dest item');
 		return;
 	}
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to move items', username);
-		utils.sendError(res, 'No write permissions');
+		security.sendError(res, 'No write permissions');
 		return;
 	}
 
@@ -48,7 +48,7 @@ router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -56,7 +56,7 @@ router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 // rename item
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const newRelativePath = req.body['newRelativePath'];
 
@@ -65,20 +65,20 @@ router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
 		logger.log.error('Invalid relativePath');
-		utils.sendError(res, 'Invalid relativePath');
+		security.sendError(res, 'Invalid relativePath');
 		return;
 	}
 
 	// validating ( must not empty string )
 	if (!j79.isString(newRelativePath) || newRelativePath.length < 1) {
 		logger.log.error('Invalid newRelativePath');
-		utils.sendError(res, 'Invalid newRelativePath');
+		security.sendError(res, 'Invalid newRelativePath');
 		return;
 	}
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to rename items', username);
-		utils.sendError(res, 'No write permissions');
+		security.sendError(res, 'No write permissions');
 		return;
 	}
 
@@ -90,7 +90,7 @@ router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -98,7 +98,7 @@ router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 // delete item
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
 	logger.log.debug(`Deleting a [${relativePath}] item by [${username}] user`);
@@ -106,13 +106,13 @@ router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
 		logger.log.error('Invalid relativePath');
-		utils.sendError(res, 'Invalid relativePath');
+		security.sendError(res, 'Invalid relativePath');
 		return;
 	}
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to delete items', username);
-		utils.sendError(res, 'No write permissions');
+		security.sendError(res, 'No write permissions');
 		return;
 	}
 
@@ -124,7 +124,7 @@ router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -132,7 +132,7 @@ router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 // make-dir
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
 	logger.log.debug(`Creating a [${relativePath}] directory by [${username}] user`);
@@ -140,13 +140,13 @@ router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
 		logger.log.error('Invalid relativePath');
-		utils.sendError(res, 'Invalid relativePath');
+		security.sendError(res, 'Invalid relativePath');
 		return;
 	}
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to create new directory', username);
-		utils.sendError(res, 'No write permissions');
+		security.sendError(res, 'No write permissions');
 		return;
 	}
 
@@ -158,7 +158,7 @@ router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -166,13 +166,13 @@ router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 // get tree items hierarchy
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.TREE_ITEMS, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Getting tree items hierarchy by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
-		utils.sendError(res, 'No read permissions');
+		security.sendError(res, 'No read permissions');
 		return;
 	}
 
@@ -183,14 +183,14 @@ router.post(restUtls.JS_FILES.URLS.TREE_ITEMS, function (req, res, next) {
 // load-jsfile
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'] || path.sep;
 
 	logger.log.debug(`Loading content of [${relativePath}] JavaScript file by [${username}] user`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to load JavaScript files', username);
-		utils.sendError(res, 'No read permissions');
+		security.sendError(res, 'No read permissions');
 		return;
 	}
 
@@ -202,7 +202,7 @@ router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to load a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -210,7 +210,7 @@ router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 // save-jsfile
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const content = req.body['content'];
 
@@ -219,14 +219,14 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
 		logger.log.error('Invalid relativePath');
-		utils.sendError(res, 'Invalid relativePath');
+		security.sendError(res, 'Invalid relativePath');
 		return;
 	}
 
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to save nexl JavaScript file', username);
-		utils.sendError(res, 'No write permissions');
+		security.sendError(res, 'No write permissions');
 		return;
 	}
 
@@ -238,7 +238,7 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to save a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, err);
-				utils.sendError(res, err);
+				security.sendError(res, err);
 			});
 });
 
@@ -247,12 +247,12 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 router.post('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 router.get('/*', function (req, res) {
 	logger.log.error(`Unknown route [${req.baseUrl}]`);
-	utils.sendError(res, `Unknown route`, 404);
+	security.sendError(res, `Unknown route`, 404);
 });
 
 // --------------------------------------------------------------------------------

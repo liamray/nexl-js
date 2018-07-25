@@ -1,15 +1,87 @@
+const uuidv4 = require('uuid/v4');
+
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 const securityConsts = require('../common/security-constants');
-const utils = require('./utils');
 const bcrypt = require('./bcryptx');
 const logger = require('./logger');
 const ldapUtils = require('./ldap-utils');
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
 
 const TOKEN_VALID_HOURS = 24;
+
+const LOGIN_TOKENS_MAP = {};
+const LOGIN_TOKEN = 'loginToken';
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function setLoginToken(res, value) {
+	if (value === undefined) {
+		res.clearCookie(LOGIN_TOKEN);
+		return;
+	}
+
+	res.cookie(LOGIN_TOKEN, value, {
+			expire: new Date() + 9999,
+			httpOnly: true
+		}
+	);
+}
+
+function getLoginToken(req) {
+	return req.cookies[LOGIN_TOKEN];
+}
+
+function addLoginItem(username, res) {
+	const loginToken = uuidv4();
+
+	setLoginToken(res, loginToken);
+
+	LOGIN_TOKENS_MAP[loginToken] = {
+		username: username
+	}
+}
+
+function getLoggedInUsername(req) {
+	const username = req.username;
+	if (username !== undefined) {
+		return username;
+	}
+
+	// resolving cookies
+	const loginToken = getLoginToken(req);
+
+	// no cookies set ? apply guest user
+	if (loginToken === undefined) {
+		return req.username = securityConsts.GUEST_USER;
+	}
+
+	// is client login token match server token ?
+	const authItem = LOGIN_TOKENS_MAP[loginToken];
+	if (authItem === undefined) {
+		return req.username = securityConsts.GUEST_USER;
+	}
+
+	return req.username = authItem.username;
+}
+
+function logout(req, res) {
+	const loginToken = getLoginToken(req);
+	if (loginToken !== undefined) {
+		delete LOGIN_TOKENS_MAP[loginToken];
+		setLoginToken(res, undefined);
+	}
+}
+
+function sendError(res, msg, httpStatus) {
+	httpStatus = httpStatus ? httpStatus : 500;
+	res.statusMessage = msg;
+	res.status(httpStatus).end();
+}
 
 function isAdminInner(user) {
 	return confMgmt.getCached(confConsts.CONF_FILES.ADMINS).indexOf(user) >= 0;
@@ -176,6 +248,12 @@ module.exports.isAdmin = isAdmin;
 module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
 module.exports.status = status;
+
+module.exports.addLoginItem = addLoginItem;
+module.exports.logout = logout;
+module.exports.getLoggedInUsername = getLoggedInUsername;
+
+module.exports.sendError = sendError;
 
 module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;

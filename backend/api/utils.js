@@ -1,37 +1,9 @@
 const crypto = require('crypto');
-const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const j79 = require('j79-utils');
 
-const securityConsts = require('../common/security-constants');
-
-// is a password to encrypt/decrypt tokens
-const SECRET = uuidv4();
-
-function encrypt(username) {
-	return jwt.encode(username, SECRET);
-}
-
 function generateRandomBytes(length) {
 	return crypto.randomBytes(length).toString('hex');
-}
-
-function getLoggedInUsername(req) {
-	const token = req.headers['token'] || '';
-	let username;
-	try {
-		username = jwt.decode(token, SECRET);
-	} catch (e) {
-		return securityConsts.GUEST_USER;
-	}
-
-	return username;
-}
-
-function sendError(res, msg, httpStatus) {
-	httpStatus = httpStatus ? httpStatus : 500;
-	res.statusMessage = msg;
-	res.status(httpStatus).end();
 }
 
 function formatErr(err) {
@@ -113,9 +85,6 @@ function generateNewToken() {
 
 // --------------------------------------------------------------------------------
 module.exports.generateRandomBytes = generateRandomBytes;
-module.exports.getLoggedInUsername = getLoggedInUsername;
-module.exports.sendError = sendError;
-module.exports.encrypt = encrypt;
 
 module.exports.formatErr = formatErr;
 module.exports.isNotEmptyStr = isNotEmptyStr;

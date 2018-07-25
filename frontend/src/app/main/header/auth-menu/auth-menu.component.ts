@@ -24,7 +24,6 @@ export class AuthMenuComponent implements AfterViewInit {
         const status = message.data;
         this.isLoginVisible = !status.isLoggedIn;
         this.username = status.username;
-        this.authMenu.disable('menu-generate-token', !status.isAdmin);
         this.isAdmin = status.isAdmin;
       }
     });
@@ -35,7 +34,19 @@ export class AuthMenuComponent implements AfterViewInit {
   }
 
   logout() {
-    this.authService.logout();
+    this.globalComponentsService.loader.open();
+
+    this.authService.logout().subscribe(
+      _ => {
+        this.globalComponentsService.loader.close();
+        this.authService.refreshStatus();
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple('Error', `Failed to log out. Reason : [${err.statusText}]`);
+        console.log(err);
+      }
+    );
   }
 
   openLoginWindow() {

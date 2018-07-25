@@ -13,6 +13,7 @@ REST_URLS.AUTH = {
 		GENERATE_REGISTRATION_TOKEN: '/generate-token',
 		RESOLVE_USER_STATUS: '/resolve-status',
 		LOGIN: '/login',
+		LOGOUT: '/logout',
 		REGISTER: '/register'
 	}
 };

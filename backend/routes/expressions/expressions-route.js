@@ -86,21 +86,21 @@ function nexlize(httpParams, req, res) {
 		result = nexlizeInner(httpParams);
 	} catch (e) {
 		logger.log.error('nexl request rejected. Reason : [%s]', e);
-		utils.sendError(res, e, 500);
+		security.sendError(res, e, 500);
 		return;
 	}
 
 	// is undefined ?
 	if (result === undefined) {
 		logger.log.error('Got undefined value');
-		utils.sendError(res, 'Got undefined value', 555);
+		security.sendError(res, 'Got undefined value', 555);
 		return;
 	}
 
 	// is null ?
 	if (result === null) {
 		logger.log.error('Got null value');
-		utils.sendError(res, 'Got null value', 556);
+		security.sendError(res, 'Got null value', 556);
 		return;
 	}
 
@@ -121,19 +121,19 @@ function nexlize(httpParams, req, res) {
 	res.end();
 
 	if (logger.isLogLevel('debug')) {
-		const username = utils.getLoggedInUsername(req);
+		const username = security.getLoggedInUsername(req);
 		logger.log.debug(`Successfully evaluated nexl expression by [${username}]`);
 	}
 }
 
 router.get('/*', function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Going to evaluate nexl expression by [${username}] user ( GET request )`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to evaluate nexl expression', username);
-		utils.sendError(res, 'No read permissions');
+		security.sendError(res, 'No read permissions');
 		return;
 	}
 
@@ -143,7 +143,7 @@ router.get('/*', function (req, res) {
 });
 
 router.post('/*', function (req, res) {
-	const username = utils.getLoggedInUsername(req);
+	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Going to evaluate nexl expression by [${username}] user ( POST request )`);
 
@@ -151,7 +151,7 @@ router.post('/*', function (req, res) {
 
 	if (!status.hasReadPermission) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to evaluate nexl expression', username);
-		utils.sendError(res, 'No read permissions');
+		security.sendError(res, 'No read permissions');
 		return;
 	}
 
@@ -160,7 +160,7 @@ router.post('/*', function (req, res) {
 
 	if (!status.hasWritePermission && httpParams.content !== undefined) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression with altered nexl js file', username);
-		utils.sendError(res, 'No write permissions to evaluate nexl expression with altered js file');
+		security.sendError(res, 'No write permissions to evaluate nexl expression with altered js file');
 		return;
 	}
 

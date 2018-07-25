@@ -1,10 +1,8 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {UtilsService} from "./utils.service";
 import 'rxjs/add/operator/map';
 import {MESSAGE_TYPE, MessageService} from "./message.service";
 import {GlobalComponentsService} from "./global-components.service";
-import {CREDENTIALS, LocalStorageService} from "./localstorage.service";
 
 @Injectable()
 export class AuthService {
@@ -56,7 +54,6 @@ export class AuthService {
     };
 
     return this.httpClient.post<any>(REST_URLS.AUTH.URLS.LOGIN, params, opts).map(response => {
-      LocalStorageService.storeRaw(CREDENTIALS, response['body']);
       return response;
     });
   }
@@ -76,13 +73,7 @@ export class AuthService {
     return this.httpClient.post<any>(REST_URLS.AUTH.URLS.REGISTER, params, opts);
   }
 
-  getToken(): any {
-    return LocalStorageService.loadRaw(CREDENTIALS);
-  }
-
   logout() {
-    // todo : how to disable login token permanently ?
-    LocalStorageService.storeRaw(CREDENTIALS, null);
-    this.refreshStatus();
+    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.LOGOUT, {}, {});
   }
 }
