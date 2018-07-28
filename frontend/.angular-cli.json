@@ -30,6 +30,7 @@
         "../../backend/common/conf-constants.js",
         "../../backend/common/security-constants.js",
         "../../backend/common/rest-urls.js",
+        "../../backend/common/common-utils.js",
         "app/main/common/js-beautify.js"
       ],
       "environmentSource": "environments/environment.ts",

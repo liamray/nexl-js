@@ -18,6 +18,7 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {UtilsService} from "../../services/utils.service";
 import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
+import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '70%', min: 400, collapsible: false},
@@ -88,6 +89,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   @ViewChild('expressionSplitter') expressionSplitter: jqxSplitterComponent;
 
+  @ViewChild('executionHistoryListBox') executionHistoryListBox: jqxListBoxComponent;
+
   urlTemplate: string = URL_TEMPLATE;
 
   output: string = '';
@@ -102,20 +105,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   relativePath: string = '';
 
   tabsInfo: any = {};
-  executionHistorySrc: any[] = [
-    {
-      html: "<div style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/ok.png'/><span>2018-07-28 15:12 | [\\routes\\utils.js]</span></div>",
-      title: 'Evaluated successfully'
-    },
-    {
-      html: "<div  style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/remove.png'/><span>2018-07-28 15:12 | [\\api\\logger.js]</span></div>",
-      title: 'Failed to evaluate'
-    },
-    {
-      html: "<div style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/prohibit.png'/><span>2018-07-28 15:12 | [\\settings\\settings-route.js]</span></div>",
-      title: 'Got null/undefined value'
-    }
-  ];
+  executionHistorySrc: any[] = [];
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -227,6 +217,31 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.REQUEST_CURRENT_TAB);
   }
 
+  addExecutionHistoryItem(relativePath: string, httpStatus: number, errMsg?: string) {
+    const date = COMMON_UTILS.formatDate();
+
+    if (httpStatus >= 200 && httpStatus < 300) {
+      this.executionHistoryListBox.addItem({
+        html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/ok.png\'/><span>| ${date} | [${relativePath}]</span></div>`,
+        title: 'Evaluated successfully'
+      });
+      return;
+    }
+
+    if (httpStatus >= 554 && httpStatus < 600) {
+      this.executionHistoryListBox.addItem({
+        html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/prohibit.png\'/><span>| ${date} | [${relativePath}]</span></div>`,
+        title: 'Evaluated successfully but got null|undefined value'
+      });
+      return;
+    }
+
+    this.executionHistoryListBox.addItem({
+      html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/remove.png\'/><span>| ${date} | [${relativePath}] | ${errMsg}</span></div>`,
+      title: 'Failed to evaluate'
+    });
+  }
+
   evalInner(tabInfo: any) {
     if (tabInfo === undefined) {
       this.globalComponentsService.loader.close();
@@ -255,18 +270,14 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       (info: any) => {
         this.originalOutput = info.body;
         this.output = this.prettifyIfNeeded();
+        this.addExecutionHistoryItem(tabInfo.relativePath, 200);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.notification.openSuccess('Successfully evaluated nexl expression. See output');
       },
       (err) => {
         this.output = '';
+        this.addExecutionHistoryItem(tabInfo.relativePath, err.status, err.statusText);
         this.globalComponentsService.loader.close();
         console.log(err);
-        if (err.status > 554 && err.status < 600) {
-          this.globalComponentsService.notification.openInfo(err.statusText);
-        } else {
-          this.globalComponentsService.notification.openError(err.statusText);
-        }
       }
     );
   }
