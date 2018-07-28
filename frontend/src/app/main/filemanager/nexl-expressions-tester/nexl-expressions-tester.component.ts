@@ -9,6 +9,7 @@ import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import * as $ from 'jquery';
 import {
+  EXPRESSION_SPLITTER_VERTICAL,
   LocalStorageService, OPEN_URL_WARNING_MESSAGE,
   PRETTIFY_BUTTON_STATE
 } from "../../services/localstorage.service";
@@ -16,6 +17,12 @@ import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtoo
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {UtilsService} from "../../services/utils.service";
+import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
+
+const EXPRESSION_SPLITTER_DEF_VALUE = [
+  {size: '60%', min: 400, collapsible: false},
+  {size: '40%', min: 200}
+];
 
 const URL_TEMPLATE = `
 <div style="text-align: left; display: block; padding: 10px;">
@@ -78,6 +85,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('urlTooltip') urlTooltip: jqxTooltipComponent;
 
   @ViewChild('prettifyButton') prettifyButton: jqxToggleButtonComponent;
+
+  @ViewChild('expressionSplitter') expressionSplitter: jqxSplitterComponent;
 
   urlTemplate: string = URL_TEMPLATE;
 
@@ -428,6 +437,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.nexlExpression.elementRef.nativeElement.addEventListener('input', () => {
       this.updateUrl();
     });
+
+    this.loadSplitter();
   }
 
   onUrlClickWhenNewFile() {
@@ -485,5 +496,25 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     LocalStorageService.storeObj(PRETTIFY_BUTTON_STATE, this.isPrettify);
 
     this.output = this.prettifyIfNeeded();
+  }
+
+  loadSplitter() {
+    this.expressionSplitter.panels(LocalStorageService.loadObj(EXPRESSION_SPLITTER_VERTICAL, EXPRESSION_SPLITTER_DEF_VALUE));
+  }
+
+  saveSplitter() {
+    LocalStorageService.storeObj(EXPRESSION_SPLITTER_VERTICAL, this.expressionSplitter.panels());
+  }
+
+  onSplitterResized() {
+    this.saveSplitter();
+  }
+
+  onSplitterCollapsed() {
+    this.saveSplitter();
+  }
+
+  onSplitterExpanded() {
+    this.saveSplitter();
   }
 }

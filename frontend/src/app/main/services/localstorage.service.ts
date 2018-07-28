@@ -1,6 +1,8 @@
 export const SAVE_JS_FILE_CONFIRM = 'nexl.confirmations.save-js-file';
 export const OPEN_URL_WARNING_MESSAGE = 'nexl.confirmations.url-warning-message';
-export const SPLITTERS = 'nexl.ui.splitters';
+export const MAIN_HORIZONTAL = 'nexl.ui.splitters.main.horizontal';
+export const MAIN_VERTICAL = 'nexl.ui.splitters.main.vertical';
+export const EXPRESSION_SPLITTER_VERTICAL = 'nexl.ui.splitters.expression.vertical';
 export const ARGS_WINDOW = 'nexl.ui.args-window';
 export const APPEARANCE = 'nexl.ui.appearance';
 export const SHOW_SPLASH_SCREEN = 'nexl.ui.show-splash-screen';

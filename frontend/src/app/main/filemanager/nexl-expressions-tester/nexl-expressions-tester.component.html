@@ -1,147 +1,176 @@
-<jqxExpander
-  [height]="85"
-  [showArrow]="false"
-  [toggleMode]="'none'"
-  #expressionArea
-  [disabled]="true"
->
-
-  <div style="text-align: center; font-size: 14px; width: 100%;">nexl expressions tester</div>
-
-  <div class="nexl-expressions-container">
+<div style="width:100%; height:100%;">
+  <jqxSplitter [width]="'100%'"
+               [height]="'100%'"
+               [panels]="[{size: '60%', min: 400, collapsible: false}, {size: '40%'}]"
+               (onResize)="onSplitterResized()"
+               (onCollapsed)="onSplitterCollapsed()"
+               (onExpanded)="onSplitterExpanded()"
+               #expressionSplitter
+  >
     <div>
-      <div class="nexl-expression-label">
-        <jqxTooltip
-          [position]="'mouse'"
-          [content]="'<p style=\'text-align: left;\'>nexl expression describes what exactly you need to retrieve from JavaScript file<br/>For example the <b>${count}</b> expression retrieves a value of <b>count</b> JavaScript variable from currently opened file<br/>nexl expressions can merge arrays, objects, produce XML, YAML and has a lot more features<br/>See <a href=\'#\' onclick=\'showExamples()\'>examples</a><br/>See <a href=\'http:\/\/www.nexl-js.com\/expressions.html\' target=\'_blank\'>documentation</a></p>'"
-          [closeOnClick]="false"
-          [autoHide]="false"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="'hover'"
-        >
-          nexl expression
-        </jqxTooltip>
-      </div>
-
-      <div style="width:calc(100% - 245px); height:25px;float: left;">
-        <jqxInput
-          #nexlExpression
-          [width]="'100%'"
-          [height]="25"
-          (keypress)="onKeyPress($event)"
-          [disabled]="true"
-        >
-        </jqxInput>
-      </div>
-
-      <div class="nexl-expression-buttons" style="margin-left:4px;">
-        <jqxTooltip
-          [position]="'bottom-left'"
-          [content]="'<p style=\'text-align: left;\'>Evaluate nexl expression</p>'"
-          [closeOnClick]="false"
-          [autoHide]="true"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="'hover'"
-        >
-          <jqxButton
-            #evalButton
-            [width]='60'
-            [height]='27'
-            class="nexl-expression-buttons"
-            [imgSrc]='"./nexl/site/icons/play.png"'
-            (onClick)="eval()"
-            [disabled]="true"
-          >
-          </jqxButton>
-        </jqxTooltip>
-      </div>
-
-      <div class="nexl-expression-buttons">
-        <jqxTooltip
-          [position]="'bottom-left'"
-          [content]="'<p style=\'text-align: left;\'>Arguments</p>'"
-          [closeOnClick]="false"
-          [autoHide]="true"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="'hover'"
-        >
-          <jqxButton
-            #argsButton
-            [width]='60'
-            [height]='27'
-            class="nexl-expression-buttons"
-            [imgSrc]='"./nexl/site/icons/cmd-line.png"'
-            (onClick)="args()"
-            [disabled]="true"
-          >
-          </jqxButton>
-        </jqxTooltip>
-      </div>
-
-    </div>
-    <div class="nexl-url-container">
-      <div class="nexl-url-label">URL</div>
-      <div>
-        <jqxTooltip
-          #urlTooltip
-          [content]="urlTemplate"
-          [position]="'bottom-left'"
-          [closeOnClick]="false"
-          [autoHide]="true"
-          [autoHideDelay]="99999"
-          [animationShowDelay]="400"
-          [showDelay]="600"
-          [trigger]="'hover'"
-          [height]="25"
-        >
-          <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
-        </jqxTooltip>
-      </div>
-    </div>
-  </div>
-</jqxExpander>
-
-<jqxExpander
-  height="100%"
-  [showArrow]="false"
-  [toggleMode]="'none'"
-  [disabled]="true"
-  #outputArea
->
-
-  <div>
-    <div style="float: left; position: relative; top: 3px;">Output |</div>
-    <jqxTooltip
-      style="float: left;"
-      #urlTooltip
-      [content]="'Prettifies JavaScript arrays and objects'"
-      [position]="'bottom-left'"
-      [closeOnClick]="false"
-      [autoHide]="true"
-      [autoHideDelay]="99999"
-      [animationShowDelay]="400"
-      [showDelay]="600"
-      [trigger]="'hover'"
-      [height]="25"
-    >
-      <jqxToggleButton
-        #prettifyButton
-        (onClick)="onPrettify()"
-        [toggled]="true"
+      <jqxExpander
+        [height]="85"
+        [showArrow]="false"
+        [toggleMode]="'none'"
+        #expressionArea
+        [disabled]="true"
       >
-        Prettify
-      </jqxToggleButton>
-    </jqxTooltip>
-  </div>
-  <div>
-    <textarea readonly class="output-textarea">{{output}}</textarea>
-  </div>
-</jqxExpander>
+
+        <div style="text-align: center; font-size: 14px; width: 100%;">nexl expressions executor</div>
+
+        <div class="nexl-expressions-container">
+          <div>
+            <div class="nexl-expression-label">
+              <jqxTooltip
+                [position]="'mouse'"
+                [content]="'<p style=\'text-align: left;\'>nexl expression describes what exactly you need to retrieve from JavaScript file<br/>For example the <b>${count}</b> expression retrieves a value of <b>count</b> JavaScript variable from currently opened file<br/>nexl expressions can merge arrays, objects, produce XML, YAML and has a lot more features<br/>See <a href=\'#\' onclick=\'showExamples()\'>examples</a><br/>See <a href=\'http:\/\/www.nexl-js.com\/expressions.html\' target=\'_blank\'>documentation</a></p>'"
+                [closeOnClick]="false"
+                [autoHide]="false"
+                [autoHideDelay]="99999"
+                [animationShowDelay]="400"
+                [showDelay]="600"
+                [trigger]="'hover'"
+              >
+                nexl expression
+              </jqxTooltip>
+            </div>
+
+            <div style="width:calc(100% - 245px); height:25px;float: left;">
+              <jqxInput
+                #nexlExpression
+                [width]="'100%'"
+                [height]="25"
+                (keypress)="onKeyPress($event)"
+                [disabled]="true"
+              >
+              </jqxInput>
+            </div>
+
+            <div class="nexl-expression-buttons" style="margin-left:4px;">
+              <jqxTooltip
+                [position]="'bottom-left'"
+                [content]="'<p style=\'text-align: left;\'>Evaluate nexl expression</p>'"
+                [closeOnClick]="false"
+                [autoHide]="true"
+                [autoHideDelay]="99999"
+                [animationShowDelay]="400"
+                [showDelay]="600"
+                [trigger]="'hover'"
+              >
+                <jqxButton
+                  #evalButton
+                  [width]='60'
+                  [height]='27'
+                  class="nexl-expression-buttons"
+                  [imgSrc]='"./nexl/site/icons/play.png"'
+                  (onClick)="eval()"
+                  [disabled]="true"
+                >
+                </jqxButton>
+              </jqxTooltip>
+            </div>
+
+            <div class="nexl-expression-buttons">
+              <jqxTooltip
+                [position]="'bottom-left'"
+                [content]="'<p style=\'text-align: left;\'>Arguments</p>'"
+                [closeOnClick]="false"
+                [autoHide]="true"
+                [autoHideDelay]="99999"
+                [animationShowDelay]="400"
+                [showDelay]="600"
+                [trigger]="'hover'"
+              >
+                <jqxButton
+                  #argsButton
+                  [width]='60'
+                  [height]='27'
+                  class="nexl-expression-buttons"
+                  [imgSrc]='"./nexl/site/icons/cmd-line.png"'
+                  (onClick)="args()"
+                  [disabled]="true"
+                >
+                </jqxButton>
+              </jqxTooltip>
+            </div>
+
+          </div>
+          <div class="nexl-url-container">
+            <div class="nexl-url-label">URL</div>
+            <div>
+              <jqxTooltip
+                #urlTooltip
+                [content]="urlTemplate"
+                [position]="'bottom-left'"
+                [closeOnClick]="false"
+                [autoHide]="true"
+                [autoHideDelay]="99999"
+                [animationShowDelay]="400"
+                [showDelay]="600"
+                [trigger]="'hover'"
+                [height]="25"
+              >
+                <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
+              </jqxTooltip>
+            </div>
+          </div>
+        </div>
+      </jqxExpander>
+      <jqxExpander
+        height="100%"
+        [showArrow]="false"
+        [toggleMode]="'none'"
+        [disabled]="true"
+        #outputArea
+      >
+
+        <div>
+          <div style="float: left; position: relative; top: 3px;">Output |</div>
+          <jqxTooltip
+            style="float: left;"
+            #urlTooltip
+            [content]="'Prettifies JavaScript arrays and objects'"
+            [position]="'bottom-left'"
+            [closeOnClick]="false"
+            [autoHide]="true"
+            [autoHideDelay]="99999"
+            [animationShowDelay]="400"
+            [showDelay]="600"
+            [trigger]="'hover'"
+            [height]="25"
+          >
+            <jqxToggleButton
+              #prettifyButton
+              (onClick)="onPrettify()"
+              [toggled]="true"
+            >
+              Prettify
+            </jqxToggleButton>
+          </jqxTooltip>
+        </div>
+        <div>
+          <textarea readonly class="output-textarea">{{output}}</textarea>
+        </div>
+      </jqxExpander>
+    </div>
+    <div>
+      <jqxExpander
+        [height]="85"
+        [showArrow]="false"
+        [toggleMode]="'none'"
+        #expressionArea
+        [disabled]="true"
+      >
+
+        <div style="text-align: center; font-size: 14px; width: 100%;">Execution history</div>
+
+        <div class="nexl-expressions-container">
+          bla bla
+        </div>
+      </jqxExpander>
+
+    </div>
+  </jqxSplitter>
+</div>
 
 <app-args-window #argsWindow (onArgs)="onArgs($event)"></app-args-window>

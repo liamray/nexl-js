@@ -2,8 +2,8 @@
   #horizontalSplitter
   width="100%"
   [orientation]="'horizontal'"
-  [panels]="[{ size: '65%', collapsible: false }, { size: '35%' }]"
-  (onResize)="onResize()"
+  [panels]="[{ size: '65%', collapsible: false, min: 100 }, { size: '35%' }]"
+  (onResize)="onHorizontalResized()"
   (onCollapsed)="onHorizontalCollapsed()"
   (onExpanded)="onHorizontalExpanded()"
 >
@@ -15,9 +15,9 @@
       height="100%"
       [orientation]="'vertical'"
       [panels]="[{ size: '20%' }, { size: '80%' }]"
-      (onResize)="onResize()"
+      (onResize)="onVerticalResized()"
       (onCollapsed)="onVerticalCollapsed()"
-      (onExpanded)="onVerticalExpanded()"
+      (onExpanded)="onVerticalResized()"
     >
       <div class="app-javascript-files-explorer"></div>
       <div class="app-javascript-files-editor"></div>
