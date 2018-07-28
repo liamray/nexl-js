@@ -40,6 +40,7 @@
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification",
     "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel",
-    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton"
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton",
+    "node_modules/jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox"
   ]
 }

@@ -20,8 +20,8 @@ import {UtilsService} from "../../services/utils.service";
 import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
-  {size: '60%', min: 400, collapsible: false},
-  {size: '40%', min: 200}
+  {size: '70%', min: 400, collapsible: false},
+  {size: '30%', min: 200}
 ];
 
 const URL_TEMPLATE = `
@@ -102,6 +102,20 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   relativePath: string = '';
 
   tabsInfo: any = {};
+  executionHistorySrc: any[] = [
+    {
+      html: "<div style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/ok.png'/><span>2018-07-28 15:12 | [\\routes\\utils.js]</span></div>",
+      title: 'Evaluated successfully'
+    },
+    {
+      html: "<div  style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/remove.png'/><span>2018-07-28 15:12 | [\\api\\logger.js]</span></div>",
+      title: 'Failed to evaluate'
+    },
+    {
+      html: "<div style='height: 20px; float: left;'><img width='16' height='16' style='float: left; margin-top: 2px; margin-right: 5px;' src='./nexl/site/icons/prohibit.png'/><span>2018-07-28 15:12 | [\\settings\\settings-route.js]</span></div>",
+      title: 'Got null/undefined value'
+    }
+  ];
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe((msg) => {
@@ -516,5 +530,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   onSplitterExpanded() {
     this.saveSplitter();
+  }
+
+  executionHistoryItemSelected(event: any) {
+    alert(event.args.index);
   }
 }

@@ -512,7 +512,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.messageBox.openSimple('Error', `Failed to load JavaScript file content. Reason : [${err.statusText}]`);
+          this.globalComponentsService.messageBox.openSimple('Error', `Failed to load a [${data.relativePath}] JavaScript file content. Reason : [${err.statusText}]`);
           console.log(err);
           reject();
         }
@@ -752,6 +752,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
         this.saveTabs2LocalStorageEnabled = true;
       }
-    );
+    ).catch(_ => {
+      this.saveTabs2LocalStorageEnabled = true;
+    });
   }
 }

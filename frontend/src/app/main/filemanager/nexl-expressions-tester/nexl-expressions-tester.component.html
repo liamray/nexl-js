@@ -1,7 +1,7 @@
 <div style="width:100%; height:100%;">
   <jqxSplitter [width]="'100%'"
                [height]="'100%'"
-               [panels]="[{size: '60%', min: 400, collapsible: false}, {size: '40%'}]"
+               [panels]="[{size: '70%', min: 400, collapsible: false}, {size: '30%'}]"
                (onResize)="onSplitterResized()"
                (onCollapsed)="onSplitterCollapsed()"
                (onExpanded)="onSplitterExpanded()"
@@ -126,27 +126,14 @@
 
         <div>
           <div style="float: left; position: relative; top: 3px;">Output |</div>
-          <jqxTooltip
-            style="float: left;"
-            #urlTooltip
-            [content]="'Prettifies JavaScript arrays and objects'"
-            [position]="'bottom-left'"
-            [closeOnClick]="false"
-            [autoHide]="true"
-            [autoHideDelay]="99999"
-            [animationShowDelay]="400"
-            [showDelay]="600"
-            [trigger]="'hover'"
-            [height]="25"
+          <jqxToggleButton
+            #prettifyButton
+            (onClick)="onPrettify()"
+            [toggled]="true"
+            title="Prettifies JavaScript arrays and objects"
           >
-            <jqxToggleButton
-              #prettifyButton
-              (onClick)="onPrettify()"
-              [toggled]="true"
-            >
-              Prettify
-            </jqxToggleButton>
-          </jqxTooltip>
+            Prettify
+          </jqxToggleButton>
         </div>
         <div>
           <textarea readonly class="output-textarea">{{output}}</textarea>
@@ -155,18 +142,24 @@
     </div>
     <div>
       <jqxExpander
-        [height]="85"
+        [height]="'100%'"
         [showArrow]="false"
         [toggleMode]="'none'"
-        #expressionArea
-        [disabled]="true"
+        #executionHistory
       >
 
         <div style="text-align: center; font-size: 14px; width: 100%;">Execution history</div>
 
-        <div class="nexl-expressions-container">
-          bla bla
+        <div>
+          <jqxListBox #executionHistoryListBox
+                      [source]="executionHistorySrc"
+                      [width]="'calc( 100% - 3px )'"
+                      [height]="'calc( 100% - 3px )'"
+                      (onSelect)="executionHistoryItemSelected($event)"
+          >
+          </jqxListBox>
         </div>
+
       </jqxExpander>
 
     </div>
