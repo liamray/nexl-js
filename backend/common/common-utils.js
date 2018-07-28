@@ -1,5 +1,5 @@
-const UTILS = {};
-UTILS.formatDate = formatDate;
+const COMMON_UTILS = {};
+COMMON_UTILS.formatDate = formatDate;
 
 // --------------------------------------------------------------------------------
 
@@ -38,5 +38,5 @@ function formatDate() {
 
 // backend module support
 if (typeof module !== 'undefined') {
-	module.exports = UTILS;
+	module.exports = COMMON_UTILS;
 }
