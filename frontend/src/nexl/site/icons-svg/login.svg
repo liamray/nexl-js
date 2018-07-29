@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<svg data-name="Layer 49" height="24" id="Layer_49" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+  <title/>
+  <path d="M9,2H20a2,2,0,0,1,2,2V18a2,2,0,0,1-2,2H9a2,2,0,0,1-2-2V4A2,2,0,0,1,9,2Z" style="fill:#d9e3e6"/>
+  <path
+    d="M22,4V18c0,1.10455-.69309,1.6274-1.70833,2.0625-1.16667.5-4.625,1.90723-4.625,1.90723L13,23V6l8.65039-3.128A1.98877,1.98877,0,0,1,22,4Z"
+    style="fill:#738394"/>
+  <polygon points="8 15 6.586 13.586 9.186 11 6.586 8.414 8 7 12 11 8 15" style="fill:#738394"/>
+  <rect height="2" style="fill:#738394" width="8" x="2" y="10"/>
+</svg>
