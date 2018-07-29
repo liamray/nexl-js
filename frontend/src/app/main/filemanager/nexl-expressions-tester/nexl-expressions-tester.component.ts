@@ -351,12 +351,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   updateUrl() {
-    // temporary disabled url tooltip
-    const b = true;
-    if (b) {
-      return;
-    }
-
     if (this.isDisabled()) {
       this.url = '';
       this.urlEncoded = '';
