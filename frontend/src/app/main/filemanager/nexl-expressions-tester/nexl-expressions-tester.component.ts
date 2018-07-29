@@ -384,58 +384,60 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     }
 
     // updating tooltip
-    $('#tooltipRootUrl').text(rootUrl);
-    $('#tooltipRelativePath').text(relativePathSlashed);
-    $('#tooltipExpression').text(`expression=${expression}`);
-    $('#tooltipArgs').text(args4Tooltip);
+    /*
+        $('#tooltipRootUrl').text(rootUrl);
+        $('#tooltipRelativePath').text(relativePathSlashed);
+        $('#tooltipExpression').text(`expression=${expression}`);
+        $('#tooltipArgs').text(args4Tooltip);
 
-    if (expression === '' && args4Tooltip === '') {
-      $('#tooltipQuestionChar').css('display', 'none');
-      $('#tooltipExpression').css('display', 'none');
-      $('#tooltipAmpersand').css('display', 'none');
-      $('#tooltipArgs').css('display', 'none');
+        if (expression === '' && args4Tooltip === '') {
+          $('#tooltipQuestionChar').css('display', 'none');
+          $('#tooltipExpression').css('display', 'none');
+          $('#tooltipAmpersand').css('display', 'none');
+          $('#tooltipArgs').css('display', 'none');
 
-      $('#tooltipExpressionExplanation').css('display', 'none');
-      $('#tooltipArgsExplanation').css('display', 'none');
-      $('#tooltipEmptyExpressionExplanation').css('display', '');
-      return;
-    }
+          $('#tooltipExpressionExplanation').css('display', 'none');
+          $('#tooltipArgsExplanation').css('display', 'none');
+          $('#tooltipEmptyExpressionExplanation').css('display', '');
+          return;
+        }
 
-    if (expression !== '' && args4Tooltip !== '') {
-      $('#tooltipQuestionChar').css('display', '');
-      $('#tooltipExpression').css('display', '');
-      $('#tooltipAmpersand').css('display', '');
-      $('#tooltipArgs').css('display', '');
+        if (expression !== '' && args4Tooltip !== '') {
+          $('#tooltipQuestionChar').css('display', '');
+          $('#tooltipExpression').css('display', '');
+          $('#tooltipAmpersand').css('display', '');
+          $('#tooltipArgs').css('display', '');
 
-      $('#tooltipExpressionExplanation').css('display', '');
-      $('#tooltipArgsExplanation').css('display', '');
-      $('#tooltipEmptyExpressionExplanation').css('display', 'none');
-      return;
-    }
+          $('#tooltipExpressionExplanation').css('display', '');
+          $('#tooltipArgsExplanation').css('display', '');
+          $('#tooltipEmptyExpressionExplanation').css('display', 'none');
+          return;
+        }
 
-    if (expression !== '') {
-      $('#tooltipQuestionChar').css('display', '');
-      $('#tooltipExpression').css('display', '');
-      $('#tooltipAmpersand').css('display', 'none');
-      $('#tooltipArgs').css('display', 'none');
+        if (expression !== '') {
+          $('#tooltipQuestionChar').css('display', '');
+          $('#tooltipExpression').css('display', '');
+          $('#tooltipAmpersand').css('display', 'none');
+          $('#tooltipArgs').css('display', 'none');
 
-      $('#tooltipExpressionExplanation').css('display', '');
-      $('#tooltipArgsExplanation').css('display', 'none');
-      $('#tooltipEmptyExpressionExplanation').css('display', 'none');
-      return;
-    }
+          $('#tooltipExpressionExplanation').css('display', '');
+          $('#tooltipArgsExplanation').css('display', 'none');
+          $('#tooltipEmptyExpressionExplanation').css('display', 'none');
+          return;
+        }
 
-    if (args4Tooltip !== '') {
-      $('#tooltipQuestionChar').css('display', '');
-      $('#tooltipExpression').css('display', 'none');
-      $('#tooltipAmpersand').css('display', 'none');
-      $('#tooltipArgs').css('display', '');
+        if (args4Tooltip !== '') {
+          $('#tooltipQuestionChar').css('display', '');
+          $('#tooltipExpression').css('display', 'none');
+          $('#tooltipAmpersand').css('display', 'none');
+          $('#tooltipArgs').css('display', '');
 
-      $('#tooltipExpressionExplanation').css('display', 'none');
-      $('#tooltipArgsExplanation').css('display', '');
-      $('#tooltipEmptyExpressionExplanation').css('display', '');
-      return;
-    }
+          $('#tooltipExpressionExplanation').css('display', 'none');
+          $('#tooltipArgsExplanation').css('display', '');
+          $('#tooltipEmptyExpressionExplanation').css('display', '');
+          return;
+        }
+    */
   }
 
   args2Array() {
