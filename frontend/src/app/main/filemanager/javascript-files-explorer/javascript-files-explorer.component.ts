@@ -294,6 +294,10 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       this.readPermissionChanged(status);
     }
 
+    if (!status.hasReadPermission) {
+      this.globalComponentsService.messageBox.openSimple('Information', "You don't have read permission to view JavaScript files");
+    }
+
     if (status.hasWritePermission !== this.hasWritePermission) {
       this.writePermissionChanged(status);
     }
