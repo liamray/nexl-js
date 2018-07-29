@@ -84,8 +84,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   @ViewChild('argsWindow') argsWindow: ArgsComponent;
   @ViewChild('template') template: ElementRef;
 
-  @ViewChild('urlTooltip') urlTooltip: jqxTooltipComponent;
-
   @ViewChild('prettifyButton') prettifyButton: jqxToggleButtonComponent;
 
   @ViewChild('expressionSplitter') expressionSplitter: jqxSplitterComponent;
@@ -353,14 +351,17 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   updateUrl() {
-    if (this.isDisabled()) {
-      this.url = '';
-      this.urlEncoded = '';
-      this.urlTooltip.disabled(true);
+    // temporary disabled url tooltip
+    const b = true;
+    if (b) {
       return;
     }
 
-    this.urlTooltip.disabled(false);
+    if (this.isDisabled()) {
+      this.url = '';
+      this.urlEncoded = '';
+      return;
+    }
 
     const rootUrl = environment.rootUrl;
     const relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
