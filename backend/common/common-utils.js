@@ -24,6 +24,7 @@ function formatDate() {
 
 	time.push(currentDate.getHours());
 	time.push(currentDate.getMinutes());
+	time.push(currentDate.getSeconds());
 
 	completeDateTime(date);
 	completeDateTime(time);

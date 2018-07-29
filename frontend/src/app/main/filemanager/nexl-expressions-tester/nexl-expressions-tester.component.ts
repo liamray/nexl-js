@@ -20,6 +20,7 @@ import {UtilsService} from "../../services/utils.service";
 import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 
+const MAX_EXECUTION_HISTORY_ITEMS_COUNT = 20;
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '70%', min: 400, collapsible: false},
   {size: '30%', min: 200}
@@ -217,29 +218,44 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.REQUEST_CURRENT_TAB);
   }
 
-  addExecutionHistoryItem(relativePath: string, httpStatus: number, errMsg?: string) {
+  addExecutionHistoryItemInnerInner(icon: string, msg: string) {
+    this.executionHistoryListBox.addItem({
+      html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/${icon}\'/><span>${msg}</span></div>`
+    });
+  }
+
+  addExecutionHistoryItemInner(relativePath: string, httpStatus: number, msg: string) {
+    const items = this.executionHistoryListBox.getItems();
+    if (items.length > MAX_EXECUTION_HISTORY_ITEMS_COUNT) {
+      this.executionHistoryListBox.removeAt(0);
+    }
+
     const date = COMMON_UTILS.formatDate();
 
     if (httpStatus >= 200 && httpStatus < 300) {
-      this.executionHistoryListBox.addItem({
-        html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/ok.png\'/><span>| ${date} | [${relativePath}]</span></div>`,
-        title: 'Evaluated successfully'
-      });
+      if (msg.length < 30) {
+        this.addExecutionHistoryItemInnerInner('ok.png', `| ${date} | [${relativePath}] -> ${msg}`);
+      } else {
+        this.addExecutionHistoryItemInnerInner('ok.png', `| ${date} | [${relativePath}] -> ${msg.substr(0, 30)}...`);
+      }
       return;
     }
 
     if (httpStatus >= 554 && httpStatus < 600) {
-      this.executionHistoryListBox.addItem({
-        html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/prohibit.png\'/><span>| ${date} | [${relativePath}]</span></div>`,
-        title: 'Evaluated successfully but got null|undefined value'
-      });
+      this.addExecutionHistoryItemInnerInner('prohibit.png', `| ${date} | [${relativePath}] -> Evaluated successfully but got null or undefined value`);
       return;
     }
 
-    this.executionHistoryListBox.addItem({
-      html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/remove.png\'/><span>| ${date} | [${relativePath}] | ${errMsg}</span></div>`,
-      title: 'Failed to evaluate'
-    });
+    this.addExecutionHistoryItemInnerInner('remove.png', `| ${date} | [${relativePath}] -> ${msg}`);
+  }
+
+  addExecutionHistoryItem(relativePath: string, httpStatus: number, msg: string) {
+    this.addExecutionHistoryItemInner(this.relativePath, httpStatus, msg);
+
+    setTimeout(_ => {
+      const lastItem = this.executionHistoryListBox.getItem(this.executionHistoryListBox.getItems().length - 1);
+      this.executionHistoryListBox.selectItem(lastItem);
+    }, 100);
   }
 
   evalInner(tabInfo: any) {
@@ -270,7 +286,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       (info: any) => {
         this.originalOutput = info.body;
         this.output = this.prettifyIfNeeded();
-        this.addExecutionHistoryItem(tabInfo.relativePath, 200);
+        this.addExecutionHistoryItem(tabInfo.relativePath, 200, info.body);
         this.globalComponentsService.loader.close();
       },
       (err) => {
@@ -544,6 +560,5 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   executionHistoryItemSelected(event: any) {
-    alert(event.args.index);
   }
 }
