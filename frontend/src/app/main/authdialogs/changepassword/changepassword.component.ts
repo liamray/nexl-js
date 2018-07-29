@@ -83,10 +83,10 @@ export class ChangePasswordComponent {
 
     this.authService.changePassword(this.currentPassword, this.newPassword)
       .subscribe(
-        response => {
+        _ => {
           this.globalComponentsService.loader.close();
           this.changePasswordWindow.close();
-          this.globalComponentsService.notification.openSuccess('Password changed');
+          this.globalComponentsService.messageBox.openSimple('Information', 'Password changed !');
         },
         err => {
           this.globalComponentsService.loader.close();

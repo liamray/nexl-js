@@ -48,7 +48,6 @@ import {AuthService} from "./services/auth.service";
 import {MessageService} from "./services/message.service";
 import {RegisterComponent} from "./authdialogs/register/register.component";
 import {ChangePasswordComponent} from "./authdialogs/changepassword/changepassword.component";
-import {NotificationComponent} from './misc/notification/notification.component';
 import {InputBoxComponent} from './misc/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./misc/confirmbox/confirmbox.component";
 import {LocalStorageService} from "./services/localstorage.service";
@@ -108,7 +107,6 @@ import {UsersComponent} from "./settingsdialogs/users/users.component";
     UsersComponent,
     AppearanceComponent,
     RegisterComponent,
-    NotificationComponent,
     InputBoxComponent,
     MessageBoxComponent,
     ConfirmBoxComponent,

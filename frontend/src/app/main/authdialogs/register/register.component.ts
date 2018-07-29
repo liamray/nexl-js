@@ -93,7 +93,7 @@ export class RegisterComponent {
         response => {
           this.globalComponentsService.loader.close();
           this.registerWindow.close();
-          this.globalComponentsService.notification.openSuccess('User registered');
+          this.globalComponentsService.messageBox.openSimple('Information', `User registered/reset password successfully !`);
         },
         err => {
           this.globalComponentsService.loader.close();
