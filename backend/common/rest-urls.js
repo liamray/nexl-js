@@ -2,8 +2,8 @@ const REST_URLS = {};
 
 REST_URLS.ROOT = 'nexl';
 
-REST_URLS.AUTH = {
-	PREFIX: 'auth',
+REST_URLS.USERS = {
+	PREFIX: 'users',
 	URLS: {
 		ENABLE_DISABLE_USER: '/enable-disable-user',
 		RENAME_USER: '/rename-user',

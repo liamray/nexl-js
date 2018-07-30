@@ -47,11 +47,6 @@ function getAvailLevels() {
 	return Object.keys(winston.levels);
 }
 
-function logHttpRequest(req, res, next) {
-	winston.debug("[%s] request is accepted. [url=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress);
-	next();
-}
-
 winston.importantMessage = function () {
 	const args = Array.prototype.slice.call(arguments);
 	winston.log(args[0], '');
@@ -62,11 +57,17 @@ winston.importantMessage = function () {
 	winston.log(args[0], '');
 };
 
+function loggerInterceptor(req, res, next) {
+	winston.debug("[%s] request is accepted. [url=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress);
+	next();
+}
+
+
 // --------------------------------------------------------------------------------
 module.exports.init = init;
 module.exports.log = winston;
 module.exports.LEVELS = Object.keys(winston.levels);
-module.exports.logHttpRequest = logHttpRequest;
 module.exports.isLogLevel = isLogLevel;
 module.exports.getAvailLevels = getAvailLevels;
+module.exports.loggerInterceptor = loggerInterceptor;
 // --------------------------------------------------------------------------------

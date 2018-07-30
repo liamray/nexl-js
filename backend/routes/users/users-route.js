@@ -13,7 +13,7 @@ const router = express.Router();
 //////////////////////////////////////////////////////////////////////////////
 // enable/disable user
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
+router.post(restUrls.USERS.URLS.ENABLE_DISABLE_USER, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 	const isDisabled = req.body.isDisabled;
@@ -58,7 +58,7 @@ router.post(restUrls.AUTH.URLS.ENABLE_DISABLE_USER, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // rename user
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
+router.post(restUrls.USERS.URLS.RENAME_USER, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 	const newUsername = req.body.newUsername;
 	const oldUsername = req.body.oldUsername;
@@ -96,7 +96,7 @@ router.post(restUrls.AUTH.URLS.RENAME_USER, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // remove user
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
+router.post(restUrls.USERS.URLS.REMOVE_USER, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 
@@ -130,7 +130,7 @@ router.post(restUrls.AUTH.URLS.REMOVE_USER, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // list users
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.LIST_USERS, function (req, res) {
+router.post(restUrls.USERS.URLS.LIST_USERS, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Listing existing nexl users by [${loggedInUsername}] user`);
@@ -158,7 +158,7 @@ router.post(restUrls.AUTH.URLS.LIST_USERS, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // change password
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
+router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
@@ -184,7 +184,7 @@ router.post(restUrls.AUTH.URLS.CHANGE_PASSWORD, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // generate registration token
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) {
+router.post(restUrls.USERS.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) {
 	const loggedInUsername = security.getLoggedInUsername(req);
 	const username = req.body.username;
 
@@ -228,7 +228,7 @@ router.post(restUrls.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res) 
 //////////////////////////////////////////////////////////////////////////////
 // resolve user status ( is logged in and what permission he has )
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.RESOLVE_USER_STATUS, function (req, res) {
+router.post(restUrls.USERS.URLS.RESOLVE_USER_STATUS, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 	logger.log.debug(`Resolving status for [${username}] user by [${username}] user`);
 	const status = security.status(username);
@@ -240,7 +240,7 @@ router.post(restUrls.AUTH.URLS.RESOLVE_USER_STATUS, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // log in
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.LOGIN, function (req, res) {
+router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 	const username = req.body.username;
 
 	logger.log.debug(`Logging in with  [${username}] user`);
@@ -251,7 +251,7 @@ router.post(restUrls.AUTH.URLS.LOGIN, function (req, res) {
 			return Promise.reject('Bad credentials');
 		}
 
-		security.addLoginItem(username, res);
+		security.login(username, res);
 
 		res.send({});
 		logger.log.debug(`Successfully logged in with  [${username}] user`);
@@ -265,7 +265,7 @@ router.post(restUrls.AUTH.URLS.LOGIN, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // log out
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.LOGOUT, function (req, res) {
+router.post(restUrls.USERS.URLS.LOGOUT, function (req, res) {
 	security.logout(req, res);
 	res.send({});
 });
@@ -273,7 +273,7 @@ router.post(restUrls.AUTH.URLS.LOGOUT, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // register
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.AUTH.URLS.REGISTER, function (req, res) {
+router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	const token = req.body.token;

@@ -15,19 +15,20 @@ const restUrls = require('../common/rest-urls');
 const jsFilesUtils = require('../api/jsfiles-utils');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
+const security = require('../api/security');
 const fsx = require('../api/fsx');
 const version = require('../../package.json').version;
 
-const expressionsRoute = require('../routes/expressions/expressions-route');
 const notFoundInterceptor = require('../interceptors/404-interceptor');
 const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
 
 const staticSite = require('../routes/root/root-route');
 const jsFilesRoute = require('../routes/jsfiles/jsfiles-route');
 const general = require('../routes/general/general-route');
-const authRoute = require('../routes/auth/auth-route');
+const usersRoute = require('../routes/users/users-route');
 const permissionsRoute = require('../routes/permissions/permissions-route');
 const settingsRoute = require('../routes/settings/settings-route');
+const expressionsRoute = require('../routes/expressions/expressions-route');
 const reservedRoute = require('../routes/reserved/reserved-route');
 
 class NexlApp {
@@ -71,9 +72,6 @@ class NexlApp {
 		}));
 
 		this.nexlApp.use(favicon(path.join(__dirname, this.getFavIconPath(), 'favicon.ico')));
-		this.nexlApp.use((req, res, next) => {
-			logger.logHttpRequest(req, res, next);
-		});
 		this.nexlApp.use(bodyParser.json());
 		this.nexlApp.use(bodyParser.urlencoded({extended: false}));
 		this.nexlApp.use(cookieParser());
@@ -81,10 +79,18 @@ class NexlApp {
 		// static resources, root page, nexl rest, nexl expressions
 		this.nexlApp.use(express.static(path.join(__dirname, '../../site')));
 
-		// nexl routes
+		// index html
 		this.nexlApp.use('/', staticSite);
+
+		// auth interceptor
+		this.nexlApp.use(security.authInterceptor);
+
+		// logger to log REST requests
+		this.nexlApp.use(logger.loggerInterceptor);
+
+		// REST routes
 		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.JS_FILES.PREFIX}/`, jsFilesRoute);
-		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.AUTH.PREFIX}/`, authRoute);
+		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.USERS.PREFIX}/`, usersRoute);
 		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.PERMISSIONS.PREFIX}/`, permissionsRoute);
 		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.SETTINGS.PREFIX}/`, settingsRoute);
 		this.nexlApp.use(`/${restUrls.ROOT}/${restUrls.GENERAL.PREFIX}/`, general);

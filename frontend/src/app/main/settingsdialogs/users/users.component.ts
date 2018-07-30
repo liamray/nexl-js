@@ -197,7 +197,7 @@ export class UsersComponent {
     this.globalComponentsService.loader.open();
 
     // loading available values from server
-    this.http.post({}, REST_URLS.AUTH.URLS.LIST_USERS, 'json').subscribe(
+    this.http.post({}, REST_URLS.USERS.URLS.LIST_USERS, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         this.setGridData(data.body);
@@ -244,7 +244,7 @@ export class UsersComponent {
     this.globalComponentsService.loader.open();
 
     // renaming user
-    this.http.post(userData, REST_URLS.AUTH.URLS.RENAME_USER, 'json').subscribe(
+    this.http.post(userData, REST_URLS.USERS.URLS.RENAME_USER, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         return true;
@@ -279,7 +279,7 @@ export class UsersComponent {
     this.http.post({
       username: username,
       isDisabled: isDisabled
-    }, REST_URLS.AUTH.URLS.ENABLE_DISABLE_USER, 'json').subscribe(
+    }, REST_URLS.USERS.URLS.ENABLE_DISABLE_USER, 'json').subscribe(
       (data: any) => {
         row.bounddata.disabled = !row.bounddata.disabled;
         this.usersGrid.refresh();
@@ -300,7 +300,7 @@ export class UsersComponent {
     this.globalComponentsService.loader.open();
 
     // removing user
-    this.http.post({username: username}, REST_URLS.AUTH.URLS.REMOVE_USER, 'json').subscribe(
+    this.http.post({username: username}, REST_URLS.USERS.URLS.REMOVE_USER, 'json').subscribe(
       (data: any) => {
         this.usersGrid.deleterow(rowNr);
         this.globalComponentsService.loader.close();
@@ -350,7 +350,7 @@ export class UsersComponent {
     this.globalComponentsService.loader.open();
 
     // generating token
-    this.http.post({username: username}, REST_URLS.AUTH.URLS.GENERATE_REGISTRATION_TOKEN, 'json').subscribe(
+    this.http.post({username: username}, REST_URLS.USERS.URLS.GENERATE_REGISTRATION_TOKEN, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.open({

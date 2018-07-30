@@ -12,70 +12,13 @@ const ldapUtils = require('./ldap-utils');
 const READ_PERMISSION = 'read';
 const WRITE_PERMISSION = 'write';
 
-const TOKEN_VALID_HOURS = 24;
-
+const REGISTRATION_TOKEN_EXPIRATION_HOURS = 24;
 const LOGIN_TOKENS_MAP = {};
 const LOGIN_TOKEN = 'loginToken';
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function setLoginToken(res, value) {
-	if (value === undefined) {
-		res.clearCookie(LOGIN_TOKEN);
-		return;
-	}
-
-	res.cookie(LOGIN_TOKEN, value, {
-			expire: new Date() + 9999,
-			httpOnly: true
-		}
-	);
-}
-
-function getLoginToken(req) {
-	return req.cookies[LOGIN_TOKEN];
-}
-
-function addLoginItem(username, res) {
-	const loginToken = uuidv4();
-
-	setLoginToken(res, loginToken);
-
-	LOGIN_TOKENS_MAP[loginToken] = {
-		username: username
-	}
-}
-
-function getLoggedInUsername(req) {
-	const username = req.username;
-	if (username !== undefined) {
-		return username;
-	}
-
-	// resolving cookies
-	const loginToken = getLoginToken(req);
-
-	// no cookies set ? apply guest user
-	if (loginToken === undefined) {
-		return req.username = securityConsts.GUEST_USER;
-	}
-
-	// is client login token match server token ?
-	const authItem = LOGIN_TOKENS_MAP[loginToken];
-	if (authItem === undefined) {
-		return req.username = securityConsts.GUEST_USER;
-	}
-
-	return req.username = authItem.username;
-}
-
-function logout(req, res) {
-	const loginToken = getLoginToken(req);
-	if (loginToken !== undefined) {
-		delete LOGIN_TOKENS_MAP[loginToken];
-		setLoginToken(res, undefined);
-	}
-}
 
 function sendError(res, msg, httpStatus) {
 	httpStatus = httpStatus ? httpStatus : 500;
@@ -143,7 +86,7 @@ function status(user) {
 	};
 }
 
-function isValidToken(username, userObj, token) {
+function isRegistrationValidToken(username, userObj, token) {
 	// is user exists ?
 	if (userObj === undefined) {
 		return false;
@@ -161,14 +104,14 @@ function isValidToken(username, userObj, token) {
 		return false;
 	}
 
-	return tokenCreated + TOKEN_VALID_HOURS * 60 * 60 * 1000 > new Date().getTime();
+	return tokenCreated + REGISTRATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000 > new Date().getTime();
 }
 
 function resetPassword(username, password, token) {
 	let users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const userObj = users[username];
 
-	if (!isValidToken(username, userObj, token)) {
+	if (!isRegistrationValidToken(username, userObj, token)) {
 		return Promise.reject('Bad token');
 	}
 
@@ -243,15 +186,65 @@ function isPasswordValid(username, password) {
 	);
 }
 
+function authInterceptorInner(req, res) {
+	const loginToken = req.cookies[LOGIN_TOKEN];
+
+	// no cookies set ? apply guest user
+	if (loginToken === undefined) {
+		req.username = securityConsts.GUEST_USER;
+		return;
+	}
+
+	// does client login token match server token ?
+	const authItem = LOGIN_TOKENS_MAP[loginToken];
+	if (authItem === undefined) {
+		res.clearCookie(LOGIN_TOKEN);
+		req.username = securityConsts.GUEST_USER;
+		return;
+	}
+
+	req.username = authItem.username;
+}
+
+function authInterceptor(req, res, next) {
+	authInterceptorInner(req, res);
+	next();
+}
+
+function login(username, res) {
+	const loginToken = uuidv4();
+
+	res.cookie(LOGIN_TOKEN, loginToken, {
+		expire: new Date() + 9999,
+		httpOnly: true
+	});
+
+	LOGIN_TOKENS_MAP[loginToken] = {
+		username: username
+	}
+}
+
+function logout(req, res) {
+	const loginToken = req.cookies[LOGIN_TOKEN];
+
+	if (loginToken !== undefined) {
+		delete LOGIN_TOKENS_MAP[loginToken];
+		res.clearCookie(LOGIN_TOKEN);
+	}
+}
+
 // --------------------------------------------------------------------------------
+module.exports.TOKEN_VALID_HOURS = REGISTRATION_TOKEN_EXPIRATION_HOURS;
+
 module.exports.isAdmin = isAdmin;
 module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
 module.exports.status = status;
 
-module.exports.addLoginItem = addLoginItem;
-module.exports.logout = logout;
-module.exports.getLoggedInUsername = getLoggedInUsername;
+// todo : replace with req.username
+module.exports.getLoggedInUsername = function (req) {
+	return req.username;
+};
 
 module.exports.sendError = sendError;
 
@@ -259,5 +252,7 @@ module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
 
-module.exports.TOKEN_VALID_HOURS = TOKEN_VALID_HOURS;
+module.exports.authInterceptor = authInterceptor;
+module.exports.login = login;
+module.exports.logout = logout;
 // --------------------------------------------------------------------------------

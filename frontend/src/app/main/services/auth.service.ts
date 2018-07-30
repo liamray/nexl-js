@@ -19,7 +19,7 @@ export class AuthService {
       observe: 'response',
       responseType: 'json'
     };
-    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.CHANGE_PASSWORD, params, opts);
+    return this.httpClient.post<any>(REST_URLS.USERS.URLS.CHANGE_PASSWORD, params, opts);
   }
 
   resolveStatus() {
@@ -27,7 +27,7 @@ export class AuthService {
       observe: 'response',
       responseType: 'json'
     };
-    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.RESOLVE_USER_STATUS, {}, opts);
+    return this.httpClient.post<any>(REST_URLS.USERS.URLS.RESOLVE_USER_STATUS, {}, opts);
   }
 
   refreshStatus() {
@@ -53,7 +53,7 @@ export class AuthService {
       responseType: 'text'
     };
 
-    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.LOGIN, params, opts).map(response => {
+    return this.httpClient.post<any>(REST_URLS.USERS.URLS.LOGIN, params, opts).map(response => {
       return response;
     });
   }
@@ -70,10 +70,10 @@ export class AuthService {
       responseType: 'text'
     };
 
-    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.REGISTER, params, opts);
+    return this.httpClient.post<any>(REST_URLS.USERS.URLS.REGISTER, params, opts);
   }
 
   logout() {
-    return this.httpClient.post<any>(REST_URLS.AUTH.URLS.LOGOUT, {}, {});
+    return this.httpClient.post<any>(REST_URLS.USERS.URLS.LOGOUT, {}, {});
   }
 }
