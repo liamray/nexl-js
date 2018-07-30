@@ -1,6 +1,7 @@
 const winston = require('winston');
 const j79 = require('j79-utils');
 
+const security = require('./security');
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 
@@ -58,7 +59,7 @@ winston.importantMessage = function () {
 };
 
 function loggerInterceptor(req, res, next) {
-	winston.debug("[%s] request is accepted. [url=%s], [clientHost=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress);
+	winston.debug("[method=%s], [url=%s], [clientHost=%s], [username=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress, security.getLoggedInUsername(req));
 	next();
 }
 

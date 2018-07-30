@@ -15,7 +15,7 @@ const WRITE_PERMISSION = 'write';
 const REGISTRATION_TOKEN_EXPIRATION_HOURS = 24;
 const LOGIN_TOKENS_MAP = {};
 const LOGIN_TOKEN = 'loginToken';
-
+const LOGIN_SESSION_MINUTES = 60 * 24 * 7; // 1 week
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
