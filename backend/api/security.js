@@ -203,6 +203,24 @@ function authInterceptorInner(req, res) {
 		return;
 	}
 
+	// is expired ?
+	if (authItem.sessionExpiresAt < new Date().getTime()) {
+		logger.log.debug(`Session expired for [${authItem.username}] user`);
+		res.clearCookie(LOGIN_TOKEN);
+		delete LOGIN_TOKENS_MAP[loginToken];
+		req.username = securityConsts.GUEST_USER;
+		return;
+	}
+
+	// updating session expiration date
+	LOGIN_TOKENS_MAP[loginToken].sessionExpiresAt = new Date().getTime() + LOGIN_SESSION_MINUTES * 60 * 1000;
+
+	// updating cookies expiration date
+	res.cookie(LOGIN_TOKEN, loginToken, {
+		maxAge: LOGIN_SESSION_MINUTES * 60 * 1000,
+		httpOnly: true
+	});
+
 	req.username = authItem.username;
 }
 
@@ -215,11 +233,13 @@ function login(username, res) {
 	const loginToken = uuidv4();
 
 	res.cookie(LOGIN_TOKEN, loginToken, {
-		expire: new Date() + 9999,
+		maxAge: LOGIN_SESSION_MINUTES * 60 * 1000,
 		httpOnly: true
 	});
 
+
 	LOGIN_TOKENS_MAP[loginToken] = {
+		sessionExpiresAt: new Date().getTime() + LOGIN_SESSION_MINUTES * 60 * 1000,
 		username: username
 	}
 }
