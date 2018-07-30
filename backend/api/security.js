@@ -233,26 +233,26 @@ function logout(req, res) {
 	}
 }
 
+function getLoggedInUsername(req) {
+	return req.username;
+}
+
 // --------------------------------------------------------------------------------
 module.exports.TOKEN_VALID_HOURS = REGISTRATION_TOKEN_EXPIRATION_HOURS;
+
+module.exports.sendError = sendError;
 
 module.exports.isAdmin = isAdmin;
 module.exports.hasReadPermission = hasReadPermission;
 module.exports.hasWritePermission = hasWritePermission;
 module.exports.status = status;
 
-// todo : replace with req.username
-module.exports.getLoggedInUsername = function (req) {
-	return req.username;
-};
-
-module.exports.sendError = sendError;
-
 module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 module.exports.isPasswordValid = isPasswordValid;
-
-module.exports.authInterceptor = authInterceptor;
 module.exports.login = login;
 module.exports.logout = logout;
+module.exports.getLoggedInUsername = getLoggedInUsername;
+
+module.exports.authInterceptor = authInterceptor;
 // --------------------------------------------------------------------------------
