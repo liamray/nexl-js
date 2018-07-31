@@ -23,7 +23,9 @@ const LOGIN_SESSION_MINUTES = 60 * 24 * 7; // 1 week
 function sendError(res, msg, httpStatus) {
 	httpStatus = httpStatus ? httpStatus : 500;
 	res.statusMessage = msg;
-	res.status(httpStatus).end();
+	res.status(httpStatus);
+	res.send(msg);
+	res.end();
 }
 
 function isAdminInner(user) {
