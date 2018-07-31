@@ -19,7 +19,6 @@ import {jqxNumberInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jq
 import {jqxValidatorComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxvalidator';
 import {jqxCheckBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox';
 import {jqxPasswordInputComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput';
-import {jqxNotificationComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnotification';
 import {jqxListBoxComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox';
 
 
@@ -82,7 +81,6 @@ import {UsersComponent} from "./settingsdialogs/users/users.component";
     jqxValidatorComponent,
     jqxCheckBoxComponent,
     jqxPasswordInputComponent,
-    jqxNotificationComponent,
     jqxListBoxComponent,
     jqxPanelComponent,
     jqxToggleButtonComponent,
