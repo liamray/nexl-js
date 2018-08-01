@@ -1,4 +1,13 @@
 #!/usr/bin/env node
 
-const NexlApp = require('../backend/nexl-app/nexl-app');
-new NexlApp().start();
+const nexlApp = require('../backend/nexl-app/nexl-app');
+const favicon = require('serve-favicon');
+const path = require('path');
+
+const interceptors = [
+	favicon(path.join(__dirname, '../site/nexl/site/', 'favicon.ico'))
+];
+
+nexlApp.create(interceptors)
+	.then(nexlApp.init)
+	.then(nexlApp.start);

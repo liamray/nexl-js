@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-const NexlApp = require('../backend/nexl-app/nexl-app');
-const devInterceptor = require('./dev-interceptor');
+const nexlApp = require('../backend/nexl-app/nexl-app');
+const favicon = require('serve-favicon');
+const path = require('path');
 
-class NexlDevApp extends NexlApp {
-	applyInterceptors() {
-		this.nexlApp.use(devInterceptor);
-		super.applyInterceptors();
+const interceptors = [
+	favicon(path.join(__dirname, '../frontend/src', 'favicon.ico')),
+	function (req, res, next) {
+		res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+		res.setHeader("Access-Control-Allow-Credentials", "true");
+		res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+		res.setHeader("Access-Control-Allow-Headers", "token,Access-Control-Allow-Headers,Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Origin,Authorization");
+		next();
 	}
+];
 
-	getFavIconPath() {
-		return '../../frontend/src';
-	}
-}
-
-new NexlDevApp().start();
+nexlApp.create(interceptors)
+	.then(nexlApp.init)
+	.then(nexlApp.start);
