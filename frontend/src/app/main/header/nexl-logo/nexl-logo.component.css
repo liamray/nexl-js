@@ -1,8 +1,10 @@
 a {
-    background-image: url("/nexl/site/images/nexl-logo.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 55px;
-    height: 55px;
-    display: block;
+  background-image: url("/nexl/site/images/nexl-logo.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 55px;
+  display: block;
+  position: relative;
+  top: 5px;
 }
