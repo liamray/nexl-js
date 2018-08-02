@@ -1,10 +1,11 @@
 a {
-  background-image: url("/nexl/site/images/nexl-logo.png");
+  background-image: url("/nexl/site/images/nexl-logo.svg");
   background-size: contain;
   background-repeat: no-repeat;
-  width: 100px;
+  width: 74px;
   height: 55px;
   display: block;
   position: relative;
-  top: 5px;
+  top: -3px;
+  left: -8px;
 }

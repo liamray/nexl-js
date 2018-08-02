@@ -1,79 +1,86 @@
-<jqxMenu #mainMenuRef [width]="350" [height]="30" [showTopLevelArrows]="true">
-  <ul>
-    <!-- ------------------------------------------------------------------------->
-    <!--File menu-->
-    <li>
-      <span>File</span>
-      <ul style="width:175px;">
-        <li (click)="saveJSFile()" id="main-menu-save">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/save.png'/><span>Save ( Ctrl + S )</span>
-        </li>
-        <li (click)="prettifyFile()" id="main-menu-prettify">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/rose.png'/><span>Prettify file ( F7 )</span>
-        </li>
-        <li (click)="findFile()" id="main-menu-find-file">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/find.png'/><span>Find file ( Alt + F7 )</span>
-        </li>
-        <li (click)="closeAllTabs()" id='main-menu-close-all'>
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/close.png'/><span>Close all</span>
-        </li>
-      </ul>
-    </li>
+<div class="main-menu">
+  <jqxMenu
+    #mainMenuRef
+    [width]="350"
+    [height]="30"
+    [showTopLevelArrows]="true"
+  >
+    <ul>
+      <!-- ------------------------------------------------------------------------->
+      <!--File menu-->
+      <li>
+        <span>File</span>
+        <ul style="width:175px;">
+          <li (click)="saveJSFile()" id="main-menu-save">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/save.png'/><span>Save ( Ctrl + S )</span>
+          </li>
+          <li (click)="prettifyFile()" id="main-menu-prettify">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/rose.png'/><span>Prettify file ( F7 )</span>
+          </li>
+          <li (click)="findFile()" id="main-menu-find-file">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/find.png'/><span>Find file ( Alt + F7 )</span>
+          </li>
+          <li (click)="closeAllTabs()" id='main-menu-close-all'>
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/close.png'/><span>Close all</span>
+          </li>
+        </ul>
+      </li>
 
-    <!-- ------------------------------------------------------------------------->
-    <!--View menu-->
-    <li>
-      <span>View</span>
-      <ul style="width:160px;">
-        <li (click)="this.openAppearanceWindow()" id="main-menu-appearance">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/paint.png'/><span>Appearance</span>
-        </li>
-        <li (click)="this.openPermissionsWindow()" id="main-menu-permissions">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/user-security.png'/><span>Permissions</span>
-        </li>
-        <li (click)="this.openUsersWindow()" id="main-menu-users">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/users.png'/><span>Users</span>
-        </li>
-        <li (click)="this.openSettingsWindow()" id="main-menu-settings">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/settings.png'/><span>Settings</span>
-        </li>
-      </ul>
-    </li>
+      <!-- ------------------------------------------------------------------------->
+      <!--View menu-->
+      <li>
+        <span>View</span>
+        <ul style="width:160px;">
+          <li (click)="this.openAppearanceWindow()" id="main-menu-appearance">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/paint.png'/><span>Appearance</span>
+          </li>
+          <li (click)="this.openPermissionsWindow()" id="main-menu-permissions">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/user-security.png'/><span>Permissions</span>
+          </li>
+          <li (click)="this.openUsersWindow()" id="main-menu-users">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/users.png'/><span>Users</span>
+          </li>
+          <li (click)="this.openSettingsWindow()" id="main-menu-settings">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/settings.png'/><span>Settings</span>
+          </li>
+        </ul>
+      </li>
 
-    <!-- ------------------------------------------------------------------------->
-    <!--Expression menu-->
-    <li>
-      <span>Expression</span>
-      <ul style="width:160px;">
-        <li (click)="toggleArgsWindow()" id="main-menu-arguments">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/cmd-line.png'/><span>Arguments ( F8 )</span>
-        </li>
-        <li (click)="evaluateNexlExpression()" id="main-menu-evaluate">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/play.png'/><span>Evaluate ( F9 )</span>
-        </li>
-      </ul>
-    </li>
+      <!-- ------------------------------------------------------------------------->
+      <!--Expression menu-->
+      <li>
+        <span>Expression</span>
+        <ul style="width:160px;">
+          <li (click)="toggleArgsWindow()" id="main-menu-arguments">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/cmd-line.png'/><span>Arguments ( F8 )</span>
+          </li>
+          <li (click)="evaluateNexlExpression()" id="main-menu-evaluate">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/play.png'/><span>Evaluate ( F9 )</span>
+          </li>
+        </ul>
+      </li>
 
-    <!-- ------------------------------------------------------------------------->
-    <!--Help menu-->
-    <li>
-      <span>Help</span>
-      <ul style="width:160px;">
-        <li (click)="openAboutWindow()">
-          <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/info.png'/><span>About</span>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</jqxMenu>
+      <!-- ------------------------------------------------------------------------->
+      <!--Help menu-->
+      <li>
+        <span>Help</span>
+        <ul style="width:160px;">
+          <li (click)="openAboutWindow()">
+            <img style='float: left; margin-right: 5px;'
+                 src='./nexl/site/icons/info.png'/><span>About</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </jqxMenu>
+</div>
