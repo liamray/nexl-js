@@ -288,6 +288,13 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 		}
 
 		const userObj = confMgmt.getCached(confConsts.CONF_FILES.USERS)[username];
+
+		if (userObj === undefined) {
+			logger.log.error(`Cannot register a [${username}] because it doesn't have registration token`);
+			security.sendError(res, 'Bad token');
+			return;
+		}
+
 		if (userObj.disabled === true) {
 			logger.log.error(`Failed to register a [${username}]. Reason : user is disabled !`);
 			security.sendError(res, 'User is disabled');

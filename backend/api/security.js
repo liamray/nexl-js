@@ -88,36 +88,28 @@ function status(user) {
 	};
 }
 
-function isRegistrationValidToken(username, userObj, token) {
-	// is user exists ?
-	if (userObj === undefined) {
-		return false;
-	}
 
-	// is same token ?
-	if (userObj.token2ResetPassword.token !== token) {
-		return false;
+function resetPassword(username, password, token) {
+	let users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
+	const userObj = users[username];
+
+	// is user exists ? || is not same token ?
+	if (userObj === undefined || userObj.token2ResetPassword.token !== token.trim()) {
+		return Promise.reject('Bad token');
 	}
 
 	// is token expired ?
 	let tokenCreated = Date.parse(userObj.token2ResetPassword.created);
 	if (tokenCreated !== tokenCreated) { // is NaN ?
 		logger.log.error(`Failed to parse token creation date [${userObj.token2ResetPassword.created}] for [${username}] user`);
-		return false;
+		return Promise.reject('Internal error. Users settings file is damaged !');
 	}
 
-	return tokenCreated + REGISTRATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000 > new Date().getTime();
-}
-
-function resetPassword(username, password, token) {
-	let users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
-	const userObj = users[username];
-
-	if (!isRegistrationValidToken(username, userObj, token)) {
-		return Promise.reject('Bad token');
+	if (tokenCreated + REGISTRATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000 < new Date().getTime()) {
+		return Promise.reject('Token expired !');
 	}
 
-	// token was applied, removing it
+	// token is applied, removing it
 	delete userObj.token2ResetPassword.created;
 	delete userObj.token2ResetPassword.token;
 
