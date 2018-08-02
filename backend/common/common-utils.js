@@ -4,10 +4,10 @@ COMMON_UTILS.formatDate = formatDate;
 // --------------------------------------------------------------------------------
 
 function completeDateTime(x) {
-	for (let index = 0; index < x.length; index++) {
+	for (var index = 0; index < x.length; index++) {
 		const item = x[index] + '';
 		if (item.length < 2) {
-			x[index] = `0${item}`;
+			x[index] = '0' + item;
 		}
 	}
 }
@@ -15,8 +15,8 @@ function completeDateTime(x) {
 function formatDate() {
 	const currentDate = new Date();
 
-	let date = [];
-	let time = [];
+	var date = [];
+	var time = [];
 
 	date.push(currentDate.getFullYear());
 	date.push(currentDate.getMonth() + 1);
@@ -32,7 +32,7 @@ function formatDate() {
 	date = date.join('-');
 	time = time.join(':');
 
-	return `${date} ${time}`;
+	return date + ' ' + time;
 }
 
 // --------------------------------------------------------------------------------
