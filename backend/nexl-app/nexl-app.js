@@ -94,13 +94,10 @@ function create(interceptors) {
 	// error handler
 	nexlApp.use(errorHandlerInterceptor);
 
-	return printWelcomeMessage();
-}
-
-function init() {
+	// initializing conf management
 	confMgmt.init();
 
-	return Promise.resolve()
+	return printWelcomeMessage()
 		.then(confMgmt.createNexlHomeDirectoryIfNeeded)
 		.then(confMgmt.initSettings)
 		.then(logger.init)
@@ -282,7 +279,6 @@ function stop() {
 
 // --------------------------------------------------------------------------------
 module.exports.create = create;
-module.exports.init = init;
 module.exports.start = start;
 module.exports.stop = stop;
 // --------------------------------------------------------------------------------

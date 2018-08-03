@@ -8,6 +8,4 @@ const interceptors = [
 	favicon(path.join(__dirname, '../site/nexl/site/', 'favicon.ico'))
 ];
 
-nexlApp.create(interceptors)
-	.then(nexlApp.init)
-	.then(nexlApp.start);
+nexlApp.create(interceptors).then(nexlApp.start);
