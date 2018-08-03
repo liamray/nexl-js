@@ -5,6 +5,10 @@ const fsextra = require('fs-extra');
 
 const nexlApp = require('../backend/nexl-app/nexl-app');
 const confConsts = require('../backend/common/conf-constants');
+const confMgmt = require('../backend/api/conf-mgmt');
+
+const TEST_HOST = 'localhost';
+const TEST_PORT = 8989;
 
 // --------------------------------------------------------------------------------
 
@@ -29,7 +33,12 @@ function startNexlApp(initTest, runTests, finalizeTests) {
 	return nexlApp.create()
 		.then(_ => {
 			const predefinedNexlJSFIlesDir = path.join(__dirname, 'resources/nexl-js-files-4-tests');
-			initTest(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir);
+
+			const settings = confMgmt.getNexlSettingsCached();
+			settings[confConsts.SETTINGS.HTTP_BINDING] = TEST_HOST;
+			settings[confConsts.SETTINGS.HTTP_PORT] = TEST_PORT;
+
+			return initTest(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir);
 		})
 		.then(nexlApp.start)
 		.then(runTests)
@@ -59,4 +68,6 @@ function startNexlApp(initTest, runTests, finalizeTests) {
 
 // --------------------------------------------------------------------------------
 module.exports.startNexlApp = startNexlApp;
+module.exports.TEST_HOST = TEST_HOST;
+module.exports.TEST_PORT = TEST_PORT;
 // --------------------------------------------------------------------------------
