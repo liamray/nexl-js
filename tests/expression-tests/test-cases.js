@@ -9,7 +9,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
@@ -24,7 +24,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
@@ -39,7 +39,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'The [file1.js] nexl source file doesn\'t exist'
 	}
@@ -54,7 +54,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'Unacceptable path ( relative path contains restricted characters )'
 	}
@@ -129,7 +129,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 555,
 		expectedResult: 'Got undefined value'
 	}
@@ -144,7 +144,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 556,
 		expectedResult: 'Got null value'
 	}
@@ -159,7 +159,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'The [${*}] expression cannot be evaluated to undefined ( it has a mandatory value validator ). Probably you have to provide it as external arg or check why it calculated to undefined'
 	}
@@ -174,7 +174,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: undefined,
+		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
 		expectedResult: 'Please provide something'
 	}

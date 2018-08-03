@@ -349,7 +349,7 @@ module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
 
-module.exports.gatherAllFiles2 = gatherAllFiles;
+module.exports.gatherAllFiles = gatherAllFiles;
 
 module.exports.cacheJSFiles = cacheJSFiles;
 module.exports.getTreeItems = () => TREE_ITEMS;
