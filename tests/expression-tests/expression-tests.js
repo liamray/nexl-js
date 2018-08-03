@@ -67,8 +67,8 @@ function makeGetRequestOpts(testCase) {
 	const path = util.format('%s?%s', testCase.request.source, args);
 
 	return {
-		host: TEST_HOST,
-		port: TEST_PORT,
+		host: testAPI.TEST_HOST,
+		port: testAPI.TEST_PORT,
 		path: path,
 		method: 'GET'
 	};
@@ -78,8 +78,8 @@ function makePostRequestOpts(testCase) {
 	const data = queryString.stringify(testCase.request.args);
 
 	return {
-		host: TEST_HOST,
-		port: TEST_PORT,
+		host: testAPI.TEST_HOST,
+		port: testAPI.TEST_PORT,
 		path: testCase.request.source,
 		data: data,
 		headers: {

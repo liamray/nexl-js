@@ -6,12 +6,7 @@ const assert = require('assert');
 const testAPI = require('../test-api');
 const confConsts = require('../../backend/common/conf-constants');
 const confMgmt = require('../../backend/api/conf-mgmt');
-const logger = require('../../backend/api/logger');
 const jsFilesUtils = require('../../backend/api/jsfiles-utils');
-const securityConsts = require('../../backend/common/security-constants');
-
-const TEST_HOST = 'localhost';
-const TEST_PORT = 8989;
 
 // --------------------------------------------------------------------------------
 

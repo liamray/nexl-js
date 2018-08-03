@@ -6,9 +6,6 @@ const confMgmt = require('../../backend/api/conf-mgmt');
 const security = require('../../backend/api/security');
 const securityConsts = require('../../backend/common/security-constants');
 
-const TEST_HOST = 'localhost';
-const TEST_PORT = 8989;
-
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
