@@ -19,8 +19,8 @@ import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput
 import {UtilsService} from "../../services/utils.service";
 import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
+import {AppearanceService} from "../../services/appearance.service";
 
-const MAX_EXECUTION_HISTORY_ITEMS_COUNT = 20;
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '70%', min: 400, collapsible: false},
   {size: '30%', min: 200}
@@ -224,7 +224,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   addExecutionHistoryItemInner(relativePath: string, httpStatus: number, msg: string) {
     const items = this.executionHistoryListBox.getItems();
-    if (items.length > MAX_EXECUTION_HISTORY_ITEMS_COUNT) {
+
+    const maxItemsCount = AppearanceService.load()['max-execution-history-items'];
+    if (items.length >= maxItemsCount) {
       this.executionHistoryListBox.removeAt(0);
     }
 

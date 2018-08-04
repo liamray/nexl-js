@@ -16,8 +16,8 @@ const APPEARANCE_DATA = {
       return THEMES.indexOf(val) >= 0;
     }
   },
-  'notification-message-delay': {
-    defVal: '60',
+  'max-execution-history-items': {
+    defVal: '25',
     isValid: (val) => {
       return UtilsService.isPositiveIneger(val);
     }

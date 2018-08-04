@@ -20,7 +20,7 @@ export class AppearanceComponent {
 
   @ViewChild('fontSize') fontSize: jqxInputComponent;
   // @ViewChild('theme') theme: jqxDropDownListComponent;
-  @ViewChild('notificationMessageDelay') notificationMessageDelay: jqxInputComponent;
+  @ViewChild('maxExecutionHistoryItems') maxExecutionHistoryItems: jqxInputComponent;
 
   isSaving = false;
   width = 190;
@@ -39,11 +39,11 @@ export class AppearanceComponent {
         }
       },
       {
-        input: '#notificationMessageDelay',
-        message: 'Notification message delay must be a positive integer',
+        input: '#maxExecutionHistoryItems',
+        message: 'Items count must be a positive integer',
         action: 'keyup, blur',
         rule: (): any => {
-          return AppearanceService.validate('notification-message-delay', this.notificationMessageDelay.val());
+          return AppearanceService.validate('max-execution-history-items', this.maxExecutionHistoryItems.val());
         }
       }
     ];
