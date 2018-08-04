@@ -1,5 +1,3 @@
-const path = require('path');
-const util = require('util');
 const rp = require('request-promise');
 const base64 = require('base-64');
 
@@ -7,13 +5,43 @@ const testAPI = require('../test-api');
 const confConsts = require('../../backend/common/conf-constants');
 const securityConsts = require('../../backend/common/security-constants');
 const confMgmt = require('../../backend/api/conf-mgmt');
+const security = require('../../backend/api/security');
+const utils = require('../../backend/api/utils');
+
+const TEST_USER = 'test-user';
+const DISABLED_USER = 'disabled-user';
+const NO_READ_PERMISSIONS_USER = 'no-read-permissions-user';
+const PASSWORD = '123456';
 
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
+	const promises = [];
+
+	// generate token, register
 	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = predefinedNexlJSFIlesDir;
 
-	return Promise.resolve();
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
+
+	users[TEST_USER] = {};
+	users[TEST_USER].token2ResetPassword = utils.generateNewToken();
+
+	users[DISABLED_USER] = {};
+	users[DISABLED_USER].token2ResetPassword = utils.generateNewToken();
+	users[DISABLED_USER].disabled = true;
+
+	users[NO_READ_PERMISSIONS_USER] = {};
+	users[NO_READ_PERMISSIONS_USER].token2ResetPassword = utils.generateNewToken();
+
+	const permissions = confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS);
+	permissions[TEST_USER] = {};
+	permissions[TEST_USER].read = true;
+
+	return confMgmt.save(users, confConsts.CONF_FILES.USERS)
+		.then(confMgmt.save(permissions, confConsts.CONF_FILES.PERMISSIONS))
+		.then(_ => security.resetPassword(TEST_USER, PASSWORD, users[TEST_USER].token2ResetPassword.token))
+		.then(_ => security.resetPassword(DISABLED_USER, PASSWORD, users[DISABLED_USER].token2ResetPassword.token))
+		.then(_ => security.resetPassword(NO_READ_PERMISSIONS_USER, PASSWORD, users[NO_READ_PERMISSIONS_USER].token2ResetPassword.token));
 }
 
 function decode(auth) {
@@ -65,9 +93,12 @@ function printPermissions() {
 }
 
 function setPermissions(guestUser, authenticatedUser) {
-	confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS)[securityConsts.GUEST_USER].read = guestUser;
-	confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS)[securityConsts.AUTHENTICATED].read = authenticatedUser;
-	return Promise.resolve();
+	const permissions = confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS);
+
+	permissions[securityConsts.GUEST_USER].read = guestUser;
+	permissions[securityConsts.AUTHENTICATED].read = authenticatedUser;
+
+	return confMgmt.save(permissions, confConsts.CONF_FILES.PERMISSIONS);
 }
 
 function run() {
@@ -78,26 +109,52 @@ function run() {
 		}
 	};
 
-	// 1) with/without basic auth when GUEST/AUTHENTICATED user has read permission
-	// 2) with/without basic auth when GUEST/AUTHENTICATED user doesn't have read permission
-	// with : 1) wrong hash (gibrish) 2) proper hash but user doesn't exist 3) proper hash but user disabled 4) proper hash but password wrong 5) proper hash
+	// disabled-user, test-user, no-read-permissions-user
 
 	return Promise.resolve()
 		.then(_ => setPermissions(false, false))
-		.then(_ => testHttpRequest(request, 'dummy-base-64', true))
+		.then(_ => testHttpRequest(request, undefined, false))
+		.then(_ => testHttpRequest(request, 'dummy-base-64', false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('non-existing-user', '12345'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', '12345'), false))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', 'wrong-password'), false))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', '12345'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', '12345'), true))
 
+		.then(_ => setPermissions(true, false))
+		.then(_ => testHttpRequest(request, undefined, true))
+		.then(_ => testHttpRequest(request, 'dummy-base-64', true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('non-existing-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', '12345'), true))
+
 		.then(_ => setPermissions(false, true))
-		.then(_ => testHttpRequest(request, 'dkf3qpthsdkfgjh', false))
+		.then(_ => testHttpRequest(request, undefined, false))
+		.then(_ => testHttpRequest(request, 'dummy-base-64', false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('non-existing-user', '12345'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', '12345'), false))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', '12345'), true))
 		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', 'wrong-password'), false))
-		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', '12345'), false))
+		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', '12345'), true))
+
+		.then(_ => setPermissions(true, true))
+		.then(_ => testHttpRequest(request, undefined, true))
+		.then(_ => testHttpRequest(request, 'dummy-base-64', true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('non-existing-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('disabled-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('no-read-permissions-user', '12345'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth('test-user', '12345'), true))
 
 		;
 }
