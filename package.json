@@ -1,7 +1,7 @@
 {
   "name": "nexl",
   "version": "3.0.0-dev",
-  "description": "",
+  "description": "nexl is a configuration storage where configuration stored in native JavaScript files, exposed via REST and accessed by special query language",
   "keywords": [
     "nexl",
     "nexl-js",
