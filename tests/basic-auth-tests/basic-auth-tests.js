@@ -140,7 +140,7 @@ function run() {
 		.then(_ => testHttpRequest(request, makeBasicAuth('non-existing-user', PASSWORD), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth(DISABLED_USER, 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth(DISABLED_USER, PASSWORD), false))
-		.then(_ => testHttpRequest(request, makeBasicAuth(NO_READ_PERMISSIONS_USER, 'wrong-password'), true))
+		.then(_ => testHttpRequest(request, makeBasicAuth(NO_READ_PERMISSIONS_USER, 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth(NO_READ_PERMISSIONS_USER, PASSWORD), true))
 		.then(_ => testHttpRequest(request, makeBasicAuth(TEST_USER, 'wrong-password'), false))
 		.then(_ => testHttpRequest(request, makeBasicAuth(TEST_USER, PASSWORD), true))
