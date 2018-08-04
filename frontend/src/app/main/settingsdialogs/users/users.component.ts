@@ -6,6 +6,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {UtilsService} from "../../services/utils.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
 @Component({
@@ -205,7 +206,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load users list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load users list. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );
@@ -227,10 +228,7 @@ export class UsersComponent {
 
   onChange(rowNr: number, oldValue: string, newValue: string) {
     if (!UtilsService.isValidUsername(newValue)) {
-      this.globalComponentsService.messageBox.open({
-        title: 'Error',
-        label: 'Invalid user name',
-      });
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Invalid user name');
       this.setCellValueDelayed(rowNr, 'username', oldValue);
       return;
     }
@@ -252,11 +250,7 @@ export class UsersComponent {
       err => {
         this.setCellValueDelayed(rowNr, 'username', oldValue);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Failed to create a [${newValue}] user. Reason : ${err.statusText}`,
-        });
-
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to create a [${newValue}] user. Reason : ${err.statusText}`);
         console.log(err);
       });
   }
@@ -287,11 +281,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Failed to enable/disable [${username}] user. Reason : ${err.statusText}`,
-        });
-
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to enable/disable [${username}] user. Reason : ${err.statusText}`);
         console.log(err);
       });
   }
@@ -307,11 +297,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Failed to remove a [${username}] user. Reason : ${err.statusText}`,
-        });
-
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to remove a [${username}] user. Reason : ${err.statusText}`);
         console.log(err);
       });
   }
@@ -353,18 +339,11 @@ export class UsersComponent {
     this.http.post({username: username}, REST_URLS.USERS.URLS.GENERATE_REGISTRATION_TOKEN, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Information',
-          label: `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token} This token expires in [${data.body.tokenValidHours}] hour(s)`,
-        });
+        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, `The [${username}] user can register or reset his password. Send him the following token to proceed : ${data.body.token} This token expires in [${data.body.tokenValidHours}] hour(s)`);
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Operation failed. Reason : ${err.statusText}`,
-        });
-
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Operation failed. Reason : ${err.statusText}`);
         console.log(err);
       });
   }

@@ -5,6 +5,12 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import * as $ from 'jquery';
 import {jqxCheckBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox";
 
+export const ICONS = {
+  INFO: {icon: 'lamp.png', title: 'Information'},
+  WARNING: {icon: 'prohibit.png', title: 'Warning'},
+  ERROR: {icon: 'error.png', title: 'Error'},
+};
+
 @Component({
   selector: 'app-messagebox',
   templateUrl: './messagebox.component.html',
@@ -35,6 +41,13 @@ export class MessageBoxComponent implements OnInit {
   }
 
   open(opts: any) {
+    if (opts.icon) {
+      const iconCSS = `url("/nexl/site/icons/${opts.icon}")`;
+      $('#msgBoxHeaderIcon').css('background-image', iconCSS);
+    } else {
+      $('#msgBoxHeaderIcon').css('display', 'none');
+    }
+
     this.checkBox.val(false);
     if (opts.checkBoxText !== undefined) {
       this.window.height(160);
@@ -49,11 +62,11 @@ export class MessageBoxComponent implements OnInit {
     this.window.open();
   }
 
-  // todo : use it where needed !
-  openSimple(title: string, text: string) {
+  openSimple(type: any, text: string) {
     const opts = {
-      title: title,
+      title: type.title,
       label: text,
+      icon: type.icon
     };
 
     this.open(opts);

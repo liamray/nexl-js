@@ -4,6 +4,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {AuthService} from "../../services/auth.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 @Component({
   selector: '.app-auth-menu',
@@ -43,7 +44,7 @@ export class AuthMenuComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to log out. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to log out. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );

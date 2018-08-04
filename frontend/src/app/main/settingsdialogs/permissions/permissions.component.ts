@@ -7,6 +7,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
 @Component({
@@ -65,7 +66,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load permissions list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load permissions list. Reason : [${err.statusText}]`);
         console.log(err);
       });
   }
@@ -83,10 +84,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Failed to update permissions. Reason : ${err.statusText}`,
-        });
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to update permissions. Reason : ${err.statusText}`);
         console.log(err);
       });
   }

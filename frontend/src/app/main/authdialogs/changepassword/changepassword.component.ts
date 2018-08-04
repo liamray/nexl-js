@@ -6,6 +6,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
 @Component({
@@ -86,7 +87,7 @@ export class ChangePasswordComponent {
         _ => {
           this.globalComponentsService.loader.close();
           this.changePasswordWindow.close();
-          this.globalComponentsService.messageBox.openSimple('Information', 'Password changed !');
+          this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Password changed !');
         },
         err => {
           this.globalComponentsService.loader.close();

@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import 'rxjs/add/operator/map';
 import {MESSAGE_TYPE, MessageService} from "./message.service";
 import {GlobalComponentsService} from "./global-components.service";
+import {ICONS} from "../misc/messagebox/messagebox.component";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,7 @@ export class AuthService {
         this.messageService.sendMessage(MESSAGE_TYPE.AUTH_CHANGED, status.body);
       },
       (err) => {
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve server status. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to resolve server status. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );

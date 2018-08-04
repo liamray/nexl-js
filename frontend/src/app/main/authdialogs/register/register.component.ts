@@ -7,6 +7,7 @@ import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput
 import {jqxPasswordInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpasswordinput";
 import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
 @Component({
@@ -93,7 +94,7 @@ export class RegisterComponent {
         response => {
           this.globalComponentsService.loader.close();
           this.registerWindow.close();
-          this.globalComponentsService.messageBox.openSimple('Information', `User registered/reset password successfully !`);
+          this.globalComponentsService.messageBox.openSimple(ICONS.INFO, `User registered/reset password successfully !`);
         },
         err => {
           this.globalComponentsService.loader.close();

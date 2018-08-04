@@ -7,6 +7,7 @@ import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxex
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {UtilsService} from "../../services/utils.service";
 import {HttpClient} from "@angular/common/http";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 const DIR_ICON = UI_CONSTANTS.DIR_ICON;
 const FILE_ICON = UI_CONSTANTS.FILE_ICON;
@@ -295,7 +296,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     if (!status.hasReadPermission) {
-      this.globalComponentsService.messageBox.openSimple('Information', "You don't have read permission to view JavaScript files");
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, "You don't have read permission to view JavaScript files");
     }
 
     if (status.hasWritePermission !== this.hasWritePermission) {
@@ -325,7 +326,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
           }, 100);
       },
       (err) => {
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to resolve JavaScript file list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to resolve JavaScript file list. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );
@@ -435,7 +436,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       }
 
       if (!UtilsService.isFileNameValid(newLabel)) {
-        this.globalComponentsService.messageBox.openSimple('Error', `The [${newLabel}] file name contains forbidden characters`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newLabel}] file name contains forbidden characters`);
         return;
       }
 
@@ -467,7 +468,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
           this.renameInner(data);
         },
         (err) => {
-          this.globalComponentsService.messageBox.openSimple('Error', 'Failed to rename item. Reason : [${err.statusText}]');
+          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Failed to rename item. Reason : [${err.statusText}]');
           this.globalComponentsService.loader.close();
           console.log(err);
         }
@@ -536,14 +537,14 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     if (!UtilsService.isFileNameValid(newDirName)) {
-      this.globalComponentsService.messageBox.openSimple('Error', `The [${newDirName}] directory name contains forbidden characters`);
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newDirName}] directory name contains forbidden characters`);
       return;
     }
 
     const newDirRelativePath = this.getRightClickDirPath() + UtilsService.SERVER_INFO.SLASH + newDirName;
 
     if (this.findItemByRelativePath(newDirRelativePath) !== undefined) {
-      this.globalComponentsService.messageBox.openSimple('Error', `The [${newDirRelativePath}] item is already exists`);
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newDirRelativePath}] item is already exists`);
       return;
     }
 
@@ -559,7 +560,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to create a new directory. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to create a new directory. Reason : [${err.statusText}]`);
       }
     );
   }
@@ -593,7 +594,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to delete an item. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to delete an item. Reason : [${err.statusText}]`);
       }
     );
   }
@@ -652,14 +653,14 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     }
 
     if (!UtilsService.isFileNameValid(newFileName)) {
-      this.globalComponentsService.messageBox.openSimple('Error', `The [${newFileName}] file name contains forbidden characters`);
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newFileName}] file name contains forbidden characters`);
       return;
     }
 
     const item: any = JavaScriptFilesExplorerComponent.makeNewFileItem(this.getRightClickDirPath(), newFileName);
 
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
-      this.globalComponentsService.messageBox.openSimple('Error', `The [${item.value.relativePath}] item is already exists`);
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${item.value.relativePath}] item is already exists`);
       return;
     }
 
@@ -969,7 +970,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       },
       (err) => {
         console.log(err);
-        this.globalComponentsService.messageBox.openSimple('Error', err.statusText);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         this.globalComponentsService.loader.close();
       }
     );
@@ -993,7 +994,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
     // does use have write permissions ?
     if (this.hasWritePermission !== true) {
-      this.globalComponentsService.messageBox.openSimple('Error', 'No write permissions to move an item');
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'No write permissions to move an item');
       return false;
     }
 

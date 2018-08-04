@@ -5,6 +5,7 @@ import {MESSAGE_TYPE, MessageService} from "./services/message.service";
 import {HttpRequestService} from "./services/http.requests.service";
 import {GlobalComponentsService} from "./services/global-components.service";
 import {UtilsService} from "./services/utils.service";
+import {ICONS} from "./misc/messagebox/messagebox.component";
 
 export const CTRL_S = 'control+s';
 export const F9 = 'F9';
@@ -105,7 +106,7 @@ export class MainComponent implements OnInit {
       },
       (err) => {
         console.log(err);
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load data from server. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load data from server. Reason : [${err.statusText}]`);
       }
     );
 

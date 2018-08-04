@@ -8,6 +8,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as LOG_LEVELS from '../../common/winston-log-levels.json';
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 @Component({
   selector: 'app-settings',
@@ -137,7 +138,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to load settings. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load settings. Reason : [${err.statusText}]`);
         console.log(err);
       });
   }
@@ -174,10 +175,7 @@ export class SettingsComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.open({
-          title: 'Error',
-          label: `Failed to save settings. Reason : ${err.statusText}`,
-        });
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save settings. Reason : ${err.statusText}`);
         console.log(err);
       });
   }

@@ -7,6 +7,7 @@ import * as $ from 'jquery';
 import {LocalStorageService, SAVE_JS_FILE_CONFIRM, TABS} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 const TAB_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -370,7 +371,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple('Error', `Failed to save JS file. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save JS file. Reason : [${err.statusText}]`);
         console.log(err);
         if (callback !== undefined) {
           callback(false);
@@ -512,7 +513,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.messageBox.openSimple('Error', `Failed to load a [${data.relativePath}] JavaScript file content. Reason : [${err.statusText}]`);
+          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load a [${data.relativePath}] JavaScript file content. Reason : [${err.statusText}]`);
           console.log(err);
           reject();
         }
