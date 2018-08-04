@@ -1,4 +1,5 @@
 const uuidv4 = require('uuid/v4');
+const base64 = require('base-64');
 
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
@@ -180,13 +181,46 @@ function isPasswordValid(username, password) {
 	);
 }
 
-function authInterceptorInner(req, res) {
+function handleBasicAuthorization(req) {
+	const authorization = req.headers.authorization;
+	if (authorization === undefined) {
+		return Promise.resolve()
+	}
+
+	logger.log.debug('Trying to authorize user via Basic Authorization');
+	let credentials;
+	try {
+		credentials = base64.decode(authorization.substr(6));
+	} catch (e) {
+		logger.log.error('Failed to decode Basic Authorization hash');
+		return Promise.resolve()
+	}
+
+	const username = credentials.substr(0, credentials.indexOf(':'));
+	const password = credentials.substr(credentials.indexOf(':') + 1);
+
+	logger.log.debug(`Got a [${username}] username from Basic Authorization. Validating user credentials`);
+	return isPasswordValid(username, password)
+		.then(isValid => {
+
+			if (isValid) {
+				req.username = username;
+			}
+			return Promise.resolve();
+		});
+}
+
+function handleCookiesAuthorization(req, res) {
+	if (req.username !== undefined) {
+		return Promise.resolve();
+	}
+
 	const loginToken = req.cookies[LOGIN_TOKEN];
 
 	// no cookies set ? apply guest user
 	if (loginToken === undefined) {
 		req.username = securityConsts.GUEST_USER;
-		return;
+		return Promise.resolve();
 	}
 
 	// does client login token match server token ?
@@ -194,7 +228,7 @@ function authInterceptorInner(req, res) {
 	if (authItem === undefined) {
 		res.clearCookie(LOGIN_TOKEN);
 		req.username = securityConsts.GUEST_USER;
-		return;
+		return Promise.resolve();
 	}
 
 	// is expired ?
@@ -203,7 +237,7 @@ function authInterceptorInner(req, res) {
 		res.clearCookie(LOGIN_TOKEN);
 		delete LOGIN_TOKENS_MAP[loginToken];
 		req.username = securityConsts.GUEST_USER;
-		return;
+		return Promise.resolve();
 	}
 
 	// updating session expiration date
@@ -216,11 +250,16 @@ function authInterceptorInner(req, res) {
 	});
 
 	req.username = authItem.username;
+	return Promise.resolve();
 }
 
 function authInterceptor(req, res, next) {
-	authInterceptorInner(req, res);
-	next();
+	Promise.resolve()
+		.then(_ => handleBasicAuthorization(req))
+		.then(_ => handleCookiesAuthorization(req, res))
+		.then(_ => {
+			next();
+		});
 }
 
 function login(username, res) {
