@@ -527,7 +527,7 @@ function getLDAPSettings() {
 		findBy: ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY]
 	};
 
-	if (ldapSettings.url === undefined) {
+	if (utils.isEmptyStr(ldapSettings.url)) {
 		return undefined;
 	}
 
