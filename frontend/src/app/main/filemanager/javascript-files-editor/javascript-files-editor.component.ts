@@ -122,6 +122,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   prettifyFile() {
+    if (!this.hasWritePermission) {
+      return;
+    }
+
     const tabNr = this.tabs.val();
     if (tabNr < 0) {
       return;
