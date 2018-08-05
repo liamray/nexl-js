@@ -55,7 +55,6 @@
     "command-line-args": "^4.0.7",
     "cookie-parser": "~1.4.3",
     "cookies": "0.7.1",
-    "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "express": "~4.15.5",
     "express-session": "^1.15.6",

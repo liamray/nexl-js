@@ -1,4 +1,4 @@
-let jsBeautify;
+var jsBeautify;
 
 /*jshint curly:false, eqeqeq:true, laxbreak:true, noempty:false */
 /* AUTO-GENERATED. DO NOT MODIFY. */
