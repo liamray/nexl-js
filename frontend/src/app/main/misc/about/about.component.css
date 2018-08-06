@@ -1,9 +1,9 @@
 .nexl-logo {
-  background-image: url("/nexl/site/images/nexl-logo.svg");
+  background-image: url(/nexl/site/images/nexl-logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
   width: 221px;
-  height: 157px;
+  height: 81px;
   display: inline-block;
-  margin: -33px;
+  margin-top: 17px;
 }

@@ -1,11 +1,16 @@
+div {
+  height: 46px;
+}
+
 a {
-  background-image: url("/nexl/site/images/nexl-logo.svg");
+  background-image: url(/nexl/site/images/favicon-32x32.png);
   background-size: contain;
   background-repeat: no-repeat;
-  width: 74px;
-  height: 55px;
-  display: block;
+  width: 32px;
+  height: 32px;
   position: relative;
-  top: -3px;
-  left: -8px;
+  top: 8px;
+  left: 2px;
+  display: block;
+  margin-right: 1px;
 }
