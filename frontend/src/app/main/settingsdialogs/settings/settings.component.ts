@@ -20,7 +20,9 @@ export class SettingsComponent {
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
   @ViewChild('validator') validator: jqxValidator;
   @ViewChild('jsFilesEncoding') jsFilesEncoding: any;
+  @ViewChild('rawOutput') rawOutput: any;
   @ViewChild('httpTimeout') httpTimeout: any;
+
   @ViewChild('httpBinding') httpBiding: any;
   @ViewChild('httpPort') httpPort: any;
   @ViewChild('httpsBinding') httpsBiding: any;

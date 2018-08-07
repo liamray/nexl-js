@@ -138,6 +138,51 @@
               </div>
 
               <div style="clear: both"></div>
+
+              <!--JSONP-->
+              <div class="item">
+                <label>JSONP callback function</label>
+                <jqxInput
+                  #jsonp
+                  id="jsonp"
+                  name="jsonp"
+                  [(ngModel)]="settings[SETTINGS.JSONP]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--RAW_OUTPUT-->
+              <div class="item">
+                <label>Raw output</label>
+                <jqxCheckBox
+                  #rawOutput
+                  [boxSize]="'12px;'"
+                  id="rawOutput"
+                  name="rawOutput"
+                  [(ngModel)]="settings[SETTINGS.RAW_OUTPUT]"
+                ></jqxCheckBox>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
             </div>
 
             <!-- ------------------------------------------------------------------------------ -->

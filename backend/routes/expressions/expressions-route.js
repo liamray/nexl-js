@@ -1,5 +1,5 @@
 const j79 = require('j79-utils');
-const url = require('url'); // built-in utility
+const url = require('url');
 const express = require('express');
 const path = require('path');
 const router = express.Router();
@@ -8,6 +8,7 @@ const logger = require('../../api/logger');
 const utils = require('../../api/utils');
 const confMgmt = require('../../api/conf-mgmt');
 const security = require('../../api/security');
+const confConsts = require('../../common/conf-constants');
 
 function resolveGetParams(req) {
 	const expression = req.query.expression;
@@ -77,6 +78,13 @@ function nexlizeInner(httpParams) {
 	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
 }
 
+function makeJsonResult(field, input, data) {
+	let result = {};
+	result[field] = data;
+	result = JSON.stringify(result);
+	return `${input.callback} ( ${result} )`;
+}
+
 function nexlize(httpParams, req, res) {
 	let result;
 
@@ -112,7 +120,7 @@ function nexlize(httpParams, req, res) {
 	}
 
 	// string sends as is. all other must be stringified
-	if (j79.isString(result)) {
+	if (j79.isString(result) && confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.RAW_OUTPUT]) {
 		res.send(result);
 	} else {
 		res.send(JSON.stringify(result));

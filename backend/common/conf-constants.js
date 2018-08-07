@@ -11,6 +11,9 @@ const SETTINGS = {
 	JS_FILES_ROOT_DIR: 'js-files-root-dir',
 	JS_FILES_ENCODING: 'js-files-encoding',
 	HTTP_TIMEOUT: 'http-timeout-sec',
+	RAW_OUTPUT: 'raw-output',
+	JSONP: 'jsonp-callback',
+
 	LDAP_URL: 'ldap-url',
 	LDAP_BASE_DN: 'ldap-base-dn',
 	LDAP_BIND_DN: 'ldap-bind-dn',
