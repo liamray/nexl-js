@@ -10,6 +10,8 @@ const confMgmt = require('../../api/conf-mgmt');
 const security = require('../../api/security');
 const confConsts = require('../../common/conf-constants');
 
+const JSONP_FUNC = 'nexl-jsonp-func-name';
+
 function resolveGetParams(req) {
 	const expression = req.query.expression;
 	delete req.query['expression'];
@@ -78,11 +80,52 @@ function nexlizeInner(httpParams) {
 	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
 }
 
-function makeJsonResult(field, input, data) {
+function makeJsonResponse(req, field, data) {
+	const jsonpFuncName = req[JSONP_FUNC];
+
 	let result = {};
 	result[field] = data;
 	result = JSON.stringify(result);
-	return `${input.callback} ( ${result} )`;
+	return `${jsonpFuncName} ( ${result} )`;
+}
+
+function isJSONPSupported(req) {
+	return !utils.isEmptyStr(req[JSONP_FUNC]);
+}
+
+function sendError(req, res, err, status) {
+	if (!isJSONPSupported(req)) {
+		security.sendError(res, err, status);
+		return;
+	}
+
+	const jsonPResponse = makeJsonResponse(req, 'error', err);
+	res.send(jsonPResponse);
+	res.end();
+}
+
+function handleJSONPRequest(req) {
+	// JSON works only via HTTP GET
+	if (req.method.toUpperCase() !== 'GET') {
+		return;
+	}
+
+	// is JSONP supported at all ?
+	const callbackParam = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JSONP];
+	if (utils.isEmptyStr(callbackParam)) {
+		return;
+	}
+
+	// resolving JSONP function name
+	const callbackFuncName = req.query[callbackParam];
+
+	// checking JSONP function name
+	if (!utils.isEmptyStr(callbackFuncName)) {
+		req[JSONP_FUNC] = callbackFuncName;
+		logger.log.debug(`Got JSONP request, function name is [${callbackFuncName}]`);
+	} else {
+		logger.log.debug(`Got JSONP request, but function name is empty. Not sending back JSONP response`);
+	}
 }
 
 function nexlize(httpParams, req, res) {
@@ -90,48 +133,52 @@ function nexlize(httpParams, req, res) {
 
 	httpParams.method = req.method;
 
+	const username = security.getLoggedInUsername(req);
+
+	handleJSONPRequest(req);
+
 	try {
 		result = nexlizeInner(httpParams);
-	} catch (e) {
-		logger.log.error('nexl request rejected. Reason : [%s]', e);
-		security.sendError(res, e, 500);
+	} catch (err) {
+		logger.log.error(`nexl request rejected for [${username}] user. Reason : [%s]`, utils.formatErr(err));
+		sendError(req, res, e, 500);
 		return;
 	}
 
 	// is undefined ?
 	if (result === undefined) {
-		logger.log.error('Got undefined value');
-		security.sendError(res, 'Got undefined value', 555);
+		logger.log.error(`Got undefined value for [${username}] user`);
+		sendError(req, res, 'Got undefined value', 555);
 		return;
 	}
 
 	// is null ?
 	if (result === null) {
 		logger.log.error('Got null value');
-		security.sendError(res, 'Got null value', 556);
+		sendError(req, res, `Got null value for [${username}] user`, 556);
 		return;
 	}
 
-	// setting up headers
-	if (j79.isArray(result) || j79.isObject(result)) {
-		res.header("Content-Type", 'application/json');
-	} else {
-		res.header("Content-Type", 'text/plain');
+	if (isJSONPSupported(req)) {
+		const jsonPResponse = makeJsonResponse(req, 'data', result);
+		res.send(jsonPResponse);
+		res.end();
+		logger.log.debug(`nexl expression successfully evaluated by [${username}] user and  JSONP response sent`);
+		return;
 	}
 
 	// string sends as is. all other must be stringified
 	if (j79.isString(result) && confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.RAW_OUTPUT]) {
+		res.header("Content-Type", 'text/plain');
 		res.send(result);
 	} else {
+		res.header("Content-Type", 'application/json');
 		res.send(JSON.stringify(result));
 	}
 
 	res.end();
 
-	if (logger.isLogLevel('debug')) {
-		const username = security.getLoggedInUsername(req);
-		logger.log.debug(`Successfully evaluated nexl expression by [${username}]`);
-	}
+	logger.log.debug(`Successfully evaluated nexl expression by [${username}]`);
 }
 
 router.get('/*', function (req, res) {
