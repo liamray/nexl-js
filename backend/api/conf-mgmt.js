@@ -450,7 +450,7 @@ function initUsers() {
 				token2ResetPassword: token
 			};
 
-			logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${securityConsts.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expired just delete the [${confConsts.CONF_FILES.USERS}] file located in [${NEXL_HOME_DIR}] directory and restart nexl app`);
+			logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${securityConsts.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expires just delete the [${confConsts.CONF_FILES.USERS}] file located in [${NEXL_HOME_DIR}] directory and restart nexl app`);
 
 			return save(users, confConsts.CONF_FILES.USERS);
 		});
