@@ -123,8 +123,6 @@ function handleJSONPRequest(req) {
 	if (!utils.isEmptyStr(callbackFuncName)) {
 		req[JSONP_FUNC] = callbackFuncName;
 		logger.log.debug(`Got JSONP request, function name is [${callbackFuncName}]`);
-	} else {
-		logger.log.debug(`Got JSONP request, but function name is empty. Not sending back JSONP response`);
 	}
 }
 
