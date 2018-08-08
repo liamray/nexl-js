@@ -139,7 +139,7 @@ function nexlize(httpParams, req, res) {
 		result = nexlizeInner(httpParams);
 	} catch (err) {
 		logger.log.error(`nexl request rejected for [${username}] user. Reason : [%s]`, utils.formatErr(err));
-		sendError(req, res, e, 500);
+		sendError(req, res, err, 500);
 		return;
 	}
 
