@@ -52,6 +52,7 @@
     "base-64": "^0.1.0",
     "bcryptjs": "2.4.3",
     "body-parser": "~1.18.2",
+    "clone": "^2.1.2",
     "command-line-args": "^4.0.7",
     "cookie-parser": "~1.4.3",
     "cookies": "0.7.1",
@@ -76,7 +77,6 @@
   },
   "devDependencies": {
     "assert": "^1.4.1",
-    "deepmerge": "^2.1.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
   }

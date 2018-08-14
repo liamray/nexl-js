@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const clone = require('clone');
 
-const utils = require('../../api/utils');
+const nexlApp = require('../../nexl-app/nexl-app');
 const security = require('../../api/security');
 const jsFilesUtils = require('../../api/jsfiles-utils');
 const confMgmt = require('../../api/conf-mgmt');
@@ -29,6 +30,27 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
 });
 
+function applyChanges(before) {
+	const after = confMgmt.getNexlSettingsCached();
+
+	// is log level changed ?
+	if (before[confConsts.SETTINGS.LOG_LEVEL] !== after[confConsts.SETTINGS.LOG_LEVEL]) {
+		logger.log.level = after[confConsts.SETTINGS.LOG_LEVEL];
+	}
+
+	// is http timeout changed ?
+	if (before[confConsts.SETTINGS.HTTP_TIMEOUT] !== after[confConsts.SETTINGS.HTTP_TIMEOUT]) {
+		nexlApp.setHttpTimeout(after[confConsts.SETTINGS.HTTP_TIMEOUT]);
+	}
+
+	// is nexl storage dir changed ?
+	if (before[confConsts.SETTINGS.JS_FILES_ROOT_DIR] !== after[confConsts.SETTINGS.JS_FILES_ROOT_DIR]) {
+		return jsFilesUtils.cacheJSFiles();
+	}
+
+	return Promise.resolve();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // saves settings
 //////////////////////////////////////////////////////////////////////////////
@@ -43,25 +65,23 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 	}
 
 	const data = req.body;
-	delete data[confConsts.NEXL_HOME_DEF];
-	logger.log.level = data[confConsts.SETTINGS.LOG_LEVEL];
-	const jsRootDir = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 
-	return confMgmt.saveSettings(data).then(
-		() => {
+	// saving current conf
+	const settingsClone = clone(confMgmt.getNexlSettingsCached());
+
+	// removing nexl home dir from data, because it's not a part of setting
+	delete data[confConsts.NEXL_HOME_DEF];
+
+	return confMgmt.saveSettings(data)
+		.then(_ => applyChanges(settingsClone))
+		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully saved nexl server settings by [${username}] user`);
-
-			// is js root dir was changed ?
-			if (jsRootDir !== data[confConsts.SETTINGS.JS_FILES_ROOT_DIR]) {
-				// reloading cache
-				jsFilesUtils.cacheJSFiles();
-			}
 		}).catch(
-		(err) => {
-			logger.log.error('Failed to save settings. Reason : [%s]', err);
-			security.sendError(res, err);
-		});
+			(err) => {
+				logger.log.error('Failed to save settings. Reason : [%s]', err);
+				security.sendError(res, err);
+			});
 });
 
 //////////////////////////////////////////////////////////////////////////////

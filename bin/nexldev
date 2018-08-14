@@ -15,4 +15,8 @@ const interceptors = [
 	}
 ];
 
-nexlApp.create(interceptors).then(nexlApp.start);
+nexlApp.create(interceptors)
+	.then(nexlApp.start)
+	.catch(err => {
+		console.log(`Failed to start nexl app. Reason : [${err}]`);
+	});

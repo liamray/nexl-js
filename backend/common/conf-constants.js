@@ -11,6 +11,7 @@ const SETTINGS = {
 	JS_FILES_ROOT_DIR: 'js-files-root-dir',
 	JS_FILES_ENCODING: 'js-files-encoding',
 	HTTP_TIMEOUT: 'http-timeout-sec',
+	SESSION_TIMEOUT: 'session-timeout-min',
 	RAW_OUTPUT: 'raw-output',
 	JSONP: 'jsonp-callback',
 
@@ -26,11 +27,18 @@ const SETTINGS = {
 	HTTPS_PORT: 'https-port',
 	SSL_CERT_LOCATION: 'ssl-cert-location',
 	SSL_KEY_LOCATION: 'ssl-key-location',
+	SSL_CA_LOCATION: 'ssl-ca-location',
 
 	LOG_FILE_LOCATION: 'log-file-location',
 	LOG_LEVEL: 'log-level',
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
 	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count'
+};
+
+const SETTINGS_GROUP = {
+	HTTP: 'http',
+	HTTPS: 'https',
+	LDAP: 'ldap'
 };
 
 // --------------------------------------------------------------------------------
@@ -45,6 +53,7 @@ const AVAILABLE_ENCODINGS = [ENCODING_UTF8, ENCODING_ASCII];
 const CONF_CONSTANTS = {};
 CONF_CONSTANTS.CONF_FILES = CONF_FILES;
 CONF_CONSTANTS.SETTINGS = SETTINGS;
+CONF_CONSTANTS.SETTINGS_GROUP = SETTINGS_GROUP;
 CONF_CONSTANTS.NEXL_HOME_DEF = NEXL_HOME_DEF;
 
 CONF_CONSTANTS.ENCODING_UTF8 = ENCODING_UTF8;

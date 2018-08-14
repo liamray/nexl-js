@@ -118,7 +118,7 @@
 
               <!--HTTP timeout-->
               <div class="item">
-                <label>HTTP timeout</label>
+                <label>HTTP timeout (sec)</label>
                 <jqxInput
                   #httpTimeout
                   id="httpTimeout"
@@ -132,10 +132,34 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>HTTP and HTTPS server timeout in seconds</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--Session timeout-->
+              <div class="item">
+                <label>Session timeout (min)</label>
+                <jqxInput
+                  #sessionTimeout
+                  id="sessionTimeout"
+                  name="sessionTimeout"
+                  [(ngModel)]="settings[SETTINGS.SESSION_TIMEOUT]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'></p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
+
 
               <div style="clear: both"></div>
 
@@ -400,6 +424,7 @@
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
+
               <div style="clear: both"></div>
 
               <!--SSL cert location-->
@@ -422,6 +447,30 @@
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
+
+              <div style="clear: both"></div>
+
+              <!--SSL CA location-->
+              <div class="item">
+                <label>SSL CA location</label>
+                <jqxInput
+                  #sslCertLocation
+                  id="sslCALocation"
+                  name="sslCALocation"
+                  [(ngModel)]="settings[SETTINGS.SSL_CA_LOCATION]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'></p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
             </div>
 
             <!-- ------------------------------------------------------------------------------ -->

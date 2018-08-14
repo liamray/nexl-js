@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const fsx = require('./fsx');
 const j79 = require('j79-utils');
 const osHomeDir = require('os-homedir');
@@ -12,203 +11,11 @@ const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
 const security = require('./security');
 const logger = require('./logger');
+const schemas = require('../common/schemas');
 const schemaValidation = require('./schema-validation');
 
 let NEXL_HOME_DIR;
 let ALL_SETTINGS_CACHED = {};
-
-// --------------------------------------------------------------------------------
-// default values
-const DEF_VALUES = {};
-
-// SETTINGS default values
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS] = {};
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(osHomeDir(), 'nexl-js-files');
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = confConsts.ENCODING_UTF8;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = false;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = 10;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = 'localhost';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = 8080;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = 'localhost';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = 443;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = () => path.join(NEXL_HOME_DIR, 'nexl.log');
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = 'info';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = 999;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = 0; // not rotating
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
-
-// PASSWORDS default values
-DEF_VALUES[confConsts.CONF_FILES.USERS] = {};
-
-// ADMINS default values
-DEF_VALUES[confConsts.CONF_FILES.ADMINS] = [];
-
-// PERMISSIONS default values
-DEF_VALUES[confConsts.CONF_FILES.PERMISSIONS] = {};
-
-
-// --------------------------------------------------------------------------------
-// validation schemas
-const VALIDATION_SCHEMAS = {};
-
-// --------------------------------------------------------------------------------
-// SETTINGS validations
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
-	if (!j79.isString(val) || val.length < 1) {
-		return 'JS files root dir dir must be a non empty string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = (val) => {
-	if (confConsts.AVAILABLE_ENCODINGS.indexOf(val) < 0) {
-		return 'JS files encoding must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => {
-	val = parseInt(val);
-	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
-		return 'HTTP timeout must be a positive integer';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = (val) => {
-	if (!j79.isBool(val)) {
-		return 'RAW_OUTPUT must be a valid boolean value';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JSONP] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = () => true;
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = (val) => {
-	if (!j79.isString(val)) {
-		return 'HTTP binding must be a string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = (val) => {
-	val = parseInt(val);
-	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
-		return 'HTTP port be a positive integer';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = (val) => {
-	if (val !== undefined && !j79.isString(val)) {
-		return 'HTTPS binding must be a string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = (val) => {
-	if (val === undefined || val === '') {
-		return;
-	}
-
-	val = parseInt(val);
-	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
-		return 'HTTPS port must be a positive integer';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = (val) => {
-	if (val !== undefined && !j79.isString(val)) {
-		return 'SSL certificate location must be a non empty string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = (val) => {
-	if (val !== undefined && !j79.isString(val)) {
-		return 'SSL key location must be a non empty string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = (val) => {
-	if (utils.isEmptyStr(val)) {
-		return 'Log file location must be a nont empty string';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) => {
-	if (!j79.isString(val) && logger.getAvailLevels().indexOf(val) < 0) {
-		return 'Log level must be of the following : [' + logger.getAvailLevels().join(',') + ']';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => {
-	val = parseInt(val);
-	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
-		return 'Log rotate file size must be a positive integer';
-	}
-};
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => {
-	val = parseInt(val);
-	if (!j79.isNumber(val) || val < 0 || !Number.isInteger(val)) {
-		return 'Log rotate files count must be a positive integer';
-	}
-};
-
-// --------------------------------------------------------------------------------
-// USERS validations
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.USERS] = {
-	'*': {
-		password: (val) => {
-			// todo : validate password
-			if (!j79.isString(val) || val.length < 1) {
-				return 'Bad password';
-			}
-		},
-
-		disabled: (val) => {
-			if (!j79.isBool(val)) {
-				return '[disabled] field must be of a boolean type';
-			}
-		},
-
-		token2ResetPassword: {
-			token: (val) => {
-				if (!j79.isString(val) || val.length < 1) {
-					return 'Token must be non empty string';
-				}
-			},
-			created: (val) => {
-				const parsed = Date.parse(val);
-				// is NaN ?
-				if (parsed !== parsed) {
-					return '[created] field must be a valid date string';
-				}
-			}
-		},
-	}
-};
-
-
-// --------------------------------------------------------------------------------
-// ADMINS validations
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.ADMINS] = [
-	(val) => {
-		if (!j79.isString(val) || val.length < 1) {
-			return 'Each admin item must be a non empty string';
-		}
-	}
-];
-
-
-// --------------------------------------------------------------------------------
-// PERMISSIONS validations
-VALIDATION_SCHEMAS[confConsts.CONF_FILES.PERMISSIONS] = {
-	'*': {
-		read: (val) => {
-			if (!j79.isBool(val)) {
-				return '[read] items must of a boolean type';
-			}
-		},
-		write: (val) => {
-			if (!j79.isBool(val)) {
-				return '[write] items must of a boolean type';
-			}
-		}
-	}
-};
-
 
 // --------------------------------------------------------------------------------
 // api
@@ -217,7 +24,7 @@ function getConfFileFullPath(fileName) {
 	return path.join(NEXL_HOME_DIR, fileName);
 }
 
-function substDefValues(defValue) {
+function loadDefaultValues(defValue) {
 	if (j79.isPrimitive(defValue)) {
 		return defValue;
 	}
@@ -230,7 +37,7 @@ function substDefValues(defValue) {
 		const result = [];
 		for (let index in defValue) {
 			let item = defValue[index];
-			item = substDefValues(item);
+			item = loadDefaultValues(item);
 			result.push(item);
 		}
 		return result;
@@ -240,7 +47,7 @@ function substDefValues(defValue) {
 		const result = {};
 		for (let key in defValue) {
 			let val = defValue[key];
-			val = substDefValues(val);
+			val = loadDefaultValues(val);
 			result[key] = val;
 		}
 
@@ -248,26 +55,6 @@ function substDefValues(defValue) {
 	}
 
 	throw 'Bad default value';
-}
-
-function setupDefaultValues(data, fileName) {
-	// setting upd default values for objects only ( there is no way to do this with arrays )
-	if (!j79.isObject(data)) {
-		return data;
-	}
-
-	const defValues = substDefValues(DEF_VALUES[fileName]);
-
-	// iterating over defValues
-	for (let key in defValues) {
-		if (data[key] !== undefined) {
-			continue;
-		}
-
-		data[key] = defValues[key];
-	}
-
-	return data;
 }
 
 function loadInner(fullPath, fileName) {
@@ -287,13 +74,17 @@ function loadInner(fullPath, fileName) {
 
 			logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
 
-			// completing default values
-			let result = setupDefaultValues(data, fileName);
+			// validating data
+			const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName]);
+			if (!validationResult.isValid) {
+				logger.log.error(`Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`);
+				return Promise.reject(validationResult.err);
+			}
 
 			// updating cache
-			ALL_SETTINGS_CACHED[fileName] = result;
+			ALL_SETTINGS_CACHED[fileName] = data;
 
-			return Promise.resolve(result);
+			return Promise.resolve(data);
 		});
 }
 
@@ -324,18 +115,15 @@ function load(fileName) {
 			}
 
 			// file doesn't exist, loading defaults
-			return new Promise(
-				(resolve, reject) => {
-					logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
+			logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
 
-					// applying default values
-					let result = substDefValues(DEF_VALUES[fileName]);
+			// applying default values
+			let result = loadDefaultValues(schemas.DEF_VALUES[fileName]);
 
-					// updating cache
-					ALL_SETTINGS_CACHED[fileName] = result;
+			// updating cache
+			ALL_SETTINGS_CACHED[fileName] = result;
 
-					resolve(result)
-				});
+			return Promise.resolve(result);
 		});
 }
 
@@ -348,27 +136,33 @@ function save(data, fileName) {
 	}
 
 	const fullPath = getConfFileFullPath(fileName);
-	const schema = VALIDATION_SCHEMAS[fileName];
 
-	return schemaValidation(data, schema).then(
-		() => {
-			let conf = {
-				version: version,
-				data: data
-			};
+	// validating data before save
+	const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName]);
+	if (!validationResult.isValid) {
+		logger.log.error(`Config validation failed for [${fileName}] while saving. Reason : [${validationResult.err}]`);
+		return Promise.reject(validationResult.err);
+	}
 
-			try {
-				conf = JSON.stringify(conf, null, 2);
-			} catch (e) {
-				logger.log.error('Failed to stringify object while saving the [%s] file. Reason : [%s]', fullPath, utils.formatErr(e));
-				return Promise.reject('Bad data format');
-			}
+	// preparing for save
+	let conf = {
+		version: version,
+		data: data
+	};
 
+	try {
+		conf = JSON.stringify(conf, null, 2);
+	} catch (e) {
+		logger.log.error('Failed to stringify object while saving the [%s] file. Reason : [%s]', fullPath, utils.formatErr(e));
+		return Promise.reject('Bad data format');
+	}
+
+	// saving...
+	return fsx.writeFile(fullPath, conf, {encoding: confConsts.ENCODING_UTF8})
+		.then(_ => {
 			// updating cache
 			ALL_SETTINGS_CACHED[fileName] = data;
-
-			// saving...
-			return fsx.writeFile(fullPath, conf, {encoding: confConsts.ENCODING_UTF8});
+			return Promise.resolve();
 		});
 }
 

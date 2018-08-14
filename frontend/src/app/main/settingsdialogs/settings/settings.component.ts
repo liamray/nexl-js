@@ -21,14 +21,11 @@ export class SettingsComponent {
   @ViewChild('validator') validator: jqxValidator;
   @ViewChild('jsFilesEncoding') jsFilesEncoding: any;
   @ViewChild('rawOutput') rawOutput: any;
-  @ViewChild('httpTimeout') httpTimeout: any;
 
   @ViewChild('httpBinding') httpBiding: any;
   @ViewChild('httpPort') httpPort: any;
   @ViewChild('httpsBinding') httpsBiding: any;
   @ViewChild('httpsPort') httpsPort: any;
-  @ViewChild('sslKeyLocation') sslKeyLocation: any;
-  @ViewChild('sslCertLocation') sslCertLocation: any;
 
   @ViewChild('ldapUrl') ldapUrl: any;
   @ViewChild('ldapBaseDN') ldapBaseDN: any;
@@ -58,36 +55,51 @@ export class SettingsComponent {
   validationRules =
     [
       {input: '#jsFilesRootDir', message: 'JS files root dir is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#httpTimeout', message: 'HTTP timeout is required !', action: 'keyup, blur', rule: 'required'},
       {
         input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          const val = this.httpTimeout.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTP_TIMEOUT, 1);
         }
       },
-      {input: '#httpBinding', message: 'HTTP bindings is required!', action: 'keyup, blur', rule: 'required'},
-      {input: '#httpPort', message: 'HTTP port is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#sessionTimeout', message: 'Session timeout is required !', action: 'keyup, blur', rule: 'required'},
       {
-        input: '#httpPort', message: 'HTTP port must be a positive integer', action: 'keyup, blur',
+        input: '#sessionTimeout', message: 'Session timeout must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          const val = this.httpPort.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.SESSION_TIMEOUT, 1);
         }
       },
       {
-        input: '#httpsPort', message: 'HTTPS port must be a positive integer', action: 'keyup, blur',
+        input: '#httpPort', message: 'HTTP port must be a positive integer between 1 and 65535', action: 'keyup, blur',
         rule: (): any => {
-          const val = this.httpsPort.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTP_PORT, 1, 65535);
         }
       },
+      {
+        input: '#httpsPort',
+        message: 'HTTPS port must be a positive integer between 1 and 65535',
+        action: 'keyup, blur',
+        rule: (): any => {
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTPS_PORT, 1, 65535);
+        }
+      },
+      {
+        input: '#ldapUrl',
+        message: 'LDAP URL must be started with ldap://',
+        action: 'keyup, blur',
+        rule: (): any => {
+          const val = this.settings[CONF_CONSTANTS.SETTINGS.LDAP_URL];
+          if (val === '' || val === undefined || val === null) {
+            return true;
+          }
 
-      {input: '#logFileLocation', message: 'Log file location is required!', action: 'keyup, blur', rule: 'required'},
+          return val.indexOf('ldap://') === 0;
+        }
+      },
       {
         input: '#logRotateFileSize', message: 'Log rotate file size must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          const val = this.logRotateFileSize.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILE_SIZE, 0);
         }
       },
       {
@@ -95,8 +107,7 @@ export class SettingsComponent {
         message: 'Log rotate files count must be a positive integer',
         action: 'keyup, blur',
         rule: (): any => {
-          const val = this.logRotateFilesCount.val() || '';
-          return UtilsService.isPositiveIneger(val);
+          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILES_COUNT, 0);
         }
       }
     ];
@@ -118,6 +129,30 @@ export class SettingsComponent {
       });
   }
 
+  convert2IntAndValidate(field: string, min?: number, max?: number) {
+    let val = this.settings[field];
+    if (val === '') {
+      return true;
+    }
+
+    val = parseInt(val);
+    if (val !== val) {
+      return false;
+    }
+
+    if (min !== undefined && val < min) {
+      return false;
+    }
+
+    if (max !== undefined && val > max) {
+      return false;
+    }
+
+    this.settings[field] = val;
+
+    return true;
+  }
+
   open() {
     if (!this.isAdmin) {
       return;
@@ -135,6 +170,7 @@ export class SettingsComponent {
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
         this.jsFilesEncoding.val(this.settings[this.SETTINGS.JS_FILES_ENCODING]);
+        this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT]);
         this.jsFilesRootDirBefore = this.settings[this.SETTINGS.JS_FILES_ROOT_DIR];
         this.settingsWindow.open();
       },

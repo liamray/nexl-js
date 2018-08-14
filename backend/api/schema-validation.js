@@ -1,53 +1,57 @@
 const j79 = require('j79-utils');
 const util = require('util');
 const logger = require('./logger');
-
-// todo : add log
-// todo : improve
-
-function resolveSchema(key, objectSchema) {
-	// any key
-	if (objectSchema['*'] !== undefined) {
-		return objectSchema['*'];
-	}
-
-	// specific key
-	return objectSchema[key];
-}
+const schemas = require('../common/schemas');
 
 function objectSchemaValidation(data, objectSchema) {
-	if (!j79.isObject(data)) {
-		return util.format('Wrong data structure. Expecting for object, but got a %s', j79.getType(data));
+	// validating by schema
+	for (let key in objectSchema) {
+		const val = data[key];
+		const schema = objectSchema[key];
+
+		if (key !== '*') {
+			const validationResult = schemaValidation(val, schema);
+			if (!validationResult.isValid) {
+				return validationResult;
+			}
+
+			continue;
+		}
+
+		// iterating over each key\value pair in object and validating each one because of *
+		for (let subKey in data) {
+			const validationResult = schemaValidation(data[subKey], schema);
+			if (!validationResult.isValid) {
+				return validationResult;
+			}
+		}
 	}
 
+	if (objectSchema['*'] !== undefined) {
+		return schemas.valid();
+	}
+
+	// checking for unexpected keys in data
 	for (let key in data) {
-		let schema = resolveSchema(key, objectSchema);
-		if (schema === undefined) {
-			return util.format('Got unrecognized object field [%s]', key);
-		}
-
-		let val = data[key];
-
-		const result = schemaValidation(val, schema);
-		if (j79.isString(result)) {
-			return result;
+		if (objectSchema[key] === undefined) {
+			return schemas.invalid(`Object contains unrecognized [${key}] field`);
 		}
 	}
+
+	return schemas.valid();
 }
 
 function arraySchemaValidation(data, arraySchema) {
-	if (!j79.isArray(data)) {
-		return 'Wrong data structure. Expecting for array, but got a [' + j79.getType(data) + ']';
-	}
-
 	for (let index in data) {
 		let item = data[index];
 
-		const result = schemaValidation(item, arraySchema);
-		if (j79.isString(result)) {
-			return result;
+		const validationResult = schemaValidation(item, arraySchema);
+		if (!validationResult.isValid) {
+			return validationResult;
 		}
 	}
+
+	return schemas.valid();
 }
 
 function schemaValidation(data, schema) {
@@ -63,23 +67,14 @@ function schemaValidation(data, schema) {
 		return objectSchemaValidation(data, schema);
 	}
 
-	throw 'API error : wrong schema';
+	return schema.invalid('API error : wrong schema');
 }
 
-function schemaValidationPromised(data, schema) {
-	try {
-		const validationMsg = schemaValidation(data, schema);
-		if (validationMsg === undefined) {
-			return Promise.resolve();
-		} else {
-			logger.log.error('Data validation failed. Reason : [%s]', validationMsg);
-			return Promise.reject(validationMsg);
-		}
-	} catch (e) {
-		return Promise.reject(e);
-	}
+function schemaValidationWrapper(data, schema) {
+	const result = schemaValidation(data, schema);
+	return result;
 }
 
 // --------------------------------------------------------------------------------
-module.exports = schemaValidationPromised;
+module.exports = schemaValidationWrapper;
 // --------------------------------------------------------------------------------

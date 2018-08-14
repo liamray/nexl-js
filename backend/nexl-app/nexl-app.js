@@ -141,6 +141,9 @@ function startHTTPServer() {
 			return;
 		}
 
+		const settings = confMgmt.getNexlSettingsCached();
+		httpServer.setTimeout(reCalcHttpTimeout(settings[confConsts.SETTINGS.HTTP_TIMEOUT]));
+
 		// error event handler
 		httpServer.on('error', (error) => {
 			httpError(error);
@@ -153,7 +156,6 @@ function startHTTPServer() {
 		});
 
 		// starting http server
-		const settings = confMgmt.getNexlSettingsCached();
 		httpServer.listen(settings[confConsts.SETTINGS.HTTP_PORT], settings[confConsts.SETTINGS.HTTP_BINDING]);
 	});
 }
@@ -216,6 +218,9 @@ function startHTTPSServerInner(sslCredentials) {
 			return;
 		}
 
+		const settings = confMgmt.getNexlSettingsCached();
+		httpsServer.setTimeout(reCalcHttpTimeout(settings[confConsts.SETTINGS.HTTP_TIMEOUT]));
+
 		// error event handler
 		httpsServer.on('error', (error) => {
 			httpsError(error);
@@ -228,7 +233,6 @@ function startHTTPSServerInner(sslCredentials) {
 		});
 
 		// starting http server
-		const settings = confMgmt.getNexlSettingsCached();
 		httpsServer.listen(settings[confConsts.SETTINGS.HTTPS_PORT], settings[confConsts.SETTINGS.HTTPS_BINDING]);
 	});
 }
@@ -277,8 +281,23 @@ function stop() {
 	}
 }
 
+function reCalcHttpTimeout(timeout) {
+	return timeout * 1000;
+}
+
+function setHttpTimeout(timeout) {
+	if (httpServer !== undefined) {
+		httpServer.setTimeout(reCalcHttpTimeout(timeout));
+	}
+
+	if (httpsServer !== undefined) {
+		httpsServer.setTimeout(reCalcHttpTimeout(timeout));
+	}
+}
+
 // --------------------------------------------------------------------------------
 module.exports.create = create;
 module.exports.start = start;
 module.exports.stop = stop;
+module.exports.setHttpTimeout = setHttpTimeout;
 // --------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 const COMMON_UTILS = {};
 COMMON_UTILS.formatDate = formatDate;
+COMMON_UTILS.validatePasswordStrength = validatePasswordStrength;
+COMMON_UTILS.validateUsernameStrength = validateUsernameStrength;
 
 // --------------------------------------------------------------------------------
 
@@ -33,6 +35,14 @@ function formatDate() {
 	time = time.join(':');
 
 	return date + ' ' + time;
+}
+
+function validateUsernameStrength(username) {
+	return username.match(/^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]){2,}$/) !== null;
+}
+
+function validatePasswordStrength(passowrd) {
+	return passowrd.match(/(?=.*[0-9])(?=.*[A-z]).{5,}/) !== null;
 }
 
 // --------------------------------------------------------------------------------
