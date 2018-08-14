@@ -135,11 +135,16 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     const editor = ace.edit(TAB_CONTENT + idSeqNr);
     const cursorPos = editor.getCursorPosition();
 
-    let tabContent = editor.getValue();
+    const tabContentBefore = editor.getValue();
     const opts = {"indent_with_tabs": true};
-    tabContent = jsBeautify(tabContent, opts);
+    const tabContentAfter = jsBeautify(tabContentBefore, opts);
 
-    editor.setValue(tabContent);
+    if (tabContentBefore === tabContentAfter) {
+      this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'This file is already prettified');
+      return;
+    }
+
+    editor.setValue(tabContentAfter);
     editor.gotoLine(cursorPos.row + 1, cursorPos.column);
   }
 

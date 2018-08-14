@@ -310,12 +310,20 @@ SCHEMAS[confConsts.CONF_FILES.PERMISSIONS] = {
 // --------------------------------------------------------------------------------
 const GROUP_VALIDATIONS = {};
 
+function hasHttpConnector(data) {
+	return !isNullOrEmpty(data[confConsts.SETTINGS.HTTP_BINDING]) && !isNullOrEmpty(data[confConsts.SETTINGS.HTTP_PORT]);
+}
+
+function hasHttpsConnector(data) {
+	return !isNullOrEmpty(data[confConsts.SETTINGS.HTTPS_BINDING]) && !isNullOrEmpty(data[confConsts.SETTINGS.HTTPS_PORT]) && !isNullOrEmpty(data[confConsts.SETTINGS.SSL_KEY_LOCATION]) && !isNullOrEmpty(data[confConsts.SETTINGS.SSL_CERT_LOCATION]);
+}
+
 GROUP_VALIDATIONS[SETTINGS_FILE] = {};
-GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.HTTP] = (data) => {
-	return {
-		isValid: false,
-		err: 'HTTP binding is missing'
-	}
+GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.CONNECTORS] = (data) => {
+	return hasHttpConnector(data) || hasHttpsConnector(data) ? valid() : invalid('You have to provide either HTTP or HTTPS connector details');
+};
+GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.LDAP] = (data) => {
+	return !isNullOrEmpty(data[confConsts.SETTINGS.LDAP_URL]) && !isNullOrEmpty(data[confConsts.SETTINGS.LDAP_BASE_DN]) ? valid() : invalid('You have to provide at least LDAP URL and Base DN');
 };
 
 // --------------------------------------------------------------------------------
@@ -324,4 +332,6 @@ module.exports.SCHEMAS = SCHEMAS;
 module.exports.GROUP_VALIDATIONS = GROUP_VALIDATIONS;
 module.exports.valid = valid;
 module.exports.invalid = invalid;
+module.exports.hasHttpConnector = hasHttpConnector;
+module.exports.hasHttpsConnector = hasHttpsConnector;
 // --------------------------------------------------------------------------------

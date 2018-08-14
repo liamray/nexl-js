@@ -70,11 +70,13 @@ function schemaValidation(data, schema) {
 	return schema.invalid('API error : wrong schema');
 }
 
-function schemaValidationWrapper(data, schema) {
-	const result = schemaValidation(data, schema);
-	return result;
+function groupValidation(data, groupSchema) {
+	for (let key in groupSchema) {
+
+	}
 }
 
 // --------------------------------------------------------------------------------
-module.exports = schemaValidationWrapper;
+module.exports.schemaValidation = schemaValidation;
+module.exports.groupValidation = groupValidation;
 // --------------------------------------------------------------------------------

@@ -36,8 +36,7 @@ const SETTINGS = {
 };
 
 const SETTINGS_GROUP = {
-	HTTP: 'http',
-	HTTPS: 'https',
+	CONNECTORS: 'connectors',
 	LDAP: 'ldap'
 };
 

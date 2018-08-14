@@ -16,7 +16,6 @@ const WRITE_PERMISSION = 'write';
 const REGISTRATION_TOKEN_EXPIRATION_HOURS = 24;
 const LOGIN_TOKENS_MAP = {};
 const LOGIN_TOKEN = 'loginToken';
-const LOGIN_SESSION_MINUTES = 60 * 24 * 7; // 1 week
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -210,6 +209,10 @@ function handleBasicAuthorization(req) {
 		});
 }
 
+function getSessionTimeout() {
+	return confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.SESSION_TIMEOUT] * 60 * 1000;
+}
+
 function handleCookiesAuthorization(req, res) {
 	if (req.username !== undefined) {
 		return Promise.resolve();
@@ -241,11 +244,11 @@ function handleCookiesAuthorization(req, res) {
 	}
 
 	// updating session expiration date
-	LOGIN_TOKENS_MAP[loginToken].sessionExpiresAt = new Date().getTime() + LOGIN_SESSION_MINUTES * 60 * 1000;
+	LOGIN_TOKENS_MAP[loginToken].sessionExpiresAt = new Date().getTime() + getSessionTimeout();
 
 	// updating cookies expiration date
 	res.cookie(LOGIN_TOKEN, loginToken, {
-		maxAge: LOGIN_SESSION_MINUTES * 60 * 1000,
+		maxAge: getSessionTimeout(),
 		httpOnly: true
 	});
 
@@ -266,13 +269,13 @@ function login(username, res) {
 	const loginToken = uuidv4();
 
 	res.cookie(LOGIN_TOKEN, loginToken, {
-		maxAge: LOGIN_SESSION_MINUTES * 60 * 1000,
+		maxAge: getSessionTimeout(),
 		httpOnly: true
 	});
 
 
 	LOGIN_TOKENS_MAP[loginToken] = {
-		sessionExpiresAt: new Date().getTime() + LOGIN_SESSION_MINUTES * 60 * 1000,
+		sessionExpiresAt: new Date().getTime() + getSessionTimeout(),
 		username: username
 	}
 }
