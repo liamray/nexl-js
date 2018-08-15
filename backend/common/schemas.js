@@ -323,7 +323,18 @@ GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.CONNECTORS] = (data) 
 	return hasHttpConnector(data) || hasHttpsConnector(data) ? valid() : invalid('You have to provide either HTTP or HTTPS connector details');
 };
 GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.LDAP] = (data) => {
-	return !isNullOrEmpty(data[confConsts.SETTINGS.LDAP_URL]) && !isNullOrEmpty(data[confConsts.SETTINGS.LDAP_BASE_DN]) ? valid() : invalid('You have to provide at least LDAP URL and Base DN');
+	const ldapUrl = data[confConsts.SETTINGS.LDAP_URL];
+	const baseDN = data[confConsts.SETTINGS.LDAP_BASE_DN];
+
+	if (isNullOrEmpty(ldapUrl) && !isNullOrEmpty(baseDN)) {
+		return invalid('You have to provide an LDAP URL');
+	}
+
+	if (!isNullOrEmpty(ldapUrl) && isNullOrEmpty(baseDN)) {
+		return invalid('You have to provide an LDAP Base DN');
+	}
+
+	return valid();
 };
 
 // --------------------------------------------------------------------------------

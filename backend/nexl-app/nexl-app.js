@@ -16,6 +16,7 @@ const utils = require('../api/utils');
 const logger = require('../api/logger');
 const security = require('../api/security');
 const fsx = require('../api/fsx');
+const schemas = require('../common/schemas');
 const version = require('../../package.json').version;
 
 const notFoundInterceptor = require('../interceptors/404-interceptor');
@@ -131,6 +132,12 @@ function httpError(error) {
 }
 
 function startHTTPServer() {
+	const settings = confMgmt.getNexlSettingsCached();
+	if (!schemas.hasHttpConnector(settings)) {
+		logger.log.debug(`HTTP binding and/or port is not provided. Not starting HTTP listener`);
+		return Promise.resolve();
+	}
+
 	return new Promise((resolve, reject) => {
 		// creating http server
 		try {
@@ -239,22 +246,12 @@ function startHTTPSServerInner(sslCredentials) {
 
 function startHTTPSServer() {
 	const settings = confMgmt.getNexlSettingsCached();
-	const httpsBinding = settings[confConsts.SETTINGS.HTTPS_BINDING];
-	const httpsPort = settings[confConsts.SETTINGS.HTTPS_PORT];
-	const sslCert = settings[confConsts.SETTINGS.SSL_CERT_LOCATION];
-	const sslKey = settings[confConsts.SETTINGS.SSL_KEY_LOCATION];
-
-	if (utils.isEmptyStr(httpsBinding) && utils.isEmptyStr(httpsPort) && utils.isEmptyStr(sslCert) && utils.isEmptyStr(sslKey)) {
-		logger.log.info('HTTPS listener will not be started. To start HTTPS listener provide the following settings : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT, confConsts.SETTINGS.SSL_KEY_LOCATION, confConsts.SETTINGS.SSL_CERT_LOCATION, confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
+	if (!schemas.hasHttpsConnector(settings)) {
+		logger.log.debug(`HTTPS binding|port|cert|key is not provided. Not starting HTTPS listener`);
 		return Promise.resolve();
 	}
 
-	if (utils.isNotEmptyStr(httpsBinding) && utils.isNotEmptyStr(httpsPort) && utils.isNotEmptyStr(sslCert) && utils.isNotEmptyStr(sslKey)) {
-		return assembleSSLCerts().then(startHTTPSServerInner);
-	} else {
-		logger.log.info('HTTPS listener will not be started because one of the following settings is missing : [%s, %s, %s, %s] in [%s] file located in [%s] directory', confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT, confConsts.SETTINGS.SSL_KEY_LOCATION, confConsts.SETTINGS.SSL_CERT_LOCATION, confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlHomeDir());
-		return Promise.resolve();
-	}
+	return assembleSSLCerts().then(startHTTPSServerInner);
 }
 
 function start() {

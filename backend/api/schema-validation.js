@@ -67,16 +67,27 @@ function schemaValidation(data, schema) {
 		return objectSchemaValidation(data, schema);
 	}
 
-	return schema.invalid('API error : wrong schema');
+	return schemas.invalid('API error : wrong schema');
 }
 
 function groupValidation(data, groupSchema) {
 	for (let key in groupSchema) {
-
+		const validator = groupSchema[key];
+		const result = validator(data);
+		if (!result.isValid) {
+			return result;
+		}
 	}
+
+	return schemas.valid();
 }
 
+function schemaValidationWrapper(data, schema, groupSchema) {
+	const result = schemaValidation(data, schema);
+	return result.isValid ? groupValidation(data, groupSchema) : result;
+}
+
+
 // --------------------------------------------------------------------------------
-module.exports.schemaValidation = schemaValidation;
-module.exports.groupValidation = groupValidation;
+module.exports = schemaValidationWrapper;
 // --------------------------------------------------------------------------------

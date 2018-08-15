@@ -75,7 +75,7 @@ function loadInner(fullPath, fileName) {
 			logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
 
 			// validating data
-			const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName]);
+			const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 			if (!validationResult.isValid) {
 				logger.log.error(`Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`);
 				return Promise.reject(validationResult.err);
@@ -138,7 +138,7 @@ function save(data, fileName) {
 	const fullPath = getConfFileFullPath(fileName);
 
 	// validating data before save
-	const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName]);
+	const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 	if (!validationResult.isValid) {
 		logger.log.error(`Config validation failed for [${fileName}] while saving. Reason : [${validationResult.err}]`);
 		return Promise.reject(validationResult.err);
