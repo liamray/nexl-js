@@ -127,7 +127,17 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SESSION_TIMEOUT] = (val) => mandatoryInt(val, 'Session timeout', 1);
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = (val) => mandatoryBool(val, 'Raw output');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JSONP] = (val) => notMandatoryString(val, 'JSONP');
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = (val) => notMandatoryString(val, 'LDAP URL');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = (val) => {
+	if (isNullOrEmpty(val)) {
+		return valid();
+	}
+
+	if (!j79.isString(val)) {
+		return invalid('[LDAP URL] must a valid string');
+	}
+
+	return val.indexOf('ldap://') === 0 && val.match(/[0-9]$/) !== null ? valid() : invalid('[LDAP URL] must be started with [ldap://] and ended with a port number');
+};
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = (val) => notMandatoryString(val, 'Base DN');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = (val) => notMandatoryString(val, '[Bind DN');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = (val) => notMandatoryString(val, 'LDAP password');

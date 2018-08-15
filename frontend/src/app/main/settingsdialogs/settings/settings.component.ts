@@ -85,7 +85,7 @@ export class SettingsComponent {
       },
       {
         input: '#ldapUrl',
-        message: 'LDAP URL must be started with ldap://',
+        message: 'LDAP URL must be started with [ldap://] and ended with port number',
         action: 'keyup, blur',
         rule: (): any => {
           const val = this.settings[CONF_CONSTANTS.SETTINGS.LDAP_URL];
@@ -93,7 +93,7 @@ export class SettingsComponent {
             return true;
           }
 
-          return val.indexOf('ldap://') === 0;
+          return val.indexOf('ldap://') === 0 && val.match(/[0-9]$/) !== null;
         }
       },
       {
