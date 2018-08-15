@@ -69,173 +69,83 @@ function isNullOrEmpty(val) {
 	return val === null || val === undefined || val === '';
 }
 
-// SETTINGS validations
-SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => {
-	if (j79.isString(val) && val.length > 0) {
+function mandatoryString(val, msg) {
+	return !j79.isString(val) || val.length < 1 ? invalid(`The [${msg}] must be a non empty string`) : valid();
+}
+
+function notMandatoryString(val, msg) {
+	if (val === undefined || val === null || val === '') {
 		return valid();
 	}
 
-	return invalid('[nexl storage home directory] must be non empty string');
-};
+	return mandatoryString(val, msg);
+}
+
+function mandatoryInt(val, msg, min, max) {
+	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
+		return invalid(`The [${msg}] must be a valid integer`);
+	}
+
+	if (min !== undefined && val < min) {
+		return invalid(`The [${msg}] must be greater than or equal to [${min}]`);
+	}
+
+	if (max !== undefined && val > max) {
+		return invalid(`The [${msg}] must be less than or equal to [${max}]`);
+	}
+
+	return valid();
+}
+
+function notMandatoryInt(val, msg, min, max) {
+	if (val === undefined || val === null) {
+		return valid();
+	}
+
+	return mandatoryInt(val, msg, min, max);
+}
+
+function mandatoryBool(val, msg) {
+	return j79.isBool(val) ? valid() : invalid(`The [${msg}] must be a valid boolean`);
+}
+
+function notMandatoryBool(val, msg) {
+	if (val === undefined || val === null) {
+		return valid();
+	}
+
+	return mandatoryBool(val, msg);
+}
+
+// SETTINGS validations
+SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => mandatoryString(val, 'nexl storage home directory');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = (val) => {
 	return confConsts.AVAILABLE_ENCODINGS.indexOf(val) >= 0 ? valid() : invalid('[nexl storge files encoding] must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']');
 };
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => {
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[HTTP timeout] must be a positive integer');
-	}
-
-	if (val < 1) {
-		return invalid('[HTTP timeout] must be greater than 0');
-	}
-
-	return valid();
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SESSION_TIMEOUT] = (val) => {
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[Session timeout] must be a positive integer');
-	}
-
-	if (val < 1) {
-		return invalid('[Session timeout] must be greater than 0');
-	}
-
-	return valid();
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = (val) => {
-	if (!j79.isBool(val)) {
-		return invalid('[Raw output] must be a valid boolean value');
-	}
-
-	return valid();
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JSONP] = (val) => {
-	if (j79.isString(val) || val === undefined || val === null) {
-		return valid();
-	}
-
-	return invalid('[JSONP] must be a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-
-	if (!j79.isString(val)) {
-		return invalid('[LDAP URL] must a valid string');
-	}
-
-	return val.indexOf('ldap://') === 0 ? valid() : invalid('[LDAP URL] must be started with ldap://');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[Base DN] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[Bind DN] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[LDAP password] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[LDAP find by] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[HTTP binding] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[HTTP port] must be a valid integer');
-	}
-
-	if (val < 1 || val > 65535) {
-		return invalid('[HTTP port] must be greater than 0 and less than 65536');
-	}
-
-	return valid();
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[HTTPS binding] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[HTTPS port] must be a valid integer');
-	}
-
-	if (val < 1 || val > 65535) {
-		return invalid('[HTTPS port] must be greater than 0 and less than 65536');
-	}
-
-	return valid();
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[SSL cert location] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[SSL key location] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = (val) => {
-	if (isNullOrEmpty(val)) {
-		return valid();
-	}
-	return j79.isString(val) ? valid() : invalid('[SSL CA location] must a valid string');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = (val) => {
-	if (j79.isString(val) && val.length > 0) {
-		return valid();
-	}
-
-	return invalid('[log file location] must be non empty string');
-};
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => mandatoryInt(val, 'HTTP timeout', 1);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SESSION_TIMEOUT] = (val) => mandatoryInt(val, 'Session timeout', 1);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = (val) => mandatoryBool(val, 'Raw output');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JSONP] = (val) => notMandatoryString(val, 'JSONP');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_URL] = (val) => notMandatoryString(val, 'LDAP URL');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BASE_DN] = (val) => notMandatoryString(val, 'Base DN');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_DN] = (val) => notMandatoryString(val, '[Bind DN');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_BIND_PASSWORD] = (val) => notMandatoryString(val, 'LDAP password');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = (val) => notMandatoryString(val, 'LDAP find by');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = (val) => notMandatoryString(val, 'HTTP binding');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = (val) => notMandatoryInt(val, 'HTTP port', 1, 65535);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = (val) => notMandatoryString(val, 'HTTPS binding');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = (val) => notMandatoryInt(val, 'HTTPS port', 1, 65535);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = (val) => notMandatoryString(val, 'SSL cert location');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = (val) => notMandatoryString(val, 'SSL key location');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = (val) => notMandatoryString(val, 'SSL CA location');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = (val) => mandatoryString(val, 'log file location');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) => {
 	return logger.getAvailLevels().indexOf(val) >= 0 ? valid() : invalid('[Log level] must be of the following : [' + logger.getAvailLevels().join(',') + ']');
 };
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => {
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[Log rotate file size] must be a valid integer');
-	}
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => mandatoryInt(val, 'log rotate file size', 0);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => mandatoryInt(val, 'Log rotate files count', 0);
 
-	return val >= 0 ? valid() : invalid('[Log rotate file size] must be a positive integer');
-};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => {
-	if (!j79.isNumber(val) || val.toString().indexOf('.') >= 0) {
-		return invalid('[Log rotate files count] must be a valid integer');
-	}
-
-	return val >= 0 ? valid() : invalid('[Log rotate files count] must be a positive integer');
-};
 
 // --------------------------------------------------------------------------------
 // USERS validations
@@ -253,20 +163,10 @@ SCHEMAS[confConsts.CONF_FILES.USERS] = {
 			return commonUtils.validatePasswordStrength(val) ? valid() : invalid('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
 		},
 
-		disabled: (val) => {
-			if (val === undefined || val === null) {
-				return valid();
-			}
-			return j79.isBool(val) ? valid() : invalid('[disabled] field must be of a boolean type');
-		},
+		disabled: (val) => notMandatoryBool(val, 'disabled'),
 
 		token2ResetPassword: {
-			token: (val) => {
-				if (isNullOrEmpty(val)) {
-					return valid();
-				}
-				return j79.isString(val) && val.length > 1 ? valid() : invalid('[token2ResetPassword] => [token] must be a valid non empty string');
-			},
+			token: (val) => notMandatoryString(val, 'token2ResetPassword => token'),
 			created: (val) => {
 				if (isNullOrEmpty(val)) {
 					return valid();
@@ -297,12 +197,8 @@ SCHEMAS[confConsts.CONF_FILES.ADMINS] = [
 // PERMISSIONS validations
 SCHEMAS[confConsts.CONF_FILES.PERMISSIONS] = {
 	'*': {
-		read: (val) => {
-			return j79.isBool(val) ? valid() : invalid('[permissions] => [read] items must of a boolean type');
-		},
-		write: (val) => {
-			return j79.isBool(val) ? valid() : invalid('[permissions] => [write] items must of a boolean type');
-		}
+		read: (val) => mandatoryBool(val, 'permissions => read'),
+		write: (val) => mandatoryBool(val, 'permissions => write'),
 	}
 };
 
