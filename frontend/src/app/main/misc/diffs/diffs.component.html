@@ -1,11 +1,14 @@
 <jqxWindow #diffsWindows
            class="first-level-dialog"
-           [autoOpen]="true"
+           [autoOpen]="false"
+           [initContent]="initContent"
            (onResizing)="onWindowResize()"
-           [isModal]="true"
+           [isModal]="false"
            [resizable]="true"
-           [width]="400"
-           [height]="230"
+           [width]="600"
+           [height]="400"
+           [maxWidth]="9999"
+           [maxHeight]="9999"
 >
 
   <div>
@@ -17,11 +20,47 @@
       <div id="diff-container"></div>
     </div>
 
-    <div class="button">
-      <input type="button" value="Apply">
-      <input type="button" value="Apply and save">
-      <input type="button" value="Close">
-    </div>
+    <div class="buttons">
+      <div class="button">
+        <jqxButton
+          [height]='32'
+          [width]="90"
+          [textImageRelation]='"imageBeforeText"'
+          [textPosition]='"center"'
+          [imgSrc]='"./nexl/site/icons/remove.png"'
+          [auto-create]="false"
+          (onClick)="this.diffsWindows.close();"
+          #closeWindow>
+          Close
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton
+          [height]='32'
+          [width]="150"
+          [textImageRelation]='"imageBeforeText"'
+          [textPosition]='"center"'
+          [imgSrc]='"./nexl/site/icons/save.png"'
+          [auto-create]="false"
+          (onClick)="this.diffsWindows.close();"
+          #applyAndSave>
+          Apply and save
+        </jqxButton>
+      </div>
+      <div class="button">
+        <jqxButton
+          [height]='32'
+          [width]="130"
+          [textImageRelation]='"imageBeforeText"'
+          [textPosition]='"center"'
+          [imgSrc]='"./nexl/site/icons/ok.png"'
+          [auto-create]="false"
+          (onClick)="this.diffsWindows.close();"
+          #applyChanges>
+          Apply changes
+        </jqxButton>
+      </div>
 
+    </div>
   </div>
 </jqxWindow>

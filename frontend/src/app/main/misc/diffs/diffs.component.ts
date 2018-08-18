@@ -13,6 +13,9 @@ export class DiffsComponent implements AfterViewInit {
   private differ: any;
 
   @ViewChild('diffsWindows') diffsWindows: jqxWindowComponent;
+  @ViewChild('applyChanges') applyChanges: jqxWindowComponent;
+  @ViewChild('applyAndSave') applyAndSave: jqxWindowComponent;
+  @ViewChild('closeWindow') closeWindow: jqxWindowComponent;
 
   constructor(private messageService: MessageService) {
     this.messageService.getMessage().subscribe(msg => {
@@ -25,19 +28,12 @@ export class DiffsComponent implements AfterViewInit {
   private showDiffs(data: any) {
     const left = data.left;
     const right = data.right;
+    this.differ.getEditors().left.setOption('value', left);
+    this.differ.getEditors().right.setOption('value', right);
     this.diffsWindows.open();
   }
 
   ngAfterViewInit(): void {
-    /*
-        const aceEditor = ace.edit('diff-container');
-
-        aceEditor.setOptions({
-          autoScrollEditorIntoView: true,
-          mode: 'ace/mode/javascript'
-        });
-    */
-
     // creating differ
     this.differ = new AceDiff({
       element: '#diff-container',
@@ -60,8 +56,15 @@ export class DiffsComponent implements AfterViewInit {
   }
 
   onWindowResize() {
-    $('#diff-container').css('height', `${this.diffsWindows.height() - 70}px`);
+    $('#diff-container').css('height', `${this.diffsWindows.height() - 90}px`);
     this.differ.getEditors().left.resize();
     this.differ.getEditors().right.resize();
   }
+
+  initContent = () => {
+    this.applyChanges.createComponent();
+    this.applyAndSave.createComponent();
+    this.closeWindow.createComponent();
+  };
+
 }
