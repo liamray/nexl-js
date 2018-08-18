@@ -59,6 +59,7 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
 import {AboutComponent} from "./misc/about/about.component";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
 import {UsersComponent} from "./settingsdialogs/users/users.component";
+import {DiffsComponent} from "./misc/diffs/diffs.component";
 
 
 @NgModule({
@@ -110,7 +111,8 @@ import {UsersComponent} from "./settingsdialogs/users/users.component";
     ConfirmBoxComponent,
     ArgsComponent,
     AboutComponent,
-    FindFileComponent
+    FindFileComponent,
+    DiffsComponent
   ],
 
   imports: [

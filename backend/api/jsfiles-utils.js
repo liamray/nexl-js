@@ -297,7 +297,7 @@ function gatherAllFiles(relativePath) {
 	return listDirItems(searchFrom)
 		.then(currentDirItems => {
 
-			// iterating over dir items and resolve sub dir items with promises
+			// iterating over dir items and resolving sub dir items with promises
 			const promises = [];
 			currentDirItems.dirs.forEach(item => {
 				const subDirRelativePath = path.join(relativePath, item);

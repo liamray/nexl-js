@@ -22,10 +22,12 @@
       "styles": [
         "styles.css",
         "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css",
-        "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.dark.css"
+        "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.dark.css",
+        "nexl/site/ace/ace-diff.min.css"
       ],
       "scripts": [
         "nexl/site/ace/ace.js",
+        "nexl/site/ace/ace-diff.min.js",
         "../../backend/common/ui-constants.js",
         "../../backend/common/conf-constants.js",
         "../../backend/common/security-constants.js",

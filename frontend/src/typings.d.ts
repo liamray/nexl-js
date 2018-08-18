@@ -17,5 +17,6 @@ declare var CONF_CONSTANTS: any;
 declare var SECURITY_CONSTANTS: any;
 declare var REST_URLS: any;
 declare var COMMON_UTILS: any;
+declare var AceDiff: any;
 
 declare var jsBeautify: (content: string, opts?: any) => {};
