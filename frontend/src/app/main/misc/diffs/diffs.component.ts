@@ -9,13 +9,12 @@ import * as $ from 'jquery';
   styleUrls: ['./diffs.component.css']
 })
 export class DiffsComponent {
-
-  private differ: any;
-
-  @ViewChild('diffsWindows') diffsWindows: jqxWindowComponent;
+  @ViewChild('diffsWindow') diffsWindow: jqxWindowComponent;
   @ViewChild('applyChanges') applyChanges: jqxWindowComponent;
   @ViewChild('applyAndSave') applyAndSave: jqxWindowComponent;
   @ViewChild('closeWindow') closeWindow: jqxWindowComponent;
+
+  private dv: any;
 
   constructor(private messageService: MessageService) {
     this.messageService.getMessage().subscribe(msg => {
@@ -26,35 +25,50 @@ export class DiffsComponent {
   }
 
   private showDiffs(data: any) {
-    const left = data.left;
-    const right = data.right;
+    this.diffsWindow.open();
 
-    // creating differ
-    this.differ = new AceDiff({
-      element: '#diff-container',
-      mode: "ace/mode/javascript",
-
-      left: {
-        content: left,
-        copyLinkEnabled: false,
-        editable: true
-      },
-
-      right: {
-        content: right,
-        copyLinkEnabled: true,
-        editable: false
-      }
-    });
-
-    this.onWindowResize();
-    this.diffsWindows.open();
+    setTimeout(_ => {
+      this.showDiffsInner(data);
+    }, 100);
   }
 
+  mergeViewHeight(mergeView) {
+    function editorHeight(editor) {
+      if (!editor) return 0;
+      return editor.getScrollInfo().height;
+    }
+
+    return Math.max(editorHeight(mergeView.leftOriginal()),
+      editorHeight(mergeView.editor()),
+      editorHeight(mergeView.rightOriginal()));
+  }
+
+  resize(mergeView) {
+    let height = this.mergeViewHeight(mergeView);
+    for (; ;) {
+      if (mergeView.leftOriginal()) {
+        mergeView.leftOriginal().setSize(null, height);
+      }
+
+      mergeView.editor().setSize(null, height);
+
+      if (mergeView.rightOriginal()) {
+        mergeView.rightOriginal().setSize(null, height);
+      }
+
+      const newHeight = this.mergeViewHeight(mergeView);
+      if (newHeight >= height) {
+        break;
+      }
+      else {
+        height = newHeight;
+      }
+    }
+    mergeView.wrap.style.height = height + "px";
+  }
+
+
   onWindowResize() {
-    $('#diff-container').css('height', `${this.diffsWindows.height() - 120}px`);
-    this.differ.getEditors().left.resize();
-    this.differ.getEditors().right.resize();
   }
 
   initContent = () => {
@@ -65,6 +79,26 @@ export class DiffsComponent {
 
 
   onWindowClose() {
-    this.differ.destroy();
+  }
+
+  private showDiffsInner(data: any) {
+    const left = data.left;
+    const right = data.right;
+
+    const target = document.getElementById('diff-container');
+    target.innerHTML = "";
+
+    this.dv = CodeMirror.MergeView(target, {
+      value: left,
+      orig: right,
+      lineNumbers: true,
+      mode: "text/html",
+      highlightDifferences: true,
+      connect: "align",
+      collapseIdentical: false,
+      readOnly: false
+    });
+
+    this.resize(this.dv);
   }
 }

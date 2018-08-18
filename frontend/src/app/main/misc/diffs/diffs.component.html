@@ -1,4 +1,4 @@
-<jqxWindow #diffsWindows
+<jqxWindow #diffsWindow
            class="first-level-dialog"
            [autoOpen]="false"
            [initContent]="initContent"
@@ -23,9 +23,7 @@
       <div style="float: right;">Server copy</div>
     </div>
 
-    <div>
-      <div id="diff-container"></div>
-    </div>
+    <div id="diff-container" style="width: 100%; height: 500px;"></div>
 
     <div class="buttons">
       <div class="button">
@@ -36,7 +34,7 @@
           [textPosition]='"center"'
           [imgSrc]='"./nexl/site/icons/remove.png"'
           [auto-create]="false"
-          (onClick)="this.diffsWindows.close();"
+          (onClick)="this.diffsWindow.close();"
           #closeWindow>
           Close
         </jqxButton>
@@ -49,7 +47,7 @@
           [textPosition]='"center"'
           [imgSrc]='"./nexl/site/icons/save.png"'
           [auto-create]="false"
-          (onClick)="this.diffsWindows.close();"
+          (onClick)="this.diffsWindow.close();"
           #applyAndSave>
           Apply and save
         </jqxButton>
@@ -62,7 +60,7 @@
           [textPosition]='"center"'
           [imgSrc]='"./nexl/site/icons/ok.png"'
           [auto-create]="false"
-          (onClick)="this.diffsWindows.close();"
+          (onClick)="this.diffsWindow.close();"
           #applyChanges>
           Apply changes
         </jqxButton>

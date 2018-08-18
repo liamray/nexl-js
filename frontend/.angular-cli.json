@@ -23,17 +23,20 @@
         "styles.css",
         "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css",
         "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.dark.css",
-        "nexl/site/ace/ace-diff.min.css"
+        "nexl/site/codemirror/codemirror.css",
+        "nexl/site/codemirror/merge.css"
       ],
       "scripts": [
         "nexl/site/ace/ace.js",
-        "nexl/site/ace/ace-diff.min.js",
         "../../backend/common/ui-constants.js",
         "../../backend/common/conf-constants.js",
         "../../backend/common/security-constants.js",
         "../../backend/common/rest-urls.js",
         "../../backend/common/common-utils.js",
-        "app/main/common/js-beautify.js"
+        "app/main/common/js-beautify.js",
+        "nexl/site/codemirror/codemirror.js",
+        "nexl/site/codemirror/merge.js",
+        "nexl/site/codemirror/diff_match_patch.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
