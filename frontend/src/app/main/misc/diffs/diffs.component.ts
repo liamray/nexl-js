@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from "@angular/core";
+import {Component, OnInit, ViewChild} from "@angular/core";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import * as $ from 'jquery';
@@ -8,7 +8,7 @@ import * as $ from 'jquery';
   templateUrl: './diffs.component.html',
   styleUrls: ['./diffs.component.css']
 })
-export class DiffsComponent implements AfterViewInit {
+export class DiffsComponent {
 
   private differ: any;
 
@@ -28,35 +28,31 @@ export class DiffsComponent implements AfterViewInit {
   private showDiffs(data: any) {
     const left = data.left;
     const right = data.right;
-    this.differ.getEditors().left.setOption('value', left);
-    this.differ.getEditors().right.setOption('value', right);
-    this.diffsWindows.open();
-  }
 
-  ngAfterViewInit(): void {
     // creating differ
     this.differ = new AceDiff({
       element: '#diff-container',
       mode: "ace/mode/javascript",
 
       left: {
-        content: 'hello\nLiam',
+        content: left,
         copyLinkEnabled: false,
         editable: true
       },
 
       right: {
-        content: 'Liam\nRay',
+        content: right,
         copyLinkEnabled: true,
         editable: false
       }
     });
 
     this.onWindowResize();
+    this.diffsWindows.open();
   }
 
   onWindowResize() {
-    $('#diff-container').css('height', `${this.diffsWindows.height() - 90}px`);
+    $('#diff-container').css('height', `${this.diffsWindows.height() - 120}px`);
     this.differ.getEditors().left.resize();
     this.differ.getEditors().right.resize();
   }
@@ -67,4 +63,8 @@ export class DiffsComponent implements AfterViewInit {
     this.closeWindow.createComponent();
   };
 
+
+  onWindowClose() {
+    this.differ.destroy();
+  }
 }
