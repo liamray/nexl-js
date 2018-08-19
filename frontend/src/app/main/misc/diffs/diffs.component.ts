@@ -32,53 +32,8 @@ export class DiffsComponent {
     }, 100);
   }
 
-  mergeViewHeight(mergeView) {
-    function editorHeight(editor) {
-      if (!editor) return 0;
-      return editor.getScrollInfo().height;
-    }
-
-    return Math.max(editorHeight(mergeView.leftOriginal()),
-      editorHeight(mergeView.editor()),
-      editorHeight(mergeView.rightOriginal()));
-  }
-
-  resize(mergeView) {
-    let height = this.mergeViewHeight(mergeView);
-    for (; ;) {
-      if (mergeView.leftOriginal()) {
-        mergeView.leftOriginal().setSize(null, height);
-      }
-
-      mergeView.editor().setSize(null, height);
-
-      if (mergeView.rightOriginal()) {
-        mergeView.rightOriginal().setSize(null, height);
-      }
-
-      const newHeight = this.mergeViewHeight(mergeView);
-      if (newHeight >= height) {
-        break;
-      }
-      else {
-        height = newHeight;
-      }
-    }
-    mergeView.wrap.style.height = height + "px";
-  }
-
-
   onWindowResize() {
-  }
-
-  initContent = () => {
-    this.applyChanges.createComponent();
-    this.applyAndSave.createComponent();
-    this.closeWindow.createComponent();
-  };
-
-
-  onWindowClose() {
+    this.resize();
   }
 
   private showDiffsInner(data: any) {
@@ -92,13 +47,34 @@ export class DiffsComponent {
       value: left,
       orig: right,
       lineNumbers: true,
-      mode: "text/html",
+      mode: "javascript",
       highlightDifferences: true,
-      connect: "align",
       collapseIdentical: false,
-      readOnly: false
+      readOnly: false,
+      lineWrapping: false,
+      viewportMargin: Infinity,
+      revertButtons: true
     });
 
-    this.resize(this.dv);
+    this.resize();
+  }
+
+  initContent = () => {
+    this.applyChanges.createComponent();
+    this.applyAndSave.createComponent();
+    this.closeWindow.createComponent();
+  };
+
+  onWindowClose() {
+  }
+
+  resize() {
+    const height = this.diffsWindow.height() - 115;
+
+    $('#diff-container').css('height', `${height}px`);
+
+    this.dv.editor().setSize(null, height - 5);
+    this.dv.rightOriginal().setSize(null, height - 5);
+    this.dv.wrap.style.height = `${height - 5}px`;
   }
 }

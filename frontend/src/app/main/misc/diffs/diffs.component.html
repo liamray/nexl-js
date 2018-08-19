@@ -3,11 +3,12 @@
            [autoOpen]="false"
            [initContent]="initContent"
            (onResizing)="onWindowResize()"
+           (onResized)="onWindowResize()"
            (onClose)="onWindowClose()"
            [isModal]="true"
            [resizable]="true"
            [width]="1200"
-           [height]="800"
+           [height]="650"
            [maxWidth]="9999"
            [maxHeight]="9999"
 >
@@ -23,7 +24,7 @@
       <div style="float: right;">Server copy</div>
     </div>
 
-    <div id="diff-container" style="width: 100%; height: 500px;"></div>
+    <div id="diff-container" style="width: 100%;"></div>
 
     <div class="buttons">
       <div class="button">
