@@ -117,6 +117,15 @@ function notMandatoryBool(val, msg) {
 	return mandatoryBool(val, msg);
 }
 
+function notMandatoryDate(val, msg) {
+	if (isNullOrEmpty(val)) {
+		return valid();
+	}
+	const parsed = Date.parse(val);
+	// is NaN ?
+	return parsed === parsed ? valid() : invalid(`The [${msg}] must be a valid date`);
+}
+
 // SETTINGS validations
 SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => mandatoryString(val, 'nexl storage home directory');
@@ -175,16 +184,12 @@ SCHEMAS[confConsts.CONF_FILES.USERS] = {
 
 		disabled: (val) => notMandatoryBool(val, 'disabled'),
 
-		token2ResetPassword: {
-			token: (val) => notMandatoryString(val, 'token2ResetPassword => token'),
-			created: (val) => {
-				if (isNullOrEmpty(val)) {
-					return valid();
-				}
-				const parsed = Date.parse(val);
-				// is NaN ?
-				return parsed === parsed ? valid() : invalid('[token2ResetPassword] => [created] field must be a valid date string');
+		token2ResetPassword: (val) => {
+			if (val === undefined) {
+				return valid();
 			}
+
+			return notMandatoryString(val.token, 'token2ResetPassword => token') && notMandatoryDate(val.created, '[token2ResetPassword] => [created]');
 		},
 	}
 };

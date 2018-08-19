@@ -80,10 +80,6 @@ export class UtilsService {
     path2 = path2 ? path2.toLocaleLowerCase() : path2;
     return path1.indexOf(path2);
   }
-
-  static isValidUsername(username: any) {
-    return typeof username === 'string' && username.match(/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/) !== null;
-  }
 }
 
 UtilsService.prefixUrlObject(REST_URLS.USERS);

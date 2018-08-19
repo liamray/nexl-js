@@ -94,7 +94,7 @@ function resetPassword(username, password, token) {
 	const userObj = users[username];
 
 	// is user exists ? || is not same token ?
-	if (userObj === undefined || userObj.token2ResetPassword.token !== token.trim()) {
+	if (userObj === undefined || userObj.token2ResetPassword === undefined || userObj.token2ResetPassword.token !== token.trim()) {
 		return Promise.reject('Bad token');
 	}
 

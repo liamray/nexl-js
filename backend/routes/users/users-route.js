@@ -7,6 +7,7 @@ const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
 const restUrls = require('../../common/rest-urls');
 const securityConsts = require('../../common/security-constants');
+const commonUtils = require('../../common/common-utils');
 
 const router = express.Router();
 
@@ -67,14 +68,17 @@ router.post(restUrls.USERS.URLS.RENAME_USER, function (req, res) {
 
 	// only admins can perform this action
 	if (!security.isAdmin(loggedInUsername)) {
-		logger.log.error('Cannot create new user, admin permissions required');
+		logger.log.error('Cannot rename user, admin permissions required');
 		security.sendError(res, 'admin permissions required');
 		return;
 	}
 
-	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
+	if (!commonUtils.validatePasswordStrength(newUsername)) {
+		logger.log.error(`Bad new username [${newUsername}]`);
+		return Promise.reject('Bad new username');
+	}
 
-	// todo : validate newUsername !!!
+	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	delete users[oldUsername];
 	users[newUsername] = {};
@@ -167,6 +171,11 @@ router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 		if (loggedInUsername === securityConsts.GUEST_USER) {
 			logger.log.error('You must be logged in to change your password');
 			return Promise.reject('Not logged in');
+		}
+
+		if (!commonUtils.validatePasswordStrength(req.body.newPassword)) {
+			logger.log.error(`Password is not strong enough for [${loggedInUsername}] user`);
+			return Promise.reject('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
 		}
 
 		return security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword).then(() => {
@@ -281,10 +290,9 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 	logger.log.debug(`Registering/resetting password for [${username}] user`);
 
 	Promise.resolve().then(() => {
-		// todo : proper password validation
-		if (password.length < 1) {
-			logger.log.error('Password cannot be empty');
-			return Promise.reject('Password cannot be empty');
+		if (!commonUtils.validatePasswordStrength(password)) {
+			logger.log.error(`Password is not strong enough for [${username}] user`);
+			return Promise.reject('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
 		}
 
 		const userObj = confMgmt.getCached(confConsts.CONF_FILES.USERS)[username];
