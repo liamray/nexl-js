@@ -8,6 +8,7 @@ const confConsts = require('../../common/conf-constants');
 const restUrls = require('../../common/rest-urls');
 const securityConsts = require('../../common/security-constants');
 const commonUtils = require('../../common/common-utils');
+const uiConsts = require('../../common/ui-constants');
 
 const router = express.Router();
 
@@ -73,9 +74,10 @@ router.post(restUrls.USERS.URLS.RENAME_USER, function (req, res) {
 		return;
 	}
 
-	if (!commonUtils.validatePasswordStrength(newUsername)) {
+	if (!commonUtils.validateUsernameStrength(newUsername)) {
 		logger.log.error(`Bad new username [${newUsername}]`);
-		return Promise.reject('Bad new username');
+		security.sendError(res, uiConsts.BAD_USERNAME_MSG);
+		return;
 	}
 
 	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
@@ -175,7 +177,7 @@ router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 
 		if (!commonUtils.validatePasswordStrength(req.body.newPassword)) {
 			logger.log.error(`Password is not strong enough for [${loggedInUsername}] user`);
-			return Promise.reject('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
+			return Promise.reject(uiConsts.BAD_PASSWORD_MSG);
 		}
 
 		return security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword).then(() => {
@@ -292,7 +294,7 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 	Promise.resolve().then(() => {
 		if (!commonUtils.validatePasswordStrength(password)) {
 			logger.log.error(`Password is not strong enough for [${username}] user`);
-			return Promise.reject('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
+			return Promise.reject(uiConsts.BAD_PASSWORD_MSG);
 		}
 
 		const userObj = confMgmt.getCached(confConsts.CONF_FILES.USERS)[username];

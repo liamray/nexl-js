@@ -6,6 +6,7 @@ const logger = require('../api/logger');
 const confConsts = require('./conf-constants');
 const confMgmt = require('../api/conf-mgmt');
 const commonUtils = require('../common/common-utils');
+const uiConsts = require('../common/ui-constants');
 
 const SETTINGS_FILE = confConsts.CONF_FILES.SETTINGS;
 
@@ -179,7 +180,7 @@ SCHEMAS[confConsts.CONF_FILES.USERS] = {
 				return invalid('Password must be a valid string');
 			}
 
-			return commonUtils.validatePasswordStrength(val) ? valid() : invalid('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
+			return commonUtils.validatePasswordStrength(val) ? valid() : invalid(uiConsts.BAD_PASSWORD_MSG);
 		},
 
 		disabled: (val) => notMandatoryBool(val, 'disabled'),

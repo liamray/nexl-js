@@ -88,12 +88,12 @@ export class RegisterComponent {
     }
 
     if (!COMMON_UTILS.validateUsernameStrength(this.username)) {
-      this.displayErrorMessage('Username must contain at least three [A-z0-9] characters and might contain hyphen and underscore characters');
+      this.displayErrorMessage(UI_CONSTANTS.BAD_USERNAME_MSG);
       return;
     }
 
     if (!COMMON_UTILS.validatePasswordStrength(this.password)) {
-      this.displayErrorMessage('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
+      this.displayErrorMessage(UI_CONSTANTS.BAD_PASSWORD_MSG);
       return;
     }
 

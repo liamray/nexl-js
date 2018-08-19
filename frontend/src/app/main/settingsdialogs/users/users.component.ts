@@ -227,8 +227,8 @@ export class UsersComponent {
   }
 
   onChange(rowNr: number, oldValue: string, newValue: string) {
-    if (!COMMON_UTILS.validatePasswordStrength(newValue)) {
-      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Invalid user name');
+    if (!COMMON_UTILS.validateUsernameStrength(newValue)) {
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, UI_CONSTANTS.BAD_USERNAME_MSG);
       this.setCellValueDelayed(rowNr, 'username', oldValue);
       return;
     }

@@ -81,7 +81,7 @@ export class ChangePasswordComponent {
     }
 
     if (!COMMON_UTILS.validatePasswordStrength(this.newPassword)) {
-      this.displayErrorMessage('Password must contain at least one [A-z] character, one number character and must be at least 5 characters');
+      this.displayErrorMessage(UI_CONSTANTS.BAD_PASSWORD_MSG);
       return;
     }
 
