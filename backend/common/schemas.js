@@ -186,7 +186,7 @@ SCHEMAS[confConsts.CONF_FILES.USERS] = {
 		disabled: (val) => notMandatoryBool(val, 'disabled'),
 
 		token2ResetPassword: (val) => {
-			if (val === undefined) {
+			if (val === undefined || val === null) {
 				return valid();
 			}
 
