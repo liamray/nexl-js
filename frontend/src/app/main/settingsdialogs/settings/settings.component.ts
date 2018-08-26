@@ -2,7 +2,6 @@ import {Component, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
-import {UtilsService} from "../../services/utils.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxValidator = jqwidgets.jqxValidator;
@@ -59,20 +58,20 @@ export class SettingsComponent {
       {
         input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTP_TIMEOUT, 1);
+          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.HTTP_TIMEOUT, 1);
         }
       },
       {input: '#sessionTimeout', message: 'Session timeout is required !', action: 'keyup, blur', rule: 'required'},
       {
         input: '#sessionTimeout', message: 'Session timeout must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.SESSION_TIMEOUT, 1);
+          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.SESSION_TIMEOUT, 1);
         }
       },
       {
         input: '#httpPort', message: 'HTTP port must be a positive integer between 1 and 65535', action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTP_PORT, 1, 65535);
+          return this.validateNotMandatoryInt(CONF_CONSTANTS.SETTINGS.HTTP_PORT, 1, 65535);
         }
       },
       {
@@ -80,7 +79,7 @@ export class SettingsComponent {
         message: 'HTTPS port must be a positive integer between 1 and 65535',
         action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.HTTPS_PORT, 1, 65535);
+          return this.validateNotMandatoryInt(CONF_CONSTANTS.SETTINGS.HTTPS_PORT, 1, 65535);
         }
       },
       {
@@ -99,7 +98,7 @@ export class SettingsComponent {
       {
         input: '#logRotateFileSize', message: 'Log rotate file size must be a positive integer', action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILE_SIZE, 0);
+          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILE_SIZE, 0);
         }
       },
       {
@@ -107,7 +106,7 @@ export class SettingsComponent {
         message: 'Log rotate files count must be a positive integer',
         action: 'keyup, blur',
         rule: (): any => {
-          return this.convert2IntAndValidate(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILES_COUNT, 0);
+          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILES_COUNT, 0);
         }
       }
     ];
@@ -129,13 +128,10 @@ export class SettingsComponent {
       });
   }
 
-  convert2IntAndValidate(field: string, min?: number, max?: number) {
-    let val = this.settings[field];
-    if (val === '') {
-      return true;
-    }
+  validateMandatoryInt(field: string, min?: number, max?: number) {
+    const val = parseInt(this.settings[field]);
 
-    val = parseInt(val);
+    // is NaN ?
     if (val !== val) {
       return false;
     }
@@ -152,6 +148,16 @@ export class SettingsComponent {
 
     return true;
   }
+
+  validateNotMandatoryInt(field: string, min?: number, max?: number) {
+    const val = this.settings[field];
+    if (val === '') {
+      return true;
+    }
+
+    return this.validateMandatoryInt(field, min, max);
+  }
+
 
   open() {
     if (!this.isAdmin) {

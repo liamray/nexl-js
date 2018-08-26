@@ -75,7 +75,7 @@ function mandatoryString(val, msg) {
 }
 
 function notMandatoryString(val, msg) {
-	if (val === undefined || val === null || val === '') {
+	if (isNullOrEmpty(val)) {
 		return valid();
 	}
 
@@ -99,7 +99,7 @@ function mandatoryInt(val, msg, min, max) {
 }
 
 function notMandatoryInt(val, msg, min, max) {
-	if (val === undefined || val === null) {
+	if (isNullOrEmpty(val)) {
 		return valid();
 	}
 
@@ -111,7 +111,7 @@ function mandatoryBool(val, msg) {
 }
 
 function notMandatoryBool(val, msg) {
-	if (val === undefined || val === null) {
+	if (isNullOrEmpty(val)) {
 		return valid();
 	}
 
@@ -232,7 +232,7 @@ function hasHttpsConnector(data) {
 
 GROUP_VALIDATIONS[SETTINGS_FILE] = {};
 GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.CONNECTORS] = (data) => {
-	return hasHttpConnector(data) || hasHttpsConnector(data) ? valid() : invalid('You have to provide either HTTP or HTTPS connector details');
+	return hasHttpConnector(data) || hasHttpsConnector(data) ? valid() : invalid('You have to provide either HTTP or HTTPS binding details');
 };
 GROUP_VALIDATIONS[SETTINGS_FILE][confConsts.SETTINGS_GROUP.LDAP] = (data) => {
 	const ldapUrl = data[confConsts.SETTINGS.LDAP_URL];
