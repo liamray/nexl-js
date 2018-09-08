@@ -147,7 +147,7 @@ export class ArgsComponent implements OnInit, AfterViewInit {
   }
 
   loadArgsWindow() {
-    let args = LocalStorageService.loadObj(ARGS_WINDOW);
+    const args = LocalStorageService.loadObj(ARGS_WINDOW, {});
     if (Object.keys(args).length < 1) {
       return;
     }

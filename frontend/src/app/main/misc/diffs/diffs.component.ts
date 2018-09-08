@@ -1,14 +1,15 @@
-import {Component, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, OnInit, ViewChild} from "@angular/core";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import * as $ from 'jquery';
+import {DIFFS_WINDOW, LocalStorageService} from "../../services/localstorage.service";
 
 @Component({
   selector: 'app-diffs',
   templateUrl: './diffs.component.html',
   styleUrls: ['./diffs.component.css']
 })
-export class DiffsComponent {
+export class DiffsComponent implements AfterViewInit {
   @ViewChild('diffsWindow') diffsWindow: jqxWindowComponent;
   @ViewChild('applyChanges') applyChanges: jqxWindowComponent;
   @ViewChild('applyAndSave') applyAndSave: jqxWindowComponent;
@@ -22,6 +23,10 @@ export class DiffsComponent {
         this.showDiffs(msg.data);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.loadWindowPos();
   }
 
   private showDiffs(data: any) {
@@ -76,5 +81,29 @@ export class DiffsComponent {
     this.dv.editor().setSize(null, height - 5);
     this.dv.rightOriginal().setSize(null, height - 5);
     this.dv.wrap.style.height = `${height - 5}px`;
+  }
+
+  private loadWindowPos() {
+    // loading from local storage
+    const data = LocalStorageService.loadObj(DIFFS_WINDOW, {});
+
+    if (data.offset && data.offset.top && data.offset.left) {
+      this.diffsWindow.move(data.offset.left, data.offset.top);
+    }
+
+    this.diffsWindow.width(data.width || this.diffsWindow.width());
+    this.diffsWindow.height(data.height || this.diffsWindow.height());
+  }
+
+  private onMoved() {
+    const data = {
+      offset: $('#diffsWindow').parent().offset(),
+      width: this.diffsWindow.width(),
+      height: this.diffsWindow.height()
+    };
+
+    console.log(data.offset);
+
+    LocalStorageService.storeObj(DIFFS_WINDOW, data);
   }
 }

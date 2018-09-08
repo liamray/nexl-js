@@ -5,6 +5,8 @@
            (onResizing)="onWindowResize()"
            (onResized)="onWindowResize()"
            (onClose)="onWindowClose()"
+           (onMoved)="onMoved()"
+           (onResized)="onMoved()"
            [isModal]="true"
            [resizable]="true"
            [width]="1200"
@@ -13,7 +15,7 @@
            [maxHeight]="9999"
 >
 
-  <div>
+  <div id="diffsWindow">
     <img src="./nexl/site/icons/scale.png" style="position: relative; top: 2px; margin-left: 3px;">
     <span style="position: relative; top: -1px;margin-left: 1px;">Diff</span>
   </div>

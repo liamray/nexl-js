@@ -4,8 +4,8 @@ export const MAIN_HORIZONTAL = 'nexl.ui.splitters.main.horizontal';
 export const MAIN_VERTICAL = 'nexl.ui.splitters.main.vertical';
 export const EXPRESSION_SPLITTER_VERTICAL = 'nexl.ui.splitters.expression.vertical';
 export const ARGS_WINDOW = 'nexl.ui.args-window';
+export const DIFFS_WINDOW = 'nexl.ui.diffs-window';
 export const APPEARANCE = 'nexl.ui.appearance';
-export const SHOW_SPLASH_SCREEN = 'nexl.ui.show-splash-screen';
 export const PRETTIFY_BUTTON_STATE = 'nexl.ui.prettify-button-state';
 export const TABS = 'nexl.ui.tabs';
 
