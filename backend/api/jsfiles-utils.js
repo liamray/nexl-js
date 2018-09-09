@@ -69,25 +69,46 @@ function loadJSFile(relativePath) {
 	);
 }
 
-function saveJSFile(relativePath, content) {
-	return getJSFileFullPath(relativePath).then(
-		(fullPath) => {
-			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
-			return fsx.writeFile(fullPath, content, {encoding: encoding});
-		}
-	)
-		.then(cacheJSFiles);
-	/*
-			.then( // updating cache
-				() => {
-					if (JS_FILES_CACHE.indexOf(relativePath) < 0) {
-						JS_FILES_CACHE.push(relativePath);
-					}
+function saveJSFileInnerInner(fullPath, content) {
+	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 
-					JS_FILES_CACHE.sort();
-				}
-			);
-	*/
+	return fsx.writeFile(fullPath, content, {encoding: encoding})
+		.then(cacheJSFiles)
+		.then(_ => {
+			return {};
+		});
+}
+
+function saveJSFileInner(fullPath, content, fileLoadTime) {
+	if (fileLoadTime === undefined) {
+		return saveJSFileInnerInner(fullPath, content);
+	}
+
+	// comparing fileLoadTime to last file modification time
+	return fsx.stat(fullPath)
+		.then(stat => {
+			if (fileLoadTime > stat.mtime.getTime()) {
+				// file was modified on server before the fileLoadTime, just saving...
+				return saveJSFileInnerInner(fullPath, content);
+			}
+
+			// file on the server was modified after it was opened by client
+			// sending back newer file content
+			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
+			return fsx.readFile(fullPath, {encoding: encoding})
+				.then(newerFileContent => {
+					return {
+						newerFileContent: newerFileContent
+					};
+				});
+		});
+}
+
+function saveJSFile(relativePath, content, fileLoadTime) {
+	return getJSFileFullPath(relativePath)
+		.then(fullPath => {
+			return saveJSFileInner(fullPath, content, fileLoadTime);
+		});
 }
 
 function mkdir(relativePath) {
@@ -109,20 +130,6 @@ function deleteItem(relativePath) {
 	return getJSFileFullPath(relativePath)
 		.then(fsx.deleteItem)
 		.then(cacheJSFiles);
-	/*
-			.then(
-				// updating cache
-				() => {
-					JS_FILES_CACHE.forEach(
-						(item, index) => {
-							if (item.indexOf(relativePath) === 0) {
-								JS_FILES_CACHE.splice(index, 1);
-							}
-						}
-					);
-				}
-			);
-	*/
 }
 
 function rename(oldRelativePath, newRelativePath) {
@@ -146,24 +153,6 @@ function rename(oldRelativePath, newRelativePath) {
 		}
 	)
 		.then(cacheJSFiles);
-	/*
-			.then(
-				// updating cache
-				() => {
-					JS_FILES_CACHE.forEach(
-						(item, index) => {
-							if (item.indexOf(oldRelativePath) === 0) {
-								JS_FILES_CACHE[index] = newRelativePath;
-							}
-						}
-					);
-
-					JS_FILES_CACHE.sort();
-
-					return Promise.resolve();
-				}
-			);
-	*/
 }
 
 function moveInner(sourceStuff, destStuff) {
@@ -202,24 +191,6 @@ function move(source, dest) {
 		}
 	)
 		.then(cacheJSFiles);
-
-	/*
-				// updating cache
-				() => {
-					JS_FILES_CACHE.forEach(
-						(item, index) => {
-							if (item.indexOf(source) === 0) {
-								const baseName = path.basename(source);
-								JS_FILES_CACHE[index] = path.join(path.sep, dest, baseName);
-							}
-						}
-					);
-
-					JS_FILES_CACHE.sort();
-
-					return Promise.resolve();
-				}
-	*/
 }
 
 function listDirItems(fullPath) {

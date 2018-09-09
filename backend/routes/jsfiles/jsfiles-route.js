@@ -213,8 +213,9 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const content = req.body['content'];
+	const fileLoadTime = req.body['file-load-time'];
 
-	logger.log.debug(`Saving content of [${relativePath}] JavaScript file by [${username}] user`);
+	logger.log.debug(`Saving content of [${relativePath}] JavaScript file by [${username}] user. fileLoadTime is [${fileLoadTime}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -230,9 +231,9 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 		return;
 	}
 
-	return jsfilesUtils.saveJSFile(relativePath, content)
-		.then(() => {
-			res.send({});
+	return jsfilesUtils.saveJSFile(relativePath, content, fileLoadTime)
+		.then(result => {
+			res.send(result);
 			logger.log.debug(`Successfully saved content of [${relativePath}] JavaScript file by [${username}] user`);
 		})
 		.catch(
