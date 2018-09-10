@@ -60,6 +60,7 @@ import {AboutComponent} from "./misc/about/about.component";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
 import {UsersComponent} from "./settingsdialogs/users/users.component";
 import {DiffsComponent} from "./misc/diffs/diffs.component";
+import {DiffsConfirmBoxComponent} from "./misc/diffsconfirmbox/diffsconfirmbox.component";
 
 
 @NgModule({
@@ -108,6 +109,7 @@ import {DiffsComponent} from "./misc/diffs/diffs.component";
     RegisterComponent,
     InputBoxComponent,
     MessageBoxComponent,
+    DiffsConfirmBoxComponent,
     ConfirmBoxComponent,
     ArgsComponent,
     AboutComponent,

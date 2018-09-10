@@ -1,0 +1,68 @@
+<jqxWindow #diffsWindow
+           class="second-level-dialog"
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="500"
+           (onClose)="onClose()"
+           [height]="120"
+           [initContent]="initContent"
+>
+
+  <div>
+    <img src="./nexl/site/icons/save-warning.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Override confirmation</span>
+  </div>
+
+  <div class="container">
+    <div style="text-align: center;">File you are trying to save was changed on server</div>
+
+    <div class="buttons">
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="diffsWindow.close();"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/icons/remove.png"'
+                   #cancelButton
+        >
+          Cancel
+        </jqxButton>
+      </div>
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="makeDiffs();"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/icons/scale.png"'
+                   #diffsButton
+        >
+          Diff
+        </jqxButton>
+      </div>
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="overrideFile()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/icons/save-warning.png"'
+                   #overrideButton
+        >
+          Override
+        </jqxButton>
+      </div>
+
+
+    </div>
+
+  </div>
+</jqxWindow>
