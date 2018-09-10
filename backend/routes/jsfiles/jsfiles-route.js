@@ -3,10 +3,10 @@ const path = require('path');
 const j79 = require('j79-utils');
 
 const jsfilesUtils = require('../../api/jsfiles-utils');
-const utils = require('../../api/utils');
 const security = require('../../api/security');
 const logger = require('../../api/logger');
 const restUtls = require('../../common/rest-urls');
+const di = require('../../common/data-interchange-constants');
 
 const router = express.Router();
 
@@ -194,9 +194,14 @@ router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 		return;
 	}
 
+	const currentTime = new Date().getTime();
+
 	return jsfilesUtils.loadJSFile(relativePath)
 		.then(data => {
-			res.send(data);
+			const body = {};
+			body[di.FILE_BODY] = data;
+			body[di.FILE_LOAD_TIME] = currentTime;
+			res.send(body);
 			logger.log.debug(`Successfully loaded content of [${relativePath}] JavaScript file by [${username}] user`);
 		})
 		.catch(

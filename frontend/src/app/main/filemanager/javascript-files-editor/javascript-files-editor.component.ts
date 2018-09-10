@@ -9,7 +9,7 @@ import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
 
-const TAB_CONTENT = 'tabs-content-';
+const TABS_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
 const TITLE_TOOLTIP = 'tabs-title-tooltip-';
 const TITLE_TEXT = 'tabs-title-text-';
@@ -132,7 +132,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     }
 
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
-    const editor = ace.edit(TAB_CONTENT + idSeqNr);
+    const editor = ace.edit(TABS_CONTENT + idSeqNr);
     const cursorPos = editor.getCursorPosition();
 
     const tabContentBefore = editor.getValue();
@@ -210,11 +210,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   setTabContent(idSeqNr: string | number, content: string) {
-    ace.edit(TAB_CONTENT + idSeqNr).setValue(content, -1);
+    ace.edit(TABS_CONTENT + idSeqNr).setValue(content, -1);
   }
 
   getTabContent(idSeqNr: string) {
-    return ace.edit(TAB_CONTENT + idSeqNr).getValue();
+    return ace.edit(TABS_CONTENT + idSeqNr).getValue();
   }
 
   getTooltipText(idSeqNr: string | number) {
@@ -295,7 +295,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   createJSFile(data) {
-    const jsFile = this.loadJSFileInner(data);
+    const jsFile = this.createJSFileInner(data);
     this.changeFileStatus(jsFile.idSeqNr, true);
     this.setNewFile(jsFile.idSeqNr, true);
   }
@@ -469,11 +469,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   private setTabContentAttr(idSeqNr: string, key: string, value: string) {
-    $('#' + TAB_CONTENT + idSeqNr).attr(key, value);
+    $('#' + TABS_CONTENT + idSeqNr).attr(key, value);
   }
 
   private getTabContentAttr(idSeqNr: string | number, key: string) {
-    return $('#' + TAB_CONTENT + idSeqNr).attr(key);
+    return $('#' + TABS_CONTENT + idSeqNr).attr(key);
   }
 
   setTabTitleAttr(tabNr: number, attrName: string, attrValue: string) {
@@ -506,6 +506,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       // is tab already opened ?
       const tabInfo = this.resolveTabInfoByRelativePath(data.relativePath);
       if (tabInfo !== undefined && tabInfo.index >= 0) {
+        // making this tab active
         this.tabs.val(tabInfo.index + '');
         return;
       }
@@ -515,8 +516,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       // loading file content by relativePath
       this.http.post({relativePath: data.relativePath}, REST_URLS.JS_FILES.URLS.LOAD_JS_FILE, 'text').subscribe(
         (content: any) => {
-          data.body = content.body;
-          this.loadJSFileInner(data);
+          const contentAsJson = JSON.parse(content.body);
+          data.body = contentAsJson[DI_CONSTANTS.FILE_BODY];
+          const jsFile = this.createJSFileInner(data);
+          this.setTabContentAttr(jsFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, contentAsJson[DI_CONSTANTS.FILE_LOAD_TIME]);
           this.globalComponentsService.loader.close();
           resolve(data.idSeqNr);
         },
@@ -552,7 +555,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
   makeBody(data: any) {
     const attrs = {
-      id: `${TAB_CONTENT}${data.idSeqNr}`
+      id: `${TABS_CONTENT}${data.idSeqNr}`
     };
 
     attrs[ID_SEQ_NR] = data.idSeqNr;
@@ -567,7 +570,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // destroying tooltip
     jqwidgets.createInstance($('#' + TITLE_ID + idSeqNr), 'jqxTooltip').destroy();
     // destroying ace
-    ace.edit(TAB_CONTENT + idSeqNr).destroy();
+    ace.edit(TABS_CONTENT + idSeqNr).destroy();
     // removing tab
     this.tabs.removeAt(this.resolveTabByRelativePath(relativePath));
 
@@ -639,7 +642,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
   }
 
   bindBody(data: any) {
-    const aceEditor = ace.edit(`${TAB_CONTENT}${data.idSeqNr}`);
+    const aceEditor = ace.edit(`${TABS_CONTENT}${data.idSeqNr}`);
 
     aceEditor.setOptions({
       fontSize: this.fontSize + 'pt',
@@ -657,7 +660,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     });
   }
 
-  loadJSFileInner(data: any) {
+  createJSFileInner(data: any) {
     this.idSeqNr++;
     data.idSeqNr = this.idSeqNr;
 
@@ -674,7 +677,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
   onTabSelect(event: any) {
     const idSeqNr = this.resolveTabAttr(event.args.item, ID_SEQ_NR);
-    ace.edit(TAB_CONTENT + idSeqNr).focus();
+    ace.edit(TABS_CONTENT + idSeqNr).focus();
 
     const relativePath = this.getTabContentAttr(idSeqNr, RELATIVE_PATH);
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_SELECTED, relativePath);
@@ -697,13 +700,18 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     for (let index = 0; index < this.tabs.length(); index++) {
       const tab = {};
 
-      let tabRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
-      let idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
+      const tabRelativePath = this.resolveTabAttr(index, RELATIVE_PATH);
+      const idSeqNr = this.resolveTabAttr(index, ID_SEQ_NR);
+
       tab[RELATIVE_PATH] = tabRelativePath;
       tab[ATTR_IS_NEW_FILE] = this.isNewFile(idSeqNr);
       tab[IS_CHANGED] = this.isTabChanged(idSeqNr);
+      // storing file load time for changed files only, don't need for newly created file and for unmodified files
+      if (tab[IS_CHANGED] && !tab[ATTR_IS_NEW_FILE]) {
+        tab[DI_CONSTANTS.FILE_LOAD_TIME] = this.getTabContentAttr(idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME);
+      }
       if (tab[IS_CHANGED]) {
-        tab['tab-content'] = this.getTabContent(idSeqNr);
+        tab[TABS_CONTENT] = this.getTabContent(idSeqNr);
       }
 
       // according to docs the this.tabs.val() returns string, but sometimes it number ? WTF ???
@@ -722,40 +730,50 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // loading tabs
     let loadedTabs = LocalStorageService.loadObj(TABS, []);
     let activeTab;
-    loadedTabs.reduce(
-      (current, newItem, index) => {
-        const data: any = {};
-        data.relativePath = newItem[RELATIVE_PATH];
-
-        return current.then(
+    const promise = loadedTabs.reduce(
+      (currentPromise, item, index) => {
+        return currentPromise.then(
           () => {
-            if (newItem['active'] === true) {
+            if (item['active'] === true) {
               activeTab = index;
             }
 
             // is newly created file ?
-            if (newItem[ATTR_IS_NEW_FILE]) {
+            if (item[ATTR_IS_NEW_FILE]) {
               this.createJSFile({
-                relativePath: data.relativePath,
-                label: UtilsService.resolveFileName(data.relativePath),
-                body: newItem['tab-content']
+                relativePath: item[RELATIVE_PATH],
+                label: UtilsService.resolveFileName(item[RELATIVE_PATH]),
+                body: item[TABS_CONTENT]
               });
-              this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE, data.relativePath);
+              this.messageService.sendMessage(MESSAGE_TYPE.CREATE_NEW_FILE_IN_TREE, item[RELATIVE_PATH]);
+              return Promise.resolve();
+            }
+
+            // it's an existing file, was it changed ?
+            if (item[IS_CHANGED]) {
+              // yes, file content was changed, loading
+              const jsFile = this.createJSFileInner({
+                relativePath: item[RELATIVE_PATH],
+                label: UtilsService.resolveFileName(item[RELATIVE_PATH]),
+                body: item[TABS_CONTENT]
+              });
+              // marking this file as [changed]
+              this.changeFileStatus(jsFile.idSeqNr, true);
+              // setting up file load time
+              this.setTabContentAttr(jsFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, item[DI_CONSTANTS.FILE_LOAD_TIME]);
               return Promise.resolve();
             }
 
             // it's an existing file, loading from server
-            return this.loadJSFile(data).then(
-              (idSeqNr: number) => {
-                // updating it's content if needed
-                if (newItem[IS_CHANGED]) {
-                  this.setTabContent(idSeqNr, newItem['tab-content']);
-                }
-                return Promise.resolve();
-              });
+            return this.loadJSFile({
+              relativePath: item[RELATIVE_PATH]
+            });
           });
-      }, Promise.resolve()).then(
-      () => {
+      }, Promise.resolve());
+
+    // after all tabs loaded, choosing active tab
+    promise.then(
+      _ => {
         if (activeTab !== undefined) {
           this.tabs.val(activeTab);
         }
