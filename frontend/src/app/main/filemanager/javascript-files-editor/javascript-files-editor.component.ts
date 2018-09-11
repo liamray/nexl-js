@@ -432,10 +432,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       content: content
     };
 
-    // sending file load time if file was changed
-    if (this.isTabChanged(tabInfo.idSeqNr)) {
-      data[DI_CONSTANTS.FILE_LOAD_TIME] = this.getTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME);
-    }
+    // file load time
+    data[DI_CONSTANTS.FILE_LOAD_TIME] = this.getTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME);
 
     this.http.post(data, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'json').subscribe(
       (content: any) => {
