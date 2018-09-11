@@ -98,8 +98,16 @@ export class DiffsComponent implements AfterViewInit, OnInit {
       height: this.diffsWindow.height()
     };
 
-    console.log(data.offset);
-
     LocalStorageService.storeObj(DIFFS_WINDOW, data);
+  }
+
+  onApply() {
+    this.data.onApply(this.dv.edit.getValue());
+    this.diffsWindow.close();
+  }
+
+  onApplyAndSave() {
+    this.data.onApplyAndSave(this.dv.edit.getValue());
+    this.diffsWindow.close();
   }
 }

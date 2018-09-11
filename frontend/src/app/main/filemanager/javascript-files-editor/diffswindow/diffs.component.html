@@ -50,7 +50,7 @@
           [textPosition]='"center"'
           [imgSrc]='"./nexl/site/icons/save.png"'
           [auto-create]="false"
-          (onClick)="this.data.onApplyAndSave(); this.diffsWindow.close();"
+          (onClick)="onApplyAndSave();"
           #applyAndSave>
           Apply and save
         </jqxButton>
@@ -63,7 +63,7 @@
           [textPosition]='"center"'
           [imgSrc]='"./nexl/site/icons/ok.png"'
           [auto-create]="false"
-          (onClick)="this.data.onApply(); this.diffsWindow.close();"
+          (onClick)="onApply();"
           #applyChanges>
           Apply changes
         </jqxButton>

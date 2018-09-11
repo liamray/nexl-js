@@ -342,17 +342,6 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       relativePath = this.resolveTabAttr(tabNr, RELATIVE_PATH);
     }
 
-    this.diffsWindow.showDiffs({
-      left: 'hello',
-      right: 'helo',
-      onApply: () => {
-        alert('Applied !');
-      },
-      onApplyAndSave: () => {
-        alert('Applied and saved !');
-      }
-    });
-
     if (LocalStorageService.loadRaw(SAVE_JS_FILE_CONFIRM) === false.toString()) {
       this.saveJSFileInner(relativePath);
       return;
@@ -374,19 +363,45 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.globalComponentsService.confirmBox.open(opts);
   }
 
-  saveJSFileInnerInner(content: any, tabInfo: any, callback?: any) {
-    this.globalComponentsService.loader.close();
+  openDiffsWindow(content: any, tabInfo: any) {
+    this.diffsWindow.showDiffs({
+      left: this.getTabContent(tabInfo.idSeqNr),
+      right: content.body[DI_CONSTANTS.FILE_BODY],
 
+      onApply: (leftUpdated: string) => {
+        // updating file load time
+        this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, content.body[DI_CONSTANTS.FILE_LOAD_TIME]);
+        // updating tab content
+        this.setTabContent(tabInfo.idSeqNr, leftUpdated);
+      },
+
+      onApplyAndSave: (leftUpdated: string) => {
+        // updating file load time
+        this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, content.body[DI_CONSTANTS.FILE_LOAD_TIME]);
+        // updating tab content
+        this.setTabContent(tabInfo.idSeqNr, leftUpdated);
+        // resaving
+        this.saveJSFileInner(tabInfo.relativePath);
+      }
+    });
+  }
+
+  saveJSFileInnerInner(content: any, tabInfo: any) {
     // checking content. if it contains file-body, it means save was rejected because because of file was updated on server and here is an updated file content
     if (content.body[DI_CONSTANTS.FILE_BODY] !== undefined) {
       // opening diffs confirm dialog
       this.diffsConfirmBox.open(
+        // ON OVERRIDE goes here
         () => {
-          // override
-          console.log('Overriding...');
-        }, () => {
+          // removing file load time. when save request will be sent to the server it will override file because FILE_LOAD_TIME will not be provided
+          this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, undefined);
+          // overriding file
+          this.saveJSFileInner(tabInfo.relativePath);
+        },
+        // ON DIFF goes here
+        () => {
           // showing diffs dialog
-          console.log('Diffs dialog...');
+          this.openDiffsWindow(content, tabInfo);
         });
 
       return;
@@ -402,16 +417,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // updating file load time
     this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, content.body[DI_CONSTANTS.FILE_LOAD_TIME]);
 
-    // call callback if specified
-    if (callback !== undefined) {
-      callback(true);
-    }
-
     // updating local storage
     this.saveTabs2LocalStorage();
   }
 
-  saveJSFileInner(relativePath: string, callback?: (boolean) => void) {
+  saveJSFileInner(relativePath: string) {
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
     const content = this.getTabContent(tabInfo.idSeqNr);
 
@@ -429,15 +439,13 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
     this.http.post(data, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'json').subscribe(
       (content: any) => {
-        this.saveJSFileInnerInner(content, tabInfo, callback);
+        this.globalComponentsService.loader.close();
+        this.saveJSFileInnerInner(content, tabInfo);
       },
       (err) => {
         this.globalComponentsService.loader.close();
         this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save JS file. Reason : [${err.statusText}]`);
         console.log(err);
-        if (callback !== undefined) {
-          callback(false);
-        }
       }
     );
   }
