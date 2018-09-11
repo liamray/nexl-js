@@ -394,7 +394,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         // ON OVERRIDE goes here
         () => {
           // removing file load time. when save request will be sent to the server it will override file because FILE_LOAD_TIME will not be provided
-          this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, undefined);
+          this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, null);
           // overriding file
           this.saveJSFileInner(tabInfo.relativePath);
         },

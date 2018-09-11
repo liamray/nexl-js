@@ -91,7 +91,7 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 	// comparing fileLoadTime to last file modification time
 	return fsx.stat(fullPath)
 		.then(stat => {
-			if (fileLoadTime > stat.mtime.getTime()) {
+			if (fileLoadTime >= stat.mtime.getTime()) {
 				// file was modified on server before the fileLoadTime, just saving...
 				return saveJSFileInnerInner(fullPath, content);
 			}
@@ -103,6 +103,7 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 				.then(newerFileContent => {
 					const data = {};
 					data[di.FILE_BODY] = newerFileContent;
+					data[di.FILE_LOAD_TIME] = stat.mtime.getTime();
 					return data;
 				});
 		});
