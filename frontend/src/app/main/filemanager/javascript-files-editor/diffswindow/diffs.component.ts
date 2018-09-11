@@ -1,9 +1,7 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from "@angular/core";
-import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import * as $ from 'jquery';
-import {DIFFS_WINDOW, LocalStorageService} from "../../services/localstorage.service";
-import {GlobalComponentsService} from "../../services/global-components.service";
+import {DIFFS_WINDOW, LocalStorageService} from "../../../services/localstorage.service";
 
 @Component({
   selector: 'app-diffs',
@@ -17,8 +15,9 @@ export class DiffsComponent implements AfterViewInit, OnInit {
   @ViewChild('closeWindow') closeWindow: jqxWindowComponent;
 
   private dv: any;
+  private data: any;
 
-  constructor(private globalComponentsService: GlobalComponentsService) {
+  constructor() {
   }
 
   ngOnInit(): void {
@@ -28,11 +27,12 @@ export class DiffsComponent implements AfterViewInit, OnInit {
     this.loadWindowPos();
   }
 
-  private showDiffs(data: any) {
+  showDiffs(data: any) {
+    this.data = data;
     this.diffsWindow.open();
 
     setTimeout(_ => {
-      this.showDiffsInner(data);
+      this.showDiffsInner();
     }, 100);
   }
 
@@ -40,16 +40,13 @@ export class DiffsComponent implements AfterViewInit, OnInit {
     this.resize();
   }
 
-  private showDiffsInner(data: any) {
-    const left = data.left;
-    const right = data.right;
-
+  private showDiffsInner() {
     const target = document.getElementById('diff-container');
     target.innerHTML = "";
 
     this.dv = CodeMirror.MergeView(target, {
-      value: left,
-      orig: right,
+      value: this.data.left,
+      orig: this.data.right,
       lineNumbers: true,
       mode: "javascript",
       highlightDifferences: true,

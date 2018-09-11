@@ -59,8 +59,8 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
 import {AboutComponent} from "./misc/about/about.component";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
 import {UsersComponent} from "./settingsdialogs/users/users.component";
-import {DiffsComponent} from "./misc/diffs/diffs.component";
-import {DiffsConfirmBoxComponent} from "./misc/diffsconfirmbox/diffsconfirmbox.component";
+import {DiffsConfirmBoxComponent} from "./filemanager/javascript-files-editor/diffsconfirmbox/diffsconfirmbox.component";
+import {DiffsComponent} from "./filemanager/javascript-files-editor/diffswindow/diffs.component";
 
 
 @NgModule({

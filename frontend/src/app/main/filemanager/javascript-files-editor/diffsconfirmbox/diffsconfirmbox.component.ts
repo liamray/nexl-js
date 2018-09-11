@@ -1,9 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
-import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import * as $ from 'jquery';
-import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 
 @Component({
   selector: 'app-diffsconfirmbox',
@@ -25,11 +23,10 @@ export class DiffsConfirmBoxComponent implements OnInit {
     this.cancelButton.createComponent();
   };
 
-  constructor(private globalComponentsService: GlobalComponentsService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.globalComponentsService.diffsConfirmBox = this;
   }
 
   open(onOverride: () => void, onDiff: () => void) {

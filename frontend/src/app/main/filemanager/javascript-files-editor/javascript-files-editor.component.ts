@@ -8,6 +8,8 @@ import {LocalStorageService, SAVE_JS_FILE_CONFIRM, TABS} from "../../services/lo
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import {DiffsConfirmBoxComponent} from "./diffsconfirmbox/diffsconfirmbox.component";
+import {DiffsComponent} from "./diffswindow/diffs.component";
 
 const TABS_CONTENT = 'tabs-content-';
 const TITLE_ID = 'tabs-title-';
@@ -29,6 +31,8 @@ const TRUE = true.toString();
 })
 export class JavaScriptFilesEditorComponent implements AfterViewInit {
   @ViewChild('tabs') tabs: jqxTabsComponent;
+  @ViewChild('diffsConfirmBox') diffsConfirmBox: DiffsConfirmBoxComponent;
+  @ViewChild('diffsWindow') diffsWindow: DiffsComponent;
 
   idSeqNr = 0;
   hasReadPermission = false;
@@ -338,6 +342,17 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       relativePath = this.resolveTabAttr(tabNr, RELATIVE_PATH);
     }
 
+    this.diffsWindow.showDiffs({
+      left: 'hello',
+      right: 'helo',
+      onApply: () => {
+        alert('Applied !');
+      },
+      onApplyAndSave: () => {
+        alert('Applied and saved !');
+      }
+    });
+
     if (LocalStorageService.loadRaw(SAVE_JS_FILE_CONFIRM) === false.toString()) {
       this.saveJSFileInner(relativePath);
       return;
@@ -365,7 +380,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // checking content. if it contains file-body, it means save was rejected because because of file was updated on server and here is an updated file content
     if (content.body[DI_CONSTANTS.FILE_BODY] !== undefined) {
       // opening diffs confirm dialog
-      this.globalComponentsService.diffsConfirmBox.open(
+      this.diffsConfirmBox.open(
         () => {
           // override
           console.log('Overriding...');
