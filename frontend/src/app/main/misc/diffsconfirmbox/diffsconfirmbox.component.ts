@@ -11,10 +11,13 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
   styleUrls: ['./diffsconfirmbox.component.css']
 })
 export class DiffsConfirmBoxComponent implements OnInit {
-  @ViewChild('diffsWindow') diffsWindow: jqxWindowComponent;
+  @ViewChild('diffsConfirmBoxWindow') diffsConfirmBoxWindow: jqxWindowComponent;
   @ViewChild('overrideButton') overrideButton: jqxButtonComponent;
   @ViewChild('diffsButton') diffsButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
+
+  private onOverride: () => void;
+  private onDiff: () => void;
 
   initContent = () => {
     this.overrideButton.createComponent();
@@ -22,29 +25,26 @@ export class DiffsConfirmBoxComponent implements OnInit {
     this.cancelButton.createComponent();
   };
 
-  constructor(private messageService: MessageService) {
-    this.messageService.getMessage().subscribe(
-      (message: any) => {
-      }
-    );
+  constructor(private globalComponentsService: GlobalComponentsService) {
   }
-
 
   ngOnInit() {
+    this.globalComponentsService.diffsConfirmBox = this;
   }
 
-  onClose() {
-  }
-
-  open(opts: any) {
-    this.diffsWindow.open();
+  open(onOverride: () => void, onDiff: () => void) {
+    this.onOverride = onOverride;
+    this.onDiff = onDiff;
+    this.diffsConfirmBoxWindow.open();
   }
 
   overrideFile() {
-    alert('Overriding file...');
+    this.onOverride();
+    this.diffsConfirmBoxWindow.close();
   }
 
   makeDiffs() {
-    alert('Making diffs...');
+    this.onDiff();
+    this.diffsConfirmBoxWindow.close();
   }
 }

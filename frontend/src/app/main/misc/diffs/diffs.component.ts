@@ -3,13 +3,14 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import * as $ from 'jquery';
 import {DIFFS_WINDOW, LocalStorageService} from "../../services/localstorage.service";
+import {GlobalComponentsService} from "../../services/global-components.service";
 
 @Component({
   selector: 'app-diffs',
   templateUrl: './diffs.component.html',
   styleUrls: ['./diffs.component.css']
 })
-export class DiffsComponent implements AfterViewInit {
+export class DiffsComponent implements AfterViewInit, OnInit {
   @ViewChild('diffsWindow') diffsWindow: jqxWindowComponent;
   @ViewChild('applyChanges') applyChanges: jqxWindowComponent;
   @ViewChild('applyAndSave') applyAndSave: jqxWindowComponent;
@@ -17,12 +18,10 @@ export class DiffsComponent implements AfterViewInit {
 
   private dv: any;
 
-  constructor(private messageService: MessageService) {
-    this.messageService.getMessage().subscribe(msg => {
-      if (msg.type === MESSAGE_TYPE.SHOW_DIFFS) {
-        this.showDiffs(msg.data);
-      }
-    });
+  constructor(private globalComponentsService: GlobalComponentsService) {
+  }
+
+  ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {

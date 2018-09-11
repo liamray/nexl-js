@@ -6,6 +6,7 @@ const logger = require('./logger');
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 const uiConsts = require('../common/ui-constants');
+const di = require('../common/data-interchange-constants');
 const utils = require('./utils');
 
 let TREE_ITEMS = [];
@@ -70,12 +71,15 @@ function loadJSFile(relativePath) {
 }
 
 function saveJSFileInnerInner(fullPath, content) {
+	const data = {};
+	data[di.FILE_LOAD_TIME] = new Date().getTime();
+
 	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 
 	return fsx.writeFile(fullPath, content, {encoding: encoding})
 		.then(cacheJSFiles)
 		.then(_ => {
-			return {};
+			return data;
 		});
 }
 
@@ -97,9 +101,9 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 			return fsx.readFile(fullPath, {encoding: encoding})
 				.then(newerFileContent => {
-					return {
-						newerFileContent: newerFileContent
-					};
+					const data = {};
+					data[di.FILE_BODY] = newerFileContent;
+					return data;
 				});
 		});
 }

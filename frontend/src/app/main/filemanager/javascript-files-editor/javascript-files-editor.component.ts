@@ -359,24 +359,62 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.globalComponentsService.confirmBox.open(opts);
   }
 
+  saveJSFileInnerInner(content: any, tabInfo: any, callback?: any) {
+    this.globalComponentsService.loader.close();
+
+    // checking content. if it contains file-body, it means save was rejected because because of file was updated on server and here is an updated file content
+    if (content.body[DI_CONSTANTS.FILE_BODY] !== undefined) {
+      // opening diffs confirm dialog
+      this.globalComponentsService.diffsConfirmBox.open(
+        () => {
+          // override
+          console.log('Overriding...');
+        }, () => {
+          // showing diffs dialog
+          console.log('Diffs dialog...');
+        });
+
+      return;
+    }
+
+    // file was saved successfully
+    // marking this file as [unchanged]
+    this.changeFileStatus(tabInfo.idSeqNr, false);
+
+    // this is not already a new file
+    this.setNewFile(tabInfo.idSeqNr, false);
+
+    // updating file load time
+    this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, content.body[DI_CONSTANTS.FILE_LOAD_TIME]);
+
+    // call callback if specified
+    if (callback !== undefined) {
+      callback(true);
+    }
+
+    // updating local storage
+    this.saveTabs2LocalStorage();
+  }
+
   saveJSFileInner(relativePath: string, callback?: (boolean) => void) {
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
     const content = this.getTabContent(tabInfo.idSeqNr);
 
     this.globalComponentsService.loader.open();
 
-    this.http.post({
+    const data = {
       relativePath: relativePath,
       content: content
-    }, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'text').subscribe(
+    };
+
+    // sending file load time if file was changed
+    if (this.isTabChanged(tabInfo.idSeqNr)) {
+      data[DI_CONSTANTS.FILE_LOAD_TIME] = this.getTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME);
+    }
+
+    this.http.post(data, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'json').subscribe(
       (content: any) => {
-        this.globalComponentsService.loader.close();
-        this.changeFileStatus(tabInfo.idSeqNr, false);
-        this.setNewFile(tabInfo.idSeqNr, false);
-        if (callback !== undefined) {
-          callback(true);
-        }
-        this.saveTabs2LocalStorage();
+        this.saveJSFileInnerInner(content, tabInfo, callback);
       },
       (err) => {
         this.globalComponentsService.loader.close();
@@ -514,9 +552,9 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       this.globalComponentsService.loader.open();
 
       // loading file content by relativePath
-      this.http.post({relativePath: data.relativePath}, REST_URLS.JS_FILES.URLS.LOAD_JS_FILE, 'text').subscribe(
+      this.http.post({relativePath: data.relativePath}, REST_URLS.JS_FILES.URLS.LOAD_JS_FILE, 'json').subscribe(
         (content: any) => {
-          const contentAsJson = JSON.parse(content.body);
+          const contentAsJson = content.body;
           data.body = contentAsJson[DI_CONSTANTS.FILE_BODY];
           const jsFile = this.createJSFileInner(data);
           this.setTabContentAttr(jsFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, contentAsJson[DI_CONSTANTS.FILE_LOAD_TIME]);

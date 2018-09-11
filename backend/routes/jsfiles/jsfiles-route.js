@@ -218,7 +218,7 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const content = req.body['content'];
-	const fileLoadTime = req.body['file-load-time'];
+	const fileLoadTime = req.body[di.FILE_LOAD_TIME];
 
 	logger.log.debug(`Saving content of [${relativePath}] JavaScript file by [${username}] user. fileLoadTime is [${fileLoadTime}]`);
 
@@ -228,7 +228,6 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 		security.sendError(res, 'Invalid relativePath');
 		return;
 	}
-
 
 	if (!security.hasWritePermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have write permissions to save nexl JavaScript file', username);

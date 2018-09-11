@@ -1,6 +1,7 @@
 const DI_CONSTANTS = {};
 DI_CONSTANTS.FILE_LOAD_TIME = 'file-load-time';
 DI_CONSTANTS.FILE_BODY = 'file-body';
+DI_CONSTANTS.FILE_BODY = 'file-body';
 
 // --------------------------------------------------------------------------------
 
