@@ -72,15 +72,14 @@ function loadJSFile(relativePath) {
 
 function saveJSFileInnerInner(fullPath, content) {
 	const data = {};
-	data[di.FILE_LOAD_TIME] = new Date().getTime();
 
 	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
 
 	return fsx.writeFile(fullPath, content, {encoding: encoding})
+		.then(_ => fsx.stat(fullPath))
+		.then(stat => Promise.resolve(data[di.FILE_LOAD_TIME] = stat.mtime.getTime()))
 		.then(cacheJSFiles)
-		.then(_ => {
-			return data;
-		});
+		.then(_ => data);
 }
 
 function saveJSFileInner(fullPath, content, fileLoadTime) {
