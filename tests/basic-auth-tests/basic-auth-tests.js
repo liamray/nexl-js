@@ -19,7 +19,7 @@ function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
 	const promises = [];
 
 	// generate token, register
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = predefinedNexlJSFIlesDir;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = predefinedNexlJSFIlesDir;
 
 	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 

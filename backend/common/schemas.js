@@ -20,8 +20,8 @@ const DEF_VALUES = {};
 
 // SETTINGS default values
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS] = {};
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(confMgmt.getNexlHomeDir(), 'storage');
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = confConsts.ENCODING_UTF8;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR] = () => path.join(confMgmt.getNexlHomeDir(), 'storage');
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_FILES_ENCODING] = confConsts.ENCODING_UTF8;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = false;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = 120;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SESSION_TIMEOUT] = 60 * 24 * 7; // 1 week
@@ -161,8 +161,8 @@ function notMandatoryDate(val, msg) {
 
 // SETTINGS validations
 SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = (val) => mandatoryString(val, 'nexl storage home directory');
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = (val) => {
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR] = (val) => mandatoryString(val, 'nexl storage home directory');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_FILES_ENCODING] = (val) => {
 	return confConsts.AVAILABLE_ENCODINGS.indexOf(val) >= 0 ? valid() : invalid('[nexl storge files encoding] must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']');
 };
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => mandatoryInt(val, 'HTTP timeout', 1);

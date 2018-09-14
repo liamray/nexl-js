@@ -27,7 +27,7 @@ function getJSFileFullPath(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	const fullPath = path.join(confMgmt.getJSFilesRootDir(), relativePath || '');
+	const fullPath = path.join(confMgmt.getNexlStorageDir(), relativePath || '');
 
 	if (!utils.isFilePathValid(fullPath)) {
 		logger.log.error('The [%s] path is unacceptable', fullPath);
@@ -43,7 +43,7 @@ function getJSFilesRootDirPath(relativePath) {
 		return Promise.reject('Unacceptable path');
 	}
 
-	const fullPath = path.join(confMgmt.getJSFilesRootDir(), relativePath || '');
+	const fullPath = path.join(confMgmt.getNexlStorageDir(), relativePath || '');
 
 	if (!utils.isDirPathValid(fullPath)) {
 		logger.log.error('The [%s] path is unacceptable', fullPath);
@@ -53,7 +53,7 @@ function getJSFilesRootDirPath(relativePath) {
 	return Promise.resolve(fullPath);
 }
 
-function loadJSFile(relativePath) {
+function loadFileFromStorage(relativePath) {
 	return getJSFileFullPath(relativePath).then(
 		(fullPath) => {
 			return fsx.exists(fullPath).then(
@@ -63,7 +63,7 @@ function loadJSFile(relativePath) {
 						return Promise.reject('JavaScript file doesn\'t exist !');
 					}
 
-					const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
+					const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING];
 					return fsx.readFile(fullPath, {encoding: encoding});
 				});
 		}
@@ -73,12 +73,12 @@ function loadJSFile(relativePath) {
 function saveJSFileInnerInner(fullPath, content) {
 	const data = {};
 
-	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
+	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING];
 
 	return fsx.writeFile(fullPath, content, {encoding: encoding})
 		.then(_ => fsx.stat(fullPath))
 		.then(stat => Promise.resolve(data[di.FILE_LOAD_TIME] = stat.mtime.getTime()))
-		.then(cacheJSFiles)
+		.then(cacheStorageFiles)
 		.then(_ => data);
 }
 
@@ -97,7 +97,7 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 
 			// file on the server was modified after it was opened by client
 			// sending back newer file content
-			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ENCODING];
+			const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING];
 			return fsx.readFile(fullPath, {encoding: encoding})
 				.then(newerFileContent => {
 					const data = {};
@@ -108,7 +108,7 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 		});
 }
 
-function saveJSFile(relativePath, content, fileLoadTime) {
+function saveFileToStorage(relativePath, content, fileLoadTime) {
 	return getJSFileFullPath(relativePath)
 		.then(fullPath => {
 			return saveJSFileInner(fullPath, content, fileLoadTime);
@@ -127,13 +127,13 @@ function mkdir(relativePath) {
 				return fsx.mkdir(fullPath);
 			});
 		})
-		.then(cacheJSFiles);
+		.then(cacheStorageFiles);
 }
 
 function deleteItem(relativePath) {
 	return getJSFileFullPath(relativePath)
 		.then(fsx.deleteItem)
-		.then(cacheJSFiles);
+		.then(cacheStorageFiles);
 }
 
 function rename(oldRelativePath, newRelativePath) {
@@ -156,7 +156,7 @@ function rename(oldRelativePath, newRelativePath) {
 			);
 		}
 	)
-		.then(cacheJSFiles);
+		.then(cacheStorageFiles);
 }
 
 function moveInner(sourceStuff, destStuff) {
@@ -194,7 +194,7 @@ function move(source, dest) {
 			);
 		}
 	)
-		.then(cacheJSFiles);
+		.then(cacheStorageFiles);
 }
 
 function listDirItems(fullPath) {
@@ -261,7 +261,7 @@ function makeFileItem(item, relativePath) {
 function gatherAllFiles(relativePath) {
 	relativePath = relativePath || '';
 	relativePath = path.join(path.sep, relativePath);
-	const searchFrom = path.join(confMgmt.getJSFilesRootDir(), relativePath);
+	const searchFrom = path.join(confMgmt.getNexlStorageDir(), relativePath);
 
 	if (!utils.isDirPathValid(searchFrom)) {
 		logger.log.error(`Got unacceptable path [${searchFrom}]. This path is invalid or points outside a nexl JavaScript files root dir`);
@@ -303,8 +303,8 @@ function gatherAllFiles(relativePath) {
 		});
 }
 
-function cacheJSFiles() {
-	const jsFilesRootDir = confMgmt.getJSFilesRootDir();
+function cacheStorageFiles() {
+	const jsFilesRootDir = confMgmt.getNexlStorageDir();
 	logger.log.info(`Caching files list in [${jsFilesRootDir}] directory`);
 
 	return gatherAllFiles().then(
@@ -317,8 +317,8 @@ function cacheJSFiles() {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.loadJSFile = loadJSFile;
-module.exports.saveJSFile = saveJSFile;
+module.exports.loadFileFromStorage = loadFileFromStorage;
+module.exports.saveFileToStorage = saveFileToStorage;
 module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
@@ -326,6 +326,6 @@ module.exports.move = move;
 
 module.exports.gatherAllFiles = gatherAllFiles;
 
-module.exports.cacheJSFiles = cacheJSFiles;
+module.exports.cacheStorageFiles = cacheStorageFiles;
 module.exports.getTreeItems = () => TREE_ITEMS;
 // --------------------------------------------------------------------------------

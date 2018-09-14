@@ -25,16 +25,16 @@ REST_URLS.GENERAL = {
 	}
 };
 
-REST_URLS.JS_FILES = {
-	PREFIX: 'jsfiles',
+REST_URLS.STORAGE = {
+	PREFIX: 'storage',
 	URLS: {
 		MOVE: '/move',
 		RENAME: '/rename',
 		DELETE: '/delete',
 		MAKE_DIR: '/make-dir',
 		TREE_ITEMS: '/get-tree-items-hierarchy',
-		LOAD_JS_FILE: '/load-jsfile',
-		SAVE_JS_FILE: '/save-jsfile'
+		LOAD_FILE_FROM_STORAGE: '/load-file-from-storage',
+		SAVE_FILE_TO_STORAGE: '/save-file-to-storage'
 	}
 };
 

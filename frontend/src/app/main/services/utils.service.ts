@@ -84,6 +84,6 @@ export class UtilsService {
 
 UtilsService.prefixUrlObject(REST_URLS.USERS);
 UtilsService.prefixUrlObject(REST_URLS.GENERAL);
-UtilsService.prefixUrlObject(REST_URLS.JS_FILES);
+UtilsService.prefixUrlObject(REST_URLS.STORAGE);
 UtilsService.prefixUrlObject(REST_URLS.PERMISSIONS);
 UtilsService.prefixUrlObject(REST_URLS.SETTINGS);

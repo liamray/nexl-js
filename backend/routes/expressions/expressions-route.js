@@ -50,7 +50,7 @@ function assembleNexlParams(httpParams) {
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
 
-	const fullPath = path.join(confMgmt.getJSFilesRootDir(), httpParams.relativePath);
+	const fullPath = path.join(confMgmt.getNexlStorageDir(), httpParams.relativePath);
 	if (!utils.isFilePathValid(fullPath)) {
 		logger.log.error('Got unacceptable path [%s]', fullPath);
 		throw 'Unacceptable path ( relative path contains restricted characters )';
@@ -58,7 +58,7 @@ function assembleNexlParams(httpParams) {
 
 	const nexlSource = {};
 
-	// ignoring content for GET method. Altered nexl js file works only for POST method
+	// ignoring content for GET method. Altered storage file works only for POST method
 	if (httpParams.method.toUpperCase() === 'POST' && httpParams.content !== undefined) {
 		nexlSource.asText = {};
 		nexlSource.asText['text'] = httpParams.content;
@@ -212,8 +212,8 @@ router.post('/*', function (req, res) {
 	const httpParams = resolvePostParams(req);
 
 	if (!status.hasWritePermission && httpParams.content !== undefined) {
-		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression with altered nexl js file', username);
-		security.sendError(res, 'No write permissions to evaluate nexl expression with altered js file');
+		logger.log.error('The [%s] user doesn\'t have write permissions to evaluate nexl expression on altered file', username);
+		security.sendError(res, 'No write permissions to evaluate nexl expression on altered file');
 		return;
 	}
 

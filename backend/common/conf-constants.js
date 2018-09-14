@@ -8,8 +8,8 @@ const CONF_FILES = {
 // --------------------------------------------------------------------------------
 // available options for SETTINGS
 const SETTINGS = {
-	JS_FILES_ROOT_DIR: 'js-files-root-dir',
-	JS_FILES_ENCODING: 'js-files-encoding',
+	STORAGE_DIR: 'storage-dir',
+	STORAGE_FILES_ENCODING: 'storage-files-encoding',
 	HTTP_TIMEOUT: 'http-timeout-sec',
 	SESSION_TIMEOUT: 'session-timeout-min',
 	RAW_OUTPUT: 'raw-output',

@@ -11,7 +11,7 @@ const jsFilesUtils = require('../../backend/api/jsfiles-utils');
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = predefinedNexlJSFIlesDir;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = predefinedNexlJSFIlesDir;
 
 	return Promise.resolve();
 }

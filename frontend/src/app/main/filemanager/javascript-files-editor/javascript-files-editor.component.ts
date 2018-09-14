@@ -435,7 +435,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     // file load time
     data[DI_CONSTANTS.FILE_LOAD_TIME] = this.getTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME);
 
-    this.http.post(data, REST_URLS.JS_FILES.URLS.SAVE_JS_FILE, 'json').subscribe(
+    this.http.post(data, REST_URLS.STORAGE.URLS.SAVE_FILE_TO_STORAGE, 'json').subscribe(
       (content: any) => {
         this.globalComponentsService.loader.close();
         this.saveJSFileInnerInner(content, tabInfo);
@@ -573,7 +573,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       this.globalComponentsService.loader.open();
 
       // loading file content by relativePath
-      this.http.post({relativePath: data.relativePath}, REST_URLS.JS_FILES.URLS.LOAD_JS_FILE, 'json').subscribe(
+      this.http.post({relativePath: data.relativePath}, REST_URLS.STORAGE.URLS.LOAD_FILE_FROM_STORAGE, 'json').subscribe(
         (content: any) => {
           const contentAsJson = content.body;
           data.body = contentAsJson[DI_CONSTANTS.FILE_BODY];

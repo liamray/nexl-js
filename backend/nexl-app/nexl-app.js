@@ -11,7 +11,7 @@ const figlet = require('figlet');
 const confMgmt = require('../api/conf-mgmt');
 const confConsts = require('../common/conf-constants');
 const restUrls = require('../common/rest-urls');
-const jsFilesUtils = require('../api/jsfiles-utils');
+const storageUtils = require('../api/storage-utils');
 const utils = require('../api/utils');
 const logger = require('../api/logger');
 const security = require('../api/security');
@@ -23,7 +23,7 @@ const notFoundInterceptor = require('../interceptors/404-interceptor');
 const errorHandlerInterceptor = require('../interceptors/error-handler-interceptor');
 
 const staticSite = require('../routes/root/root-route');
-const jsFilesRoute = require('../routes/jsfiles/jsfiles-route');
+const storageRoute = require('../routes/storage/storage-route');
 const general = require('../routes/general/general-route');
 const usersRoute = require('../routes/users/users-route');
 const permissionsRoute = require('../routes/permissions/permissions-route');
@@ -81,7 +81,7 @@ function create(interceptors) {
 	nexlApp.use(logger.loggerInterceptor);
 
 	// REST routes
-	nexlApp.use(`/${restUrls.ROOT}/${restUrls.JS_FILES.PREFIX}/`, jsFilesRoute);
+	nexlApp.use(`/${restUrls.ROOT}/${restUrls.STORAGE.PREFIX}/`, storageRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.USERS.PREFIX}/`, usersRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.PERMISSIONS.PREFIX}/`, permissionsRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.SETTINGS.PREFIX}/`, settingsRoute);
@@ -250,8 +250,8 @@ function startHTTPSServer() {
 
 function start() {
 	return Promise.resolve()
-		.then(confMgmt.createJSFilesRootDirIfNeeded)
-		.then(jsFilesUtils.cacheJSFiles)
+		.then(confMgmt.createStorageDirIfNeeded)
+		.then(storageUtils.cacheStorageFiles)
 		.then(startHTTPServer)
 		.then(startHTTPSServer)
 		.catch(

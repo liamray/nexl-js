@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const j79 = require('j79-utils');
 
-const jsfilesUtils = require('../../api/jsfiles-utils');
+const storageUtils = require('../../api/storage-utils');
 const security = require('../../api/security');
 const logger = require('../../api/logger');
 const restUtls = require('../../common/rest-urls');
@@ -13,7 +13,7 @@ const router = express.Router();
 //////////////////////////////////////////////////////////////////////////////
 // move item
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
+router.post(restUtls.STORAGE.URLS.MOVE, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 	const source = req.body['source'];
 	const dest = req.body['dest'];
@@ -40,7 +40,7 @@ router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 		return;
 	}
 
-	return jsfilesUtils.move(source, dest)
+	return storageUtils.move(source, dest)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully moved a [${source}] item to [${dest}] by [${username}] user`);
@@ -55,7 +55,7 @@ router.post(restUtls.JS_FILES.URLS.MOVE, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // rename item
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
+router.post(restUtls.STORAGE.URLS.RENAME, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const newRelativePath = req.body['newRelativePath'];
@@ -82,7 +82,7 @@ router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 		return;
 	}
 
-	return jsfilesUtils.rename(relativePath, newRelativePath)
+	return storageUtils.rename(relativePath, newRelativePath)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully renamed a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
@@ -97,7 +97,7 @@ router.post(restUtls.JS_FILES.URLS.RENAME, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // delete item
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
+router.post(restUtls.STORAGE.URLS.DELETE, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
@@ -116,7 +116,7 @@ router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 		return;
 	}
 
-	return jsfilesUtils.deleteItem(relativePath)
+	return storageUtils.deleteItem(relativePath)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully deleted a [${relativePath}] item by [${username}] user`);
@@ -131,7 +131,7 @@ router.post(restUtls.JS_FILES.URLS.DELETE, function (req, res) {
 //////////////////////////////////////////////////////////////////////////////
 // make-dir
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
+router.post(restUtls.STORAGE.URLS.MAKE_DIR, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
@@ -150,7 +150,7 @@ router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 		return;
 	}
 
-	return jsfilesUtils.mkdir(relativePath)
+	return storageUtils.mkdir(relativePath)
 		.then(_ => {
 			res.send({});
 			logger.log.debug(`Successfully created a [${relativePath}] directory by [${username}] user`);
@@ -165,7 +165,7 @@ router.post(restUtls.JS_FILES.URLS.MAKE_DIR, function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////
 // get tree items hierarchy
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.TREE_ITEMS, function (req, res, next) {
+router.post(restUtls.STORAGE.URLS.TREE_ITEMS, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`Getting tree items hierarchy by [${username}] user`);
@@ -176,13 +176,13 @@ router.post(restUtls.JS_FILES.URLS.TREE_ITEMS, function (req, res, next) {
 		return;
 	}
 
-	res.send(jsfilesUtils.getTreeItems());
+	res.send(storageUtils.getTreeItems());
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// load-jsfile
+// load file from storage
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
+router.post(restUtls.STORAGE.URLS.LOAD_FILE_FROM_STORAGE, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'] || path.sep;
 
@@ -196,7 +196,7 @@ router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 
 	const currentTime = new Date().getTime();
 
-	return jsfilesUtils.loadJSFile(relativePath)
+	return storageUtils.loadFileFromStorage(relativePath)
 		.then(data => {
 			const body = {};
 			body[di.FILE_BODY] = data;
@@ -212,9 +212,9 @@ router.post(restUtls.JS_FILES.URLS.LOAD_JS_FILE, function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// save-jsfile
+// save file to storage
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
+router.post(restUtls.STORAGE.URLS.SAVE_FILE_TO_STORAGE, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 	const content = req.body['content'];
@@ -235,7 +235,7 @@ router.post(restUtls.JS_FILES.URLS.SAVE_JS_FILE, function (req, res, next) {
 		return;
 	}
 
-	return jsfilesUtils.saveJSFile(relativePath, content, fileLoadTime)
+	return storageUtils.saveFileToStorage(relativePath, content, fileLoadTime)
 		.then(result => {
 			res.send(result);
 			logger.log.debug(`Successfully saved content of [${relativePath}] JavaScript file by [${username}] user`);

@@ -9,7 +9,7 @@ const securityConsts = require('../../backend/common/security-constants');
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.JS_FILES_ROOT_DIR] = tmpNexlJSFilesDir;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = tmpNexlJSFilesDir;
 
 	return Promise.resolve();
 }

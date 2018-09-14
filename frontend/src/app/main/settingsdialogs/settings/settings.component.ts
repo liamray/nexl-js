@@ -175,9 +175,9 @@ export class SettingsComponent {
         this.settings = data.body;
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
-        this.jsFilesEncoding.val(this.settings[this.SETTINGS.JS_FILES_ENCODING]);
+        this.jsFilesEncoding.val(this.settings[this.SETTINGS.STORAGE_FILES_ENCODING]);
         this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT]);
-        this.jsFilesRootDirBefore = this.settings[this.SETTINGS.JS_FILES_ROOT_DIR];
+        this.jsFilesRootDirBefore = this.settings[this.SETTINGS.STORAGE_DIR];
         this.settingsWindow.open();
       },
       err => {
@@ -213,7 +213,7 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.settingsWindow.close();
-        if (this.jsFilesRootDirBefore !== this.settings[this.SETTINGS.JS_FILES_ROOT_DIR]) {
+        if (this.jsFilesRootDirBefore !== this.settings[this.SETTINGS.STORAGE_DIR]) {
           this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
         }
       },

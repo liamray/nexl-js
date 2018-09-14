@@ -4,7 +4,7 @@ const clone = require('clone');
 
 const nexlApp = require('../../nexl-app/nexl-app');
 const security = require('../../api/security');
-const jsFilesUtils = require('../../api/jsfiles-utils');
+const storageUtils = require('../../api/storage-utils');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
 const restUrls = require('../../common/rest-urls');
@@ -44,8 +44,8 @@ function applyChanges(before) {
 	}
 
 	// is nexl storage dir changed ?
-	if (before[confConsts.SETTINGS.JS_FILES_ROOT_DIR] !== after[confConsts.SETTINGS.JS_FILES_ROOT_DIR]) {
-		return jsFilesUtils.cacheJSFiles();
+	if (before[confConsts.SETTINGS.STORAGE_DIR] !== after[confConsts.SETTINGS.STORAGE_DIR]) {
+		return storageUtils.cacheStorageFiles();
 	}
 
 	return Promise.resolve();

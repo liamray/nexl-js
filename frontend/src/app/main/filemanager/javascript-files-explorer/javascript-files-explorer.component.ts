@@ -314,7 +314,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
   loadTreeItems() {
     this.treeSource = [];
 
-    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.TREE_ITEMS, {}).subscribe(
+    this.httpClient.post<any>(REST_URLS.STORAGE.URLS.TREE_ITEMS, {}).subscribe(
       (data: any) => {
         this.expander.disabled(false);
         this.treeSource = data;
@@ -463,7 +463,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         newRelativePath: data.newRelativePath
       };
 
-      this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.RENAME, params).subscribe(
+      this.httpClient.post<any>(REST_URLS.STORAGE.URLS.RENAME, params).subscribe(
         () => {
           this.renameInner(data);
         },
@@ -553,7 +553,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     let param = {
       relativePath: newDirRelativePath
     };
-    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.MAKE_DIR, param).subscribe(
+    this.httpClient.post<any>(REST_URLS.STORAGE.URLS.MAKE_DIR, param).subscribe(
       () => {
         this.insertDirItem(JavaScriptFilesExplorerComponent.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
@@ -586,7 +586,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const params = {
       relativePath: targetItem.value.relativePath
     };
-    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.DELETE, params).subscribe(
+    this.httpClient.post<any>(REST_URLS.STORAGE.URLS.DELETE, params).subscribe(
       () => {
         this.tree.removeItem(targetItem);
         this.closeDeletedTabs(targetItem.value);
@@ -964,7 +964,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       dest: data.dropPath
     };
 
-    this.httpClient.post<any>(REST_URLS.JS_FILES.URLS.MOVE, params).subscribe(
+    this.httpClient.post<any>(REST_URLS.STORAGE.URLS.MOVE, params).subscribe(
       () => {
         this.moveItemInnerInner(data);
       },

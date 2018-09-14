@@ -194,8 +194,8 @@ function preloadConfs() {
 		.then(_ => load(confConsts.CONF_FILES.ADMINS, true));
 }
 
-function createJSFilesRootDirIfNeeded() {
-	const nexlStorageDir = ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR];
+function createStorageDirIfNeeded() {
+	const nexlStorageDir = ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR];
 	return fse.mkdirs(nexlStorageDir)
 		.then(_ => Promise.resolve(logger.log.importantMessage('info', `nexl storage dir is [${nexlStorageDir}]`)));
 }
@@ -236,7 +236,7 @@ function getNexlAppDataDir() {
 }
 
 // --------------------------------------------------------------------------------
-module.exports.createJSFilesRootDirIfNeeded = createJSFilesRootDirIfNeeded;
+module.exports.createStorageDirIfNeeded = createStorageDirIfNeeded;
 
 module.exports.initNexlHomeDir = initNexlHomeDir;
 module.exports.preloadConfs = preloadConfs;
@@ -249,7 +249,7 @@ module.exports.saveSettings = saveSettings;
 
 module.exports.getNexlHomeDir = getNexlHomeDir;
 module.exports.getNexlAppDataDir = getNexlAppDataDir;
-module.exports.getJSFilesRootDir = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR];
+module.exports.getNexlStorageDir = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR];
 module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS];
 
 module.exports.getCached = (fileName) => ALL_SETTINGS_CACHED[fileName];
