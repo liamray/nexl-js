@@ -15,8 +15,6 @@
 </div>
 
 <div class="item" [style.display]="isLoginVisible ? '' : 'none'">
-  <jqxTooltip [position]="'bottom-left'" [content]="'nexl login'">
-
     <jqxButton [width]='140'
                [height]='32'
                (click)='openLoginWindow()'
@@ -24,10 +22,8 @@
                [textPosition]='"left"'
                [imgSrc]='"./nexl/site/icons/login.png"'
     >
-      nexl login
+      login
     </jqxButton>
-
-  </jqxTooltip>
 </div>
 
 <div class="item" [style.display]="isLoginVisible ? 'none' : ''">

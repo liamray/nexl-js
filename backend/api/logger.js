@@ -1,5 +1,7 @@
+const path = require('path');
 const winston = require('winston');
 const j79 = require('j79-utils');
+const fse = require('fs-extra');
 
 const security = require('./security');
 const confMgmt = require('./conf-mgmt');
@@ -10,9 +12,16 @@ function logFormatter(options) {
 }
 
 function init() {
-	// loading settings
+	// resolving settings
 	const settings = confMgmt.getNexlSettingsCached();
+	// log file location
+	const logFileLocation = settings[confConsts.SETTINGS.LOG_FILE_LOCATION];
 
+	// creating dirs structure if needed
+	return fse.mkdirs(logFileLocation).then(_ => initInner(settings, logFileLocation))
+}
+
+function initInner(settings, logFileLocation) {
 	// removing existing console transport
 	winston.remove(winston.transports.Console);
 
@@ -24,7 +33,7 @@ function init() {
 	// loading log setting
 	// adding file transport
 	winston.add(winston.transports.File, {
-		filename: settings[confConsts.SETTINGS.LOG_FILE_LOCATION],
+		filename: path.join(logFileLocation, 'nexl.log'),
 		formatter: logFormatter,
 		json: false,
 		tailable: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,

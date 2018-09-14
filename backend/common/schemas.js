@@ -2,11 +2,15 @@ const j79 = require('j79-utils');
 const path = require('path');
 const osHomeDir = require('os-homedir');
 
-const logger = require('../api/logger');
 const confConsts = require('./conf-constants');
+const securityConsts = require('../common/security-constants');
+const uiConsts = require('./ui-constants');
+const commonUtils = require('./common-utils');
+
+const security = require('../api/security');
+const logger = require('../api/logger');
+const utils = require('../api/utils');
 const confMgmt = require('../api/conf-mgmt');
-const commonUtils = require('../common/common-utils');
-const uiConsts = require('../common/ui-constants');
 
 const SETTINGS_FILE = confConsts.CONF_FILES.SETTINGS;
 
@@ -16,7 +20,10 @@ const DEF_VALUES = {};
 
 // SETTINGS default values
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS] = {};
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = () => path.join(osHomeDir(), 'nexl-js-files');
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR] = () => {
+	const dir = path.join(confMgmt.getNexlHomeDir(), '..', 'storage');
+	return path.normalize(dir);
+};
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ENCODING] = confConsts.ENCODING_UTF8;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.RAW_OUTPUT] = false;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = 120;
@@ -25,7 +32,10 @@ DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_BINDING] = '
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_PORT] = 8080;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_BINDING] = 'localhost';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTPS_PORT] = 443;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = () => path.join(confMgmt.getNexlHomeDir(), 'nexl.log');
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_FILE_LOCATION] = () => {
+	const dir = path.join(confMgmt.getNexlHomeDir(), '..', 'logs');
+	return path.normalize(dir);
+};
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = 'info';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = 999;
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = 0; // not rotating
@@ -38,14 +48,42 @@ DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = '';
 
-// PASSWORDS default values
-DEF_VALUES[confConsts.CONF_FILES.USERS] = {};
+// USERS default values
+DEF_VALUES[confConsts.CONF_FILES.USERS] = () => {
+	logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] default user', confConsts.CONF_FILES.USERS, confMgmt.getNexlHomeDir(), securityConsts.ADMIN_USER);
+
+	// not exists, creating admin user and registration token
+	const users = {};
+	let token = utils.generateNewToken();
+	users[securityConsts.ADMIN_USER] = {
+		token2ResetPassword: token
+	};
+
+	logger.log.importantMessage('info', `Use the following token [${token.token}] to register [${securityConsts.ADMIN_USER}] account. This token is valid for [${security.TOKEN_VALID_HOURS}] hour(s). If token expires just delete the [${confConsts.CONF_FILES.USERS}] file located in [${confMgmt.getNexlHomeDir()}] directory and restart nexl app`);
+	return users;
+};
 
 // ADMINS default values
-DEF_VALUES[confConsts.CONF_FILES.ADMINS] = [];
+DEF_VALUES[confConsts.CONF_FILES.ADMINS] = () => {
+	logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with a [%s] default user', confConsts.CONF_FILES.ADMINS, confMgmt.getNexlHomeDir(), securityConsts.ADMIN_USER);
+	return [securityConsts.ADMIN_USER];
+};
 
 // PERMISSIONS default values
-DEF_VALUES[confConsts.CONF_FILES.PERMISSIONS] = {};
+DEF_VALUES[confConsts.CONF_FILES.PERMISSIONS] = () => {
+	logger.log.info('The [%s] file doesn\'t exist in [%s] directory. Creating a new one with read/write permissions for the following users : [%s, %s]', confConsts.CONF_FILES.PERMISSIONS, confMgmt.getNexlHomeDir(), securityConsts.GUEST_USER, securityConsts.AUTHENTICATED);
+	const permission = {};
+	permission[securityConsts.GUEST_USER] = {
+		read: true,
+		write: true
+	};
+	permission[securityConsts.AUTHENTICATED] = {
+		read: true,
+		write: true
+	};
+
+	return permission;
+};
 
 
 // --------------------------------------------------------------------------------

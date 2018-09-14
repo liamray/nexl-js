@@ -1,5 +1,5 @@
 const fs = require('fs');
-const fsextra = require('fs-extra');
+const fse = require('fs-extra');
 const path = require('path');
 const logger = require('./logger');
 const utils = require('./utils');
@@ -104,7 +104,7 @@ function readdir(fullPath) {
 }
 
 function deleteItem(fullPath) {
-	return fsextra.remove(fullPath)
+	return fse.remove(fullPath)
 		.then(() => {
 			logger.log.debug('Deleted [%s] item', fullPath);
 			return Promise.resolve();
@@ -132,7 +132,7 @@ function rename(oldName, newName) {
 }
 
 function move(src, dest) {
-	return fsextra.move(src, dest, {override: false});
+	return fse.move(src, dest, {override: false});
 }
 
 // --------------------------------------------------------------------------------

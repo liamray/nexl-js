@@ -95,16 +95,10 @@ function create(interceptors) {
 	// error handler
 	nexlApp.use(errorHandlerInterceptor);
 
-	// initializing conf management
-	confMgmt.init();
-
 	return printWelcomeMessage()
-		.then(confMgmt.createNexlHomeDirectoryIfNeeded)
-		.then(confMgmt.initSettings)
+		.then(confMgmt.initNexlHomeDir)
 		.then(logger.init)
-		.then(confMgmt.initUsers)
-		.then(confMgmt.initPermissions)
-		.then(confMgmt.initAdmins);
+		.then(confMgmt.preloadConfs);
 }
 
 function httpError(error) {
