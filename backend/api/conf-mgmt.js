@@ -21,7 +21,7 @@ let ALL_SETTINGS_CACHED = {};
 // api
 
 function getConfFileFullPath(fileName) {
-	return path.join(NEXL_HOME_DIR, fileName);
+	return path.join(getNexlAppDataDir(), fileName);
 }
 
 function loadDefaultValues(defValue) {
@@ -181,10 +181,10 @@ function saveSettings(settings) {
 
 function initNexlHomeDir() {
 	const cmdLineOpts = cmdLineArgs.init();
-	NEXL_HOME_DIR = cmdLineOpts[confConsts.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl', 'app-data');
+	NEXL_HOME_DIR = cmdLineOpts[confConsts.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 
 	// create dir structure if needed, preload settings and save them if needed
-	return fse.mkdirs(NEXL_HOME_DIR).then(_ => loadSettings(true));
+	return fse.mkdirs(getNexlAppDataDir()).then(_ => loadSettings(true));
 }
 
 function preloadConfs() {
@@ -227,6 +227,14 @@ function reloadCache() {
 	return Promise.all(promises);
 }
 
+function getNexlHomeDir() {
+	return NEXL_HOME_DIR;
+}
+
+function getNexlAppDataDir() {
+	return path.join(NEXL_HOME_DIR, 'app-data');
+}
+
 // --------------------------------------------------------------------------------
 module.exports.createJSFilesRootDirIfNeeded = createJSFilesRootDirIfNeeded;
 
@@ -239,7 +247,8 @@ module.exports.save = save;
 module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
 
-module.exports.getNexlHomeDir = () => NEXL_HOME_DIR;
+module.exports.getNexlHomeDir = getNexlHomeDir;
+module.exports.getNexlAppDataDir = getNexlAppDataDir;
 module.exports.getJSFilesRootDir = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.JS_FILES_ROOT_DIR];
 module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS];
 
