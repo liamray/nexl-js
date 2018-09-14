@@ -21,7 +21,7 @@ function sortFilesFunc(a, b) {
 	return 0;
 }
 
-function getJSFileFullPath(relativePath) {
+function assembleStorageFilePath(relativePath) {
 	if (!utils.isFilePathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
@@ -37,7 +37,7 @@ function getJSFileFullPath(relativePath) {
 	return Promise.resolve(fullPath);
 }
 
-function getJSFilesRootDirPath(relativePath) {
+function assembleStorageDirPath(relativePath) {
 	if (!utils.isDirPathValid(relativePath)) {
 		logger.log.error('The [%s] path is unacceptable', relativePath);
 		return Promise.reject('Unacceptable path');
@@ -54,7 +54,7 @@ function getJSFilesRootDirPath(relativePath) {
 }
 
 function loadFileFromStorage(relativePath) {
-	return getJSFileFullPath(relativePath).then(
+	return assembleStorageFilePath(relativePath).then(
 		(fullPath) => {
 			return fsx.exists(fullPath).then(
 				(isExists) => {
@@ -70,7 +70,7 @@ function loadFileFromStorage(relativePath) {
 	);
 }
 
-function saveJSFileInnerInner(fullPath, content) {
+function saveFileToStorageInnerInner(fullPath, content) {
 	const data = {};
 
 	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING];
@@ -82,9 +82,9 @@ function saveJSFileInnerInner(fullPath, content) {
 		.then(_ => data);
 }
 
-function saveJSFileInner(fullPath, content, fileLoadTime) {
+function saveFileToStorageInner(fullPath, content, fileLoadTime) {
 	if (fileLoadTime === undefined) {
-		return saveJSFileInnerInner(fullPath, content);
+		return saveFileToStorageInnerInner(fullPath, content);
 	}
 
 	// comparing fileLoadTime to last file modification time
@@ -92,7 +92,7 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 		.then(stat => {
 			if (fileLoadTime >= stat.mtime.getTime()) {
 				// file was modified on server before the fileLoadTime, just saving...
-				return saveJSFileInnerInner(fullPath, content);
+				return saveFileToStorageInnerInner(fullPath, content);
 			}
 
 			// file on the server was modified after it was opened by client
@@ -109,14 +109,14 @@ function saveJSFileInner(fullPath, content, fileLoadTime) {
 }
 
 function saveFileToStorage(relativePath, content, fileLoadTime) {
-	return getJSFileFullPath(relativePath)
+	return assembleStorageFilePath(relativePath)
 		.then(fullPath => {
-			return saveJSFileInner(fullPath, content, fileLoadTime);
+			return saveFileToStorageInner(fullPath, content, fileLoadTime);
 		});
 }
 
 function mkdir(relativePath) {
-	return getJSFileFullPath(relativePath).then(
+	return assembleStorageFilePath(relativePath).then(
 		(fullPath) => {
 			return fsx.exists(fullPath).then((isExists) => {
 				if (isExists) {
@@ -131,13 +131,13 @@ function mkdir(relativePath) {
 }
 
 function deleteItem(relativePath) {
-	return getJSFileFullPath(relativePath)
+	return assembleStorageFilePath(relativePath)
 		.then(fsx.deleteItem)
 		.then(cacheStorageFiles);
 }
 
 function rename(oldRelativePath, newRelativePath) {
-	return getJSFileFullPath(newRelativePath).then(
+	return assembleStorageFilePath(newRelativePath).then(
 		(newFullPath) => {
 			return fsx.exists(newFullPath).then(
 				(isExists) => {
@@ -146,7 +146,7 @@ function rename(oldRelativePath, newRelativePath) {
 						return Promise.reject('Item with the same name already exists');
 					}
 
-					return getJSFileFullPath(oldRelativePath).then(
+					return assembleStorageFilePath(oldRelativePath).then(
 						(oldFullPath) => {
 							return fsx.rename(oldFullPath, newFullPath);
 						}
@@ -185,15 +185,12 @@ function moveInner(sourceStuff, destStuff) {
 }
 
 function move(source, dest) {
-	return getJSFileFullPath(source).then(
-		(sourceFullPath) => {
-			return getJSFilesRootDirPath(dest).then(
-				(destFullPath) => {
-					return moveInner(sourceFullPath, destFullPath);
-				}
-			);
-		}
-	)
+	const data = {};
+	return assembleStorageFilePath(source)
+		.then(sourceFullPath => Promise.resolve(data.sourceFullPath = sourceFullPath))
+		.then(_ => assembleStorageDirPath(dest))
+		.then(destFullPath => Promise.resolve(data.destFullPath = destFullPath))
+		.then(_ => moveInner(data.sourceFullPath, data.destFullPath))
 		.then(cacheStorageFiles);
 }
 
@@ -304,8 +301,8 @@ function gatherAllFiles(relativePath) {
 }
 
 function cacheStorageFiles() {
-	const jsFilesRootDir = confMgmt.getNexlStorageDir();
-	logger.log.info(`Caching files list in [${jsFilesRootDir}] directory`);
+	const storageDir = confMgmt.getNexlStorageDir();
+	logger.log.info(`Caching files list in [${storageDir}] directory`);
 
 	return gatherAllFiles().then(
 		(result) => {
