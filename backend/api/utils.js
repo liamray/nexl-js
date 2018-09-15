@@ -7,11 +7,13 @@ function generateRandomBytes(length) {
 	return crypto.randomBytes(length).toString('hex');
 }
 
+// format error in order to print it in console.log() as a part of error message : console.log('Error occurred. Reason : [%s]', formattedError);
 function formatErr(err) {
-	if (j79.getType(err) === '[object Error]') {
-		return err.message + '\n' + err.stack;
+	if (err.message !== undefined || err.stack !== undefined) {
+		return ( err.message || '' ) + '\n' + ( err.stack || '' );
 	}
 
+	// not an object ? nothing to do with it
 	if (!j79.isObject(err)) {
 		return err;
 	}

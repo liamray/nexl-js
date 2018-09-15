@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
-const nexlApp = require('../backend/nexl-app/nexl-app');
 const favicon = require('serve-favicon');
 const path = require('path');
+const nexlApp = require('../backend/nexl-app/nexl-app');
+const utils = require('../backend/api/utils');
 
 const interceptors = [
 	favicon(path.join(__dirname, '../site/nexl/site/', 'favicon.ico'))
 ];
 
-nexlApp.create(interceptors).then(nexlApp.start);
+nexlApp.create(interceptors)
+	.then(nexlApp.start)
+	.catch(err => console.log(`Failed to start nexl app. Reason : [%s]`, utils.formatErr(err)));
