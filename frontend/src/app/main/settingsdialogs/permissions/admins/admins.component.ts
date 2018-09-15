@@ -85,7 +85,8 @@ export class AdminsComponent implements AfterViewInit {
       height: 210,
       filterable: false,
       sortable: true,
-      editable: true
+      editable: true,
+      rowsheight: 28
     });
   }
 

@@ -5,7 +5,6 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
-import {UtilsService} from "../../services/utils.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
