@@ -91,7 +91,7 @@ export class DiffsComponent implements AfterViewInit, OnInit {
     this.diffsWindow.height(data.height || this.diffsWindow.height());
   }
 
-  private onMoved() {
+  onMoved() {
     const data = {
       offset: $('#diffsWindow').parent().offset(),
       width: this.diffsWindow.width(),
