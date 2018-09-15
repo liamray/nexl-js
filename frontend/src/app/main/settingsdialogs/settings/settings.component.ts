@@ -18,7 +18,7 @@ export class SettingsComponent {
   @ViewChild('settingsWindow') settingsWindow: jqxWindowComponent;
   @ViewChild('ribbon') ribbon: jqxRibbonComponent;
   @ViewChild('validator') validator: jqxValidator;
-  @ViewChild('jsFilesEncoding') jsFilesEncoding: any;
+  @ViewChild('storageFilesEncoding') storageFilesEncoding: any;
   @ViewChild('rawOutput') rawOutput: any;
 
   @ViewChild('httpBinding') httpBiding: any;
@@ -42,7 +42,7 @@ export class SettingsComponent {
 
   settings: any = {};
   isAdmin = false;
-  jsFilesRootDirBefore: string;
+  storageFilesRootDirBefore: string;
   isSaving = false;
   width = 190;
   encodings = CONF_CONSTANTS.AVAILABLE_ENCODINGS;
@@ -53,7 +53,7 @@ export class SettingsComponent {
 
   validationRules =
     [
-      {input: '#jsFilesRootDir', message: 'JS files root dir is required!', action: 'keyup, blur', rule: 'required'},
+      {input: '#nexlStorageDir', message: 'nexl storage dir is required!', action: 'keyup, blur', rule: 'required'},
       {input: '#httpTimeout', message: 'HTTP timeout is required !', action: 'keyup, blur', rule: 'required'},
       {
         input: '#httpTimeout', message: 'HTTP timeout must be a positive integer', action: 'keyup, blur',
@@ -167,7 +167,7 @@ export class SettingsComponent {
     // opening indicator
     this.globalComponentsService.loader.open();
 
-    this.jsFilesRootDirBefore = undefined;
+    this.storageFilesRootDirBefore = undefined;
 
     // loading data
     this.http.post({}, REST_URLS.SETTINGS.URLS.LOAD_SETTINGS, 'json').subscribe(
@@ -175,9 +175,9 @@ export class SettingsComponent {
         this.settings = data.body;
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
-        this.jsFilesEncoding.val(this.settings[this.SETTINGS.STORAGE_FILES_ENCODING]);
+        this.storageFilesEncoding.val(this.settings[this.SETTINGS.STORAGE_FILES_ENCODING]);
         this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT]);
-        this.jsFilesRootDirBefore = this.settings[this.SETTINGS.STORAGE_DIR];
+        this.storageFilesRootDirBefore = this.settings[this.SETTINGS.STORAGE_DIR];
         this.settingsWindow.open();
       },
       err => {
@@ -213,8 +213,8 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.settingsWindow.close();
-        if (this.jsFilesRootDirBefore !== this.settings[this.SETTINGS.STORAGE_DIR]) {
-          this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_JS_FILES);
+        if (this.storageFilesRootDirBefore !== this.settings[this.SETTINGS.STORAGE_DIR]) {
+          this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_FILES);
         }
       },
       err => {

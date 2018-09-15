@@ -51,7 +51,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.RELOAD_JS_FILES: {
+      case MESSAGE_TYPE.RELOAD_FILES: {
         if (this.hasReadPermission) {
           this.loadTreeItems();
         }
@@ -302,13 +302,6 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     if (status.hasWritePermission !== this.hasWritePermission) {
       this.writePermissionChanged(status);
     }
-
-    // lock icon the title
-    if (this.hasReadPermission === true && this.hasWritePermission !== true) {
-      $('#jsFilesLockIcon').css('display', '');
-    } else {
-      $('#jsFilesLockIcon').css('display', 'none');
-    }
   }
 
   loadTreeItems() {
@@ -322,7 +315,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         // the [this.treeSource = data] assignment doesn't really updates tree instantly, tree still empty, therefore we need a little delay
         setTimeout(
           () => {
-            this.messageService.sendMessage(MESSAGE_TYPE.JS_FILES_TREE_RELOADED);
+            this.messageService.sendMessage(MESSAGE_TYPE.FILES_TREE_RELOADED);
           }, 100);
       },
       (err) => {
@@ -827,7 +820,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_FILE_FROM_STORAGE, {
       relativePath: item.value.relativePath
     });
   }

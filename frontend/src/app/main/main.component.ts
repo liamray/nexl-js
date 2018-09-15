@@ -60,7 +60,7 @@ export class MainComponent implements OnInit {
 
         switch (key) {
           case CTRL_S: {
-            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_JS_FILE);
+            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_FILE_TO_STORAGE);
             event.preventDefault();
             return;
           }

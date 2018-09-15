@@ -57,8 +57,8 @@ export class MainMenuComponent implements AfterViewInit {
     this.mainMenu.disable('main-menu-prettify', true);
   }
 
-  saveJSFile() {
-    this.messageService.sendMessage(MESSAGE_TYPE.SAVE_JS_FILE);
+  saveFileToStorage() {
+    this.messageService.sendMessage(MESSAGE_TYPE.SAVE_FILE_TO_STORAGE);
   }
 
   closeAllTabs() {

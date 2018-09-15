@@ -77,12 +77,12 @@ export class FindFileComponent implements OnInit {
     this.input.focus();
   }
 
-  loadJSFile() {
+  loadFileFromStorage() {
     if (this.source.indexOf(this.input.val()) < 0) {
       return;
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_JS_FILE, {
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_FILE_FROM_STORAGE, {
       relativePath: this.input.val()
     });
     this.findFileWindow.close();
@@ -97,6 +97,6 @@ export class FindFileComponent implements OnInit {
   };
 
   onOk() {
-    this.loadJSFile();
+    this.loadFileFromStorage();
   }
 }

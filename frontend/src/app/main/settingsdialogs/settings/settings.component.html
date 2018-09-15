@@ -68,12 +68,12 @@
 
               <div style="clear: both"></div>
 
-              <!--js files root dir-->
+              <!--nexl storage dir dir-->
               <div class="item">
-                <label>JS files root dir</label>
+                <label>nexl storage dir</label>
                 <jqxInput
-                  id="jsFilesRootDir"
-                  name="jsFilesRootDir"
+                  id="nexlStorageDir"
+                  name="nexlStorageDir"
                   [(ngModel)]="settings[SETTINGS.STORAGE_DIR]"
                   [width]="width"
                   [height]="25">
@@ -83,20 +83,20 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>JavaScript files root dir points to your configuration files directory<br/>This directory exposed via REST and you can see and manage those files in JS files explorer</p>'">
+                  [content]="'<p style=\'text-align: left;\'>??? nexl storage dir points to your configuration files directory<br/>This directory exposed via REST and you can see and manage those files in storage files explorer</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
 
               <div style="clear: both"></div>
 
-              <!--js files encoding-->
+              <!--storage files encoding-->
               <div class="item" style="margin-top: 15px;">
-                <label>JS files encoding</label>
+                <label>Storage files encoding</label>
                 <jqxDropDownList
                   style="margin-top: -4px;"
-                  name="jsFilesEncoding"
-                  #jsFilesEncoding
+                  name="storageFilesEncoding"
+                  #storageFilesEncoding
                   [(ngModel)]="settings[SETTINGS.STORAGE_FILES_ENCODING]"
                   [width]="width - 50"
                   [height]="25"

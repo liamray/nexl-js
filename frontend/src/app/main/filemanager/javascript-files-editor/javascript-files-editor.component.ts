@@ -4,7 +4,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
-import {LocalStorageService, SAVE_JS_FILE_CONFIRM, TABS} from "../../services/localstorage.service";
+import {LocalStorageService, CONFIRM_FILE_SAVE, TABS} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
@@ -62,8 +62,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.LOAD_JS_FILE: {
-        this.loadJSFile(message.data).then(
+      case MESSAGE_TYPE.LOAD_FILE_FROM_STORAGE: {
+        this.loadFileFromStorage(message.data).then(
           () => {
             this.saveTabs2LocalStorage();
           }
@@ -81,8 +81,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.SAVE_JS_FILE: {
-        this.saveJSFile(message.data);
+      case MESSAGE_TYPE.SAVE_FILE_TO_STORAGE: {
+        this.saveFileToStorage(message.data);
         return;
       }
 
@@ -92,7 +92,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       }
 
       case MESSAGE_TYPE.OPEN_NEW_TAB: {
-        this.createJSFile(message.data);
+        this.createNewFile(message.data);
         this.saveTabs2LocalStorage();
         return;
       }
@@ -113,8 +113,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.JS_FILES_TREE_RELOADED: {
-        this.jsFilesTreeReloaded();
+      case MESSAGE_TYPE.FILES_TREE_RELOADED: {
+        this.filesTreeReloaded();
         return;
       }
 
@@ -152,7 +152,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     editor.gotoLine(cursorPos.row + 1, cursorPos.column);
   }
 
-  jsFilesTreeReloaded() {
+  filesTreeReloaded() {
     if (!this.firstTimeLoad) {
       return;
     }
@@ -252,7 +252,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     const idSeqNr = this.resolveTabAttr(tabNr, ID_SEQ_NR);
 
     if (this.isTabChanged(idSeqNr)) {
-      data.nexlJSFileContent = this.getTabContent(idSeqNr);
+      data.fileContent = this.getTabContent(idSeqNr);
     }
 
     this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB, data);
@@ -298,10 +298,10 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     }
   }
 
-  createJSFile(data) {
-    const jsFile = this.createJSFileInner(data);
-    this.changeFileStatus(jsFile.idSeqNr, true);
-    this.setNewFile(jsFile.idSeqNr, true);
+  createNewFile(data) {
+    const newFile = this.createNewFileInner(data);
+    this.changeFileStatus(newFile.idSeqNr, true);
+    this.setNewFile(newFile.idSeqNr, true);
   }
 
   closeAllTabs() {
@@ -328,7 +328,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.setTabChanged(idSeqNr, isChanged);
   }
 
-  saveJSFile(relativePath: string) {
+  saveFileToStorage(relativePath: string) {
     if (!this.hasWritePermission) {
       return;
     }
@@ -342,8 +342,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       relativePath = this.resolveTabAttr(tabNr, RELATIVE_PATH);
     }
 
-    if (LocalStorageService.loadRaw(SAVE_JS_FILE_CONFIRM) === false.toString()) {
-      this.saveJSFileInner(relativePath);
+    if (LocalStorageService.loadRaw(CONFIRM_FILE_SAVE) === false.toString()) {
+      this.saveFileToStorageInner(relativePath);
       return;
     }
 
@@ -353,9 +353,9 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       label: 'Please note you can test your changes without saving the file. If you save this file it will immediately affect all REST requests related to the file. Are you sure you want to save ?',
       checkBoxText: 'Don\'t show it again',
       callback: (callbackData: any) => {
-        LocalStorageService.storeRaw(SAVE_JS_FILE_CONFIRM, !callbackData.checkBoxVal);
+        LocalStorageService.storeRaw(CONFIRM_FILE_SAVE, !callbackData.checkBoxVal);
         if (callbackData.isConfirmed === true) {
-          this.saveJSFileInner(relativePath);
+          this.saveFileToStorageInner(relativePath);
         }
       },
     };
@@ -381,12 +381,12 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         // updating tab content
         this.setTabContent(tabInfo.idSeqNr, leftUpdated);
         // resaving
-        this.saveJSFileInner(tabInfo.relativePath);
+        this.saveFileToStorageInner(tabInfo.relativePath);
       }
     });
   }
 
-  saveJSFileInnerInner(content: any, tabInfo: any) {
+  saveFileToStorageInnerInner(content: any, tabInfo: any) {
     // checking content. if it contains file-body, it means save was rejected because because of file was updated on server and here is an updated file content
     if (content.body[DI_CONSTANTS.FILE_BODY] !== undefined) {
       // opening diffs confirm dialog
@@ -396,7 +396,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
           // removing file load time. when save request will be sent to the server it will override file because FILE_LOAD_TIME will not be provided
           this.setTabContentAttr(tabInfo.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, null);
           // overriding file
-          this.saveJSFileInner(tabInfo.relativePath);
+          this.saveFileToStorageInner(tabInfo.relativePath);
         },
         // ON DIFF goes here
         () => {
@@ -421,7 +421,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.saveTabs2LocalStorage();
   }
 
-  saveJSFileInner(relativePath: string) {
+  saveFileToStorageInner(relativePath: string) {
     const tabInfo = this.resolveTabInfoByRelativePath(relativePath);
     const content = this.getTabContent(tabInfo.idSeqNr);
 
@@ -438,11 +438,11 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     this.http.post(data, REST_URLS.STORAGE.URLS.SAVE_FILE_TO_STORAGE, 'json').subscribe(
       (content: any) => {
         this.globalComponentsService.loader.close();
-        this.saveJSFileInnerInner(content, tabInfo);
+        this.saveFileToStorageInnerInner(content, tabInfo);
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save JS file. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save a file. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );
@@ -558,7 +558,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     return tabInfo === undefined ? -1 : tabInfo.index;
   }
 
-  loadJSFile(data: any) {
+  loadFileFromStorage(data: any) {
     data.label = UtilsService.resolveFileName(data.relativePath);
 
     return new Promise((resolve, reject) => {
@@ -577,8 +577,8 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
         (content: any) => {
           const contentAsJson = content.body;
           data.body = contentAsJson[DI_CONSTANTS.FILE_BODY];
-          const jsFile = this.createJSFileInner(data);
-          this.setTabContentAttr(jsFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, contentAsJson[DI_CONSTANTS.FILE_LOAD_TIME]);
+          const newFile = this.createNewFileInner(data);
+          this.setTabContentAttr(newFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, contentAsJson[DI_CONSTANTS.FILE_LOAD_TIME]);
           this.globalComponentsService.loader.close();
           resolve(data.idSeqNr);
         },
@@ -719,7 +719,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     });
   }
 
-  createJSFileInner(data: any) {
+  createNewFileInner(data: any) {
     this.idSeqNr++;
     data.idSeqNr = this.idSeqNr;
 
@@ -799,7 +799,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
 
             // is newly created file ?
             if (item[ATTR_IS_NEW_FILE]) {
-              this.createJSFile({
+              this.createNewFile({
                 relativePath: item[RELATIVE_PATH],
                 label: UtilsService.resolveFileName(item[RELATIVE_PATH]),
                 body: item[TABS_CONTENT]
@@ -811,20 +811,20 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
             // it's an existing file, was it changed ?
             if (item[IS_CHANGED]) {
               // yes, file content was changed, loading
-              const jsFile = this.createJSFileInner({
+              const newFile = this.createNewFileInner({
                 relativePath: item[RELATIVE_PATH],
                 label: UtilsService.resolveFileName(item[RELATIVE_PATH]),
                 body: item[TABS_CONTENT]
               });
               // marking this file as [changed]
-              this.changeFileStatus(jsFile.idSeqNr, true);
+              this.changeFileStatus(newFile.idSeqNr, true);
               // setting up file load time
-              this.setTabContentAttr(jsFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, item[DI_CONSTANTS.FILE_LOAD_TIME]);
+              this.setTabContentAttr(newFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, item[DI_CONSTANTS.FILE_LOAD_TIME]);
               return Promise.resolve();
             }
 
             // it's an existing file, loading from server
-            return this.loadJSFile({
+            return this.loadFileFromStorage({
               relativePath: item[RELATIVE_PATH]
             });
           });

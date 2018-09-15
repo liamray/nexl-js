@@ -38,14 +38,14 @@ export class AssignPermissionsComponent implements AfterViewInit {
         width: 109
       },
       {
-        text: 'Read JS files',
+        text: 'Read files',
         datafield: 'read',
         columntype: 'checkbox',
         align: 'center',
         width: 125
       },
       {
-        text: 'Write JS files',
+        text: 'Write files',
         datafield: 'write',
         columntype: 'checkbox',
         align: 'center',

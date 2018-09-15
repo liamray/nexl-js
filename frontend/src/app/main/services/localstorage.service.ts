@@ -1,4 +1,4 @@
-export const SAVE_JS_FILE_CONFIRM = 'nexl.confirmations.save-js-file';
+export const CONFIRM_FILE_SAVE = 'nexl.confirmations.confirm-file-save';
 export const OPEN_URL_WARNING_MESSAGE = 'nexl.confirmations.url-warning-message';
 export const MAIN_HORIZONTAL = 'nexl.ui.splitters.main.horizontal';
 export const MAIN_VERTICAL = 'nexl.ui.splitters.main.vertical';
