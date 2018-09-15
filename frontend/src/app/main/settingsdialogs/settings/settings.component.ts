@@ -38,7 +38,7 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
-  nexlHomeDirToolTip = `<p style=\'text-align: left;\'>nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --${CONF_CONSTANTS.NEXL_HOME_DEF}=/path/to/nexl/home/dir</span><br/> This might be useful if you need to start multiple nexl server instances<br/> By default nexl home dir located in [\${HOME}/.nexl] directory </p>`;
+  nexlHomeDirToolTip = `<p style=\'text-align: left;\'>??? nexl home directory contains nexl settings, authentication data and log file(s)<br/> This directory can be specified in the following way as command line argument:<br/> <span style=\'margin-left:30px; font-style: italic\'>nexl --${CONF_CONSTANTS.NEXL_HOME_DEF}=/path/to/nexl/home/dir</span><br/> This might be useful if you need to start multiple nexl server instances<br/> By default nexl home dir located in [\${HOME}/.nexl] directory </p>`;
 
   settings: any = {};
   isAdmin = false;
