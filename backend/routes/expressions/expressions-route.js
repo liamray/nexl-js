@@ -8,6 +8,7 @@ const logger = require('../../api/logger');
 const utils = require('../../api/utils');
 const confMgmt = require('../../api/conf-mgmt');
 const security = require('../../api/security');
+const confConsts = require('../../common/conf-constants');
 const diConsts = require('../../common/data-interchange-constants');
 
 const JSONP_FUNC = 'nexl-jsonp-func-name';
@@ -111,7 +112,7 @@ function handleJSONPRequest(req) {
 	}
 
 	// is JSONP supported at all ?
-	const callbackParam = confMgmt.getCached(diConsts.CONF_FILES.SETTINGS)[diConsts.SETTINGS.JSONP];
+	const callbackParam = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.JSONP];
 	if (utils.isEmptyStr(callbackParam)) {
 		return;
 	}
@@ -166,7 +167,7 @@ function nexlize(httpParams, req, res) {
 	}
 
 	// string sends as is. all other must be stringified
-	if (j79.isString(result) && confMgmt.getCached(diConsts.CONF_FILES.SETTINGS)[diConsts.SETTINGS.RAW_OUTPUT]) {
+	if (j79.isString(result) && confMgmt.getCached(confConsts.CONF_FILES.SETTINGS)[confConsts.SETTINGS.RAW_OUTPUT]) {
 		res.header("Content-Type", 'text/plain');
 		res.send(result);
 	} else {

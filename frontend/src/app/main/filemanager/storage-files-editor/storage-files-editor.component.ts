@@ -25,11 +25,11 @@ const IS_CHANGED = 'is-changed';
 const TRUE = true.toString();
 
 @Component({
-  selector: '.app-javascript-files-editor',
-  templateUrl: './javascript-files-editor.component.html',
-  styleUrls: ['./javascript-files-editor.component.css'],
+  selector: '.app-storage-files-editor',
+  templateUrl: './storage-files-editor.component.html',
+  styleUrls: ['./storage-files-editor.component.css'],
 })
-export class JavaScriptFilesEditorComponent implements AfterViewInit {
+export class StorageFilesEditorComponent implements AfterViewInit {
   @ViewChild('tabs') tabs: jqxTabsComponent;
   @ViewChild('diffsConfirmBox') diffsConfirmBox: DiffsConfirmBoxComponent;
   @ViewChild('diffsWindow') diffsWindow: DiffsComponent;
@@ -609,7 +609,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
       id: `${TITLE_ID}${data.idSeqNr}`
     };
     attrs[ID_SEQ_NR] = data.idSeqNr;
-    return '<span ' + JavaScriptFilesEditorComponent.obj2Array(attrs) + '>' + modified + readOnlyIcon + theTitle + closeIcon + '</span>';
+    return '<span ' + StorageFilesEditorComponent.obj2Array(attrs) + '>' + modified + readOnlyIcon + theTitle + closeIcon + '</span>';
   }
 
   makeBody(data: any) {
@@ -620,7 +620,7 @@ export class JavaScriptFilesEditorComponent implements AfterViewInit {
     attrs[ID_SEQ_NR] = data.idSeqNr;
     attrs[RELATIVE_PATH] = data.relativePath;
 
-    return '<div ' + JavaScriptFilesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
+    return '<div ' + StorageFilesEditorComponent.obj2Array(attrs) + '>' + data.body + '</div>';
   }
 
   closeTabInnerInner(idSeqNr: number) {

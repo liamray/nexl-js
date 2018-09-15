@@ -13,11 +13,11 @@ const DIR_ICON = UI_CONSTANTS.DIR_ICON;
 const FILE_ICON = UI_CONSTANTS.FILE_ICON;
 
 @Component({
-  selector: '.app-javascript-files-explorer',
-  templateUrl: './javascript-files-explorer.component.html',
-  styleUrls: ['./javascript-files-explorer.component.css']
+  selector: '.app-storage-files-explorer',
+  templateUrl: './storage-files-explorer.component.html',
+  styleUrls: ['./storage-files-explorer.component.css']
 })
-export class JavaScriptFilesExplorerComponent implements AfterViewInit {
+export class StorageExplorerComponent implements AfterViewInit {
 
   @ViewChild('expander') expander: jqxExpanderComponent;
   @ViewChild('tree') tree: jqxTreeComponent;
@@ -96,7 +96,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
     this.loadTreeItemsHierarchy(path, false).then(
       () => {
-        let item = JavaScriptFilesExplorerComponent.makeNewFileItem(path, fileName);
+        let item = StorageExplorerComponent.makeNewFileItem(path, fileName);
         const parentItem = this.findItemByRelativePath(path);
         this.insertFileItemInner(item, parentItem);
         item.value.isChanged = true;
@@ -355,7 +355,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
         this.tree.host.jqxTree("val", undefined);
       }
 
-      if (JavaScriptFilesExplorerComponent.isRightClick(event)) {
+      if (StorageExplorerComponent.isRightClick(event)) {
         this.handleRightClick(target, event);
       } else {
         this.handleLeftClick(target, event);
@@ -548,7 +548,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
     };
     this.httpClient.post<any>(REST_URLS.STORAGE.URLS.MAKE_DIR, param).subscribe(
       () => {
-        this.insertDirItem(JavaScriptFilesExplorerComponent.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
+        this.insertDirItem(StorageExplorerComponent.makeEmptyDirItem(newDirRelativePath, newDirName), this.rightClickSelectedElement);
         this.globalComponentsService.loader.close();
       },
       (err) => {
@@ -650,7 +650,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
       return;
     }
 
-    const item: any = JavaScriptFilesExplorerComponent.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+    const item: any = StorageExplorerComponent.makeNewFileItem(this.getRightClickDirPath(), newFileName);
 
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
       this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${item.value.relativePath}] item is already exists`);
@@ -839,7 +839,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveFileItem(data: any) {
     // creating root item
-    const item2Add: any = JavaScriptFilesExplorerComponent.makeNewFileItem(data.dropPath, data.item2Move.value.label);
+    const item2Add: any = StorageExplorerComponent.makeNewFileItem(data.dropPath, data.item2Move.value.label);
     item2Add.value.isChanged = data.item2Move.value.isChanged;
     item2Add.value.isNewFile = data.item2Move.value.isNewFile;
 
@@ -900,7 +900,7 @@ export class JavaScriptFilesExplorerComponent implements AfterViewInit {
 
   moveDirItem(data: any) {
     // creating root item
-    const item2Add: any = JavaScriptFilesExplorerComponent.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
+    const item2Add: any = StorageExplorerComponent.makeEmptyDirItem(data.targetRelativePath, data.item2Move.value.label);
 
     // collecting existing items under the item2Move item
     const changedFilesList = [];

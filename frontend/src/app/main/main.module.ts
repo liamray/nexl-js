@@ -28,8 +28,6 @@ import {MainMenuComponent} from './header/main-menu/main-menu.component';
 import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 
 import {ContentComponent} from './filemanager/content.component';
-import {JavaScriptFilesExplorerComponent} from './filemanager/javascript-files-explorer/javascript-files-explorer.component';
-import {JavaScriptFilesEditorComponent} from './filemanager/javascript-files-editor/javascript-files-editor.component';
 import {NexlExpressionsTesterComponent} from './filemanager/nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {MainComponent} from "./main.component";
@@ -59,8 +57,10 @@ import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_j
 import {AboutComponent} from "./misc/about/about.component";
 import {FindFileComponent} from "./misc/findfile/findfile.component";
 import {UsersComponent} from "./settingsdialogs/users/users.component";
-import {DiffsConfirmBoxComponent} from "./filemanager/javascript-files-editor/diffsconfirmbox/diffsconfirmbox.component";
-import {DiffsComponent} from "./filemanager/javascript-files-editor/diffswindow/diffs.component";
+import {StorageFilesEditorComponent} from "./filemanager/storage-files-editor/storage-files-editor.component";
+import {DiffsConfirmBoxComponent} from "./filemanager/storage-files-editor/diffsconfirmbox/diffsconfirmbox.component";
+import {DiffsComponent} from "./filemanager/storage-files-editor/diffswindow/diffs.component";
+import {StorageExplorerComponent} from "./filemanager/storage-files-explorer/storage-files-explorer.component";
 
 
 @NgModule({
@@ -92,8 +92,8 @@ import {DiffsComponent} from "./filemanager/javascript-files-editor/diffswindow/
     MainMenuComponent,
     AuthMenuComponent,
     ChangePasswordComponent,
-    JavaScriptFilesExplorerComponent,
-    JavaScriptFilesEditorComponent,
+    StorageExplorerComponent,
+    StorageFilesEditorComponent,
     NexlExpressionsTesterComponent,
     HeaderComponent,
     ContentComponent,
