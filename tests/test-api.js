@@ -22,23 +22,23 @@ function startNexlApp(initTest, runTests, finalizeTests) {
 	fsextra.removeSync(tmpNexlHomeDir);
 	fs.mkdirSync(tmpNexlHomeDir);
 
-	// recreating tmp nexl js files dir
-	const tmpNexlJSFilesDir = path.join(os.tmpdir(), 'nexl-js-files');
-	fsextra.removeSync(tmpNexlJSFilesDir);
-	fs.mkdirSync(tmpNexlJSFilesDir);
+	// recreating tmp nexl storage files dir
+	const tmpNexlStorageDir = path.join(os.tmpdir(), 'nexl-storage');
+	fsextra.removeSync(tmpNexlStorageDir);
+	fs.mkdirSync(tmpNexlStorageDir);
 
 	// setting up nexl home dir in process args
 	process.argv.push(`--${confConsts.NEXL_HOME_DEF}=${tmpNexlHomeDir}`);
 
 	return nexlApp.create()
 		.then(_ => {
-			const predefinedNexlJSFIlesDir = path.join(__dirname, 'resources/nexl-js-files-4-tests');
+			const predefinedNexlStorageDir = path.join(__dirname, 'resources/storage');
 
 			const settings = confMgmt.getNexlSettingsCached();
 			settings[confConsts.SETTINGS.HTTP_BINDING] = TEST_HOST;
 			settings[confConsts.SETTINGS.HTTP_PORT] = TEST_PORT;
 
-			return initTest(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir);
+			return initTest(predefinedNexlStorageDir, tmpNexlStorageDir);
 		})
 		.then(nexlApp.start)
 		.then(runTests)
