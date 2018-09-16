@@ -107,4 +107,9 @@ export class LoginComponent {
       return;
     }
   }
+
+  onClose() {
+    this.username = '';
+    this.password = '';
+  }
 }

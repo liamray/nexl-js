@@ -7,6 +7,7 @@
            [width]="390"
            [height]="200"
            (onOpen)="onOpen()"
+           (onClose)="onClose()"
 >
 
   <div>
@@ -40,6 +41,7 @@
             id="password"
             name="password"
             #passwordRef
+            [placeHolder]="''"
             [(ngModel)]="password"
             [height]="25"
             (keypress)="onKeyPress($event)"

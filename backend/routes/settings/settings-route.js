@@ -24,21 +24,17 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 		return;
 	}
 
-	const settings = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS);
+	const settings = clone(confMgmt.getCached(confConsts.CONF_FILES.SETTINGS));
 
 	// adding nexl home dir ( to display only )
 	settings[confConsts.NEXL_HOME_DEF] = confMgmt.getNexlHomeDir();
 
 	// replacing ldap password before send
-	let ldapBindPassword = settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD];
 	settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD] = confConsts.PASSWORD_STUB;
 
 	// sending data
 	res.send(settings);
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
-
-	// replacing ldap password back
-	settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD] = ldapBindPassword;
 });
 
 function applyChanges(before) {
