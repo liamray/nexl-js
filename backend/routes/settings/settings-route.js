@@ -25,9 +25,20 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 	}
 
 	const settings = confMgmt.getCached(confConsts.CONF_FILES.SETTINGS);
+
+	// adding nexl home dir ( to display only )
 	settings[confConsts.NEXL_HOME_DEF] = confMgmt.getNexlHomeDir();
+
+	// replacing ldap password before send
+	let ldapBindPassword = settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD];
+	settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD] = confConsts.PASSWORD_STUB;
+
+	// sending data
 	res.send(settings);
 	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
+
+	// replacing ldap password back
+	settings[confConsts.SETTINGS.LDAP_BIND_PASSWORD] = ldapBindPassword;
 });
 
 function applyChanges(before) {
@@ -71,6 +82,12 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 
 	// removing nexl home dir from data, because it's not a part of setting
 	delete data[confConsts.NEXL_HOME_DEF];
+
+	// checking LDAP password stub
+	if (data[confConsts.SETTINGS.LDAP_BIND_PASSWORD] === confConsts.PASSWORD_STUB) {
+		// replacing password stub with real password
+		data[confConsts.SETTINGS.LDAP_BIND_PASSWORD] = settingsClone[confConsts.SETTINGS.LDAP_BIND_PASSWORD];
+	}
 
 	return confMgmt.saveSettings(data)
 		.then(_ => applyChanges(settingsClone))
