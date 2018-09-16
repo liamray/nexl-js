@@ -23,9 +23,7 @@ const LOGIN_TOKEN = 'loginToken';
 function sendError(res, msg, httpStatus) {
 	httpStatus = httpStatus ? httpStatus : 500;
 	res.statusMessage = msg;
-	res.status(httpStatus);
-	res.send(msg);
-	res.end();
+	res.status(httpStatus).send(msg).end();
 }
 
 function isAdminInner(user) {
