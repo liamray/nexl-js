@@ -9,6 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "preinstall": "node ./scripts/pre-npm-install.js",
     "postinstall": "node ./scripts/post-npm-install.js"
   },
   "private": true,
@@ -24,8 +25,8 @@
     "@angular/router": "^5.2.9",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
+    "fs-extra": "^7.0.0",
     "jquery": "^3.2.1",
-    "jqwidgets-scripts": "^5.7.2",
     "rxjs": "^5.5.2",
     "zone.js": "^0.8.19"
   },
