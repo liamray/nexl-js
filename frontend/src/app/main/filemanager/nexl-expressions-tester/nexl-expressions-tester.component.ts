@@ -22,8 +22,8 @@ import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlis
 import {AppearanceService} from "../../services/appearance.service";
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
-  {size: '70%', min: 400, collapsible: false},
-  {size: '30%', min: 200}
+  {size: '55%', min: 400, collapsible: false},
+  {size: '45%', min: 200}
 ];
 
 const URL_TEMPLATE = `
