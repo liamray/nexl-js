@@ -1,4 +1,0 @@
-The jQWidgets framework is available as npm package:
-
-https://www.npmjs.com/package/jqwidgets-scripts
-
