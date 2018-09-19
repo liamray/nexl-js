@@ -27,7 +27,7 @@
 .tooltip {
   display: inline-block;
   position: relative;
-  left: -7px;
-  top: 14px;
+  left: 1px;
+  top: 1px;
   float: left;
 }

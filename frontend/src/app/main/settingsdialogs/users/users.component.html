@@ -20,7 +20,15 @@
       <div style="float:left">
         Click
         <jqxButton (click)="addNewItem()">here</jqxButton>
-        to add a new empty record&nbsp;
+        to add new record&nbsp;
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>Here you can manage nexl users<br/>Click on [Password] button after you create a new user<br/>This will generate random token<br/>Send this token to that user in order to register in nexl</p>'">
+          <img src='./nexl/site/icons/info.png' style="position: relative; top: 3px;"/>
+        </jqxTooltip>
       </div>
 
       <div style="clear: both; height: 5px;"></div>
