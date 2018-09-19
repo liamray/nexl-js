@@ -152,7 +152,8 @@ function startHTTPServer() {
 
 		// listening handler
 		httpServer.on('listening', () => {
-			logger.log.importantMessage('info', 'nexl HTTP server is up and listening on [%s:%s]', httpServer.address().address, httpServer.address().port);
+			const localBindingMsg = settings[confConsts.SETTINGS.HTTP_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTP binding` : '';
+			logger.log.importantMessage('info', 'nexl HTTP server is up and listening on [%s:%s]%s', httpServer.address().address, httpServer.address().port, localBindingMsg);
 			resolve();
 		});
 
@@ -229,7 +230,8 @@ function startHTTPSServerInner(sslCredentials) {
 
 		// listening handler
 		httpsServer.on('listening', () => {
-			logger.log.importantMessage('info', 'nexl HTTPS server is up and listening on [%s:%s]', httpServer.address().address, httpServer.address().port);
+			const localBindingMsg = settings[confConsts.SETTINGS.HTTPS_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTPS binding` : '';
+			logger.log.importantMessage('info', 'nexl HTTPS server is up and listening on [%s:%s]%s', httpServer.address().address, httpServer.address().port, localBindingMsg);
 			resolve();
 		});
 
@@ -254,6 +256,13 @@ function start() {
 		.then(storageUtils.cacheStorageFiles)
 		.then(startHTTPServer)
 		.then(startHTTPSServer)
+		.then(_ => {
+			logger.log.info(`nexl home dir is [${confMgmt.getNexlHomeDir()}]`);
+			logger.log.info(`nexl app data dir is [${confMgmt.getNexlAppDataDir()}]`);
+			logger.log.info(`nexl logs dir is [${confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.LOG_FILE_LOCATION]}]`);
+			logger.log.info(`nexl storage dir is [${confMgmt.getNexlStorageDir()}]`);
+			return Promise.resolve();
+		})
 		.catch(
 			err => {
 				console.log(err);

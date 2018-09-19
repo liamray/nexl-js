@@ -196,8 +196,7 @@ function preloadConfs() {
 
 function createStorageDirIfNeeded() {
 	const nexlStorageDir = ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR];
-	return fse.mkdirs(nexlStorageDir)
-		.then(_ => Promise.resolve(logger.log.importantMessage('info', `nexl storage dir is [${nexlStorageDir}]`)));
+	return fse.mkdirs(nexlStorageDir);
 }
 
 function getLDAPSettings() {

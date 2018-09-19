@@ -302,7 +302,7 @@ function gatherAllFiles(relativePath) {
 
 function cacheStorageFiles() {
 	const storageDir = confMgmt.getNexlStorageDir();
-	logger.log.info(`Caching files list in [${storageDir}] directory`);
+	logger.log.debug(`Caching files list in [${storageDir}] directory`);
 
 	return gatherAllFiles().then(
 		(result) => {
