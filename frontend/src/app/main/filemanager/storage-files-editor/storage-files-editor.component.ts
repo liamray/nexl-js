@@ -122,6 +122,10 @@ export class StorageFilesEditorComponent implements AfterViewInit {
         this.prettifyFile();
         return;
       }
+
+      case MESSAGE_TYPE.TIMER: {
+        this.onTimer(message.data);
+      }
     }
   }
 
@@ -161,11 +165,12 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     // loading tabs from local storage
     this.loadTabsFromLocalStorage();
 
-    // starting timer to store tabs to the local storage
-    setInterval(
-      () => {
-        this.saveTabs2LocalStorage();
-      }, 30000);
+  }
+
+  onTimer(timerCounter: number) {
+    if (timerCounter % 2 === 0) {
+      this.saveTabs2LocalStorage();
+    }
   }
 
   loadUISettings() {

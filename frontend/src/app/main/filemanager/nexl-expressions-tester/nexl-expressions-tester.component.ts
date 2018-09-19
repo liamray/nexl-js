@@ -7,9 +7,8 @@ import {jqxExpanderComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxex
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
 import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
-import * as $ from 'jquery';
 import {
-  EXPRESSION_SPLITTER_VERTICAL,
+  EXPRESSION_SPLITTER_VERTICAL, EXPRESSIONS,
   LocalStorageService, OPEN_URL_WARNING_MESSAGE,
   PRETTIFY_BUTTON_STATE
 } from "../../services/localstorage.service";
@@ -92,6 +91,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   urlTemplate: string = URL_TEMPLATE;
 
+  nexlExpressions: any = {};
+
   output: string = '';
   originalOutput: string = '';
   isPrettify: boolean = true; // jqxToggleButton has a certain problem with its state, so storing its state externally
@@ -107,6 +108,8 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   executionHistorySrc: any[] = [];
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
+    this.nexlExpressions = LocalStorageService.loadObj(EXPRESSIONS, {});
+
     this.messageService.getMessage().subscribe((msg) => {
       this.handleMessages(msg);
     });
@@ -160,6 +163,15 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
         this.itemMoved(msg.data);
         return;
       }
+
+      case MESSAGE_TYPE.TIMER: {
+        this.onTimer(msg.data);
+      }
+    }
+  }
+  onTimer(timerCounter: number) {
+    if (timerCounter % 2 === 0) {
+      LocalStorageService.storeObj(EXPRESSIONS, this.nexlExpressions);
     }
   }
 
@@ -171,14 +183,18 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       }
 
       this.relativePath = data.newRelativePath + this.relativePath.substr(data.oldRelativePath.length);
+      return;
     }
 
     // for files
-    if (data.isDir !== true) {
-      this.relativePath = data.newRelativePath;
-    }
 
-    // updating
+    // updating expressions
+    const expression = this.nexlExpressions[this.relativePath];
+    delete this.nexlExpressions[this.relativePath];
+    this.relativePath = data.newRelativePath;
+    this.nexlExpressions[this.relativePath] = expression;
+
+    // updating tabs
     const item = this.tabsInfo[data.oldRelativePath];
     if (item !== undefined) {
       delete this.tabsInfo[data.oldRelativePath];
@@ -194,6 +210,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   tabSelected(relativePath: string) {
     this.relativePath = relativePath;
+    this.nexlExpression.val(this.nexlExpressions[this.relativePath] || '');
     this.updateUrl();
   }
 
@@ -475,6 +492,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
     //
     this.nexlExpression.elementRef.nativeElement.addEventListener('input', () => {
+      this.nexlExpressions[this.relativePath] = this.nexlExpression.val();
       this.updateUrl();
     });
 

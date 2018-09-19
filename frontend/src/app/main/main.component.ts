@@ -19,6 +19,7 @@ export const ALT_F7 = 'ALT_F7';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
+  timerCounter: number = 0;
 
   constructor(private authService: AuthService, private messageService: MessageService, private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
   }
@@ -93,6 +94,11 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
+    setInterval(_ => {
+      this.timerCounter++;
+      this.messageService.sendMessage(MESSAGE_TYPE.TIMER, this.timerCounter);
+    }, 10000);
+
     window['showExamples'] = () => {
       throw 'Implement me !';
     };

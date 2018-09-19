@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  TIMER,
   PRETTIFY_FILE,
   SET_TREE_ITEMS,
   GET_TREE_ITEMS,
