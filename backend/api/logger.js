@@ -15,15 +15,6 @@ const generalLog = new (winston.Logger)({
 	]
 });
 
-const nexlEngineLog = new (winston.Logger)({
-		transports: [
-			new (winston.transports.Console)({
-				formatter: logFormatter
-			})
-		]
-	}
-);
-
 function logFormatter(options) {
 	return j79.rawNowISODate() + ' [' + options.level.toUpperCase() + '] ' + (options.message ? options.message : '');
 }
@@ -43,23 +34,9 @@ function initInner(settings, logFileLocation) {
 	if (generalLog.transports['file']) {
 		generalLog.remove(winston.transports.File);
 	}
-	if (nexlEngineLog.transports['file']) {
-		nexlEngineLog.remove(winston.transports.File);
-	}
-
 	// adding file transport for general
 	generalLog.add(winston.transports.File, {
-		filename: path.join(logFileLocation, 'general.log'),
-		formatter: logFormatter,
-		json: false,
-		tailable: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
-		maxsize: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
-		maxFiles: settings[confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT]
-	});
-
-	// adding file transport for nexl engine
-	nexlEngineLog.add(winston.transports.File, {
-		filename: path.join(logFileLocation, 'nexl-engine.log'),
+		filename: path.join(logFileLocation, 'nexl.log'),
 		formatter: logFormatter,
 		json: false,
 		tailable: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
@@ -69,7 +46,6 @@ function initInner(settings, logFileLocation) {
 
 	// setting up level
 	generalLog.level = settings[confConsts.SETTINGS.LOG_LEVEL];
-	nexlEngineLog.level = settings[confConsts.SETTINGS.LOG_LEVEL];
 
 	generalLog.debug('Log is set up');
 	return Promise.resolve();
@@ -102,7 +78,6 @@ function loggerInterceptor(req, res, next) {
 // --------------------------------------------------------------------------------
 module.exports.configureLoggers = configureLoggers;
 module.exports.log = generalLog;
-module.exports.nexlEngineLog = nexlEngineLog;
 module.exports.LEVELS = Object.keys(winston.levels);
 module.exports.isLogLevel = isLogLevel;
 module.exports.getAvailLevels = getAvailLevels;

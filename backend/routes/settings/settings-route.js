@@ -46,7 +46,6 @@ function applyChanges(before) {
 	// is log level changed ?
 	if (before[confConsts.SETTINGS.LOG_LEVEL] !== after[confConsts.SETTINGS.LOG_LEVEL]) {
 		logger.log.level = after[confConsts.SETTINGS.LOG_LEVEL];
-		logger.nexlEngineLog.level = after[confConsts.SETTINGS.LOG_LEVEL];
 	}
 
 	// is http timeout changed ?
