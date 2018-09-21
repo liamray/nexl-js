@@ -97,7 +97,7 @@ function create(interceptors) {
 
 	return printWelcomeMessage()
 		.then(confMgmt.initNexlHomeDir)
-		.then(logger.init)
+		.then(logger.configureLoggers)
 		.then(confMgmt.preloadConfs);
 }
 

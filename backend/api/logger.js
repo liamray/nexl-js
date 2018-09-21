@@ -7,11 +7,28 @@ const security = require('./security');
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 
+const generalLog = new (winston.Logger)({
+	transports: [
+		new (winston.transports.Console)({
+			formatter: logFormatter
+		})
+	]
+});
+
+const nexlEngineLog = new (winston.Logger)({
+		transports: [
+			new (winston.transports.Console)({
+				formatter: logFormatter
+			})
+		]
+	}
+);
+
 function logFormatter(options) {
 	return j79.rawNowISODate() + ' [' + options.level.toUpperCase() + '] ' + (options.message ? options.message : '');
 }
 
-function init() {
+function configureLoggers() {
 	// resolving settings
 	const settings = confMgmt.getNexlSettingsCached();
 	// log file location
@@ -22,18 +39,17 @@ function init() {
 }
 
 function initInner(settings, logFileLocation) {
-	// removing existing console transport
-	winston.remove(winston.transports.Console);
+	// removing file transports
+	if (generalLog.transports['file']) {
+		generalLog.remove(winston.transports.File);
+	}
+	if (nexlEngineLog.transports['file']) {
+		nexlEngineLog.remove(winston.transports.File);
+	}
 
-	// add new console transport
-	winston.add(winston.transports.Console, {
-		formatter: logFormatter
-	});
-
-	// loading log setting
-	// adding file transport
-	winston.add(winston.transports.File, {
-		filename: path.join(logFileLocation, 'nexl.log'),
+	// adding file transport for general
+	generalLog.add(winston.transports.File, {
+		filename: path.join(logFileLocation, 'general.log'),
 		formatter: logFormatter,
 		json: false,
 		tailable: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
@@ -41,41 +57,52 @@ function initInner(settings, logFileLocation) {
 		maxFiles: settings[confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT]
 	});
 
-	// setting up log level
-	winston.level = settings[confConsts.SETTINGS.LOG_LEVEL];
+	// adding file transport for nexl engine
+	nexlEngineLog.add(winston.transports.File, {
+		filename: path.join(logFileLocation, 'nexl-engine.log'),
+		formatter: logFormatter,
+		json: false,
+		tailable: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] > 0,
+		maxsize: settings[confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] * 1024,
+		maxFiles: settings[confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT]
+	});
 
-	winston.debug('Log is set up');
+	// setting up level
+	generalLog.level = settings[confConsts.SETTINGS.LOG_LEVEL];
+	nexlEngineLog.level = settings[confConsts.SETTINGS.LOG_LEVEL];
 
+	generalLog.debug('Log is set up');
 	return Promise.resolve();
 }
 
 function isLogLevel(level) {
-	return winston.levels[winston.level] >= winston.levels[level];
+	return generalLog.levels[generalLog.level] >= generalLog.levels[level];
 }
 
 function getAvailLevels() {
 	return Object.keys(winston.levels);
 }
 
-winston.importantMessage = function () {
+generalLog.importantMessage = function () {
 	const args = Array.prototype.slice.call(arguments);
-	winston.log(args[0], '');
-	winston.log(args[0], '----------------------------------------------');
+	generalLog.log(args[0], '');
+	generalLog.log(args[0], '----------------------------------------------');
 	args[1] = '| ' + args[1];
-	winston.log.apply(null, args);
-	winston.log(args[0], '----------------------------------------------');
-	winston.log(args[0], '');
+	generalLog.log.apply(generalLog, args);
+	generalLog.log(args[0], '----------------------------------------------');
+	generalLog.log(args[0], '');
 };
 
 function loggerInterceptor(req, res, next) {
-	winston.debug("[method=%s], [url=%s], [clientHost=%s], [username=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress, security.getLoggedInUsername(req));
+	generalLog.debug("[method=%s], [url=%s], [clientHost=%s], [username=%s]", req.method.toUpperCase(), req.url, req.connection.remoteAddress, security.getLoggedInUsername(req));
 	next();
 }
 
 
 // --------------------------------------------------------------------------------
-module.exports.init = init;
-module.exports.log = winston;
+module.exports.configureLoggers = configureLoggers;
+module.exports.log = generalLog;
+module.exports.nexlEngineLog = nexlEngineLog;
 module.exports.LEVELS = Object.keys(winston.levels);
 module.exports.isLogLevel = isLogLevel;
 module.exports.getAvailLevels = getAvailLevels;

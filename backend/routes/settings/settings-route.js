@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clone = require('clone');
+const fse = require('fs-extra');
 
 const nexlApp = require('../../nexl-app/nexl-app');
 const security = require('../../api/security');
@@ -38,11 +39,14 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 });
 
 function applyChanges(before) {
+	let promise = Promise.resolve();
+
 	const after = confMgmt.getNexlSettingsCached();
 
 	// is log level changed ?
 	if (before[confConsts.SETTINGS.LOG_LEVEL] !== after[confConsts.SETTINGS.LOG_LEVEL]) {
 		logger.log.level = after[confConsts.SETTINGS.LOG_LEVEL];
+		logger.nexlEngineLog.level = after[confConsts.SETTINGS.LOG_LEVEL];
 	}
 
 	// is http timeout changed ?
@@ -52,10 +56,20 @@ function applyChanges(before) {
 
 	// is nexl storage dir changed ?
 	if (before[confConsts.SETTINGS.STORAGE_DIR] !== after[confConsts.SETTINGS.STORAGE_DIR]) {
-		return storageUtils.cacheStorageFiles();
+		logger.log.info(`nexl storage dir was changed from [${before[confConsts.SETTINGS.STORAGE_DIR]}] to [${after[confConsts.SETTINGS.STORAGE_DIR]}]`);
+		promise = promise.then(_ => fse.mkdirs(after[confConsts.SETTINGS.STORAGE_DIR])).then(storageUtils.cacheStorageFiles);
 	}
 
-	return Promise.resolve();
+	// is logs dir changed ?
+	if (before[confConsts.SETTINGS.LOG_FILE_LOCATION] !== after[confConsts.SETTINGS.LOG_FILE_LOCATION]) {
+		promise = promise.then(logger.configureLoggers)
+			.then(_ => {
+				logger.log.info(`Logs file location was changed from [${before[confConsts.SETTINGS.LOG_FILE_LOCATION]}] to [${after[confConsts.SETTINGS.LOG_FILE_LOCATION]}]`);
+				return Promise.resolve();
+			});
+	}
+
+	return promise;
 }
 
 //////////////////////////////////////////////////////////////////////////////
