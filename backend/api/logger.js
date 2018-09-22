@@ -2,12 +2,14 @@ const path = require('path');
 const winston = require('winston');
 const j79 = require('j79-utils');
 const fse = require('fs-extra');
+const nexlEngine = require('nexl-engine');
 
 const security = require('./security');
 const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 
 const generalLog = new (winston.Logger)({
+	level: 'info',
 	transports: [
 		new (winston.transports.Console)({
 			formatter: logFormatter
@@ -46,6 +48,9 @@ function initInner(settings, logFileLocation) {
 
 	// setting up level
 	generalLog.level = settings[confConsts.SETTINGS.LOG_LEVEL];
+
+	// setting up logger for nexl engine
+	nexlEngine.setLogger(generalLog);
 
 	generalLog.debug('Log is set up');
 	return Promise.resolve();

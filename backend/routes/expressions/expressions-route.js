@@ -76,8 +76,13 @@ function assembleNexlParams(httpParams) {
 	};
 }
 
-function nexlizeInner(httpParams) {
+function nexlizeInner(httpParams, username) {
 	const nexlParams = assembleNexlParams(httpParams);
+	if (logger.isLogLevel('verbose')) {
+		const source = nexlParams.nexlSource.asFile ? nexlParams.nexlSource.asFile.fileName : 'altered nexl source';
+		const args = JSON.stringify(nexlParams.args || {});
+		logger.log.log('verbose', `Evaluating the following nexl [expression=${nexlParams.item}], from the [file=${source}], [arguments=${args}], [method=${httpParams.method}], [clientIP=${httpParams.ip}], [userName=${username}]`);
+	}
 	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
 }
 
@@ -131,13 +136,14 @@ function nexlize(httpParams, req, res) {
 	let result;
 
 	httpParams.method = req.method;
+	httpParams.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
 	const username = security.getLoggedInUsername(req);
 
 	handleJSONPRequest(req);
 
 	try {
-		result = nexlizeInner(httpParams);
+		result = nexlizeInner(httpParams, username);
 	} catch (err) {
 		logger.log.error(`nexl request rejected for [${username}] user. Reason : [%s]`, utils.formatErr(err));
 		sendError(req, res, err, 500);
