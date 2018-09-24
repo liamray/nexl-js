@@ -152,7 +152,7 @@ function startHTTPServer() {
 
 		// listening handler
 		httpServer.on('listening', () => {
-			const localBindingMsg = settings[confConsts.SETTINGS.HTTP_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTP binding` : '';
+			const localBindingMsg = settings[confConsts.SETTINGS.HTTP_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside this host. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTP binding` : '';
 			logger.log.importantMessage('info', 'nexl HTTP server is up and listening on [%s:%s]%s', httpServer.address().address, httpServer.address().port, localBindingMsg);
 			resolve();
 		});
@@ -230,7 +230,7 @@ function startHTTPSServerInner(sslCredentials) {
 
 		// listening handler
 		httpsServer.on('listening', () => {
-			const localBindingMsg = settings[confConsts.SETTINGS.HTTPS_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTPS binding` : '';
+			const localBindingMsg = settings[confConsts.SETTINGS.HTTPS_BINDING] === 'localhost' ? `. Please pay attention !!! The [localhost] binding is not allowing to access nexl server outside this host. Edit the [${confConsts.CONF_FILES.SETTINGS}] file located in [${confMgmt.getNexlAppDataDir()}] dir to change an HTTPS binding` : '';
 			logger.log.importantMessage('info', 'nexl HTTPS server is up and listening on [%s:%s]%s', httpServer.address().address, httpServer.address().port, localBindingMsg);
 			resolve();
 		});

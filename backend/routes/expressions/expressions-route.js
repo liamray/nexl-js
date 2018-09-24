@@ -101,7 +101,7 @@ function isJSONPSupported(req) {
 
 function sendError(req, res, err, status) {
 	if (!isJSONPSupported(req)) {
-		security.sendError(res, err, status);
+		security.sendError(res, err + '', status);
 		return;
 	}
 
