@@ -69,6 +69,8 @@ function assembleNexlParams(httpParams) {
 		nexlSource.asFile['fileName'] = fullPath;
 	}
 
+	nexlSource.basePath = confMgmt.getNexlStorageDir();
+
 	return {
 		nexlSource: nexlSource,
 		item: httpParams.expression,
