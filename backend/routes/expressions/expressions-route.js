@@ -57,19 +57,16 @@ function assembleNexlParams(httpParams) {
 		throw 'Unacceptable path ( relative path contains restricted characters )';
 	}
 
-	const nexlSource = {};
+	const nexlSource = {
+		fileEncoding: confConsts.ENCODING_UTF8,
+		basePath: confMgmt.getNexlStorageDir(),
+		filePath: fullPath
+	};
 
 	// ignoring content for GET method. Altered storage file works only for POST method
 	if (httpParams.method.toUpperCase() === 'POST' && httpParams.content !== undefined) {
-		nexlSource.asText = {};
-		nexlSource.asText['text'] = httpParams.content;
-		nexlSource.asText['path4imports'] = path.dirname(fullPath);
-	} else {
-		nexlSource.asFile = {};
-		nexlSource.asFile['fileName'] = fullPath;
+		nexlSource.fileContent = httpParams.content;
 	}
-
-	nexlSource.basePath = confMgmt.getNexlStorageDir();
 
 	return {
 		nexlSource: nexlSource,
