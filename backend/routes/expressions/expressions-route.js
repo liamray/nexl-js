@@ -109,7 +109,7 @@ function sendError(req, res, err, status) {
 	res.end();
 }
 
-function handleJSONPRequest(req) {
+function prepareJSONPRequest(req) {
 	// JSON works only via HTTP GET
 	if (req.method.toUpperCase() !== 'GET') {
 		return;
@@ -139,7 +139,7 @@ function nexlize(httpParams, req, res) {
 
 	const username = security.getLoggedInUsername(req);
 
-	handleJSONPRequest(req);
+	prepareJSONPRequest(req);
 
 	try {
 		result = nexlizeInner(httpParams, username);
