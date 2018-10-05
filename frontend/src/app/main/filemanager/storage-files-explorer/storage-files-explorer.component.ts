@@ -998,8 +998,8 @@ export class StorageExplorerComponent implements AfterViewInit {
       return false;
     }
 
-    // is item is a part of dropItem ?
-    if (dropPath.indexOf(item2Move.value.relativePath) === 0) {
+    // is same item ?
+    if (dropPath === item2Move.value.relativePath) {
       return false;
     }
 
