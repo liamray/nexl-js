@@ -3,6 +3,8 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  ARGS_CHANGED, // fired when args changed in args-window by user
+  SET_ARGS, // instructs args-window to set arguments embedded to the message
   TIMER,
   PRETTIFY_FILE,
   SET_TREE_ITEMS,

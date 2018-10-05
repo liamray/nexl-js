@@ -3,6 +3,7 @@ import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwind
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {ARGS_WINDOW, LocalStorageService} from "../../../services/localstorage.service";
 import * as $ from 'jquery';
+import {MESSAGE_TYPE, MessageService} from "../../../services/message.service";
 
 @Component({
   selector: 'app-args-window',
@@ -14,8 +15,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
 
   @ViewChild('argsGrid') argsGrid: jqxGridComponent;
   @ViewChild('argsWindow') argsWindow: jqxWindowComponent;
-
-  @Output('onArgs') argsEE: EventEmitter<any> = new EventEmitter();
 
   counter = 0;
 
@@ -128,7 +127,16 @@ export class ArgsComponent implements OnInit, AfterViewInit {
 
     ];
 
-  constructor() {
+  constructor(private messageService: MessageService) {
+    this.messageService.getMessage().subscribe(msg => {
+      switch (msg.type) {
+        case MESSAGE_TYPE.SET_ARGS: {
+          this.argsSource.localdata = msg.data;
+          this.argsGrid.updatebounddata();
+          return;
+        }
+      }
+    });
   }
 
   addNewItem() {
@@ -156,12 +164,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
     if (args.isOpened) {
       this.argsWindow.open();
     }
-
-    this.argsSource.localdata = args.args;
-    this.argsGrid.updatebounddata();
-
-    const result = this.getActiveArgs();
-    this.argsEE.emit(result);
   }
 
   toggleOpen() {
@@ -174,8 +176,16 @@ export class ArgsComponent implements OnInit, AfterViewInit {
 
 
   onChange() {
-    const result = this.getActiveArgs();
-    this.argsEE.emit(result);
+    const filteredData = [];
+    this.argsGrid.getrows().forEach(item => {
+      const filteredItem = {
+        disabled: item.disabled,
+        key: item.key,
+        value: item.value
+      };
+      filteredData.push(filteredItem);
+    });
+    this.messageService.sendMessage(MESSAGE_TYPE.ARGS_CHANGED, filteredData);
     this.storeArgsWindow();
   }
 
@@ -186,7 +196,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
   storeArgsWindow() {
     const data = {
       pos: $('#argsWindow').parent().offset(),
-      args: this.getAllArgs(),
       isOpened: this.argsWindow.isOpen()
     };
     LocalStorageService.storeObj(ARGS_WINDOW, data);
@@ -204,20 +213,6 @@ export class ArgsComponent implements OnInit, AfterViewInit {
           disabled: item.disabled
         }
       );
-    });
-
-    return result;
-  }
-
-  getActiveArgs() {
-    const data = this.argsGrid.getrows();
-    const result = {};
-    data.forEach((item) => {
-      if (item.disabled || item.key === '') {
-        return;
-      }
-
-      result[item.key] = item.value;
     });
 
     return result;

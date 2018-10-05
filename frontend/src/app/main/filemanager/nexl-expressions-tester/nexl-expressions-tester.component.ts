@@ -8,6 +8,7 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import {
+  ARGS,
   EXPRESSION_SPLITTER_VERTICAL, EXPRESSIONS,
   LocalStorageService, OPEN_URL_WARNING_MESSAGE,
   PRETTIFY_BUTTON_STATE
@@ -92,6 +93,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   urlTemplate: string = URL_TEMPLATE;
 
   nexlExpressions: any = {};
+  nexlArgs = {};
 
   output: string = '';
   originalOutput: string = '';
@@ -101,7 +103,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   urlEncoded: string = '';
   hasReadPermission = false;
   tabsCount = 0;
-  currentArgs: any = {};
   relativePath: string = '';
 
   tabsInfo: any = {};
@@ -109,8 +110,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.nexlExpressions = LocalStorageService.loadObj(EXPRESSIONS, {});
+    this.nexlArgs = LocalStorageService.loadObj(ARGS, []);
 
-    this.messageService.getMessage().subscribe((msg) => {
+    this.messageService.getMessage().subscribe(msg => {
       this.handleMessages(msg);
     });
   }
@@ -166,12 +168,20 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.TIMER: {
         this.onTimer(msg.data);
+        return;
+      }
+
+      case MESSAGE_TYPE.ARGS_CHANGED: {
+        this.argsChanged(msg.data);
+        return;
       }
     }
   }
+
   onTimer(timerCounter: number) {
     if (timerCounter % 2 === 0) {
       LocalStorageService.storeObj(EXPRESSIONS, this.nexlExpressions);
+      LocalStorageService.storeObj(ARGS, this.nexlArgs);
     }
   }
 
@@ -211,6 +221,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   tabSelected(relativePath: string) {
     this.relativePath = relativePath;
     this.nexlExpression.val(this.nexlExpressions[this.relativePath] || '');
+    this.messageService.sendMessage(MESSAGE_TYPE.SET_ARGS, this.nexlArgs[this.relativePath] || []);
     this.updateUrl();
   }
 
@@ -291,9 +302,11 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
       data.expression = this.nexlExpression.val();
     }
 
+    const currentArgs = this.resolveCurrentArgs();
+
     // args
-    for (let key in this.currentArgs) {
-      data[key] = this.currentArgs[key];
+    for (let key in currentArgs) {
+      data[key] = currentArgs[key];
     }
 
     data = queryString.stringify(data);
@@ -362,11 +375,6 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   private isDisabled() {
     return !this.hasReadPermission || this.tabsCount < 1;
-  }
-
-  onArgs(data: any) {
-    this.currentArgs = data;
-    this.updateUrl();
   }
 
   updateUrl() {
@@ -460,11 +468,12 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   args2Array() {
+    const currentArgs = this.resolveCurrentArgs();
     const result = [];
-    for (let key in this.currentArgs) {
+    for (let key in currentArgs) {
       result.push({
         key: key,
-        value: this.currentArgs[key]
+        value: currentArgs[key]
       });
     }
 
@@ -577,5 +586,24 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   executionHistoryItemSelected(event: any) {
+  }
+
+  private resolveCurrentArgs() {
+    const args = this.nexlArgs[this.relativePath] || [];
+    const result = {};
+
+    args.forEach(item => {
+      if (item.disabled !== true) {
+        result[item.key] = item.value;
+      }
+    });
+
+    return result;
+  }
+
+  private argsChanged(data) {
+    this.nexlArgs[this.relativePath] = data;
+    LocalStorageService.storeObj(ARGS, this.nexlArgs);
+    this.updateUrl();
   }
 }
