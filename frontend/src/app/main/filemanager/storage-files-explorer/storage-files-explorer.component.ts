@@ -128,7 +128,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       value: {
         relativePath: relativePath,
         label: newDirName,
-        mustLoadChildItems: true,
+        mustLoadChildItems: false,
         isDir: true
       }
     };
