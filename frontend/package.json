@@ -9,7 +9,6 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "preinstall": "node ./scripts/pre-npm-install.js",
     "postinstall": "node ./scripts/post-npm-install.js"
   },
   "private": true,
@@ -23,6 +22,7 @@
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
     "@angular/router": "^5.2.9",
+    "jqwidgets-scripts": "^5.7.2",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "fs-extra": "^7.0.0",
