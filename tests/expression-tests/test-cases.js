@@ -41,7 +41,7 @@ module.exports.push({
 	result: {
 		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
-		expectedResult: 'The [file1.js] nexl source file doesn\'t exist'
+		expectedResult: 'Failed to read [file1.js] file content'
 	}
 });
 
@@ -99,9 +99,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: 'hothead1'
+		expectedResult: '"hothead1"'
 	}
 });
 
@@ -114,7 +114,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
 		expectedResult: '11'
 	}
@@ -146,7 +146,7 @@ module.exports.push({
 	result: {
 		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 556,
-		expectedResult: 'Got null value'
+		expectedResult: 'Got null value for [guest] user'
 	}
 });
 
@@ -189,9 +189,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: ''
+		expectedResult: '""'
 	}
 });
 
@@ -202,7 +202,7 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
 		expectedResult: '25'
 	}
@@ -217,9 +217,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '0312 Hello'
+		expectedResult: '"0312 Hello"'
 	}
 });
 
@@ -232,8 +232,8 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'text/plain; charset=utf-8',
+		expectedHeader: 'application/json; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: 'queen\nmuscle\n79\nfalse queen\tmuscle\t79\tfalse'
+		expectedResult: '"queen\\nmuscle\\n79\\nfalse queen\\tmuscle\\t79\\tfalse"'
 	}
 });
