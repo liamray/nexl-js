@@ -9,7 +9,7 @@ export const APPEARANCE = 'nexl.ui.appearance';
 export const PRETTIFY_BUTTON_STATE = 'nexl.ui.prettify-button-state';
 export const TABS = 'nexl.ui.tabs';
 export const EXPRESSIONS = 'nexl.ui.expressions';
-export const ARGS = 'nexl.ui.args';
+export const ARGS = 'nexl.ui.arguments';
 
 export class LocalStorageService {
   static storeRaw(key, val) {

@@ -110,7 +110,7 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private http: HttpRequestService) {
     this.nexlExpressions = LocalStorageService.loadObj(EXPRESSIONS, {});
-    this.nexlArgs = LocalStorageService.loadObj(ARGS, []);
+    this.nexlArgs = LocalStorageService.loadObj(ARGS, {});
 
     this.messageService.getMessage().subscribe(msg => {
       this.handleMessages(msg);
