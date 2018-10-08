@@ -357,6 +357,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
 
   private tabsCountChanged(tabsCount: number) {
     this.tabsCount = tabsCount;
+    if (tabsCount < 1) {
+      this.messageService.sendMessage(MESSAGE_TYPE.SET_ARGS, []);
+    }
     this.updateComponentsState();
   }
 
@@ -602,7 +605,9 @@ export class NexlExpressionsTesterComponent implements AfterViewInit {
   }
 
   private argsChanged(data) {
-    this.nexlArgs[this.relativePath] = data;
+    if (this.tabsCount > 0) {
+      this.nexlArgs[this.relativePath] = data;
+    }
     LocalStorageService.storeObj(ARGS, this.nexlArgs);
     this.updateUrl();
   }
