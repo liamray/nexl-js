@@ -78,7 +78,7 @@ function assembleNexlParams(httpParams) {
 function nexlizeInner(httpParams, username) {
 	const nexlParams = assembleNexlParams(httpParams);
 	if (logger.isLogLevel('verbose')) {
-		const source = nexlParams.nexlSource.asFile ? nexlParams.nexlSource.asFile.fileName : 'altered nexl source';
+		const source = nexlParams.nexlSource.fileContent ? 'altered nexl source' : nexlParams.nexlSource.filePath;
 		const args = JSON.stringify(nexlParams.args || {});
 		logger.log.log('verbose', `Evaluating the following nexl [expression=${nexlParams.item}], from the [file=${source}], [arguments=${args}], [method=${httpParams.method}], [clientIP=${httpParams.ip}], [userName=${username}]`);
 	}
