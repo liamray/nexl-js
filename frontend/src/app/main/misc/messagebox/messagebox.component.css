@@ -6,17 +6,3 @@
 .buttons {
   margin: 10px 0 0 0;
 }
-
-#msgBoxHeaderIcon {
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-left: 3px;
-  width: 16px;
-  height: 16px;
-  float: left;
-}
-
-#messageBoxTitle {
-  float: left;
-  margin-left: 5px;
-}

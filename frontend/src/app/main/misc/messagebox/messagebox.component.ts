@@ -2,13 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {jqxWindowComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxwindow";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbuttons";
-import * as $ from 'jquery';
 import {jqxCheckBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox";
 
 export const ICONS = {
-  INFO: {icon: 'lamp.png', title: 'Information'},
-  WARNING: {icon: 'prohibit.png', title: 'Warning'},
-  ERROR: {icon: 'error.png', title: 'Error'},
+  INFO: {icon: 'msgBoxInfoIcon', title: 'Information'},
+  WARNING: {icon: 'msgBoxWarningIcon', title: 'Warning'},
+  ERROR: {icon: 'msgBoxErrorIcon', title: 'Error'},
 };
 
 @Component({
@@ -41,11 +40,9 @@ export class MessageBoxComponent implements OnInit {
   }
 
   open(opts: any) {
+    let title = '';
     if (opts.icon) {
-      const iconCSS = `url("/nexl/site/icons/${opts.icon}")`;
-      $('#msgBoxHeaderIcon').css('background-image', iconCSS);
-    } else {
-      $('#msgBoxHeaderIcon').css('display', 'none');
+      title += `<span class="${opts.icon} msgBoxIcons"></span>`;
     }
 
     this.checkBox.val(false);
@@ -58,7 +55,8 @@ export class MessageBoxComponent implements OnInit {
     }
 
     this.opts = opts;
-    $('#messageBoxTitle').text(opts.title);
+    title += opts.title;
+    this.window.title(title);
     this.window.open();
   }
 

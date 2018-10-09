@@ -35,3 +35,24 @@
   height: 100%;
   width: 100%;
 }
+
+.msgBoxIcons {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: 4px;
+  margin-right: 3px;
+}
+
+.msgBoxInfoIcon {
+  background-image: url("/nexl/site/icons/lamp.png");
+}
+
+.msgBoxWarningIcon {
+  background-image: url("/nexl/site/icons/prohibit.png");
+}
+
+.msgBoxErrorIcon {
+  background-image: url("/nexl/site/icons/error.png");
+}
