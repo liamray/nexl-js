@@ -116,7 +116,7 @@ function load(fileName, saveIfNotExists) {
 			}
 
 			// file doesn't exist, loading defaults
-			logger.log.debug('The [%s] file doesn\'t exist. Loading empty data', fullPath);
+			logger.log.debug('The [%s] file doesn\'t exist. Loading defaults', fullPath);
 
 			// applying default values
 			const result = loadDefaultValues(schemas.DEF_VALUES[fileName]);

@@ -43,7 +43,7 @@ router.post(restUtls.STORAGE.URLS.MOVE, function (req, res) {
 	return storageUtils.move(source, dest)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully moved a [${source}] item to [${dest}] by [${username}] user`);
+			logger.log.log('verbose', `Successfully moved a [${source}] item to [${dest}] by [${username}] user`);
 		})
 		.catch(
 			(err) => {
@@ -85,7 +85,7 @@ router.post(restUtls.STORAGE.URLS.RENAME, function (req, res) {
 	return storageUtils.rename(relativePath, newRelativePath)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully renamed a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
+			logger.log.log('verbose', `Successfully renamed a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
 		})
 		.catch(
 			(err) => {
@@ -119,7 +119,7 @@ router.post(restUtls.STORAGE.URLS.DELETE, function (req, res) {
 	return storageUtils.deleteItem(relativePath)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully deleted a [${relativePath}] item by [${username}] user`);
+			logger.log.log('verbose', `Successfully deleted a [${relativePath}] item by [${username}] user`);
 		})
 		.catch(
 			(err) => {
@@ -153,7 +153,7 @@ router.post(restUtls.STORAGE.URLS.MAKE_DIR, function (req, res, next) {
 	return storageUtils.mkdir(relativePath)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully created a [${relativePath}] directory by [${username}] user`);
+			logger.log.log('verbose', `Successfully created a [${relativePath}] directory by [${username}] user`);
 		})
 		.catch(
 			(err) => {
@@ -238,7 +238,7 @@ router.post(restUtls.STORAGE.URLS.SAVE_FILE_TO_STORAGE, function (req, res, next
 	return storageUtils.saveFileToStorage(relativePath, content, fileLoadTime)
 		.then(result => {
 			res.send(result);
-			logger.log.debug(`Successfully saved content of [${relativePath}] JavaScript file by [${username}] user`);
+			logger.log.log('verbose', `Successfully saved content of [${relativePath}] JavaScript file by [${username}] user`);
 		})
 		.catch(
 			(err) => {

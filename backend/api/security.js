@@ -234,7 +234,7 @@ function handleCookiesAuthorization(req, res) {
 
 	// is expired ?
 	if (authItem.sessionExpiresAt < new Date().getTime()) {
-		logger.log.debug(`Session expired for [${authItem.username}] user`);
+		logger.log.log('verbose', `Session expired for [${authItem.username}] user`);
 		res.clearCookie(LOGIN_TOKEN);
 		delete LOGIN_TOKENS_MAP[loginToken];
 		req.username = securityConsts.GUEST_USER;

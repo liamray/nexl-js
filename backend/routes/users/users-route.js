@@ -46,7 +46,7 @@ router.post(restUrls.USERS.URLS.ENABLE_DISABLE_USER, function (req, res) {
 	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully enabled/disabled a [${username}] user by [${loggedInUsername}] user`);
+			logger.log.log('verbose', `Successfully enabled/disabled a [${username}] user by [${loggedInUsername}] user`);
 		})
 		.catch(
 			(err) => {
@@ -88,7 +88,7 @@ router.post(restUrls.USERS.URLS.RENAME_USER, function (req, res) {
 	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully renamed a [${oldUsername}] user to [${newUsername}] by [${loggedInUsername}]`);
+			logger.log.log('verbose', `Successfully renamed a [${oldUsername}] user to [${newUsername}] by [${loggedInUsername}]`);
 		})
 		.catch(
 			(err) => {
@@ -122,7 +122,7 @@ router.post(restUrls.USERS.URLS.REMOVE_USER, function (req, res) {
 	confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(_ => {
 			res.send({});
-			logger.log.debug(`Successfully removed a [${username}] user by [${loggedInUsername}] user`);
+			logger.log.log('verbose', `Successfully removed a [${username}] user by [${loggedInUsername}] user`);
 		})
 		.catch(
 			(err) => {
@@ -181,7 +181,7 @@ router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 		}
 
 		return security.changePassword(loggedInUsername, req.body.currentPassword, req.body.newPassword).then(() => {
-			logger.log.debug(`Successfully changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
+			logger.log.log('verbose', `Successfully changing password for [${loggedInUsername}] user by [${loggedInUsername}] user`);
 			res.send({});
 		});
 	}).catch(
@@ -224,7 +224,7 @@ router.post(restUrls.USERS.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res)
 				token: users[username].token2ResetPassword.token,
 				tokenValidHours: security.TOKEN_VALID_HOURS
 			});
-			logger.log.debug(`Successfully generated registration token for [${username}] user by [${loggedInUsername}] user`);
+			logger.log.log('verbose', `Successfully generated registration token for [${username}] user by [${loggedInUsername}] user`);
 		})
 		.catch(
 			(err) => {
@@ -265,7 +265,7 @@ router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 		security.login(username, res);
 
 		res.send({});
-		logger.log.debug(`Successfully logged in with  [${username}] user`);
+		logger.log.log('verbose', `Successfully logged in with  [${username}] user`);
 
 	}).catch((err) => {
 		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
@@ -313,7 +313,7 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 
 		return security.resetPassword(username, password, token).then(() => {
 			res.send({});
-			logger.log.debug(`Successfully Registered/reset password for [${username}] user`);
+			logger.log.log('verbose', `Successfully Registered/reset password for [${username}] user`);
 		})
 	}).catch((err) => {
 		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);
