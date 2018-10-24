@@ -265,7 +265,7 @@ router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 		security.login(username, res);
 
 		res.send({});
-		logger.log.log('verbose', `Successfully logged in with  [${username}] user`);
+		logger.log.log('verbose', `Successfully logged in as [${username}] user`);
 
 	}).catch((err) => {
 		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);

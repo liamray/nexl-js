@@ -69,11 +69,12 @@ const URL_TEMPLATE = `
 `;
 
 @Component({
-  selector: '.app-nexl-expressions-tester',
-  templateUrl: './nexl-expressions-tester.component.html',
-  styleUrls: ['./nexl-expressions-tester.component.css']
+  selector: '.app-http-requests-builder-and-tester',
+  templateUrl: './http-requests-builder-and-tester.component.html',
+  styleUrls: ['./http-requests-builder-and-tester.component.css']
+
 })
-export class NexlExpressionsTesterComponent implements AfterViewInit {
+export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   @ViewChild('nexlExpression') nexlExpression: jqxInputComponent;
   @ViewChild('outputArea') outputArea: jqxExpanderComponent;
   @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;

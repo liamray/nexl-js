@@ -28,7 +28,6 @@ import {MainMenuComponent} from './header/main-menu/main-menu.component';
 import {AuthMenuComponent} from './header/auth-menu/auth-menu.component';
 
 import {ContentComponent} from './filemanager/content.component';
-import {NexlExpressionsTesterComponent} from './filemanager/nexl-expressions-tester/nexl-expressions-tester.component';
 
 import {MainComponent} from "./main.component";
 import {BrowserModule} from '@angular/platform-browser';
@@ -48,7 +47,6 @@ import {ChangePasswordComponent} from "./authdialogs/changepassword/changepasswo
 import {InputBoxComponent} from './misc/inputbox/inputbox.component';
 import {ConfirmBoxComponent} from "./misc/confirmbox/confirmbox.component";
 import {LocalStorageService} from "./services/localstorage.service";
-import {ArgsComponent} from './filemanager/nexl-expressions-tester/args/args.component';
 import {AppearanceComponent} from "./settingsdialogs/appearance/appearance.component";
 import {AuthHttpInterceptor} from "./services/auth.http.interceptor";
 import {jqxPanelComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxpanel";
@@ -61,6 +59,8 @@ import {StorageFilesEditorComponent} from "./filemanager/storage-files-editor/st
 import {DiffsConfirmBoxComponent} from "./filemanager/storage-files-editor/diffsconfirmbox/diffsconfirmbox.component";
 import {DiffsComponent} from "./filemanager/storage-files-editor/diffswindow/diffs.component";
 import {StorageExplorerComponent} from "./filemanager/storage-files-explorer/storage-files-explorer.component";
+import {ArgsComponent} from "./filemanager/http-requests-buider-and-tester/args/args.component";
+import {HttpRequestsBuilderAndTesterComponent} from "./filemanager/http-requests-buider-and-tester/http-requests-builder-and-tester.component";
 
 
 @NgModule({
@@ -94,7 +94,7 @@ import {StorageExplorerComponent} from "./filemanager/storage-files-explorer/sto
     ChangePasswordComponent,
     StorageExplorerComponent,
     StorageFilesEditorComponent,
-    NexlExpressionsTesterComponent,
+    HttpRequestsBuilderAndTesterComponent,
     HeaderComponent,
     ContentComponent,
     MainComponent,
