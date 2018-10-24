@@ -246,6 +246,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   addExecutionHistoryItemInnerInner(icon: string, msg: string) {
+    msg = (msg || '').replace('\n', ' ');
     this.executionHistoryListBox.addItem({
       html: `<div style=\'height: 20px; float: left;\'><img width=\'16\' height=\'16\' style=\'float: left; margin-top: 2px; margin-right: 5px;\' src=\'./nexl/site/icons/${icon}\'/><span>${msg}</span></div>`
     });
@@ -270,8 +271,13 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       return;
     }
 
-    if (httpStatus >= 554 && httpStatus < 600) {
-      this.addExecutionHistoryItemInnerInner('prohibit.png', `| ${date} | [${relativePath}] -> Evaluated successfully but got null or undefined value`);
+    if (httpStatus === 555) {
+      this.addExecutionHistoryItemInnerInner('prohibit.png', `| ${date} | [${relativePath}] -> Got undefined value`);
+      return;
+    }
+
+    if (httpStatus === 556) {
+      this.addExecutionHistoryItemInnerInner('prohibit.png', `| ${date} | [${relativePath}] -> Got null value`);
       return;
     }
 

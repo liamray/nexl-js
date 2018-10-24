@@ -35,7 +35,7 @@ router.post(restUrls.SETTINGS.URLS.LOAD_SETTINGS, function (req, res) {
 
 	// sending data
 	res.send(settings);
-	logger.log.debug(`Successfully loaded nexl server settings by [${username}] user`);
+	logger.log.debug(`Loaded nexl server settings by [${username}] user`);
 });
 
 function applyChanges(before) {
@@ -102,7 +102,7 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 		.then(_ => applyChanges(settingsClone))
 		.then(_ => {
 			res.send({});
-			logger.log.log('verbose', `Successfully saved nexl server settings by [${username}] user`);
+			logger.log.log('verbose', `Saved nexl server settings by [${username}] user`);
 		}).catch(
 			(err) => {
 				logger.log.error('Failed to save settings. Reason : [%s]', err);

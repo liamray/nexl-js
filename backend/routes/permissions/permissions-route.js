@@ -27,7 +27,7 @@ router.post(restUrls.PERMISSIONS.URLS.LOAD_PERMISSIONS, function (req, res) {
 		assignPermissions: confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS)
 	});
 
-	logger.log.debug(`Successfully loaded all permissions by [${username}] user`);
+	logger.log.debug(`Loaded all permissions by [${username}] user`);
 });
 
 //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next
 	return confMgmt.save(admins, confConsts.CONF_FILES.ADMINS).then(() => {
 		return confMgmt.save(assignPermissions, confConsts.CONF_FILES.PERMISSIONS).then(() => {
 			res.send({});
-			logger.log.log('verbose', `Successfully saved all permissions by [${username}] user`);
+			logger.log.log('verbose', `Saved all permissions by [${username}] user`);
 		});
 	}).catch(
 		(err) => {

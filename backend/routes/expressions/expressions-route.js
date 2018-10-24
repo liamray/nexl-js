@@ -167,7 +167,7 @@ function nexlize(httpParams, req, res) {
 		const jsonPResponse = makeJsonResponse(req, 'data', result);
 		res.send(jsonPResponse);
 		res.end();
-		logger.log.debug(`nexl expression successfully evaluated by [${username}] user and  JSONP response sent`);
+		logger.log.debug(`nexl expression evaluated by [${username}] user and  JSONP response sent`);
 		return;
 	}
 
@@ -182,7 +182,7 @@ function nexlize(httpParams, req, res) {
 
 	res.end();
 
-	logger.log.debug(`Successfully evaluated nexl expression by [${username}]`);
+	logger.log.debug(`Evaluated nexl expression by [${username}]`);
 }
 
 router.get('/*', function (req, res) {
