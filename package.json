@@ -49,6 +49,9 @@
     "backend",
     "site"
   ],
+  "engines": {
+    "node": ">=6.0"
+  },
   "dependencies": {
     "base-64": "^0.1.0",
     "bcryptjs": "2.4.3",
