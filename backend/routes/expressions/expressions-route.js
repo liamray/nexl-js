@@ -1,4 +1,5 @@
 const j79 = require('j79-utils');
+const queryString = require('querystring');
 const url = require('url');
 const express = require('express');
 const path = require('path');
@@ -19,7 +20,7 @@ function resolveGetParams(req) {
 
 	// no content in GET request
 	return {
-		relativePath: url.parse(req.url).pathname,
+		relativePath: queryString.unescape(url.parse(req.url).pathname),
 		expression: expression,
 		args: req.query
 	};
@@ -33,7 +34,7 @@ function resolvePostParams(req) {
 	delete req.body[diConsts.FILE_BODY];
 
 	return {
-		relativePath: req.url,
+		relativePath: queryString.unescape(req.url),
 		expression: expression,
 		args: req.body,
 		content: content
