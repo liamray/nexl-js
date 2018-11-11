@@ -39,7 +39,7 @@
   },
   "scripts": {
     "nexl": "node ./bin/nexl",
-    "postinstall": "node -e \"require('print-message')(['Welcome to nexl !', 'If you have installed nexl globally with -g flag, type nexl to start server', 'For other installations type npm run nexl', 'Visit http://www.nexl-js.com for more information']);\""
+    "postinstall": "node -e \"require('print-message')(['Welcome to nexl !', 'If you have installed nexl globally with -g flag, type nexl to start a server', 'For other installations type npm run nexl', 'Visit http://www.nexl-js.com for more information']);\""
   },
   "bin": {
     "nexl": "bin/nexl"
