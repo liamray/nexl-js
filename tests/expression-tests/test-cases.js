@@ -99,9 +99,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json; charset=utf-8',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '"hothead1"'
+		expectedResult: 'hothead1'
 	}
 });
 
@@ -189,9 +189,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json; charset=utf-8',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '""'
+		expectedResult: ''
 	}
 });
 
@@ -217,9 +217,9 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json; charset=utf-8',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '"0312 Hello"'
+		expectedResult: '0312 Hello'
 	}
 });
 
@@ -232,8 +232,8 @@ module.exports.push({
 	},
 
 	result: {
-		expectedHeader: 'application/json; charset=utf-8',
+		expectedHeader: 'text/plain; charset=utf-8',
 		expectedStatusCode: 200,
-		expectedResult: '"queen\\nmuscle\\n79\\nfalse queen\\tmuscle\\t79\\tfalse"'
+		expectedResult: 'queen\nmuscle\n79\nfalse queen\tmuscle\t79\tfalse'
 	}
 });

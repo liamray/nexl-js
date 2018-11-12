@@ -36,6 +36,7 @@ function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
 	const permissions = confMgmt.getCached(confConsts.CONF_FILES.PERMISSIONS);
 	permissions[TEST_USER] = {};
 	permissions[TEST_USER].read = true;
+	permissions[TEST_USER].write = false;
 
 	return confMgmt.save(users, confConsts.CONF_FILES.USERS)
 		.then(confMgmt.save(permissions, confConsts.CONF_FILES.PERMISSIONS))
