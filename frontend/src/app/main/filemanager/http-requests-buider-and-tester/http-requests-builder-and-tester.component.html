@@ -82,7 +82,20 @@
 
           </div>
           <div class="nexl-url-container">
-            <div class="nexl-url-label">URL</div>
+            <div class="nexl-url-label">
+              <jqxTooltip
+                [position]="'bottom-left'"
+                [content]="'<p style=\'text-align: left;\'>Automatically generated HTTP request URL based on currently opened JavaScript file name, expression and arguments ( if provided ).</p>'"
+                [closeOnClick]="false"
+                [autoHide]="true"
+                [autoHideDelay]="999999999"
+                [animationShowDelay]="400"
+                [showDelay]="600"
+                [trigger]="'hover'"
+              >
+                URL
+              </jqxTooltip>
+            </div>
             <div>
               <a href="#" class="jqx-widget" (click)="onUrlClick()" target="_blank">{{ url }}</a>
             </div>
