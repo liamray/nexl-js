@@ -19,5 +19,5 @@ nexl can be useful when you need to manage some project data without re-deployin
 More about nexl on [http://www.nexl-js.com](http://www.nexl-js.com)
 <br/><br/>
 Watch nexl demo:
-<br/><br/>
+<br/>
 [![nexl demo](http://www.nexl-js.com/demo/3.1.0/demo.png)](http://www.nexl-js.com/demo/3.1.0/demo.php)
