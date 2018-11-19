@@ -106,6 +106,6 @@ export class MainMenuComponent implements AfterViewInit {
   }
 
   openNexlDemo() {
-    window.open('https://www.youtube.com/watch?v=_OibWBQ_ALw', '_blank');
+    window.open('http://www.nexl-js.com/demo/3.1.0/demo.php', '_blank');
   }
 }
