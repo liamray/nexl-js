@@ -99,10 +99,6 @@ export class MainComponent implements OnInit {
       this.messageService.sendMessage(MESSAGE_TYPE.TIMER, this.timerCounter);
     }, 10000);
 
-    window['showExamples'] = () => {
-      throw 'Implement me !';
-    };
-
     // loading server info
     this.http.post({}, REST_URLS.GENERAL.URLS.INFO, 'json').subscribe(
       (info: any) => {

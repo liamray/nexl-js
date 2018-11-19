@@ -17,3 +17,8 @@ nexl can be useful when you need to manage some project data without re-deployin
 * No agents needed on clients, nexl works via standard HTTP/HTTPS protocols
 
 More about nexl on [http://www.nexl-js.com](http://www.nexl-js.com)
+
+<br/><br/>
+Watch nexl demo:
+<br/><br/>
+[![nexl demo](https://img.youtube.com/vi/_OibWBQ_ALw/0.jpg)](https://www.youtube.com/watch?v=_OibWBQ_ALw)

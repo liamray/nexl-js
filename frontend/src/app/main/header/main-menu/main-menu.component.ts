@@ -104,4 +104,8 @@ export class MainMenuComponent implements AfterViewInit {
   prettifyFile() {
     this.messageService.sendMessage(MESSAGE_TYPE.PRETTIFY_FILE);
   }
+
+  openNexlDemo() {
+    window.open('https://www.youtube.com/watch?v=_OibWBQ_ALw', '_blank');
+  }
 }
