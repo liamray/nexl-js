@@ -20,4 +20,4 @@ More about nexl on [http://www.nexl-js.com](http://www.nexl-js.com)
 <br/><br/>
 Watch nexl demo:
 <br/><br/>
-[![nexl demo](https://img.youtube.com/vi/_OibWBQ_ALw/0.jpg)](https://www.youtube.com/watch?v=_OibWBQ_ALw)
+[![nexl demo](http://www.nexl-js.com/demo/3.1.0/demo.png)](http://www.nexl-js.com/demo/3.1.0/demo.php)
