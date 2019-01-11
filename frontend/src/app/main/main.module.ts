@@ -61,6 +61,7 @@ import {DiffsComponent} from "./filemanager/storage-files-editor/diffswindow/dif
 import {StorageExplorerComponent} from "./filemanager/storage-files-explorer/storage-files-explorer.component";
 import {ArgsComponent} from "./filemanager/http-requests-buider-and-tester/args/args.component";
 import {HttpRequestsBuilderAndTesterComponent} from "./filemanager/http-requests-buider-and-tester/http-requests-builder-and-tester.component";
+import {FindInFilesComponent} from "./misc/findinfiles/findinfiles";
 
 
 @NgModule({
@@ -114,6 +115,7 @@ import {HttpRequestsBuilderAndTesterComponent} from "./filemanager/http-requests
     ArgsComponent,
     AboutComponent,
     FindFileComponent,
+    FindInFilesComponent,
     DiffsComponent
   ],
 

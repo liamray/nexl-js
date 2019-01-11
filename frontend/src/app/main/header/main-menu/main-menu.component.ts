@@ -97,6 +97,10 @@ export class MainMenuComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_FILE);
   }
 
+  findInFiles() {
+    this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES);
+  }
+
   openUsersWindow() {
     this.messageService.sendMessage(MESSAGE_TYPE.USERS_WINDOW);
   }

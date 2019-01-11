@@ -1,35 +1,51 @@
 <jqxWindow #findFileWindow
            class="first-level-dialog"
            [autoOpen]="false"
-           [width]="450"
-           [height]="120"
+           [width]="540"
+           [height]="168"
            [initContent]="initContent"
-           (onOpen)="onOpen()"
            [isModal]="true"
            [resizable]="false"
            [showCloseButton]="false"
+           (onOpen)="onOpen()"
 >
 
   <div>
-    <img src="./nexl/site/icons/find.png" style="position: relative; top: 2px; margin-left: 3px;">
-    <span style="position: relative; top: -1px;margin-left: 1px;">Find file</span>
+    <img src="./nexl/site/icons/find-in-text.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Find in files</span>
   </div>
 
   <div class="container">
-    <jqxComboBox
-      #input
-      style="margin-top: 4px;"
-      [width]="'100%'"
-      [height]="25"
-      [placeHolder]="'Start typing file name'"
-      [source]="source"
-      [autoComplete]="true"
-      [searchMode]="'containsignorecase'"
-      [showArrow]="false"
-      (onClose)="loadFileFromStorage()"
-    >
-    </jqxComboBox>
 
+    <div class="findInputBox">
+      <span>Text to find:</span>
+      <jqxInput #text [width]="425" [height]="25">
+      </jqxInput>
+    </div>
+
+    <div class="findInputBox">
+      <span>Find in:</span>
+      <jqxInput #findIn [width]="425" [height]="25" [value]="'/'"></jqxInput>
+    </div>
+
+    <div>
+      <div class="findCheckBox leftSpace"></div>
+      <div class="findCheckBox">
+        <jqxCheckBox
+          #matchCase
+          [boxSize]="'12px;'"
+        >Match case
+        </jqxCheckBox>
+      </div>
+
+      <div class="findCheckBox">
+        <jqxCheckBox
+          #regex
+          [boxSize]="'12px;'"
+        >Regex
+        </jqxCheckBox>
+      </div>
+    </div>
     <div class="buttons">
       <div class="button">
         <jqxButton [height]='32'
@@ -50,7 +66,7 @@
                    [textPosition]='"center"'
                    (click)="onFind()"
                    [auto-create]="false"
-                   [imgSrc]='"./nexl/site/icons/find.png"'
+                   [imgSrc]='"./nexl/site/icons/find-in-text.png"'
                    #findButton
         >
           Find

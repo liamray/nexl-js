@@ -13,7 +13,7 @@ import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxco
 export class FindFileComponent implements OnInit {
   @ViewChild('findFileWindow') findFileWindow: jqxWindowComponent;
   @ViewChild('input') input: jqxComboBoxComponent;
-  @ViewChild('okButton') okButton: jqxButtonComponent;
+  @ViewChild('findButton') findButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
 
   source: string[] = [];
@@ -92,7 +92,7 @@ export class FindFileComponent implements OnInit {
   }
 
   initContent = () => {
-    this.okButton.createComponent();
+    this.findButton.createComponent();
     this.cancelButton.createComponent();
   };
 
