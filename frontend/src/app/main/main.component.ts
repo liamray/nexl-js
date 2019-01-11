@@ -13,6 +13,10 @@ export const F7 = 'F7';
 export const F8 = 'F8';
 export const ALT_F7 = 'ALT_F7';
 
+const F7_KEY = 118;
+const F8_KEY = 119;
+const F9_KEY = 120;
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -24,72 +28,56 @@ export class MainComponent implements OnInit {
   constructor(private authService: AuthService, private messageService: MessageService, private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
   }
 
-  // todo : improve this code
-  discoverKeyCombination(event) {
-    if (event.ctrlKey || event.metaKey) {
-      switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 's':
-          return CTRL_S;
-      }
+  interceptHotKeysInner(event: any) {
+    const char = String.fromCharCode(event.which).toLowerCase();
+
+    // is Ctrl+S ?
+    if (char === 's' && event.ctrlKey) {
+      this.messageService.sendMessage(MESSAGE_TYPE.SAVE_FILE_TO_STORAGE);
+      event.preventDefault();
+      return;
     }
 
-    if (event.altKey || event.metaKey) {
-      if (event.which === 118) {
-        return ALT_F7;
-      }
+    // is F7 ?
+    if (event.which === F7_KEY && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      this.messageService.sendMessage(MESSAGE_TYPE.PRETTIFY_FILE);
+      return;
     }
 
-    if (event.which === 118) {
-      return F7;
+    // is Alt+F7 ?
+    if (event.which === F7_KEY && !event.ctrlKey && event.altKey) {
+      event.preventDefault();
+      this.messageService.sendMessage(MESSAGE_TYPE.FIND_FILE);
+      return;
     }
 
-    if (event.which === 119) {
-      return F8;
+    // is Ctrl+Alt+F7 ?
+    if (event.which === F7_KEY && event.ctrlKey && event.altKey) {
+      event.preventDefault();
+      this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES);
+      return;
     }
 
-    if (event.which === 120) {
-      return F9;
+    // is F8 ?
+    if (event.which === F8_KEY && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      this.messageService.sendMessage(MESSAGE_TYPE.TOGGLE_ARGS_WINDOW);
+      return;
     }
 
-    return null;
+    // is F9 ?
+    if (event.which === F9_KEY && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
+      return;
+    }
   }
 
   interceptHotKeys() {
     $(window).bind('keydown',
       (event) => {
-        const key = this.discoverKeyCombination(event);
-
-        switch (key) {
-          case CTRL_S: {
-            this.messageService.sendMessage(MESSAGE_TYPE.SAVE_FILE_TO_STORAGE);
-            event.preventDefault();
-            return;
-          }
-
-          case F7 : {
-            event.preventDefault();
-            this.messageService.sendMessage(MESSAGE_TYPE.PRETTIFY_FILE);
-            return;
-          }
-
-          case F8 : {
-            event.preventDefault();
-            this.messageService.sendMessage(MESSAGE_TYPE.TOGGLE_ARGS_WINDOW);
-            return;
-          }
-
-          case F9 : {
-            event.preventDefault();
-            this.messageService.sendMessage(MESSAGE_TYPE.EVAL_NEXL_EXPRESSION);
-            return;
-          }
-
-          case ALT_F7 : {
-            event.preventDefault();
-            this.messageService.sendMessage(MESSAGE_TYPE.FIND_FILE);
-            return;
-          }
-        }
+        this.interceptHotKeysInner(event);
       });
   }
 
