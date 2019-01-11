@@ -10,22 +10,30 @@
       <!--File menu-->
       <li>
         <span>File</span>
-        <ul style="width:225px;">
+        <ul style="width:235px;">
           <li (click)="saveFileToStorage()" id="main-menu-save">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/save.png'/><span>Save ( Ctrl+S )</span>
+                 src='./nexl/site/icons/save.png'/>
+            <div class="left">Save</div>
+            <div class="right">Ctrl+S</div>
           </li>
           <li (click)="prettifyFile()" id="main-menu-prettify">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/rose.png'/><span>Prettify file ( F7 )</span>
+                 src='./nexl/site/icons/rose.png'/>
+            <div class="left">Prettify file</div>
+            <div class="right">F7</div>
           </li>
           <li (click)="findFile()" id="main-menu-find-file">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/find.png'/><span>Find file ( Alt+F7 )</span>
+                 src='./nexl/site/icons/find.png'/>
+            <div class="left">Find file</div>
+            <div class="right">Alt+F7</div>
           </li>
           <li (click)="findInFiles()" id="main-menu-find-in-files">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/find-in-text.png'/><span>Find in files ( Ctrl+Alt+F7 )</span>
+                 src='./nexl/site/icons/find-in-text.png'/>
+            <div class="left">Find in files</div>
+            <div class="right">Ctrl+Alt+F7</div>
           </li>
           <li (click)="closeAllTabs()" id='main-menu-close-all'>
             <img style='float: left; margin-right: 5px;'
@@ -65,11 +73,15 @@
         <ul style="width:210px;">
           <li (click)="toggleArgsWindow()" id="main-menu-arguments">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/cmd-line.png'/><span>Arguments ( F8 )</span>
+                 src='./nexl/site/icons/cmd-line.png'/>
+            <div class="left">Arguments</div>
+            <div class="right">F8</div>
           </li>
           <li (click)="evaluateNexlExpression()" id="main-menu-evaluate">
             <img style='float: left; margin-right: 5px;'
-                 src='./nexl/site/icons/play.png'/><span>Test HTTP request ( F9 )</span>
+                 src='./nexl/site/icons/play.png'/>
+            <div class="left">Test HTTP request</div>
+            <div class="right">F9</div>
           </li>
         </ul>
       </li>
