@@ -28,6 +28,7 @@ REST_URLS.GENERAL = {
 REST_URLS.STORAGE = {
 	PREFIX: 'storage',
 	URLS: {
+		FILE_IN_FILES: '/find-in-files',
 		MOVE: '/move',
 		RENAME: '/rename',
 		DELETE: '/delete',

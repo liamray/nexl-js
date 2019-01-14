@@ -1,4 +1,4 @@
-<jqxWindow #findFileWindow
+<jqxWindow #window
            class="first-level-dialog"
            [autoOpen]="false"
            [width]="540"
@@ -52,7 +52,7 @@
                    [width]="94"
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
-                   (click)="findFileWindow.close()"
+                   (click)="window.close()"
                    [imgSrc]='"./nexl/site/icons/remove.png"'
                    [auto-create]="false"
                    #cancelButton>

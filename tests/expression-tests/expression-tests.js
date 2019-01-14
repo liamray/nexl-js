@@ -114,8 +114,8 @@ function run() {
 	return Promise.all(promises);
 }
 
-function finalize() {
+function done() {
 	return Promise.resolve();
 }
 
-testAPI.startNexlApp(init, run, finalize);
+testAPI.startNexlApp(init, run, done);

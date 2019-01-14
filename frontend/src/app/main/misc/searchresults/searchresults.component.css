@@ -1,0 +1,31 @@
+.container {
+  margin-top: 3px;
+}
+
+.button {
+  float: right;
+  margin-left: 5px;
+}
+
+.buttons {
+  margin: 10px 0 0 0;
+  clear: both;
+}
+
+.findInputBox {
+  margin-bottom: 7px;
+}
+
+.findInputBox span {
+  display: inline-block;
+  width: 100px;
+}
+
+.findCheckBox {
+  float: left;
+  margin: 7px 12px 4px 0;
+}
+
+.leftSpace {
+  width: 90px;
+}

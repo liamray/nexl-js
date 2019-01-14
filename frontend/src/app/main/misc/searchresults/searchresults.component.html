@@ -1,0 +1,39 @@
+<jqxWindow #window
+           class="first-level-dialog"
+           [autoOpen]="false"
+           [width]="540"
+           [height]="300"
+           [initContent]="initContent"
+           [isModal]="false"
+           [resizable]="true"
+           [showCloseButton]="false"
+>
+
+  <div>
+    <img src="./nexl/site/icons/search-results.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Search results</span>
+  </div>
+
+  <div class="container">
+
+    <div style="width: 100%; height: calc( 100% - 45px )">
+      <jqxTree #files width="100%" height="100%" [source]="filesSource">
+      </jqxTree>
+    </div>
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="window.close();"
+                   [imgSrc]='"./nexl/site/icons/ok.png"'
+                   [auto-create]="false"
+                   #closeButton>
+          Close
+        </jqxButton>
+      </div>
+    </div>
+
+  </div>
+</jqxWindow>

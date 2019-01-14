@@ -313,6 +313,118 @@ function cacheStorageFiles() {
 	);
 }
 
+function findOccurrencesInFileRegex(fileContent, regex) {
+	return fileContent.split(/[\r\n]/).map(function (line, i) {
+		if (regex.test(line)) {
+			return {
+				line: line,
+				number: i + 1
+			};
+		}
+	}).filter(Boolean);
+}
+
+function findOccurrencesInFileSimple(fileContent, text, matchCase) {
+	if (!matchCase) {
+		fileContent = fileContent.toLowerCase();
+	}
+
+	return fileContent.split(/[\r\n]/).map(function (line, i) {
+		if (line.indexOf(text) >= 0) {
+			return {
+				line: line,
+				number: i + 1
+			};
+		}
+	}).filter(Boolean);
+}
+
+function gatherFilesList(list, root) {
+	for (let index in root) {
+		const item = root[index];
+		if (item.value.isDir === true) {
+			gatherFilesList(list, item.items);
+			continue;
+		}
+
+		list.push(item.value.relativePath);
+	}
+}
+
+function findInFilesInner(root, data) {
+	const filesList = [];
+	gatherFilesList(filesList, root);
+
+	let searchFunc, searchType;
+
+	if (data[di.IS_REGEX]) {
+		let flags = 'g';
+		flags += (data[di.MATCH_CASE] ? '' : 'i');
+		searchType = new RegExp(data[di.TEXT], flags);
+		searchFunc = findOccurrencesInFileRegex;
+	} else {
+		searchType = data[di.MATCH_CASE] ? data[di.TEXT] : data[di.TEXT].toLowerCase();
+		searchFunc = findOccurrencesInFileSimple;
+	}
+
+	const result = {};
+	const promises = [];
+
+	filesList.forEach(fileName => {
+		const fullPath = path.join(confMgmt.getNexlStorageDir(), fileName);
+
+		const promise = fsx.readFile(fullPath, {encoding: confConsts.ENCODING_UTF8}).then(fileContent => {
+			const occurrences = searchFunc(fileContent, searchType, data[di.MATCH_CASE]);
+			if (occurrences.length > 0) {
+				result[fileName] = occurrences;
+			}
+		});
+		promises.push(promise);
+	});
+
+	return Promise.all(promises).then(_ => Promise.resolve(result));
+}
+
+function findDir(dir, dirName) {
+	for (let key in dir) {
+		let item = dir[key];
+
+		if (item.value.isDir !== true) {
+			continue;
+		}
+
+		if (item.value.label === dirName) {
+			return item;
+		}
+	}
+}
+
+function findInFiles(data) {
+	const normalizedPath = path.normalize(data[di.RELATIVE_PATH]);
+
+	// is root dir ?
+	if (normalizedPath === path.sep) {
+		return findInFilesInner(TREE_ITEMS, data);
+	}
+
+	// searching for target dir
+	const pathItems = normalizedPath.split(path.sep);
+	let dir = TREE_ITEMS;
+
+	for (let index in pathItems) {
+		dir = findDir(dir, pathItems[index]);
+
+		// relativePath doesn't exist
+		if (dir === undefined) {
+			return Promise.resolve({});
+		}
+
+		dir = dir.items;
+	}
+
+	return findInFilesInner(dir, data);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.loadFileFromStorage = loadFileFromStorage;
 module.exports.saveFileToStorage = saveFileToStorage;
@@ -320,6 +432,7 @@ module.exports.mkdir = mkdir;
 module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
+module.exports.findInFiles = findInFiles;
 
 module.exports.gatherAllFiles = gatherAllFiles;
 

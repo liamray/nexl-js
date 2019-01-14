@@ -11,6 +11,68 @@ const di = require('../../common/data-interchange-constants');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
+// find file
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.FILE_IN_FILES, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+
+	const relativePath = req.body[di.RELATIVE_PATH];
+	const text = req.body[di.TEXT];
+	const matchCase = req.body[di.MATCH_CASE];
+	const isRegex = req.body[di.IS_REGEX];
+
+	logger.log.debug(`Searching for a [${text}] string from the [${relativePath}] path`);
+
+	// todo : automate validations !!!
+	// todo : automate validations !!!
+	// todo : automate validations !!!
+
+	// validating relativePath
+	if (!j79.isString(relativePath) || relativePath.text < 1) {
+		logger.log.error(`The [${di.RELATIVE_PATH}] must be a valid non empty string`);
+		security.sendError(res, `The [${di.RELATIVE_PATH}] must be a valid non empty string`);
+		return;
+	}
+
+	// validating text
+	if (!j79.isString(text) || text.text < 1) {
+		logger.log.error('Empty text is not allowed');
+		security.sendError(res, 'Empty text is not allowed');
+		return;
+	}
+
+	// validating matchCase
+	if (!j79.isBool(matchCase)) {
+		logger.log.error(`The [${di.MATCH_CASE}] must be of a boolean type`);
+		security.sendError(res, `The [${di.MATCH_CASE}] must be of a boolean type`);
+		return;
+	}
+
+	// validating isRegex
+	if (!j79.isBool(matchCase)) {
+		logger.log.error(`The [${di.IS_REGEX}] must be of a boolean type`);
+		security.sendError(res, `The [${di.IS_REGEX}] must be of a boolean type`);
+		return;
+	}
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have write permissions to search text in files', username);
+		security.sendError(res, 'No read permissions');
+		return;
+	}
+
+	const data = {};
+	data[di.RELATIVE_PATH] = relativePath;
+	data[di.TEXT] = text;
+	data[di.MATCH_CASE] = matchCase;
+	data[di.IS_REGEX] = isRegex;
+
+	storageUtils.findInFiles(data).then(
+		result => res.send({result: result})
+	);
+});
+
+//////////////////////////////////////////////////////////////////////////////
 // move item
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.STORAGE.URLS.MOVE, function (req, res) {
