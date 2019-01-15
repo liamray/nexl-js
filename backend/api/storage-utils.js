@@ -9,6 +9,9 @@ const uiConsts = require('../common/ui-constants');
 const di = require('../common/data-interchange-constants');
 const utils = require('./utils');
 
+// todo : allow to configure
+const MAX_FIND_IN_FILES_OCCURRENCES = 1000;
+
 let TREE_ITEMS = [];
 
 function sortFilesFunc(a, b) {
@@ -313,32 +316,6 @@ function cacheStorageFiles() {
 	);
 }
 
-function findOccurrencesInFileRegex(fileContent, regex) {
-	return fileContent.split(/[\r\n]/).map(function (line, i) {
-		if (regex.test(line)) {
-			return {
-				line: line,
-				number: i + 1
-			};
-		}
-	}).filter(Boolean);
-}
-
-function findOccurrencesInFileSimple(fileContent, text, matchCase) {
-	if (!matchCase) {
-		fileContent = fileContent.toLowerCase();
-	}
-
-	return fileContent.split(/[\r\n]/).map(function (line, i) {
-		if (line.indexOf(text) >= 0) {
-			return {
-				line: line,
-				number: i + 1
-			};
-		}
-	}).filter(Boolean);
-}
-
 function gatherFilesList(list, root) {
 	for (let index in root) {
 		const item = root[index];
@@ -352,6 +329,39 @@ function gatherFilesList(list, root) {
 }
 
 function findInFilesInner(root, data) {
+	function findOccurrencesInFileRegex(fileContent, regex) {
+		return fileContent.split(/\r\n|\r|\n/).map(function (line, i) {
+			if (maxOccurrences < 0) {
+				return;
+			}
+			if (line.match(regex) !== null) {
+				maxOccurrences--;
+				return {
+					line: line,
+					number: i + 1
+				};
+			}
+		}).filter(Boolean);
+	}
+
+	function findOccurrencesInFileSimple(fileContent, aText, matchCase) {
+		const text = matchCase ? aText : aText.toLowerCase();
+
+		return fileContent.split(/\r\n|\r|\n/).map(function (aLine, i) {
+			if (maxOccurrences < 0) {
+				return;
+			}
+			const line = matchCase ? aLine : aLine.toLowerCase();
+			if (line.indexOf(text) >= 0) {
+				maxOccurrences--;
+				return {
+					line: aLine,
+					number: i + 1
+				};
+			}
+		}).filter(Boolean);
+	}
+
 	const filesList = [];
 	gatherFilesList(filesList, root);
 
@@ -369,13 +379,24 @@ function findInFilesInner(root, data) {
 
 	const result = {};
 	const promises = [];
+	let maxOccurrences = MAX_FIND_IN_FILES_OCCURRENCES;
 
 	filesList.forEach(fileName => {
 		const fullPath = path.join(confMgmt.getNexlStorageDir(), fileName);
 
+		if (maxOccurrences < 0) {
+			return;
+		}
+
 		const promise = fsx.readFile(fullPath, {encoding: confConsts.ENCODING_UTF8}).then(fileContent => {
+
+			if (maxOccurrences < 0) {
+				return;
+			}
+
 			const occurrences = searchFunc(fileContent, searchType, data[di.MATCH_CASE]);
 			if (occurrences.length > 0) {
+				maxOccurrences--;
 				result[fileName] = occurrences;
 			}
 		});
@@ -400,12 +421,15 @@ function findDir(dir, dirName) {
 }
 
 function findInFiles(data) {
-	const normalizedPath = path.normalize(data[di.RELATIVE_PATH]);
+	let normalizedPath = path.normalize(data[di.RELATIVE_PATH]);
 
 	// is root dir ?
 	if (normalizedPath === path.sep) {
 		return findInFilesInner(TREE_ITEMS, data);
 	}
+
+	// trimming slashes
+	normalizedPath = normalizedPath.replace(/^[\\/]+|[\\/]+$/g, '');
 
 	// searching for target dir
 	const pathItems = normalizedPath.split(path.sep);
