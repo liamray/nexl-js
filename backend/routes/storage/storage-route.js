@@ -35,7 +35,7 @@ router.post(restUtls.STORAGE.URLS.FILE_IN_FILES, function (req, res) {
 	}
 
 	// validating text
-	if (!j79.isString(text) || text.text < 1) {
+	if (!j79.isString(text) || text.length < 1) {
 		logger.log.error('Empty text is not allowed');
 		security.sendError(res, 'Empty text is not allowed');
 		return;
