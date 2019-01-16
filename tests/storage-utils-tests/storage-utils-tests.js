@@ -330,9 +330,8 @@ function run() {
 				if (!result[index].isOK) {
 					return Promise.reject(result[index]);
 				}
-
-				return Promise.resolve();
 			}
+			return Promise.resolve();
 		});
 	});
 }

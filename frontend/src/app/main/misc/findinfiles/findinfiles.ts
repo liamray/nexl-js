@@ -63,6 +63,10 @@ export class FindInFilesComponent implements OnInit {
     this.cancelButton.createComponent();
   };
 
+  // todo : start search on "Enter" press
+  // todo : replace text boxes with combo with history
+
+
   onFind() {
     this.window.close();
     this.globalComponentsService.loader.open();
@@ -70,19 +74,18 @@ export class FindInFilesComponent implements OnInit {
     const data = {};
     data[DI_CONSTANTS.RELATIVE_PATH] = this.findIn.val();
     data[DI_CONSTANTS.TEXT] = this.text.val();
-    data[DI_CONSTANTS.MATCH_CASE] = this.regex.val();
-    data[DI_CONSTANTS.IS_REGEX] = this.matchCase.val();
+    data[DI_CONSTANTS.MATCH_CASE] = this.matchCase.val();
+    data[DI_CONSTANTS.IS_REGEX] = this.regex.val();
 
     this.http.post(data, REST_URLS.STORAGE.URLS.FILE_IN_FILES, 'json').subscribe(
       (result: any) => {
-        console.log(result);
         this.globalComponentsService.loader.close();
+        this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS, result.body.result);
       },
       err => {
         this.globalComponentsService.loader.close();
         console.log(err);
       });
-    //this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS);
   }
 
   onOpen() {

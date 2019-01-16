@@ -18,30 +18,7 @@ export class SearchResultsComponent implements OnInit {
   @ViewChild('closeButton') closeButton: jqxButtonComponent;
 
   filesSource: any[] =
-    [
-      {
-        label: "Mail", expanded: true,
-        items:
-          [
-            {label: "Calendar"},
-            {label: "Contacts", selected: true}
-          ]
-      },
-      {
-        label: "Inbox", expanded: true,
-        items:
-          [
-            {label: "Admin"},
-            {label: "Corporate"},
-            {label: "Finance"},
-            {label: "Other"},
-          ]
-      },
-      {label: "Deleted Items"},
-      {label: "Notes"},
-      {label: "Settings"},
-      {label: "Favorites"}
-    ];
+    [];
 
   hasReadPermission: boolean = false;
 
@@ -50,7 +27,7 @@ export class SearchResultsComponent implements OnInit {
       (message) => {
         switch (message.type) {
           case MESSAGE_TYPE.SEARCH_RESULTS : {
-            this.showResults();
+            this.showResults(message.data);
             return;
           }
 
@@ -63,10 +40,37 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
-  showResults() {
+  // todo : add "Returns to search" button
+  // todo : on click open file and point to the line
+
+  makeFileOccurrances(data: any) {
+    const fileOccurrences = [];
+    for (let index in data) {
+      const fileOccurrence: any = {};
+      fileOccurrence.label = `(${data[index].number}): ${data[index].line}`;
+      fileOccurrence.data = data[index].number;
+
+      fileOccurrences.push(fileOccurrence);
+    }
+    return fileOccurrences;
+  }
+
+  showResults(result: any) {
     if (!this.hasReadPermission) {
       return;
     }
+
+    this.filesSource = [];
+    for (let key in result) {
+      const file: any = {};
+      file.label = key;
+      file.icon = './nexl/site/icons/file.png';
+      file.items = this.makeFileOccurrances(result[key]);
+
+      this.filesSource.push(file);
+    }
+
+    this.files.refresh();
 
     this.window.open();
   }
