@@ -40,10 +40,7 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
-  // todo : add "Returns to search" button
-  // todo : on click open file and point to the line
-
-  makeFileOccurrances(data: any) {
+  makeFileOccurrences(data: any) {
     const fileOccurrences = [];
     for (let index in data) {
       const fileOccurrence: any = {};
@@ -61,18 +58,25 @@ export class SearchResultsComponent implements OnInit {
     }
 
     this.filesSource = [];
+    if (Object.keys(result.result).length > 0) {
+      this.showResultsInner(result.result);
+    } else {
+      this.filesSource.push(`Nothing found for <b>[${result.searchData[DI_CONSTANTS.TEXT]}]</b> in <b>[${result.searchData[DI_CONSTANTS.RELATIVE_PATH]}]</b> directory`);
+    }
+
+    this.files.refresh();
+    this.window.open();
+  }
+
+  private showResultsInner(result: any) {
     for (let key in result) {
       const file: any = {};
       file.label = key;
       file.icon = './nexl/site/icons/file.png';
-      file.items = this.makeFileOccurrances(result[key]);
+      file.items = this.makeFileOccurrences(result[key]);
 
       this.filesSource.push(file);
     }
-
-    this.files.refresh();
-
-    this.window.open();
   }
 
   ngOnInit() {

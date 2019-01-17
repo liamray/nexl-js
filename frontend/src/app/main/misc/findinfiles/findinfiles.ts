@@ -63,24 +63,23 @@ export class FindInFilesComponent implements OnInit {
     this.cancelButton.createComponent();
   };
 
-  // todo : start search on "Enter" press
-  // todo : replace text boxes with combo with history
-
-
   onFind() {
     this.window.close();
     this.globalComponentsService.loader.open();
 
-    const data = {};
-    data[DI_CONSTANTS.RELATIVE_PATH] = this.findIn.val();
-    data[DI_CONSTANTS.TEXT] = this.text.val();
-    data[DI_CONSTANTS.MATCH_CASE] = this.matchCase.val();
-    data[DI_CONSTANTS.IS_REGEX] = this.regex.val();
+    const searchData = {};
+    searchData[DI_CONSTANTS.RELATIVE_PATH] = this.findIn.val();
+    searchData[DI_CONSTANTS.TEXT] = this.text.val();
+    searchData[DI_CONSTANTS.MATCH_CASE] = this.matchCase.val();
+    searchData[DI_CONSTANTS.IS_REGEX] = this.regex.val();
 
-    this.http.post(data, REST_URLS.STORAGE.URLS.FILE_IN_FILES, 'json').subscribe(
+    this.http.post(searchData, REST_URLS.STORAGE.URLS.FILE_IN_FILES, 'json').subscribe(
       (result: any) => {
         this.globalComponentsService.loader.close();
-        this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS, result.body.result);
+        this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS, {
+          result: result.body.result,
+          searchData: searchData
+        });
       },
       err => {
         this.globalComponentsService.loader.close();
