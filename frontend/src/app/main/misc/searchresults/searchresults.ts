@@ -45,7 +45,7 @@ export class SearchResultsComponent implements OnInit {
     const fileOccurrences = [];
     for (let index in data) {
       const fileOccurrence: any = {};
-      fileOccurrence.label = `(${data[index].number}): ${data[index].line}`;
+      fileOccurrence.label = `[${data[index].number}] ${data[index].line}`;
       fileOccurrence.value = {
         relativePath: relativePath,
         lineNumber: data[index].number
