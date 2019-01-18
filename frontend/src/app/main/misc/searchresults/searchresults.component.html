@@ -17,8 +17,7 @@
   <div class="container">
 
     <div style="width: 100%; height: calc( 100% - 45px )">
-      <jqxTree #files width="100%" height="100%" [source]="filesSource">
-      </jqxTree>
+      <jqxTree #files width="100%" height="100%" [source]="filesSource" (onItemClick)="select($event)"></jqxTree>
     </div>
     <div class="buttons">
       <div class="button">

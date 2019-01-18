@@ -41,12 +41,15 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
-  makeFileOccurrences(data: any) {
+  makeFileOccurrences(relativePath: string, data: any) {
     const fileOccurrences = [];
     for (let index in data) {
       const fileOccurrence: any = {};
       fileOccurrence.label = `(${data[index].number}): ${data[index].line}`;
-      fileOccurrence.data = data[index].number;
+      fileOccurrence.value = {
+        relativePath: relativePath,
+        lineNumber: data[index].number
+      };
 
       fileOccurrences.push(fileOccurrence);
     }
@@ -71,6 +74,7 @@ export class SearchResultsComponent implements OnInit {
     }
 
     this.files.refresh();
+    this.files.collapseAll();
     this.window.open();
   }
 
@@ -79,7 +83,7 @@ export class SearchResultsComponent implements OnInit {
       const file: any = {};
       file.label = key;
       file.icon = './nexl/site/icons/file.png';
-      file.items = this.makeFileOccurrences(result[key]);
+      file.items = this.makeFileOccurrences(key, result[key]);
 
       this.filesSource.push(file);
     }
@@ -99,5 +103,13 @@ export class SearchResultsComponent implements OnInit {
   return2Search() {
     this.window.close();
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES);
+  }
+
+  select(event: any) {
+    const item = this.files.getItem(event.args.element);
+    this.messageService.sendMessage(MESSAGE_TYPE.LOAD_FILE_FROM_STORAGE, {
+      relativePath: item.value['relativePath'],
+      lineNumber: item.value['lineNumber']
+    });
   }
 }

@@ -563,6 +563,15 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     return tabInfo === undefined ? -1 : tabInfo.index;
   }
 
+  gotoToLineIfNeeded(data: any, idSeqNr: number) {
+    if (data.lineNumber === undefined) {
+      return;
+    }
+
+    const editor = ace.edit(TABS_CONTENT + idSeqNr);
+    editor.gotoLine(data.lineNumber, 0);
+  }
+
   loadFileFromStorage(data: any) {
     data.label = UtilsService.resolveFileName(data.relativePath);
 
@@ -572,6 +581,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
       if (tabInfo !== undefined && tabInfo.index >= 0) {
         // making this tab active
         this.tabs.val(tabInfo.index + '');
+        this.gotoToLineIfNeeded(data, tabInfo.idSeqNr);
         return;
       }
 
@@ -584,6 +594,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
           data.body = contentAsJson[DI_CONSTANTS.FILE_BODY];
           const newFile = this.createNewFileInner(data);
           this.setTabContentAttr(newFile.idSeqNr, DI_CONSTANTS.FILE_LOAD_TIME, contentAsJson[DI_CONSTANTS.FILE_LOAD_TIME]);
+          this.gotoToLineIfNeeded(data, newFile.idSeqNr);
           this.globalComponentsService.loader.close();
           resolve(data.idSeqNr);
         },
