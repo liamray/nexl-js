@@ -33,6 +33,18 @@
           Close
         </jqxButton>
       </div>
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="115"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="return2Search();"
+                   [imgSrc]='"./nexl/site/icons/find-in-text.png"'
+                   [auto-create]="false"
+                   #return2SearchButton>
+          Find in files
+        </jqxButton>
+      </div>
     </div>
 
   </div>

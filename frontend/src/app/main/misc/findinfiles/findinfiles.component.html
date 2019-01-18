@@ -19,13 +19,13 @@
 
     <div class="findInputBox">
       <span>Text to find:</span>
-      <jqxInput #text [width]="425" [height]="25">
+      <jqxInput #text [width]="425" [height]="25" (keypress)="onKeyPress($event)">
       </jqxInput>
     </div>
 
     <div class="findInputBox">
       <span>Find in:</span>
-      <jqxInput #findIn [width]="425" [height]="25" [value]="'/'"></jqxInput>
+      <jqxInput #findIn [width]="425" [height]="25" [value]="'/'" (keypress)="onKeyPress($event)"></jqxInput>
     </div>
 
     <div>
@@ -34,6 +34,7 @@
         <jqxCheckBox
           #matchCase
           [boxSize]="'12px;'"
+          (keypress)="onKeyPress($event)"
         >Match case
         </jqxCheckBox>
       </div>
@@ -42,6 +43,7 @@
         <jqxCheckBox
           #regex
           [boxSize]="'12px;'"
+          (keypress)="onKeyPress($event)"
         >Regex
         </jqxCheckBox>
       </div>
@@ -65,6 +67,7 @@
                    [textImageRelation]='"imageBeforeText"'
                    [textPosition]='"center"'
                    (click)="onFind()"
+                   [disabled]="text.val() === ''"
                    [auto-create]="false"
                    [imgSrc]='"./nexl/site/icons/find-in-text.png"'
                    #findButton

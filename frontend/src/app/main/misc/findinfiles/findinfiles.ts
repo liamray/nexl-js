@@ -6,6 +6,7 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {HttpRequestService} from "../../services/http.requests.service";
 import {jqxCheckBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox";
+import {ICONS} from "../messagebox/messagebox.component";
 
 @Component({
   selector: 'app-findinfiles',
@@ -47,7 +48,6 @@ export class FindInFilesComponent implements OnInit {
       return;
     }
 
-    this.text.val('');
     this.source = [];
     this.window.open();
   }
@@ -84,10 +84,18 @@ export class FindInFilesComponent implements OnInit {
       err => {
         this.globalComponentsService.loader.close();
         console.log(err);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Find in files failed. Reason : [${err.statusText}]`);
       });
   }
 
   onOpen() {
     this.text.focus();
+  }
+
+  onKeyPress(event: any) {
+    if (event.keyCode === 13 && this.text.val().length > 0) {
+      this.onFind();
+      return;
+    }
   }
 }

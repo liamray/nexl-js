@@ -16,6 +16,7 @@ export class SearchResultsComponent implements OnInit {
   @ViewChild('window') window: jqxWindowComponent;
   @ViewChild('files') files: jqxTreeComponent;
   @ViewChild('closeButton') closeButton: jqxButtonComponent;
+  @ViewChild('return2SearchButton') return2SearchButton: jqxButtonComponent;
 
   filesSource: any[] =
     [];
@@ -57,6 +58,11 @@ export class SearchResultsComponent implements OnInit {
       return;
     }
 
+    if (result === undefined) {
+      this.window.open();
+      return;
+    }
+
     this.filesSource = [];
     if (Object.keys(result.result).length > 0) {
       this.showResultsInner(result.result);
@@ -87,8 +93,11 @@ export class SearchResultsComponent implements OnInit {
 
   initContent = () => {
     this.closeButton.createComponent();
+    this.return2SearchButton.createComponent();
   };
 
-  onFind() {
+  return2Search() {
+    this.window.close();
+    this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES);
   }
 }

@@ -424,7 +424,7 @@ function findInFiles(data) {
 	let normalizedPath = path.normalize(data[di.RELATIVE_PATH]);
 
 	// is root dir ?
-	if (normalizedPath === path.sep) {
+	if (normalizedPath === path.sep || normalizedPath === '.') {
 		return findInFilesInner(TREE_ITEMS, data);
 	}
 
