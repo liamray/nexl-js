@@ -33,6 +33,7 @@
         "../../backend/common/security-constants.js",
         "../../backend/common/rest-urls.js",
         "../../backend/common/data-interchange-constants.js",
+        "../../backend/common/find-in-files.js",
         "../../backend/common/common-utils.js",
         "app/main/common/js-beautify.js",
         "nexl/site/codemirror/codemirror.js",

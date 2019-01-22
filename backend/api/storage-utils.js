@@ -7,6 +7,7 @@ const confMgmt = require('./conf-mgmt');
 const confConsts = require('../common/conf-constants');
 const uiConsts = require('../common/ui-constants');
 const di = require('../common/data-interchange-constants');
+const resolveSearchFunc = require('../common/find-in-files');
 const utils = require('./utils');
 
 // todo : allow to configure
@@ -328,54 +329,12 @@ function gatherFilesList(list, root) {
 	}
 }
 
-function findInFilesInner(root, data) {
-	function findOccurrencesInFileRegex(fileContent, regex) {
-		return fileContent.split(/\r\n|\r|\n/).map(function (line, i) {
-			if (maxOccurrences < 0) {
-				return;
-			}
-			if (line.match(regex) !== null) {
-				maxOccurrences--;
-				return {
-					line: line,
-					number: i + 1
-				};
-			}
-		}).filter(Boolean);
-	}
-
-	function findOccurrencesInFileSimple(fileContent, aText, matchCase) {
-		const text = matchCase ? aText : aText.toLowerCase();
-
-		return fileContent.split(/\r\n|\r|\n/).map(function (aLine, i) {
-			if (maxOccurrences < 0) {
-				return;
-			}
-			const line = matchCase ? aLine : aLine.toLowerCase();
-			if (line.indexOf(text) >= 0) {
-				maxOccurrences--;
-				return {
-					line: aLine,
-					number: i + 1
-				};
-			}
-		}).filter(Boolean);
-	}
-
+function findInFilesInner(root, searchData) {
 	const filesList = [];
 	gatherFilesList(filesList, root);
 
-	let searchFunc, searchType;
-
-	if (data[di.IS_REGEX]) {
-		let flags = 'g';
-		flags += (data[di.MATCH_CASE] ? '' : 'i');
-		searchType = new RegExp(data[di.TEXT], flags);
-		searchFunc = findOccurrencesInFileRegex;
-	} else {
-		searchType = data[di.MATCH_CASE] ? data[di.TEXT] : data[di.TEXT].toLowerCase();
-		searchFunc = findOccurrencesInFileSimple;
-	}
+	const searchFunctionData = resolveSearchFunc(searchData);
+	searchFunctionData.maxOccurrences = MAX_FIND_IN_FILES_OCCURRENCES;
 
 	const result = {};
 	const promises = [];
@@ -394,7 +353,8 @@ function findInFilesInner(root, data) {
 				return;
 			}
 
-			const occurrences = searchFunc(fileContent, searchType, data[di.MATCH_CASE]);
+			searchFunctionData.fileContent = fileContent;
+			const occurrences = searchFunctionData.func(searchFunctionData);
 			if (occurrences.length > 0) {
 				maxOccurrences--;
 				result[fileName] = occurrences;

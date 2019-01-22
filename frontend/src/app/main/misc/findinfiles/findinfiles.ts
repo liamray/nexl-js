@@ -25,7 +25,10 @@ export class FindInFilesComponent implements OnInit {
   source: string[] = [];
   hasReadPermission: boolean = false;
 
+  tabsMap: any = {};
+
   constructor(private globalComponentsService: GlobalComponentsService, private messageService: MessageService, private http: HttpRequestService) {
+
     this.messageService.getMessage().subscribe(
       (message) => {
         switch (message.type) {
@@ -36,6 +39,11 @@ export class FindInFilesComponent implements OnInit {
 
           case MESSAGE_TYPE.AUTH_CHANGED : {
             this.hasReadPermission = message.data.hasReadPermission;
+            return;
+          }
+
+          case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
+            this.tabContentChanged(message.data);
             return;
           }
         }
@@ -63,6 +71,34 @@ export class FindInFilesComponent implements OnInit {
     this.cancelButton.createComponent();
   };
 
+  findFilesInner(searchData: any, result: any) {
+    const searchFunctionData = FIND_IN_FILES.resolveFindFunction(searchData);
+    searchFunctionData.maxOccurrences = 100;
+
+    // iterating over changed files ang finding again
+    for (let relativePath in this.tabsMap) {
+      // removing from result
+      delete result[relativePath];
+
+      // preparing to search
+      searchFunctionData.fileContent = this.tabsMap[relativePath].getFileContent();
+
+      // searching again
+      const occurrences = searchFunctionData.func(searchFunctionData);
+
+      if (occurrences.length > 0) {
+        // adding to result
+        result[relativePath] = occurrences;
+      }
+    }
+
+    this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS, {
+      result: result,
+      searchData: searchData
+    });
+
+  }
+
   onFind() {
     this.window.close();
     this.globalComponentsService.loader.open();
@@ -76,10 +112,7 @@ export class FindInFilesComponent implements OnInit {
     this.http.post(searchData, REST_URLS.STORAGE.URLS.FILE_IN_FILES, 'json').subscribe(
       (result: any) => {
         this.globalComponentsService.loader.close();
-        this.messageService.sendMessage(MESSAGE_TYPE.SEARCH_RESULTS, {
-          result: result.body.result,
-          searchData: searchData
-        });
+        this.findFilesInner(searchData, result.body.result);
       },
       err => {
         this.globalComponentsService.loader.close();
@@ -97,5 +130,14 @@ export class FindInFilesComponent implements OnInit {
       this.onFind();
       return;
     }
+  }
+
+  tabContentChanged(data) {
+    if (data.isChanged !== true) {
+      delete this.tabsMap[data.relativePath];
+      return;
+    }
+
+    this.tabsMap[data.relativePath] = data;
   }
 }

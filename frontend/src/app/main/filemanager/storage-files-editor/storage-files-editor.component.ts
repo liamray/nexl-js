@@ -198,7 +198,10 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
         isChanged: isChanged,
-        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
+        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH),
+        getFileContent: () => {
+          return this.getTabContent(idSeqNr + '')
+        }
       }
     );
   }
@@ -213,7 +216,10 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     // sending message to tree
     this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
         isNewFile: isNewFile,
-        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH)
+        relativePath: this.getTabContentAttr(idSeqNr, RELATIVE_PATH),
+        getFileContent: () => {
+          return this.getTabContent(idSeqNr + '')
+        }
       }
     );
   }
