@@ -104,6 +104,11 @@ export class FindInFilesComponent implements OnInit {
   }
 
   onFind() {
+    // jqx bug. disabled button still clickable !
+    if (this.text.val() === '') {
+      return;
+    }
+
     this.window.close();
     this.globalComponentsService.loader.open();
 
