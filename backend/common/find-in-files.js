@@ -50,8 +50,8 @@ function resolveFindFunction(data) {
 
 	return {
 		func: findOccurrencesInFileSimple,
-		text: data.matchCase ? data.text : data.text.toLowerCase(),
-		matchCase: data.matchCase
+		text: data[DI_CONSTANTS.MATCH_CASE] ? data[DI_CONSTANTS.TEXT] : data[DI_CONSTANTS.TEXT].toLowerCase(),
+		matchCase: data[DI_CONSTANTS.MATCH_CASE]
 	}
 }
 
