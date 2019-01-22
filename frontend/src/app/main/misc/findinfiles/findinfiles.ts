@@ -56,7 +56,9 @@ export class FindInFilesComponent implements OnInit {
       return;
     }
 
-    this.findIn.val(fromDir || this.findIn.val());
+    if (fromDir !== undefined) {
+      this.findIn.val(fromDir);
+    }
 
     this.source = [];
     this.window.open();
