@@ -278,6 +278,8 @@ export class StorageExplorerComponent implements AfterViewInit {
   }
 
   updatePopupMenu() {
+    this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
+
     this.popupMenu.disable('popup-new-dir', !this.hasWritePermission);
     this.popupMenu.disable('popup-new-file', !this.hasWritePermission);
     this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
@@ -1024,5 +1026,27 @@ export class StorageExplorerComponent implements AfterViewInit {
     });
 
     this.updatePopupMenu();
+  }
+
+  resolveFindInDir() {
+    if (this.rightClickSelectedElement === undefined) {
+      return '';
+    }
+
+    const targetItem = this.rightClickSelectedElement;
+
+    if (targetItem.value.isDir === true) {
+      return targetItem.value.relativePath;
+    }
+
+    return targetItem.value.relativePath.replace(/(\/[^/]*)$|(\\[^\\]*)$/, '');
+  }
+
+  findInFilesFromHere() {
+    if (!this.hasReadPermission) {
+      return;
+    }
+
+    this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, this.resolveFindInDir());
   }
 }

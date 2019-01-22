@@ -33,7 +33,7 @@ export class FindInFilesComponent implements OnInit {
       (message) => {
         switch (message.type) {
           case MESSAGE_TYPE.FIND_IN_FILES : {
-            this.findInFiles();
+            this.findInFiles(message.data);
             return;
           }
 
@@ -51,10 +51,12 @@ export class FindInFilesComponent implements OnInit {
     );
   }
 
-  findInFiles() {
+  findInFiles(fromDir: string) {
     if (!this.hasReadPermission) {
       return;
     }
+
+    this.findIn.val(fromDir || this.findIn.val());
 
     this.source = [];
     this.window.open();
