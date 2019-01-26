@@ -4,6 +4,10 @@ const logger = require('./logger');
 const schemas = require('../common/schemas');
 
 function objectSchemaValidation(data, objectSchema) {
+	if (!j79.isObject(data)) {
+		return schemas.invalid(`Expecting for the object but got an array`);
+	}
+
 	// validating by schema
 	for (let key in objectSchema) {
 		const val = data[key];
@@ -42,6 +46,10 @@ function objectSchemaValidation(data, objectSchema) {
 }
 
 function arraySchemaValidation(data, arraySchema) {
+	if (!j79.isArray(data)) {
+		return schemas.invalid(`Expecting for the array but got an object`);
+	}
+
 	for (let index in data) {
 		let item = data[index];
 
