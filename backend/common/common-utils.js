@@ -1,4 +1,6 @@
 const COMMON_UTILS = {};
+
+// todo : use a [https://www.npmjs.com/package/dateformat] instead, import its code to be available for both frontend and backend. pay attention to var|let|const, it can may certain problem when Angular imports external JS file
 COMMON_UTILS.formatDate = formatDate;
 COMMON_UTILS.validatePasswordStrength = validatePasswordStrength;
 COMMON_UTILS.validateUsernameStrength = validateUsernameStrength;

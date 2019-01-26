@@ -3,6 +3,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const logger = require('./logger');
 const utils = require('./utils');
+const confConsts = require('../common/conf-constants');
 
 function join() {
 	const args = Array.prototype.slice.call(arguments);
@@ -58,6 +59,10 @@ function readFile(fullPath, opts) {
 	});
 }
 
+function readFileUTF8(fullPath) {
+	return readFile(fullPath, {encoding: confConsts.ENCODING_UTF8});
+}
+
 function writeFile(fullPath, data, opts) {
 	return new Promise((resolve, reject) => {
 		fs.writeFile(fullPath, data, opts, (err) => {
@@ -71,6 +76,10 @@ function writeFile(fullPath, data, opts) {
 			resolve();
 		});
 	});
+}
+
+function writeFileUTF8(fullPath, data) {
+	return writeFile(fullPath, data, {encoding: confConsts.ENCODING_UTF8});
 }
 
 function stat(fullPath) {
@@ -141,6 +150,8 @@ module.exports.mkdir = mkdir;
 module.exports.exists = exists;
 module.exports.readFile = readFile;
 module.exports.writeFile = writeFile;
+module.exports.readFileUTF8 = readFileUTF8;
+module.exports.writeFileUTF8 = writeFileUTF8;
 module.exports.stat = stat;
 module.exports.readdir = readdir;
 module.exports.deleteItem = deleteItem;

@@ -1,6 +1,5 @@
 const j79 = require('j79-utils');
 const path = require('path');
-const osHomeDir = require('os-homedir');
 
 const confConsts = require('./conf-constants');
 const securityConsts = require('../common/security-constants');

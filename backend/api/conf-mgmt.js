@@ -7,7 +7,6 @@ const osHomeDir = require('os-homedir');
 const version = require('./../../package.json').version;
 
 const confConsts = require('../common/conf-constants');
-const securityConsts = require('../common/security-constants');
 const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
 const logger = require('./logger');
@@ -15,7 +14,9 @@ const schemas = require('../common/schemas');
 const schemaValidation = require('./schema-validation');
 
 let NEXL_HOME_DIR;
-let ALL_SETTINGS_CACHED = {};
+const ALL_SETTINGS_CACHED = {};
+const CONF_VERSIONS = {};
+
 
 // --------------------------------------------------------------------------------
 // api
@@ -58,7 +59,7 @@ function loadDefaultValues(defValue) {
 }
 
 function loadInner(fullPath, fileName) {
-	return fsx.readFile(fullPath, {encoding: confConsts.ENCODING_UTF8})
+	return fsx.readFileUTF8(fullPath)
 		.then(
 			(fileBody) => {
 				// JSONing. The JSON must be an object which contains config version and the data itself
@@ -72,6 +73,9 @@ function loadInner(fullPath, fileName) {
 
 				const version = conf['version'];
 				const data = conf['data'];
+
+				// storing config version
+				CONF_VERSIONS[fileName] = version;
 
 				logger.log.debug('The [%s] file is loaded. Config version is [%s]', fullPath, version);
 
@@ -132,6 +136,10 @@ function load(fileName, saveIfNotExists) {
 		});
 }
 
+function stringifyConfig(config) {
+	return JSON.stringify(config, null, 2);
+}
+
 function save(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
 
@@ -151,19 +159,19 @@ function save(data, fileName) {
 
 	// preparing for save
 	let conf = {
-		version: version,
+		version: CONF_VERSIONS[fileName] || version,
 		data: data
 	};
 
 	try {
-		conf = JSON.stringify(conf, null, 2);
+		conf = stringifyConfig(conf);
 	} catch (e) {
 		logger.log.error('Failed to stringify object while saving the [%s] file. Reason : [%s]', fullPath, utils.formatErr(e));
 		return Promise.reject('Bad data format');
 	}
 
 	// saving...
-	return fsx.writeFile(fullPath, conf, {encoding: confConsts.ENCODING_UTF8})
+	return fsx.writeFileUTF8(fullPath, conf)
 		.then(_ => {
 			// updating cache
 			ALL_SETTINGS_CACHED[fileName] = data;
@@ -242,6 +250,7 @@ module.exports.preloadConfs = preloadConfs;
 
 module.exports.load = load;
 module.exports.save = save;
+module.exports.stringifyConfig = stringifyConfig;
 
 module.exports.loadSettings = loadSettings;
 module.exports.saveSettings = saveSettings;
@@ -250,6 +259,8 @@ module.exports.getNexlHomeDir = getNexlHomeDir;
 module.exports.getNexlAppDataDir = getNexlAppDataDir;
 module.exports.getNexlStorageDir = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR];
 module.exports.getNexlSettingsCached = () => ALL_SETTINGS_CACHED[confConsts.CONF_FILES.SETTINGS];
+
+module.exports.getConfFileFullPath = getConfFileFullPath;
 
 module.exports.getCached = (fileName) => ALL_SETTINGS_CACHED[fileName];
 
