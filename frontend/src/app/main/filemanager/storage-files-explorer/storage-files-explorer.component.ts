@@ -707,6 +707,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
+      this.popupMenu.disable('find-in-files-from-here', false);
       this.rightClickSelectedElement = undefined;
       this.openPopup(event);
     } else {
@@ -714,6 +715,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
       this.tree.selectItem(target);
       this.rightClickSelectedElement = this.tree.getItem(target);
+      this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
       this.openPopup(event);
     }
   }
@@ -1060,25 +1062,12 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.updatePopupMenu();
   }
 
-  resolveFindInDir() {
-    if (this.rightClickSelectedElement === undefined) {
-      return '';
-    }
-
-    const targetItem = this.rightClickSelectedElement;
-
-    if (targetItem.value.isDir === true) {
-      return targetItem.value.relativePath;
-    }
-
-    return targetItem.value.relativePath.replace(/(\/[^/]*)$|(\\[^\\]*)$/, '');
-  }
-
   findInFilesFromHere() {
     if (!this.hasReadPermission) {
       return;
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, this.resolveFindInDir());
+    const findFrom = this.rightClickSelectedElement === undefined ? '' : this.rightClickSelectedElement.value.relativePath;
+    this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, findFrom);
   }
 }
