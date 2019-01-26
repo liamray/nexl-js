@@ -106,32 +106,40 @@ export class StorageExplorerComponent implements AfterViewInit {
     );
   }
 
-  static makeNewFileItem(relativePath: string, newFileName: string) {
+  static makeFileItem(relativePath: string, fileName: string, isChanged: boolean, isNew: boolean) {
     return {
-      label: newFileName,
+      label: fileName,
       icon: FILE_ICON,
       value: {
-        relativePath: relativePath + UtilsService.SERVER_INFO.SLASH + newFileName,
-        label: newFileName,
+        relativePath: relativePath,
+        label: fileName,
         isDir: false,
-        isChanged: true,
-        isNewFile: true
+        isChanged: isChanged,
+        isNewFile: isNew
+      }
+    };
+  }
+
+  static makeNewFileItem(relativePath: string, newFileName: string) {
+    return StorageExplorerComponent.makeFileItem(relativePath + UtilsService.SERVER_INFO.SLASH + newFileName, newFileName, true, true);
+  }
+
+  static makeDirItem(relativePath: string, dirName: string, items: any[], mustLoadChildItems = false) {
+    return {
+      label: dirName,
+      icon: DIR_ICON,
+      items: items,
+      value: {
+        relativePath: relativePath,
+        label: dirName,
+        mustLoadChildItems: mustLoadChildItems,
+        isDir: true
       }
     };
   }
 
   static makeEmptyDirItem(relativePath: string, newDirName: string) {
-    return {
-      label: newDirName,
-      icon: DIR_ICON,
-      items: [],
-      value: {
-        relativePath: relativePath,
-        label: newDirName,
-        mustLoadChildItems: false,
-        isDir: true
-      }
-    };
+    return StorageExplorerComponent.makeDirItem(relativePath, newDirName, [], false);
   }
 
   createNewFileInTree(relativePath: string) {
@@ -367,10 +375,10 @@ export class StorageExplorerComponent implements AfterViewInit {
     });
   }
 
-  itemMoved(data: any) {
+  renameInnerInner(data: any) {
     let oldRelativePath = data.oldRelativePath;
-
     const allItems: any[] = this.tree.getItems();
+    let targetItem: any;
 
     for (let index in allItems) {
       let item = allItems[index];
@@ -383,15 +391,17 @@ export class StorageExplorerComponent implements AfterViewInit {
 
       // is it the item which was renamed ?
       if (UtilsService.isPathEqual(itemRelativePath, oldRelativePath)) {
+        targetItem = item;
+        // updating relative path and label
         item.value.label = data.newLabel;
         item.value.relativePath = data.newRelativePath;
         item.label = this.makeItemLabel(item.value);
         this.tree.updateItem(item, item);
 
-        if (data.isDir !== true) {
-          return;
-        } else {
+        if (data.isDir === true) {
           continue;
+        } else {
+          return targetItem;
         }
       }
 
@@ -402,6 +412,8 @@ export class StorageExplorerComponent implements AfterViewInit {
         this.tree.updateItem(item, item);
       }
     }
+
+    return targetItem;
   }
 
   renameInner(data: any) {
@@ -409,7 +421,23 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.ITEM_MOVED, data);
 
     // rename relative path for all items in tree
-    this.itemMoved(data);
+    let targetItem = this.renameInnerInner(data);
+    const targetParentItem = targetItem.parentElement === null ? undefined : targetItem.parentElement;
+
+    // after item renamed it should be put to the proper position in the tree in alphabet order, so we need to clone this item, put it to the proper position and remove older item
+    if (targetItem.value.isDir === true) {
+      let cloneItem = StorageExplorerComponent.makeDirItem(targetItem.value.relativePath, targetItem.value.label, targetItem.items, targetItem.value.mustLoadChildsItems);
+      const changedFilesList = [];
+      cloneItem.items = this.collectChildItemsAndFixPathIfNeeded(targetItem, targetItem, undefined, changedFilesList);
+      this.insertDirItem(cloneItem, targetParentItem);
+      this.updateItems(changedFilesList);
+    } else {
+      let cloneItem = StorageExplorerComponent.makeFileItem(targetItem.value.relativePath, targetItem.value.label, true, true);
+      this.insertFileItemInner(cloneItem, targetParentItem);
+    }
+
+    // removing older item
+    this.tree.removeItem(targetItem);
 
     this.globalComponentsService.loader.close();
   }
@@ -868,14 +896,18 @@ export class StorageExplorerComponent implements AfterViewInit {
     return result;
   }
 
-  fixItemRelativePath(item: any, rootItem: any, droppedItemRelativePath: string) {
+  fixItemRelativePathIfNeeded(item: any, rootItem: any, droppedItemRelativePath: string) {
+    if (droppedItemRelativePath === undefined) {
+      return;
+    }
+
     if (item.value === null || item.value === undefined) {
       return;
     }
     item.value.relativePath = droppedItemRelativePath + UtilsService.SERVER_INFO.SLASH + rootItem.value.label + item.value.relativePath.substr(rootItem.value.relativePath.length);
   }
 
-  collectChildItemsAndFixPath(rootItem: any, subItem: any, droppedItemRelativePath: string, changedFilesList: string[]) {
+  collectChildItemsAndFixPathIfNeeded(rootItem: any, subItem: any, droppedItemRelativePath: string, changedFilesList: string[]) {
     const result = [];
     const firstLevelItems = this.getFirstLevelChildren(subItem);
 
@@ -885,10 +917,10 @@ export class StorageExplorerComponent implements AfterViewInit {
       item = this.treeItem2Json(firstLevelItems[index]);
 
       if (item.value !== undefined && item.value !== null && item.value.isDir === true) {
-        item.items = this.collectChildItemsAndFixPath(rootItem, this.findItemByRelativePath(item.value.relativePath), droppedItemRelativePath, changedFilesList);
+        item.items = this.collectChildItemsAndFixPathIfNeeded(rootItem, this.findItemByRelativePath(item.value.relativePath), droppedItemRelativePath, changedFilesList);
       }
 
-      this.fixItemRelativePath(item, rootItem, droppedItemRelativePath);
+      this.fixItemRelativePathIfNeeded(item, rootItem, droppedItemRelativePath);
 
       if (item.value !== undefined && item.value !== null && item.value.isNewFile === true) {
         changedFilesList.push(item);
@@ -906,7 +938,7 @@ export class StorageExplorerComponent implements AfterViewInit {
 
     // collecting existing items under the item2Move item
     const changedFilesList = [];
-    item2Add.items = this.collectChildItemsAndFixPath(data.item2Move, data.item2Move, data.dropPath, changedFilesList);
+    item2Add.items = this.collectChildItemsAndFixPathIfNeeded(data.item2Move, data.item2Move, data.dropPath, changedFilesList);
     item2Add.value.mustLoadChildItems = data.item2Move.value.mustLoadChildItems;
 
     // adding to the
