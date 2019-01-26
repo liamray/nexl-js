@@ -37,7 +37,7 @@
       [auto-create]="false"
     ></jqxTree>
 
-    <jqxMenu #popupMenu [width]="120" [height]="134" [autoOpenPopup]="false"
+    <jqxMenu #popupMenu [width]="130" [height]="160" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
         <li (click)="newDir()" id="popup-new-dir">
@@ -55,6 +55,10 @@
         <li (click)="deleteItem()" id="popup-delete-item">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/icons/remove.png'/><span>Delete</span>
+        </li>
+        <li (click)="makeACopy()" id="popup-make-a-copy">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/icons/make-a-copy.png'/><span>Make a copy</span>
         </li>
         <li (click)="findInFilesFromHere()" id="find-in-files-from-here">
           <img style='float: left; margin-right: 5px;'

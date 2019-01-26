@@ -670,7 +670,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.tree.addBefore(item, childItems[index]);
   }
 
-  newFileInner(newFileName: string) {
+  newFileInner(newFileName: string, filePath: string) {
     if (newFileName === undefined) {
       return;
     }
@@ -680,7 +680,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       return;
     }
 
-    const item: any = StorageExplorerComponent.makeNewFileItem(this.getRightClickDirPath(), newFileName);
+    const item: any = StorageExplorerComponent.makeNewFileItem(filePath, newFileName);
 
     if (this.findItemByRelativePath(item.value.relativePath) !== undefined) {
       this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${item.value.relativePath}] item is already exists`);
@@ -698,7 +698,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     }
 
     this.globalComponentsService.inputBox.open('New file creation', 'File name', '', (newFileName: string) => {
-      this.newFileInner(newFileName);
+      this.newFileInner(newFileName, this.getRightClickDirPath());
     });
   }
 
@@ -708,6 +708,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
       this.popupMenu.disable('find-in-files-from-here', false);
+      this.popupMenu.disable('popup-make-a-copy', true);
       this.rightClickSelectedElement = undefined;
       this.openPopup(event);
     } else {
@@ -716,6 +717,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.tree.selectItem(target);
       this.rightClickSelectedElement = this.tree.getItem(target);
       this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
+      this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission || this.rightClickSelectedElement.value.isDir === true);
       this.openPopup(event);
     }
   }
@@ -1069,5 +1071,35 @@ export class StorageExplorerComponent implements AfterViewInit {
 
     const findFrom = this.rightClickSelectedElement === undefined ? '' : this.rightClickSelectedElement.value.relativePath;
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, findFrom);
+  }
+
+  makeACopy() {
+    if (this.rightClickSelectedElement === undefined || this.rightClickSelectedElement.value === null) {
+      return;
+    }
+
+    if (!this.hasWritePermission) {
+      return;
+    }
+
+    const targetItem = this.rightClickSelectedElement.value.label;
+    this.globalComponentsService.inputBox.open('Making a copy', `Making a copy of the [${targetItem}]`, targetItem, (newFileName: string) => {
+
+      if (newFileName === undefined) {
+        return;
+      }
+
+      if (newFileName === targetItem) {
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Choose a different name to make a copy');
+        return;
+      }
+
+      if (!UtilsService.isFileNameValid(newFileName)) {
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newFileName}] file name contains forbidden characters`);
+        return;
+      }
+
+      this.newFileInner(newFileName, this.getRightClickDirPath());
+    });
   }
 }
