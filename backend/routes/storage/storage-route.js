@@ -21,7 +21,7 @@ router.post(restUtls.STORAGE.URLS.FILE_IN_FILES, function (req, res) {
 	const matchCase = req.body[di.MATCH_CASE];
 	const isRegex = req.body[di.IS_REGEX];
 
-	logger.log.debug(`Searching for a [${text}] string from the [${relativePath}] path`);
+	logger.log.log('verbose', `Got a "Find in files" request from the [${username}] user for [relativePath=${relativePath}] [text=${text}] [matchCase=${matchCase}] [isRegex=${isRegex}]`);
 
 	// todo : automate validations !!!
 	// todo : automate validations !!!
