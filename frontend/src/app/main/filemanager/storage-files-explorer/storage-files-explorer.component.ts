@@ -463,7 +463,7 @@ export class StorageExplorerComponent implements AfterViewInit {
           this.renameInner(data);
         },
         (err) => {
-          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Failed to rename item. Reason : [${err.statusText}]');
+          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to rename item. Reason : [${err.statusText}]`);
           this.globalComponentsService.loader.close();
           console.log(err);
         }
