@@ -82,6 +82,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     const treeItem = this.findItemByRelativePath(relativePath);
     if (treeItem !== undefined) {
       this.tree.selectItem(treeItem);
+      this.tree.ensureVisible(treeItem.element);
     }
   }
 
@@ -626,6 +627,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     const treeItem = this.findItemByRelativePath(item.value.relativePath);
     this.updateItem(item.value);
     this.tree.selectItem(treeItem);
+    this.tree.ensureVisible(treeItem.element);
   }
 
   sendOpenNewTabMessage(item, text?: string) {
@@ -717,6 +719,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('popup-delete-item', !this.hasWritePermission);
       this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
       this.tree.selectItem(target);
+      this.tree.ensureVisible(target.element);
       this.rightClickSelectedElement = this.tree.getItem(target);
       this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
       this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission || this.rightClickSelectedElement.value.isDir === true);

@@ -290,6 +290,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     setTimeout(_ => {
       const lastItem = this.executionHistoryListBox.getItem(this.executionHistoryListBox.getItems().length - 1);
       this.executionHistoryListBox.selectItem(lastItem);
+      this.executionHistoryListBox.ensureVisible(lastItem.element);
     }, 100);
   }
 
