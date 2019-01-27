@@ -1103,7 +1103,6 @@ export class StorageExplorerComponent implements AfterViewInit {
     const source = this.tabsMap[sourceRelativePath];
     if (source !== undefined) {
       const fileContent = source.getFileContent();
-      this.tabsMap[targetRelativePath] = fileContent;
       // updating tab content
       this.messageService.sendMessage(MESSAGE_TYPE.SET_TAB_CONTENT, {
         relativePath: targetRelativePath,
