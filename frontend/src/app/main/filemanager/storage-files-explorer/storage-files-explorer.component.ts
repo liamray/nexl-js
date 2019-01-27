@@ -1081,7 +1081,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     }
 
     if (newFileName === targetItem) {
-      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Choose a different name to make a copy');
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Choose a different file name to make a copy');
       return;
     }
 
