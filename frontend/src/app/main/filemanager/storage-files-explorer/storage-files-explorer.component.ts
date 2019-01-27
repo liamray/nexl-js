@@ -8,6 +8,7 @@ import {GlobalComponentsService} from "../../services/global-components.service"
 import {UtilsService} from "../../services/utils.service";
 import {HttpClient} from "@angular/common/http";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import {HttpRequestService} from "../../services/http.requests.service";
 
 const DIR_ICON = UI_CONSTANTS.DIR_ICON;
 const FILE_ICON = UI_CONSTANTS.FILE_ICON;
@@ -27,8 +28,9 @@ export class StorageExplorerComponent implements AfterViewInit {
   hasWritePermission = false;
   treeSource = [];
   rightClickSelectedElement: any;
+  tabsMap: any = {};
 
-  constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private httpClient: HttpClient) {
+  constructor(private messageService: MessageService, private globalComponentsService: GlobalComponentsService, private httpClient: HttpClient, private http: HttpRequestService) {
     this.messageService.getMessage().subscribe(message => {
       this.handleMessages(message);
     });
@@ -43,6 +45,7 @@ export class StorageExplorerComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.TAB_CONTENT_CHANGED: {
         this.updateItem(message.data);
+        this.storeChangedTab(message.data);
         return;
       }
 
@@ -288,21 +291,17 @@ export class StorageExplorerComponent implements AfterViewInit {
   updatePopupMenu() {
     this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
 
+    this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission);
     this.popupMenu.disable('popup-new-dir', !this.hasWritePermission);
     this.popupMenu.disable('popup-new-file', !this.hasWritePermission);
     this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
     this.popupMenu.disable('popup-delete-item', !this.hasWritePermission);
   }
 
-  writePermissionChanged(status: any) {
-    this.hasWritePermission = status.hasWritePermission;
-
-    this.updatePopupMenu();
-  }
-
   authChanged(status: any) {
     if (status.hasReadPermission !== this.hasReadPermission) {
       this.readPermissionChanged(status);
+      this.updatePopupMenu();
     }
 
     if (!status.hasReadPermission) {
@@ -310,7 +309,8 @@ export class StorageExplorerComponent implements AfterViewInit {
     }
 
     if (status.hasWritePermission !== this.hasWritePermission) {
-      this.writePermissionChanged(status);
+      this.hasWritePermission = status.hasWritePermission;
+      this.updatePopupMenu();
     }
   }
 
@@ -690,6 +690,8 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.insertFileItemInner(item, this.rightClickSelectedElement);
     this.updateSelectExpandItem(item);
     this.sendOpenNewTabMessage(item);
+
+    return item;
   }
 
   newFile() {
@@ -707,7 +709,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
-      this.popupMenu.disable('find-in-files-from-here', false);
+      this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
       this.popupMenu.disable('popup-make-a-copy', true);
       this.rightClickSelectedElement = undefined;
       this.openPopup(event);
@@ -1073,8 +1075,63 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, findFrom);
   }
 
+  makeACopyInner(newFileName: string, targetItem: string) {
+    if (newFileName === undefined) {
+      return;
+    }
+
+    if (newFileName === targetItem) {
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Choose a different name to make a copy');
+      return;
+    }
+
+    if (!UtilsService.isFileNameValid(newFileName)) {
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newFileName}] file name contains forbidden characters`);
+      return;
+    }
+
+    const newItem = this.newFileInner(newFileName, this.getRightClickDirPath());
+    // not really created ? exit
+    if (newItem === undefined) {
+      return;
+    }
+
+    const sourceRelativePath = this.rightClickSelectedElement.value.relativePath;
+    const targetRelativePath = newItem.value.relativePath;
+
+    // is targetItem in tabsMap ?
+    const source = this.tabsMap[sourceRelativePath];
+    if (source !== undefined) {
+      const fileContent = source.getFileContent();
+      this.tabsMap[targetRelativePath] = fileContent;
+      // updating tab content
+      this.messageService.sendMessage(MESSAGE_TYPE.SET_TAB_CONTENT, {
+        relativePath: targetRelativePath,
+        content: fileContent
+      });
+      return;
+    }
+
+    // loading file content and updating a newFile
+    this.globalComponentsService.loader.open();
+    this.http.post({relativePath: sourceRelativePath}, REST_URLS.STORAGE.URLS.LOAD_FILE_FROM_STORAGE, 'json').subscribe(
+      (content: any) => {
+        this.messageService.sendMessage(MESSAGE_TYPE.SET_TAB_CONTENT, {
+          relativePath: targetRelativePath,
+          content: content.body[DI_CONSTANTS.FILE_BODY]
+        });
+        this.globalComponentsService.loader.close();
+      },
+      (err) => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load a [${sourceRelativePath}] JavaScript file content. Reason : [${err.statusText}]`);
+        console.log(err);
+      }
+    );
+  }
+
   makeACopy() {
-    if (this.rightClickSelectedElement === undefined || this.rightClickSelectedElement.value === null) {
+    if (this.rightClickSelectedElement === undefined || this.rightClickSelectedElement.value === null || this.rightClickSelectedElement.value.isDir === true) {
       return;
     }
 
@@ -1084,22 +1141,17 @@ export class StorageExplorerComponent implements AfterViewInit {
 
     const targetItem = this.rightClickSelectedElement.value.label;
     this.globalComponentsService.inputBox.open('Making a copy', `Making a copy of the [${targetItem}]`, targetItem, (newFileName: string) => {
-
-      if (newFileName === undefined) {
-        return;
-      }
-
-      if (newFileName === targetItem) {
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'Choose a different name to make a copy');
-        return;
-      }
-
-      if (!UtilsService.isFileNameValid(newFileName)) {
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `The [${newFileName}] file name contains forbidden characters`);
-        return;
-      }
-
-      this.newFileInner(newFileName, this.getRightClickDirPath());
+      this.makeACopyInner(newFileName, targetItem);
     });
   }
+
+  storeChangedTab(data) {
+    if (data.isChanged !== true) {
+      delete this.tabsMap[data.relativePath];
+      return;
+    }
+
+    this.tabsMap[data.relativePath] = data;
+  }
+
 }

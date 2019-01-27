@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  SET_TAB_CONTENT,
   ARGS_CHANGED, // fired when args changed in args-window by user
   SET_ARGS, // instructs args-window to set arguments embedded to the message
   TIMER,

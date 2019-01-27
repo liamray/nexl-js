@@ -125,6 +125,15 @@ export class StorageFilesEditorComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.TIMER: {
         this.onTimer(message.data);
+        return;
+      }
+
+      case MESSAGE_TYPE.SET_TAB_CONTENT: {
+        const tabInfo = this.resolveTabInfoByRelativePath(message.data.relativePath);
+        if (tabInfo !== undefined) {
+          this.setTabContent(tabInfo.idSeqNr, message.data.content);
+        }
+        return;
       }
     }
   }
@@ -313,6 +322,14 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     const newFile = this.createNewFileInner(data);
     this.changeFileStatus(newFile.idSeqNr, true);
     this.setNewFile(newFile.idSeqNr, true);
+
+    this.messageService.sendMessage(MESSAGE_TYPE.TAB_CONTENT_CHANGED, {
+      isChanged: true,
+      relativePath: this.getTabContentAttr(newFile.idSeqNr, RELATIVE_PATH),
+      getFileContent: () => {
+        return this.getTabContent(newFile.idSeqNr + '')
+      }
+    });
   }
 
   closeAllTabs() {
