@@ -4,9 +4,8 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
-import {jqxDropDownListComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist";
 import {AppearanceService, THEMES} from "../../services/appearance.service";
-import {jqxCheckBoxComponent} from "../../../../../jqwidgets/jqwidgets-ts/angular_jqxcheckbox";
+import {jqxCheckBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcheckbox";
 
 @Component({
   selector: 'app-appearance',
