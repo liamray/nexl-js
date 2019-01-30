@@ -12,14 +12,14 @@
 }
 
 .item {
-  width: 380px;
+  width: 430px;
   float: left;
   margin-top: 10px;
   margin-left: 25px;
 }
 
 .item label {
-  width: 180px;
+  width: 230px;
   display: inline-block;
   float: left;
 }

@@ -9,6 +9,7 @@ import {UtilsService} from "../../services/utils.service";
 import {HttpClient} from "@angular/common/http";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
 import {HttpRequestService} from "../../services/http.requests.service";
+import {AppearanceService} from "../../services/appearance.service";
 
 const DIR_ICON = UI_CONSTANTS.DIR_ICON;
 const FILE_ICON = UI_CONSTANTS.FILE_ICON;
@@ -61,8 +62,8 @@ export class StorageExplorerComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.EXPAND_FROM_ROOT: {
-        this.expandFromRootRoot(message.data);
+      case MESSAGE_TYPE.EXPAND_ITEM_IN_TREE: {
+        this.autoscroll2Item(message.data);
         return;
       }
 
@@ -73,6 +74,11 @@ export class StorageExplorerComponent implements AfterViewInit {
 
       case MESSAGE_TYPE.GET_TREE_ITEMS: {
         this.messageService.sendMessage(MESSAGE_TYPE.SET_TREE_ITEMS, this.tree.getItems());
+        return;
+      }
+
+      case MESSAGE_TYPE.TAB_SELECTED: {
+        this.tabSelected(message.data);
         return;
       }
     }
@@ -86,15 +92,6 @@ export class StorageExplorerComponent implements AfterViewInit {
     }
   }
 
-  expandFromRootRoot(relativePath: string) {
-    this.loadTreeItemsHierarchy(relativePath, true).then(
-      () => {
-        this.selectItem(relativePath);
-      }
-    );
-
-  }
-
   createNewFileInTreeInner(relativePath: string) {
     const fileName = UtilsService.resolveFileName(relativePath);
     const path = UtilsService.resolvePathOnly(fileName, relativePath);
@@ -106,6 +103,7 @@ export class StorageExplorerComponent implements AfterViewInit {
         item.value.isChanged = true;
         item.value.isNewFile = true;
         this.updateItem(item.value);
+        this.autoscroll2Item(relativePath);
       }
     );
   }
@@ -1156,4 +1154,23 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.tabsMap[data.relativePath] = data;
   }
 
+  autoscroll2Item(relativePath: string) {
+    const item = this.findItemByRelativePath(relativePath);
+
+    if (item === undefined) {
+      return;
+    }
+
+    this.tree.expandItem(item);
+    setTimeout(_ => {
+      this.tree.ensureVisible(item.element);
+      this.tree.selectItem(item);
+    }, 300);
+  }
+
+  tabSelected(relativePath: any) {
+    if (AppearanceService.load()['autoscroll-from-source']) {
+      this.autoscroll2Item(relativePath);
+    }
+  }
 }

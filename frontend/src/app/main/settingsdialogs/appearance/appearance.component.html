@@ -3,7 +3,7 @@
            [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
-           [width]="450"
+           [width]="500"
            [height]="200"
            [initContent]="initContent"
            (onOpen)="onOpen()"
@@ -48,6 +48,8 @@
             <img src='./nexl/site/icons/info.png'/>
           </jqxTooltip>
         </div>
+
+
         <div style="clear: both"></div>
 
         <!--Theme-->
@@ -94,6 +96,30 @@
             [position]="'mouse'"
             [autoHideDelay]="999999999"
             [content]="'<p style=\'text-align: left;\'>Max items count in [Execution history] window</p>'">
+            <img src='./nexl/site/icons/info.png'/>
+          </jqxTooltip>
+        </div>
+        <div style="clear: both"></div>
+
+        <!--Autoscroll from source-->
+        <div class="item">
+          <label>Auto scroll from source</label>
+          <jqxCheckBox
+            [boxSize]="'12px;'"
+            #autoscrollFromSource
+            id="autoscrollFromSource"
+            name="autoscrollFromSource"
+            [width]="width"
+            [height]="25"
+            [(ngModel)]="appearanceData['autoscroll-from-source']"
+          >
+          </jqxCheckBox>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="999999999"
+            [content]="'<p style=\'text-align: left;\'>File selected in the editor will be scrolled to and highlighted in the Storage files explorer</p>'">
             <img src='./nexl/site/icons/info.png'/>
           </jqxTooltip>
         </div>

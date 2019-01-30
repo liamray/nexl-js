@@ -6,6 +6,7 @@ import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {jqxDropDownListComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxdropdownlist";
 import {AppearanceService, THEMES} from "../../services/appearance.service";
+import {jqxCheckBoxComponent} from "../../../../../jqwidgets/jqwidgets-ts/angular_jqxcheckbox";
 
 @Component({
   selector: 'app-appearance',
@@ -21,6 +22,7 @@ export class AppearanceComponent {
   @ViewChild('fontSize') fontSize: jqxInputComponent;
   // @ViewChild('theme') theme: jqxDropDownListComponent;
   @ViewChild('maxExecutionHistoryItems') maxExecutionHistoryItems: jqxInputComponent;
+  @ViewChild('autoscrollFromSource') autoscrollFromSource: jqxCheckBoxComponent;
 
   isSaving = false;
   width = 190;
@@ -63,6 +65,7 @@ export class AppearanceComponent {
   open() {
     this.appearanceData = AppearanceService.load();
     // this.theme.val(this.appearanceData['theme']);
+    this.autoscrollFromSource.val(this.appearanceData['autoscroll-from-source']);
     this.isSaving = false;
     this.appearanceWindow.open();
   }

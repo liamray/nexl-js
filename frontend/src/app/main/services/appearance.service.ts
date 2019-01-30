@@ -21,6 +21,12 @@ const APPEARANCE_DATA = {
     isValid: (val) => {
       return UtilsService.isPositiveIneger(val);
     }
+  },
+  'autoscroll-from-source': {
+    defVal: true,
+    isValid: (val) => {
+      return val !== undefined;
+    }
   }
 };
 

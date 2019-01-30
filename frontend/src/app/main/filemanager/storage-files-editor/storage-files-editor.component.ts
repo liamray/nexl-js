@@ -735,7 +735,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     // binding click on tool tip
     $(`#${TITLE_TOOLTIP}${data.idSeqNr}`).click(
       () => {
-        this.messageService.sendMessage(MESSAGE_TYPE.EXPAND_FROM_ROOT, this.getTooltipText(data.idSeqNr));
+        this.messageService.sendMessage(MESSAGE_TYPE.EXPAND_ITEM_IN_TREE, this.getTooltipText(data.idSeqNr));
       });
   }
 
