@@ -242,6 +242,57 @@ router.post(restUtls.STORAGE.URLS.TREE_ITEMS, function (req, res, next) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
+// list-dirs, list-files, list-files-and-dirs
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.LIST_FILES, function (req, res, next) {
+	const username = security.getLoggedInUsername(req);
+	const relativePath = req.body[di.RELATIVE_PATH];
+
+	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
+		security.sendError(res, 'No read permissions');
+		return;
+	}
+
+
+	res.send(storageUtils.listFiles(relativePath));
+});
+
+router.post(restUtls.STORAGE.URLS.LIST_DIRS, function (req, res, next) {
+	const username = security.getLoggedInUsername(req);
+	const relativePath = req.body[di.RELATIVE_PATH];
+
+	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
+		security.sendError(res, 'No read permissions');
+		return;
+	}
+
+
+	res.send(storageUtils.listDirs(relativePath));
+});
+
+router.post(restUtls.STORAGE.URLS.LIST_FILES_AND_DIRS, function (req, res, next) {
+	const username = security.getLoggedInUsername(req);
+	const relativePath = req.body[di.RELATIVE_PATH];
+
+	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
+		security.sendError(res, 'No read permissions');
+		return;
+	}
+
+
+	res.send(storageUtils.listDirsAndFiles(relativePath));
+});
+
+//////////////////////////////////////////////////////////////////////////////
 // load file from storage
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.STORAGE.URLS.LOAD_FILE_FROM_STORAGE, function (req, res, next) {

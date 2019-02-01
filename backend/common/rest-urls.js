@@ -35,7 +35,10 @@ REST_URLS.STORAGE = {
 		MAKE_DIR: '/make-dir',
 		TREE_ITEMS: '/get-tree-items-hierarchy',
 		LOAD_FILE_FROM_STORAGE: '/load-file-from-storage',
-		SAVE_FILE_TO_STORAGE: '/save-file-to-storage'
+		SAVE_FILE_TO_STORAGE: '/save-file-to-storage',
+		LIST_FILES: '/list-files',
+		LIST_DIRS: '/list-dirs',
+		LIST_FILES_AND_DIRS: '/list-files-and-dirs'
 	}
 };
 

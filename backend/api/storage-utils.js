@@ -329,9 +329,10 @@ function gatherFilesList(list, root) {
 	}
 }
 
-function findInFilesInner(root, searchData) {
+function findInFiles(searchData) {
 	const filesList = [];
-	gatherFilesList(filesList, root);
+	const subDir = findSubDir(searchData[di.RELATIVE_PATH]);
+	gatherFilesList(filesList, subDir);
 
 	const searchFunctionData = resolveSearchFunc(searchData);
 	searchFunctionData.maxOccurrences = MAX_FIND_IN_FILES_OCCURRENCES;
@@ -380,12 +381,12 @@ function findDir(dir, dirName) {
 	}
 }
 
-function findInFiles(data) {
-	let normalizedPath = path.normalize(data[di.RELATIVE_PATH]);
+function findSubDir(relativePath) {
+	let normalizedPath = path.normalize(relativePath || '');
 
 	// is root dir ?
 	if (normalizedPath === path.sep || normalizedPath === '.') {
-		return findInFilesInner(TREE_ITEMS, data);
+		return TREE_ITEMS;
 	}
 
 	// trimming slashes
@@ -406,7 +407,52 @@ function findInFiles(data) {
 		dir = dir.items;
 	}
 
-	return findInFilesInner(dir, data);
+	return dir;
+}
+
+function listFiles(relativePath) {
+	const subDir = findSubDir(relativePath);
+	const result = [];
+	subDir.forEach(item => {
+		if (item === undefined) {
+			return;
+		}
+		if (item.value.isDir !== true) {
+			result.push(item.value.label);
+		}
+	});
+
+	return result;
+}
+
+function listDirs(relativePath) {
+	const subDir = findSubDir(relativePath);
+	const result = [];
+	subDir.forEach(item => {
+		if (item === undefined) {
+			return;
+		}
+
+		if (item.value.isDir === true) {
+			result.push(item.value.label);
+		}
+	});
+
+	return result;
+}
+
+function listDirsAndFiles(relativePath) {
+	const subDir = findSubDir(relativePath);
+	const result = [];
+	subDir.forEach(item => {
+		if (item === undefined) {
+			return;
+		}
+
+		result.push(item.value.label);
+	});
+
+	return result;
 }
 
 // --------------------------------------------------------------------------------
@@ -417,6 +463,10 @@ module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
 module.exports.findInFiles = findInFiles;
+
+module.exports.listFiles = listFiles;
+module.exports.listDirs = listDirs;
+module.exports.listDirsAndFiles = listDirsAndFiles;
 
 module.exports.gatherAllFiles = gatherAllFiles;
 
