@@ -1163,7 +1163,9 @@ export class StorageExplorerComponent implements AfterViewInit {
 
     this.tree.expandItem(item);
     setTimeout(_ => {
-      this.tree.ensureVisible(item.element);
+      // todo : jqx bug -> https://www.jqwidgets.com/community/topic/ensurevisible-is-showing-only-50-of-item-when-horizontal-scroll-bar-is-visible
+      const nextItem = item.nextItem === null ? item : item.nextItem;
+      this.tree.ensureVisible(nextItem.element);
       this.tree.selectItem(item);
     }, 300);
   }
