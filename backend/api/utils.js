@@ -9,6 +9,10 @@ function generateRandomBytes(length) {
 
 // format error in order to print it in console.log() as a part of error message : console.log('Error occurred. Reason : [%s]', formattedError);
 function formatErr(err) {
+	if (err === undefined) {
+		return '';
+	}
+
 	if (err.message !== undefined || err.stack !== undefined) {
 		return ( err.message || '' ) + '\n' + ( err.stack || '' );
 	}
