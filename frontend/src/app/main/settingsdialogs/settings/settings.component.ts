@@ -37,6 +37,7 @@ export class SettingsComponent {
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
+  @ViewChild('reindexFiles') reindexFiles: jqxButtonComponent;
 
   nexlHomeDirToolTip = `<p style=\'text-align: left;\'>nexl home dir contains nexl server configuration, logs and storage files<br/> By default nexl home dir located in your OS home dir ( $HOME or %userprofile% )<br/> Use [--nexl-home] command line argument to specify different nexl home :<br/><span style='margin-left:30px; font-style: italic'>nexl --${CONF_CONSTANTS.NEXL_HOME_DEF}=/path/to/nexl/home/dir</span><br/> This might be useful if you need to run multiple nexl server instances</p>`;
 
@@ -191,6 +192,7 @@ export class SettingsComponent {
     this.ribbon.createComponent();
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
+    this.reindexFiles.createComponent();
   };
 
   validate() {
@@ -230,5 +232,21 @@ export class SettingsComponent {
 
   onOpen() {
     this.isSaving = false;
+  }
+
+  doReIndexFiles() {
+    this.globalComponentsService.loader.open();
+
+    this.http.post(this.settings, REST_URLS.STORAGE.URLS.REINDEX_FILES, 'json').subscribe(
+      () => {
+        this.globalComponentsService.loader.close();
+        this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_FILES);
+        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Successfully reindexed !');
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save settings. Reason : ${err.statusText}`);
+        console.log(err);
+      });
   }
 }

@@ -11,6 +11,25 @@ const di = require('../../common/data-interchange-constants');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
+// reindex files
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.REINDEX_FILES, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.REINDEX_FILES}] request`);
+
+	if (!security.isAdmin(username)) {
+		logger.log.error('Cannot reindex file because the [%s] user doesn\'t have admin permissions', username);
+		security.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	storageUtils.cacheStorageFiles().then(
+		result => res.send({})
+	);
+});
+
+//////////////////////////////////////////////////////////////////////////////
 // find file
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.STORAGE.URLS.FILE_IN_FILES, function (req, res) {
@@ -21,7 +40,7 @@ router.post(restUtls.STORAGE.URLS.FILE_IN_FILES, function (req, res) {
 	const matchCase = req.body[di.MATCH_CASE];
 	const isRegex = req.body[di.IS_REGEX];
 
-	logger.log.log('verbose', `Got a "Find in files" request from the [${username}] user for [relativePath=${relativePath}] [text=${text}] [matchCase=${matchCase}] [isRegex=${isRegex}]`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.FILE_IN_FILES}] request from the [${username}] user for [relativePath=${relativePath}] [text=${text}] [matchCase=${matchCase}] [isRegex=${isRegex}]`);
 
 	// todo : automate validations !!!
 	// todo : automate validations !!!
@@ -80,7 +99,7 @@ router.post(restUtls.STORAGE.URLS.MOVE, function (req, res) {
 	const source = req.body['source'];
 	const dest = req.body['dest'];
 
-	logger.log.debug(`Moving a [${source}] item to [${dest}] by [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.MOVE}] request from the [${username}] user for [source=${source}] [dest=${dest}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(source) || source.length < 1) {
@@ -122,7 +141,7 @@ router.post(restUtls.STORAGE.URLS.RENAME, function (req, res) {
 	const relativePath = req.body['relativePath'];
 	const newRelativePath = req.body['newRelativePath'];
 
-	logger.log.debug(`Renaming a [${relativePath}] item to [${newRelativePath}] by [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.RENAME}] request from the [${username}] user for [relativePath=${relativePath}] [newRelativePath=${newRelativePath}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -163,7 +182,7 @@ router.post(restUtls.STORAGE.URLS.DELETE, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
-	logger.log.debug(`Deleting a [${relativePath}] item by [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.DELETE}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -197,7 +216,7 @@ router.post(restUtls.STORAGE.URLS.MAKE_DIR, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'];
 
-	logger.log.debug(`Creating a [${relativePath}] directory by [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.MAKE_DIR}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {
@@ -248,7 +267,7 @@ router.post(restUtls.STORAGE.URLS.LIST_FILES, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body[di.RELATIVE_PATH];
 
-	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.LIST_FILES}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
@@ -264,7 +283,7 @@ router.post(restUtls.STORAGE.URLS.LIST_DIRS, function (req, res, next) {
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body[di.RELATIVE_PATH];
 
-	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.LIST_DIRS}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
@@ -280,7 +299,7 @@ router.post(restUtls.STORAGE.URLS.LIST_FILES_AND_DIRS, function (req, res, next)
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body[di.RELATIVE_PATH];
 
-	logger.log.debug(`Listing files in [${relativePath}] directory for [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.LIST_FILES_AND_DIRS}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to get tree items hierarchy', username);
@@ -299,7 +318,7 @@ router.post(restUtls.STORAGE.URLS.LOAD_FILE_FROM_STORAGE, function (req, res, ne
 	const username = security.getLoggedInUsername(req);
 	const relativePath = req.body['relativePath'] || path.sep;
 
-	logger.log.debug(`Loading content of [${relativePath}] JavaScript file by [${username}] user`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.LOAD_FILE_FROM_STORAGE}] request from the [${username}] user for [relativePath=${relativePath}]`);
 
 	if (!security.hasReadPermission(username)) {
 		logger.log.error('The [%s] user doesn\'t have read permissions to load JavaScript files', username);
@@ -333,7 +352,7 @@ router.post(restUtls.STORAGE.URLS.SAVE_FILE_TO_STORAGE, function (req, res, next
 	const content = req.body['content'];
 	const fileLoadTime = req.body[di.FILE_LOAD_TIME];
 
-	logger.log.debug(`Saving content of [${relativePath}] JavaScript file by [${username}] user. fileLoadTime is [${fileLoadTime}]`);
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.SAVE_FILE_TO_STORAGE}] request from the [${username}] user for [relativePath=${relativePath}] [content=***not logging***] [fileLoadTime=${fileLoadTime}]`);
 
 	// validating ( must not empty string )
 	if (!j79.isString(relativePath) || relativePath.length < 1) {

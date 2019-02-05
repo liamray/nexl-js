@@ -90,6 +90,33 @@
 
               <div style="clear: both"></div>
 
+              <!--reindex files-->
+              <div class="item">
+                <label>ReIndex files on server</label>
+                <jqxButton [height]="28"
+                           [width]="190"
+                           [textImageRelation]='"imageBeforeText"'
+                           [textPosition]='"center"'
+                           (click)="doReIndexFiles()"
+                           [imgSrc]='"./nexl/site/icons/refresh.png"'
+
+                           [auto-create]="false"
+                           #reindexFiles
+                >
+                  ReIndex now
+                </jqxButton>
+              </div>
+              <div class="tooltip" style="float: left;">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>nexl server caches file names in the memory.<br/>If you have changed files or directories directly in the file system<br/>click this button to reload files list cache on the server</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
               <!--storage files encoding-->
               <div class="item" style="margin-top: 15px;">
                 <label>Storage files encoding</label>
@@ -188,7 +215,7 @@
 
               <!--RAW_OUTPUT-->
               <div class="item">
-                <label>Raw output</label>
+                <label style="position: relative; top: -1px;">Raw output</label>
                 <jqxCheckBox
                   #rawOutput
                   [boxSize]="'12px;'"
@@ -197,7 +224,7 @@
                   [(ngModel)]="settings[SETTINGS.RAW_OUTPUT]"
                 ></jqxCheckBox>
               </div>
-              <div class="tooltip">
+              <div class="tooltip" style="top: 10px;">
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
