@@ -63,6 +63,7 @@ import {ArgsComponent} from "./filemanager/http-requests-buider-and-tester/args/
 import {HttpRequestsBuilderAndTesterComponent} from "./filemanager/http-requests-buider-and-tester/http-requests-builder-and-tester.component";
 import {FindInFilesComponent} from "./misc/findinfiles/findinfiles";
 import {SearchResultsComponent} from "./misc/searchresults/searchresults";
+import {InformationComponent} from "./misc/showfiledirinfo/information";
 
 
 @NgModule({
@@ -118,7 +119,8 @@ import {SearchResultsComponent} from "./misc/searchresults/searchresults";
     FindFileComponent,
     FindInFilesComponent,
     SearchResultsComponent,
-    DiffsComponent
+    DiffsComponent,
+    InformationComponent
   ],
 
   imports: [

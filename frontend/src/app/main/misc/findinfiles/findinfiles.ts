@@ -79,8 +79,13 @@ export class FindInFilesComponent implements OnInit {
     const searchFunctionData = FIND_IN_FILES.resolveFindFunction(searchData);
     searchFunctionData.maxOccurrences = 100;
 
-    // iterating over changed files ang finding again
+    // iterating over changed files ang searching again
     for (let relativePath in this.tabsMap) {
+      // checking are we under the relativePath
+      if (relativePath.indexOf(searchData[DI_CONSTANTS.RELATIVE_PATH]) !== 0) {
+        continue;
+      }
+
       // removing from result
       delete result[relativePath];
 

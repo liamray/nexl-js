@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
   SET_TAB_CONTENT,
   ARGS_CHANGED, // fired when args changed in args-window by user
   SET_ARGS, // instructs args-window to set arguments embedded to the message

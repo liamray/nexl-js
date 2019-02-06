@@ -289,6 +289,7 @@ export class StorageExplorerComponent implements AfterViewInit {
 
   updatePopupMenu() {
     this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
+    this.popupMenu.disable('popup-show-information', !this.hasReadPermission);
 
     this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission);
     this.popupMenu.disable('popup-new-dir', !this.hasWritePermission);
@@ -709,6 +710,7 @@ export class StorageExplorerComponent implements AfterViewInit {
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
+      this.popupMenu.disable('popup-show-information', true);
       this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
       this.popupMenu.disable('popup-make-a-copy', true);
       this.rightClickSelectedElement = undefined;
@@ -721,6 +723,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.rightClickSelectedElement = this.tree.getItem(target);
       this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
       this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission || this.rightClickSelectedElement.value.isDir === true);
+      this.popupMenu.disable('popup-show-information', false);
       this.openPopup(event);
     }
   }
@@ -1162,17 +1165,22 @@ export class StorageExplorerComponent implements AfterViewInit {
     }
 
     this.tree.expandItem(item);
+    this.tree.expandItem(item.element); // don't know why, but without this additional command sometimes it doesn't work...
     setTimeout(_ => {
       // todo : jqx bug -> https://www.jqwidgets.com/community/topic/ensurevisible-is-showing-only-50-of-item-when-horizontal-scroll-bar-is-visible
       const nextItem = item.nextItem === null ? item : item.nextItem;
       this.tree.ensureVisible(nextItem.element);
       this.tree.selectItem(item);
-    }, 300);
+    }, 1300);
   }
 
   tabSelected(relativePath: any) {
     if (AppearanceService.load()['autoscroll-from-source']) {
       this.autoscroll2Item(relativePath);
     }
+  }
+
+  showInformation() {
+    this.messageService.sendMessage(MESSAGE_TYPE.SHOW_FILE_DIR_INFORMATION, this.rightClickSelectedElement.value);
   }
 }
