@@ -1164,14 +1164,14 @@ export class StorageExplorerComponent implements AfterViewInit {
       return;
     }
 
-    this.tree.expandItem(item);
-    this.tree.expandItem(item.element); // don't know why, but without this additional command sometimes it doesn't work...
-    setTimeout(_ => {
-      // todo : jqx bug -> https://www.jqwidgets.com/community/topic/ensurevisible-is-showing-only-50-of-item-when-horizontal-scroll-bar-is-visible
-      const nextItem = item.nextItem === null ? item : item.nextItem;
-      this.tree.ensureVisible(nextItem.element);
-      this.tree.selectItem(item);
-    }, 1300);
+    this.loadTreeItemsHierarchy(relativePath, true).then(_ => {
+      setTimeout(_ => {
+        // todo : jqx bug -> https://www.jqwidgets.com/community/topic/ensurevisible-is-showing-only-50-of-item-when-horizontal-scroll-bar-is-visible
+        const nextItem = item.nextItem === null ? item : item.nextItem;
+        this.tree.ensureVisible(nextItem.element);
+        this.tree.selectItem(item);
+      }, 300);
+    });
   }
 
   tabSelected(relativePath: any) {
