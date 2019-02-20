@@ -1,0 +1,12 @@
+3.1.0
+    - First stable version
+
+3.2.0
+    - Added "Find in files" dialog box
+    - Added new REST API : [/nexl/storage/list-files], [/nexl/storage/list-dirs], [/nexl/storage/list-files-and-dirs]
+    - Added "Make a copy" feature
+    - Added "Information" item in popup menu of Storage files explorer
+    - Added "Auto scroll from source" feature
+    - Added "ReIndex files" feature in [View -> Settings -> General] menu to reload files list cache on server
+    - Different frontend and backend bugs fix
+    - Security fixes in vm2 sandbox module. Updated to 3.6.10 version ( see https://github.com/patriksimek/vm2/blob/master/CHANGELOG.md )
