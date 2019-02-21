@@ -468,6 +468,8 @@ module.exports.listFiles = listFiles;
 module.exports.listDirs = listDirs;
 module.exports.listDirsAndFiles = listDirsAndFiles;
 
+module.exports.gatherAllFiles = gatherAllFiles;
+
 module.exports.cacheStorageFiles = cacheStorageFiles;
 module.exports.getTreeItems = () => TREE_ITEMS;
 // --------------------------------------------------------------------------------
