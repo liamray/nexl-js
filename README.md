@@ -1,6 +1,6 @@
 #### What's nexl ?
 nexl is a configuration hosting server.  
-Configuration is stored in **native JavaScript files**, exposed via standard **HTTP protocol** and can be accessed by special **[expression language](http://www.nexl-js.com/introduction.html)**.  
+Configuration is stored in **native JavaScript files**, exposed via standard **HTTP protocol** and can be accessed by special **[expression language](http://www.nexl-js.com/introduction.html)**.    
 
 nexl can be useful when you need to store and manage an application configuration externally instead of storing it hard coded.  
 Another use case is when you need a centralized place to manage different kind of configurations.
