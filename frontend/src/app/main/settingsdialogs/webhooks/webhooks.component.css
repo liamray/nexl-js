@@ -1,0 +1,33 @@
+.button {
+  float: right;
+  margin-left: 5px;
+}
+
+.buttons {
+  margin: 10px 0 0 0;
+}
+
+.container {
+  overflow: hidden;
+}
+
+.item {
+  width: 380px;
+  float: left;
+  margin-top: 10px;
+  margin-left: 25px;
+}
+
+.item label {
+  width: 180px;
+  display: inline-block;
+  float: left;
+}
+
+.tooltip {
+  display: inline-block;
+  position: relative;
+  left: 1px;
+  top: 1px;
+  float: left;
+}

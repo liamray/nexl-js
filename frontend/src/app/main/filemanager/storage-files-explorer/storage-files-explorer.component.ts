@@ -27,6 +27,7 @@ export class StorageExplorerComponent implements AfterViewInit {
 
   hasReadPermission = false;
   hasWritePermission = false;
+  isAdmin = false;
   treeSource = [];
   rightClickSelectedElement: any;
   tabsMap: any = {};
@@ -276,15 +277,12 @@ export class StorageExplorerComponent implements AfterViewInit {
   }
 
   readPermissionChanged(status: any) {
-    this.hasReadPermission = status.hasReadPermission;
-
-    if (!this.hasReadPermission) {
+    if (!status.hasReadPermission) {
       this.treeSource = [];
       this.expander.disabled(true);
-      return;
+    } else {
+      this.loadTreeItems();
     }
-
-    this.loadTreeItems();
   }
 
   updatePopupMenu() {
@@ -296,21 +294,25 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.popupMenu.disable('popup-new-file', !this.hasWritePermission);
     this.popupMenu.disable('popup-rename-item', !this.hasWritePermission);
     this.popupMenu.disable('popup-delete-item', !this.hasWritePermission);
+    this.popupMenu.disable('popup-add-web-hook', !this.isAdmin);
   }
 
   authChanged(status: any) {
     if (status.hasReadPermission !== this.hasReadPermission) {
       this.readPermissionChanged(status);
-      this.updatePopupMenu();
     }
 
+    // storing new values
+    this.hasWritePermission = status.hasWritePermission;
+    this.hasReadPermission = status.hasReadPermission;
+    this.isAdmin = status.isAdmin;
+
+    // updating right click popup menu
+    this.updatePopupMenu();
+
+    // notifying if needed
     if (!status.hasReadPermission) {
       this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, "You don't have read permission to view JavaScript files");
-    }
-
-    if (status.hasWritePermission !== this.hasWritePermission) {
-      this.hasWritePermission = status.hasWritePermission;
-      this.updatePopupMenu();
     }
   }
 
@@ -706,6 +708,8 @@ export class StorageExplorerComponent implements AfterViewInit {
   }
 
   private handleRightClick(target: any, event: any) {
+    this.popupMenu.disable('popup-add-web-hook', !this.isAdmin);
+
     // is right click on empty area ?
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
@@ -1075,6 +1079,10 @@ export class StorageExplorerComponent implements AfterViewInit {
       return;
     }
 
+    if (this.rightClickSelectedElement !== undefined && this.rightClickSelectedElement.value.isDir !== true) {
+      return;
+    }
+
     const findFrom = this.rightClickSelectedElement === undefined ? '' : this.rightClickSelectedElement.value.relativePath;
     this.messageService.sendMessage(MESSAGE_TYPE.FIND_IN_FILES, findFrom);
   }
@@ -1131,6 +1139,18 @@ export class StorageExplorerComponent implements AfterViewInit {
         console.log(err);
       }
     );
+  }
+
+  addWebHook() {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const relativePath = (this.rightClickSelectedElement === undefined) ? UtilsService.SERVER_INFO.SLASH : this.rightClickSelectedElement.value.relativePath;
+
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_WEBHOOK_DIALOG, {
+      relativePath: relativePath,
+    });
   }
 
   makeACopy() {

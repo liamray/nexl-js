@@ -1,0 +1,132 @@
+<jqxWindow #window
+           class="second-level-dialog"
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="500"
+           (onClose)="onClose()"
+           [height]="220"
+           [initContent]="initContent"
+>
+
+  <div>{{ title }}</div>
+
+  <div class="container">
+
+    <div>
+      <!-- relative path -->
+      <div class="item">
+        <label>Path</label>
+        <jqxInput
+          #relativePath
+          [width]="width"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='./nexl/site/icons/info.png'/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both"></div>
+
+      <!-- url -->
+      <div class="item">
+        <label>URL</label>
+        <jqxInput
+          #url
+          [width]="width"
+          [height]="25">
+        </jqxInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='./nexl/site/icons/info.png'/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both"></div>
+
+      <!-- secret -->
+      <div class="item">
+        <label>Secret</label>
+        <jqxPasswordInput
+          #secret
+          [width]="width"
+          [height]="25">
+        </jqxPasswordInput>
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='./nexl/site/icons/info.png'/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both"></div>
+
+      <!-- is disabled -->
+      <div class="item" style="margin-top: 13px;">
+        <label style="position: relative; top: -1px;">Is disabled</label>
+        <jqxCheckBox
+          style="position:relative;left: -3px;"
+          #isDisabled
+          [boxSize]="'12px;'"
+          id="isDisabled"
+        ></jqxCheckBox>
+      </div>
+      <div class="tooltip" style="top: 10px;">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>...</p>'">
+          <img src='./nexl/site/icons/info.png'/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both"></div>
+    </div>
+
+    <div class="buttons">
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="window.close();"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/icons/remove.png"'
+                   #cancelButton
+        >
+          Cancel
+        </jqxButton>
+      </div>
+
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="proceed()"
+                   [auto-create]="false"
+                   [imgSrc]='"./nexl/site/icons/ok.png"'
+                   #okButton
+        >
+          Ok
+        </jqxButton>
+      </div>
+
+    </div>
+
+  </div>
+</jqxWindow>

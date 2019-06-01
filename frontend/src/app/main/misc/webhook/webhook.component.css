@@ -1,0 +1,31 @@
+.button {
+  float: right;
+  margin-left: 5px;
+}
+
+.buttons {
+  margin: 10px 0 0 0;
+}
+
+.item {
+  width: 465px;
+  float: left;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+
+.item label {
+  width: 85px;
+  display: inline-block;
+  float: left;
+  position: relative;
+  top: 5px;
+}
+
+.tooltip {
+  display: inline-block;
+  position: relative;
+  left: -7px;
+  top: 15px;
+  float: left;
+}

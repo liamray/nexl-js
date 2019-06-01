@@ -3,6 +3,11 @@ import {Observable} from 'rxjs';
 import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
+  // webhooks
+  OPEN_WEBHOOK_DIALOG, // single dialog window
+  OPEN_WEBHOOKS_DIALOG, // all webhooks
+  WEBHOOK_UPDATED, // fired when when added/modified a webhook
+
   SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
   SET_TAB_CONTENT,
   ARGS_CHANGED, // fired when args changed in args-window by user

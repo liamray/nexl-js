@@ -37,7 +37,7 @@
       [auto-create]="false"
     ></jqxTree>
 
-    <jqxMenu #popupMenu [width]="130" [height]="187" [autoOpenPopup]="false"
+    <jqxMenu #popupMenu [width]="150" [height]="214" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
         <li (click)="newDir()" id="popup-new-dir">
@@ -63,6 +63,10 @@
         <li (click)="findInFilesFromHere()" id="find-in-files-from-here">
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/icons/find-in-text.png'/><span>Find in files</span>
+        </li>
+        <li (click)="addWebHook()" id="popup-add-web-hook">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/icons/webhook.png'/><span>Add a Webhook</span>
         </li>
         <li (click)="showInformation()" id="popup-show-information">
           <img style='float: left; margin-right: 5px;'

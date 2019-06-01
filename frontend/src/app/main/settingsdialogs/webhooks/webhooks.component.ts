@@ -9,33 +9,34 @@ import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 
 @Component({
-  selector: 'app-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  selector: 'app-webhooks',
+  templateUrl: './webhooks.component.html',
+  styleUrls: ['./webhooks.component.css']
 })
-export class UsersComponent {
-  @ViewChild('usersWindow') usersWindow: jqxWindowComponent;
+export class WebhooksComponent {
+  @ViewChild('webhooksWindow') webhooksWindow: jqxWindowComponent;
   @ViewChild('closeButton') closeButton: jqxButtonComponent;
-  @ViewChild('usersGrid') usersGrid: jqxGridComponent;
+  @ViewChild('webhooksGrid') webhooksGrid: jqxGridComponent;
 
   isAdmin = false;
   counter = 0;
 
-  usersSource =
+  webhooksSource =
     {
       localdata: [],
       datafields: [
-        {name: 'username', type: 'string'},
-        {name: 'disabled', type: 'boolean'}
+        {name: 'relativePath', type: 'string'},
+        {name: 'url', type: 'boolean'},
+        {name: 'apiKey', type: 'string'},
       ],
       datatype: 'array'
     };
-  usersDataAdapter = new jqx.dataAdapter(this.usersSource);
-  usersColumns: any[] =
+  webhooksDataAdapter = new jqx.dataAdapter(this.webhooksSource);
+  webhooksColumns: any[] =
     [
       {
-        text: 'Username',
-        datafield: 'username',
+        text: 'File path',
+        datafield: 'relativePath',
         align: 'center',
         width: '180px',
         cellclassname: function (row, column, value, data) {
@@ -47,39 +48,20 @@ export class UsersComponent {
         }
       },
       {
-        text: 'Password',
+        text: 'URL',
+        datafield: 'url',
         align: 'center',
         width: 80,
         sortable: false,
-        editable: false,
-        createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
-          let container = document.createElement('div');
-          let id = `argsRemoveButton${this.counter}`;
-          container.id = id;
-          container.style.border = 'none';
-          htmlElement.appendChild(container);
-
-          let options = {
-            width: '100%',
-            height: 27,
-            template: 'default',
-            imgSrc: './nexl/site/icons/keys.png',
-            imgWidth: 16,
-            imgHeight: 16,
-            imgPosition: 'center',
-            textPosition: 'center'
-          };
-
-          let resetButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
-
-          resetButton.addEventHandler('click', (): void => {
-            this.showToken(row.bounddata.uid);
-          });
-
-          this.counter++;
-        },
-        initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
-        }
+        editable: true
+      },
+      {
+        text: 'API Key',
+        datafield: 'apiKEY',
+        align: 'center',
+        width: 80,
+        sortable: false,
+        editable: true
       },
       {
         text: 'Enable/<br/>Disable',
@@ -166,7 +148,7 @@ export class UsersComponent {
             return;
           }
 
-          case MESSAGE_TYPE.USERS_WINDOW: {
+          case MESSAGE_TYPE.OPEN_WEBHOOKS_DIALOG: {
             this.open();
             return;
           }
@@ -175,16 +157,16 @@ export class UsersComponent {
   }
 
   setGridData(data: any) {
-    this.usersSource.localdata = [];
+    this.webhooksSource.localdata = [];
 
     for (let key in data) {
-      this.usersSource.localdata.push({
+      this.webhooksSource.localdata.push({
         username: key,
         disabled: data[key].disabled
       });
     }
 
-    this.usersGrid.updatebounddata();
+    this.webhooksGrid.updatebounddata();
 
   }
 
@@ -201,7 +183,7 @@ export class UsersComponent {
       (data: any) => {
         this.globalComponentsService.loader.close();
         this.setGridData(data.body);
-        this.usersWindow.open();
+        this.webhooksWindow.open();
       },
       err => {
         this.globalComponentsService.loader.close();
@@ -220,8 +202,8 @@ export class UsersComponent {
 
   setCellValueDelayed(rowNr: number, cellName: string, cellValue: string) {
     setTimeout(() => {
-      this.usersGrid.setcellvalue(rowNr, cellName, cellValue);
-      this.usersGrid.refresh();
+      this.webhooksGrid.setcellvalue(rowNr, cellName, cellValue);
+      this.webhooksGrid.refresh();
     }, 10);
   }
 
@@ -255,11 +237,11 @@ export class UsersComponent {
   }
 
   addNewItem() {
-    this.usersGrid.addrow(1, {});
+    this.webhooksGrid.addrow(1, {});
   }
 
   enableDisableUser(row: any) {
-    const username = this.usersGrid.getcellvalue(row.bounddata.uid, 'username');
+    const username = this.webhooksGrid.getcellvalue(row.bounddata.uid, 'username');
     const isDisabled = !row.bounddata.disabled;
 
     if (username === undefined || username === null || username.length < 1) {
@@ -275,7 +257,7 @@ export class UsersComponent {
     }, REST_URLS.USERS.URLS.ENABLE_DISABLE_USER, 'json').subscribe(
       (data: any) => {
         row.bounddata.disabled = !row.bounddata.disabled;
-        this.usersGrid.refresh();
+        this.webhooksGrid.refresh();
         this.globalComponentsService.loader.close();
       },
       err => {
@@ -285,13 +267,13 @@ export class UsersComponent {
       });
   }
 
-  removeUserInner(rowNr: number, username: string) {
+  removeUserUnner(rowNr: number, username: string) {
     this.globalComponentsService.loader.open();
 
     // removing user
     this.http.post({username: username}, REST_URLS.USERS.URLS.REMOVE_USER, 'json').subscribe(
       (data: any) => {
-        this.usersGrid.deleterow(rowNr);
+        this.webhooksGrid.deleterow(rowNr);
         this.globalComponentsService.loader.close();
       },
       err => {
@@ -302,10 +284,10 @@ export class UsersComponent {
   }
 
   removeUser(rowNr: any) {
-    const username = this.usersGrid.getcellvalue(rowNr, 'username');
+    const username = this.webhooksGrid.getcellvalue(rowNr, 'username');
 
     if (username === undefined || username === null || username.length < 1) {
-      this.usersGrid.deleterow(rowNr);
+      this.webhooksGrid.deleterow(rowNr);
       return;
     }
 
@@ -318,7 +300,7 @@ export class UsersComponent {
           return;
         }
 
-        this.removeUserInner(rowNr, username);
+        this.removeUserUnner(rowNr, username);
       },
     };
 
@@ -326,7 +308,7 @@ export class UsersComponent {
   }
 
   showToken(rowNr: number) {
-    const username = this.usersGrid.getcellvalue(rowNr, 'username');
+    const username = this.webhooksGrid.getcellvalue(rowNr, 'username');
 
     if (username === undefined || username === null || username.length < 1) {
       return;

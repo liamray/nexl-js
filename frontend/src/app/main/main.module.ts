@@ -64,6 +64,8 @@ import {HttpRequestsBuilderAndTesterComponent} from "./filemanager/http-requests
 import {FindInFilesComponent} from "./misc/findinfiles/findinfiles";
 import {SearchResultsComponent} from "./misc/searchresults/searchresults";
 import {InformationComponent} from "./misc/showfiledirinfo/information";
+import {WebhooksComponent} from "./settingsdialogs/webhooks/webhooks.component";
+import {WebhookComponent} from "./misc/webhook/webhook.component";
 
 
 @NgModule({
@@ -108,6 +110,8 @@ import {InformationComponent} from "./misc/showfiledirinfo/information";
     LoaderComponent,
     SettingsComponent,
     UsersComponent,
+    WebhookComponent,
+    WebhooksComponent,
     AppearanceComponent,
     RegisterComponent,
     InputBoxComponent,

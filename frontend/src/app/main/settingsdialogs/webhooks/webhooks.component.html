@@ -1,0 +1,65 @@
+<jqxWindow #webhooksWindow
+           class="first-level-dialog"
+           [autoOpen]="false"
+           [isModal]="true"
+           [resizable]="false"
+           [width]="460"
+           [height]="330"
+           [initContent]="initContent"
+           (onOpen)="onOpen()"
+>
+
+  <div>
+    <img src="./nexl/site/icons/webhook.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">Webhooks</span>
+  </div>
+
+  <div>
+
+    <div style="margin: 5px;">
+      <div style="float:left">
+        Click
+        <jqxButton (click)="addNewItem()">here</jqxButton>
+        to add new record&nbsp;
+      </div>
+      <div class="tooltip">
+        <jqxTooltip
+          [position]="'mouse'"
+          [autoHideDelay]="999999999"
+          [content]="'<p style=\'text-align: left;\'>Asd</p>'">
+          <img src='./nexl/site/icons/info.png' style="position: relative; top: 3px;"/>
+        </jqxTooltip>
+      </div>
+
+      <div style="clear: both; height: 5px;"></div>
+
+      <jqxGrid
+        #webhooksGrid
+        [source]="usersDataAdapter"
+        [columns]="usersColumns"
+        [width]="'100%'"
+        [height]="200"
+        [columnsheight]="55"
+        [filterable]="false"
+        [sortable]="true"
+        [editable]="true"
+        [enablebrowserselection]="true"
+        [rowsheight]="28"
+      ></jqxGrid>
+    </div>
+
+    <div style="float:right;">
+      <jqxButton [height]='32'
+                 [width]="94"
+                 [textImageRelation]='"imageBeforeText"'
+                 [textPosition]='"center"'
+                 [imgSrc]='"./nexl/site/icons/ok.png"'
+                 [auto-create]="false"
+                 (onClick)="webhooksWindow.close()"
+                 #closeButton>
+        Close
+      </jqxButton>
+    </div>
+
+  </div>
+</jqxWindow>
