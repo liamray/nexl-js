@@ -22,7 +22,7 @@ Another use case is when you need a centralized place to manage different kind o
 Before installing, [download and install Node.js](https://nodejs.org/en/download/).  
 Node.js 6 or higher is required.  
 
-Uninstall previously installed nexl version if exist:
+Uninstall previously installed nexl version if exists:
 ```bash
 > npm uninstall nexl -g
 ```
