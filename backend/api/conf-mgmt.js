@@ -11,11 +11,13 @@ const cmdLineArgs = require('./cmd-line-args');
 const utils = require('./utils');
 const logger = require('./logger');
 const schemas = require('../common/schemas');
+const confMigration = require('./conf-migration');
 const schemaValidation = require('./schema-validation');
 
 let NEXL_HOME_DIR;
 const ALL_SETTINGS_CACHED = {};
 const CONF_VERSIONS = {};
+const APP_DATA_DIR = 'app-data';
 
 
 // --------------------------------------------------------------------------------
@@ -192,7 +194,7 @@ function initNexlHomeDir() {
 	NEXL_HOME_DIR = cmdLineOpts[confConsts.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 
 	// create dir structure if needed, preload settings and save them if needed
-	return fse.mkdirs(getNexlAppDataDir()).then(_ => loadSettings(true));
+	return fse.mkdirs(getNexlAppDataDir()).then(confMigration).then(_ => loadSettings(true));
 }
 
 function preloadConfs() {
@@ -239,7 +241,7 @@ function getNexlHomeDir() {
 }
 
 function getNexlAppDataDir() {
-	return path.join(NEXL_HOME_DIR, 'app-data');
+	return path.join(NEXL_HOME_DIR, APP_DATA_DIR);
 }
 
 // --------------------------------------------------------------------------------
@@ -247,6 +249,7 @@ module.exports.createStorageDirIfNeeded = createStorageDirIfNeeded;
 
 module.exports.initNexlHomeDir = initNexlHomeDir;
 module.exports.preloadConfs = preloadConfs;
+module.exports.APP_DATA_DIR = APP_DATA_DIR;
 
 module.exports.load = load;
 module.exports.save = save;

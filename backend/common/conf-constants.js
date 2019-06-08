@@ -32,7 +32,9 @@ const SETTINGS = {
 	LOG_FILE_LOCATION: 'log-file-location',
 	LOG_LEVEL: 'log-level',
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
-	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count'
+	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
+
+	WEBHOOKS: 'webhooks'
 };
 
 const SETTINGS_GROUP = {

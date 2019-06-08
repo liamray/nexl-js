@@ -8,6 +8,7 @@ COMMON_UTILS.validateUsernameStrength = validateUsernameStrength;
 // --------------------------------------------------------------------------------
 
 function completeDateTime(x) {
+	// WARNING : do not ise [let] and [const] statements here !
 	for (var index = 0; index < x.length; index++) {
 		const item = x[index] + '';
 		if (item.length < 2) {
@@ -19,6 +20,7 @@ function completeDateTime(x) {
 function formatDate() {
 	const currentDate = new Date();
 
+	// WARNING : do not ise [let] and [const] statements here !
 	var date = [];
 	var time = [];
 
