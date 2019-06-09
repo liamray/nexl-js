@@ -163,7 +163,7 @@ function notMandatoryDate(val, msg) {
 SCHEMAS[confConsts.CONF_FILES.SETTINGS] = {};
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_DIR] = (val) => mandatoryString(val, 'nexl storage home directory');
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.STORAGE_FILES_ENCODING] = (val) => {
-	return confConsts.AVAILABLE_ENCODINGS.indexOf(val) >= 0 ? valid() : invalid('[nexl storge files encoding] must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']');
+	return confConsts.AVAILABLE_ENCODINGS.indexOf(val) >= 0 ? valid() : invalid('[nexl storage files encoding] must be one of the following : [' + confConsts.AVAILABLE_ENCODINGS.join(',') + ']');
 };
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.HTTP_TIMEOUT] = (val) => mandatoryInt(val, 'HTTP timeout', 1);
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SESSION_TIMEOUT] = (val) => mandatoryInt(val, 'Session timeout', 1);

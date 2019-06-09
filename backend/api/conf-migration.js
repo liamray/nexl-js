@@ -102,7 +102,7 @@ function validateFilesVersion(confFilesContent) {
 }
 
 function findMinVersionIndex2Migrate(confFileVersion) {
-	let versionIndex = CONF_VERSIONS.length - 1;
+	let versionIndex = CONF_VERSIONS.length;
 
 	for (let index = CONF_VERSIONS.length - 1; index >= 0; index--) {
 		if (confFileVersion < CONF_VERSIONS[index].version) {
@@ -114,11 +114,12 @@ function findMinVersionIndex2Migrate(confFileVersion) {
 }
 
 function backUpAppDataDir(appDataDir) {
-	const backupDir = path.join(appDataDir, '..', dateFormat(new Date(), 'yyyy-mm-dd--HH-MM-ss--l'));
+	const backupDirName = confMgmt.APP_DATA_DIR + '-BACKUP-' + dateFormat(new Date(), 'yyyy-mm-dd--HH-MM-ss--l');
+	const backupFullPath = path.join(appDataDir, '..', backupDirName);
 	try {
-		fse.copySync(appDataDir, backupDir);
+		fse.copySync(appDataDir, backupFullPath);
 	} catch (e) {
-		logger.log.error(`Cannot backup a [${appDataDir}] directory to [${backupDir}] directory`);
+		logger.log.error(`Cannot backup a [${appDataDir}] directory to [${backupFullPath}] directory`);
 		throw e;
 	}
 }
@@ -130,7 +131,7 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 	backUpAppDataDir(appDataDir);
 
 	// migrating
-	logger.log.info(`Migrating configuration files from [${confMgmt.APP_DATA_DIR}] dir. Migration from the [${CONF_VERSIONS[versionIndex2Migrate].version}] version`);
+	logger.log.info(`Migrating configuration files from [${confMgmt.APP_DATA_DIR}] dir. Migrating from the [${CONF_VERSIONS[versionIndex2Migrate].version}]..[${CONF_VERSIONS[CONF_VERSIONS.length - 1].version}] version`);
 	for (let index = versionIndex2Migrate; index < CONF_VERSIONS.length; index++) {
 		CONF_VERSIONS[index].action(confFilesContent);
 	}
@@ -138,13 +139,13 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 	// tuning up
 	for (let fileName in confFilesContent) {
 		// updating version to the latest one
-		confFilesContent[fileName].version = version;
+		confFilesContent[fileName].version = CONF_VERSIONS[CONF_VERSIONS.length - 1].version;
 
 		// running schema validation
 		const validationResult = schemaValidation(confFilesContent[fileName]['data'], schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 
 		if (!validationResult.isValid) {
-			logger.log.error(`Something went wrong with nexl configuration files migration from the [${appDataDir}]. All files have been migrated but the [${fileName}] file has wrong structure. As a work around you can delete a [${appDataDir}] and restart nexl server ( but you will loss all nexl server settings )`);
+			logger.log.error(`Something went wrong with nexl configuration files migration from the [${appDataDir}]. All files have been migrated but the [${fileName}] file has wrong data structure. As a work around you can delete a [${appDataDir}] and restart nexl server ( but you will loss all nexl server settings )`);
 			throw `Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`;
 		}
 	}

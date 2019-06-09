@@ -5,7 +5,7 @@ const schemas = require('../common/schemas');
 
 function objectSchemaValidation(data, objectSchema) {
 	if (!j79.isObject(data)) {
-		return schemas.invalid(`Expecting for the object but got an array`);
+		return schemas.invalid(`Expecting for the object but got the ${j79.getType(data)}`);
 	}
 
 	// validating by schema
@@ -47,7 +47,7 @@ function objectSchemaValidation(data, objectSchema) {
 
 function arraySchemaValidation(data, arraySchema) {
 	if (!j79.isArray(data)) {
-		return schemas.invalid(`Expecting for the array but got an object`);
+		return schemas.invalid(`Expecting for the array but got  the ${j79.getType(data)}`);
 	}
 
 	for (let index in data) {
@@ -63,6 +63,10 @@ function arraySchemaValidation(data, arraySchema) {
 }
 
 function schemaValidation(data, schema) {
+	if (schema === undefined) {
+		return schemas.invalid('Schema validation is not declared');
+	}
+
 	if (j79.isFunction(schema)) {
 		return schema(data);
 	}
