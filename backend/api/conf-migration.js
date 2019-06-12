@@ -65,7 +65,7 @@ function gatherConfFiles() {
 		try {
 			confFilesContent[fileName] = JSON.parse(confFilesContent[fileName]);
 		} catch (e) {
-			logger.log.error(`Failed to parse a [${fileName}] file as JSON`);
+			logger.log.error(`The [${fileName}] file is not a valid JSON file`);
 			throw e;
 		}
 	}
@@ -85,7 +85,7 @@ function validateFilesVersion(confFilesContent) {
 		// checking file version
 		if (!j79.isString(fileVersion) || fileVersion.length < 1) {
 			logger.log.error(`The [version] field in the [${fileName}] file must be a valid string`);
-			throw `Invalid version in the [${fileName}] file`;
+			throw `Invalid [version] in the [${fileName}] file`;
 		}
 
 		// first time initialization
@@ -131,7 +131,7 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 	backUpAppDataDir(appDataDir);
 
 	// migrating
-	logger.log.info(`Migrating configuration files from [${confMgmt.APP_DATA_DIR}] dir. Migrating from the [${CONF_VERSIONS[versionIndex2Migrate].version}]..[${CONF_VERSIONS[CONF_VERSIONS.length - 1].version}] version`);
+	logger.log.info(`Migrating configuration files in [${confMgmt.APP_DATA_DIR}] dir. Migrating from the [${CONF_VERSIONS[versionIndex2Migrate].version}]..[${CONF_VERSIONS[CONF_VERSIONS.length - 1].version}] version`);
 	for (let index = versionIndex2Migrate; index < CONF_VERSIONS.length; index++) {
 		CONF_VERSIONS[index].action(confFilesContent);
 	}
@@ -145,7 +145,7 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 		const validationResult = schemaValidation(confFilesContent[fileName]['data'], schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 
 		if (!validationResult.isValid) {
-			logger.log.error(`Something went wrong with nexl configuration files migration from the [${appDataDir}]. All files have been migrated but the [${fileName}] file has wrong data structure. As a work around you can delete a [${appDataDir}] and restart nexl server ( but you will loss all nexl server settings )`);
+			logger.log.error(`Configuration files are migrated but something went wrong and the [${fileName}] file still has invalid JSON strcture. As a work around you can delete all files in the [${appDataDir}] dir ( don't forget to backup it before ) and start nexl server again.`);
 			throw `Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`;
 		}
 	}
@@ -227,6 +227,3 @@ function migrateAppData() {
 // --------------------------------------------------------------------------------
 module.exports = migrateAppData;
 // --------------------------------------------------------------------------------
-
-// JUST THROW ERROR WITHOUT LOGGING
-// there is no logging at this step, think about it

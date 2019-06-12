@@ -47,7 +47,7 @@ function objectSchemaValidation(data, objectSchema) {
 
 function arraySchemaValidation(data, arraySchema) {
 	if (!j79.isArray(data)) {
-		return schemas.invalid(`Expecting for the array but got  the ${j79.getType(data)}`);
+		return schemas.invalid(`Expecting for the array but got the ${j79.getType(data)}`);
 	}
 
 	for (let index in data) {
