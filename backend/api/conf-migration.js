@@ -84,8 +84,7 @@ function validateFilesVersion(confFilesContent) {
 
 		// checking file version
 		if (!j79.isString(fileVersion) || fileVersion.length < 1) {
-			logger.log.error(`The [version] field in the [${fileName}] file must be a valid string`);
-			throw `Invalid [version] in the [${fileName}] file`;
+			throw `The [version] field in the [${fileName}] file must be a valid string`;
 		}
 
 		// first time initialization
@@ -93,12 +92,28 @@ function validateFilesVersion(confFilesContent) {
 
 		// comparing versions
 		if (version !== fileVersion) {
-			logger.log.error(`nexl configuration files from the [${confMgmt.APP_DATA_DIR}] directory must have same version. Found two different versions: [${version}] and [${fileVersion}]`);
-			throw `Configuration files has different versions`;
+			throw `nexl configuration files from the [${confMgmt.APP_DATA_DIR}] directory must have same version. Found two different versions: [${version}] and [${fileVersion}]`;
 		}
 	}
 
 	return version;
+}
+
+function validateFilesVersionVsInstanceVersion(confFilesVersion) {
+	if (confFilesVersion <= version) {
+		// valid => conf files version is lower-equals to version
+		return;
+	}
+
+	// nexl instance version is lower than conf files version
+	// it can be still valid if conf files version didn't change. checking...
+	const latestUpdateVersion = CONF_VERSIONS[CONF_VERSIONS.length - 1].version;
+	if (version > CONF_VERSIONS[CONF_VERSIONS.length - 1].version) {
+		// valid => no changes in JSON structure
+		return;
+	}
+
+	throw`The [${version}] nexl server instance cannot run with a [${confFilesVersion}] version of configuration files`;
 }
 
 function findMinVersionIndex2Migrate(confFileVersion) {
@@ -146,7 +161,7 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 
 		if (!validationResult.isValid) {
 			logger.log.error(`Configuration files are migrated but something went wrong and the [${fileName}] file still has invalid JSON strcture. As a work around you can delete all files in the [${appDataDir}] dir ( don't forget to backup it before ) and start nexl server again.`);
-			throw `Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`;
+			throw validationResult.err;
 		}
 	}
 
@@ -200,6 +215,9 @@ function migrateAppDataInner() {
 
 	// validating files versions
 	const confFilesVersion = validateFilesVersion(confFilesContent);
+
+	// configuration files version must be <= than nexl instance version
+	validateFilesVersionVsInstanceVersion(confFilesVersion);
 
 	// searching for an appropriate version to migrate
 	const versionIndex2Migrate = findMinVersionIndex2Migrate(confFilesVersion);
