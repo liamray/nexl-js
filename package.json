@@ -1,6 +1,6 @@
 {
   "name": "nexl",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "nexl is a configuration hosting server. Configuration is stored in native JavaScript files, exposed via standard HTTP protocol and can be accessed by special expression language",
   "keywords": [
     "nexl",
