@@ -13,88 +13,89 @@
 
   <div class="container">
 
-    <div>
-      <!-- relative path -->
-      <div class="item">
-        <label>Path</label>
-        <jqxInput
-          #relativePath
-          [width]="width"
-          [height]="25">
-        </jqxInput>
-      </div>
-      <div class="tooltip">
-        <jqxTooltip
-          [position]="'mouse'"
-          [autoHideDelay]="999999999"
-          [content]="'<p style=\'text-align: left;\'>...</p>'">
-          <img src='./nexl/site/icons/info.png'/>
-        </jqxTooltip>
-      </div>
+    <jqxValidator #webhookValidator
+                  [rules]="webhookValidationRules"
+                  [animationDuration]="0"
+                  [hintType]="'label'"
+                  (onValidationSuccess)="onValidationSuccess()"
+                  (onValidationError)="onValidationError()"
+    >
+      <form id='webhookForm' action="./">
 
-      <div style="clear: both"></div>
+        <!-- relative path -->
+        <div class="item">
+          <label>Path</label>
+          <jqxInput
+            #relativePath
+            [width]="width"
+            [height]="25"
+            id="relativePath"
+            name="relativePath"
+            [(ngModel)]="webhookData['relativePath']"
+          >
+          </jqxInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="999999999"
+            [content]="'<p style=\'text-align: left;\'>Relative path to the file or directory to listen for changes</p>'">
+            <img src='./nexl/site/icons/info.png'/>
+          </jqxTooltip>
+        </div>
 
-      <!-- url -->
-      <div class="item">
-        <label>URL</label>
-        <jqxInput
-          #url
-          [width]="width"
-          [height]="25">
-        </jqxInput>
-      </div>
-      <div class="tooltip">
-        <jqxTooltip
-          [position]="'mouse'"
-          [autoHideDelay]="999999999"
-          [content]="'<p style=\'text-align: left;\'>...</p>'">
-          <img src='./nexl/site/icons/info.png'/>
-        </jqxTooltip>
-      </div>
+        <div style="clear: both"></div>
 
-      <div style="clear: both"></div>
+        <!-- url -->
+        <div class="item">
+          <label>URL</label>
+          <jqxInput
+            #url
+            [width]="width"
+            [height]="25"
+            id="url"
+            name="url"
+            [(ngModel)]="webhookData['url']"
+          >
+          </jqxInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="999999999"
+            [content]="'<p style=\'text-align: left;\'>HTTP request URL</p>'">
+            <img src='./nexl/site/icons/info.png'/>
+          </jqxTooltip>
+        </div>
 
-      <!-- secret -->
-      <div class="item">
-        <label>Secret</label>
-        <jqxPasswordInput
-          #secret
-          [width]="width"
-          [height]="25">
-        </jqxPasswordInput>
-      </div>
-      <div class="tooltip">
-        <jqxTooltip
-          [position]="'mouse'"
-          [autoHideDelay]="999999999"
-          [content]="'<p style=\'text-align: left;\'>...</p>'">
-          <img src='./nexl/site/icons/info.png'/>
-        </jqxTooltip>
-      </div>
+        <div style="clear: both"></div>
 
-      <div style="clear: both"></div>
+        <!-- secret -->
+        <div class="item">
+          <label>Secret</label>
+          <jqxPasswordInput
+            #secret
+            [width]="width"
+            [height]="25"
+            id="secret"
+            name="secret"
+            [(ngModel)]="webhookData['secret']"
+          >
+          </jqxPasswordInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="999999999"
+            [content]="'<p style=\'text-align: left;\'>Optional secret to secure the HTTP request ( see documentation for details )</p>'">
+            <img src='./nexl/site/icons/info.png'/>
+          </jqxTooltip>
+        </div>
 
-      <!-- is disabled -->
-      <div class="item" style="margin-top: 13px;">
-        <label style="position: relative; top: -1px;">Is disabled</label>
-        <jqxCheckBox
-          style="position:relative;left: -3px;"
-          #isDisabled
-          [boxSize]="'12px;'"
-          id="isDisabled"
-        ></jqxCheckBox>
-      </div>
-      <div class="tooltip" style="top: 10px;">
-        <jqxTooltip
-          [position]="'mouse'"
-          [autoHideDelay]="999999999"
-          [content]="'<p style=\'text-align: left;\'>...</p>'">
-          <img src='./nexl/site/icons/info.png'/>
-        </jqxTooltip>
-      </div>
+        <div style="clear: both"></div>
 
-      <div style="clear: both"></div>
-    </div>
+      </form>
+    </jqxValidator>
 
     <div class="buttons">
 
