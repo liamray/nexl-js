@@ -22,6 +22,14 @@
   z-index: 106 !important;
 }
 
+.third-level-dialog {
+  z-index: 109 !important;
+}
+
+.third-level-dialog + .jqx-window-modal {
+  z-index: 108 !important;
+}
+
 .main-window {
   z-index: 101 !important;
 }
