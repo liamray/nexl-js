@@ -33,6 +33,7 @@ export class WebhookComponent implements OnInit {
 
   isUpdating = false;
   webhookData = {};
+  errorMsg: string;
 
   webhookValidationRules =
     [
@@ -72,27 +73,6 @@ export class WebhookComponent implements OnInit {
     });
   }
 
-  private openWindow(data: any) {
-    this.isUpdating = false;
-    this.webhookData = data;
-
-    // this dialog window is being used to create and modify a webhook
-    // new webhooks don't have a data.id
-    // using different titles
-    this.title = (data.id === undefined ) ? 'New Webhook' : 'Modifying a Webhook';
-    this.window.setTitle(this.title);
-
-    this.url.val(data.url);
-    this.relativePath.val(data.relativePath);
-
-    this.window.open();
-  }
-
-  private proceed() {
-    this.isUpdating = true;
-    this.webhookValidator.validate(document.getElementById('webhookForm'));
-  }
-
   onValidationSuccess() {
     if (!this.isUpdating) {
       return;
@@ -102,7 +82,7 @@ export class WebhookComponent implements OnInit {
     this.globalComponentsService.loader.open();
 
     // loading data
-    this.http.post(this.webhookData, REST_URLS.PERMISSIONS.URLS.ADD_MODIFY_WEBHOOK, 'json').subscribe(
+    this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, 'json').subscribe(
       (data: any) => {
         // this.permissions = data.body;
         // this.globalComponentsService.loader.close();
@@ -112,9 +92,31 @@ export class WebhookComponent implements OnInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load permissions list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to ${this.errorMsg} . Reason : [${err.statusText}]`);
         console.log(err);
       });
+  }
+
+  private proceed() {
+    this.isUpdating = true;
+    this.webhookValidator.validate(document.getElementById('webhookForm'));
+  }
+
+  private openWindow(data: any) {
+    this.isUpdating = false;
+    this.webhookData = data;
+
+    // this dialog window is being used to create and modify a webhook
+    // new webhooks don't have a data.id
+    // using different titles
+    this.title = (data.id === undefined ) ? 'New Webhook' : 'Modifying a Webhook';
+    this.window.setTitle(this.title);
+    this.errorMsg = (data.id === undefined ) ? 'create' : 'update';
+
+    this.url.val(data.url);
+    this.relativePath.val(data.relativePath);
+
+    this.window.open();
   }
 
   onValidationError() {

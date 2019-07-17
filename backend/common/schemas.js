@@ -40,7 +40,9 @@ DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = '
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.WEBHOOKS] = [];
+
+// WebHooks default values
+DEF_VALUES[confConsts.CONF_FILES.WEBHOOKS] = [];
 
 // USERS default values
 DEF_VALUES[confConsts.CONF_FILES.USERS] = () => {
@@ -198,7 +200,9 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) =
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => mandatoryInt(val, 'log rotate file size', 0);
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => mandatoryInt(val, 'Log rotate files count', 0);
 
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.WEBHOOKS] = [{
+// --------------------------------------------------------------------------------
+// WEBHOOKS validations
+SCHEMAS[confConsts.CONF_FILES.WEBHOOKS] = [{
 	id: (val) => mandatoryInt(val, 'id is a mandatory'),
 	relativePath: (val) => mandatoryString(val, 'File or directory path is mandatory'),
 	url: (val) => {
@@ -207,14 +211,13 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.WEBHOOKS] = [{
 		}
 
 		if (!val.match(/^https?:\/\/.*/)) {
-			return invalid('Mailformed URL');
+			return invalid('Invalid URL');
 		}
 
 		return valid();
 	},
 	isDisabled: (val) => mandatoryBool(val, 'Status is a mandatory')
 }];
-
 
 // --------------------------------------------------------------------------------
 // USERS validations

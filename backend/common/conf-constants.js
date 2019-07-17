@@ -1,5 +1,6 @@
 const CONF_FILES = {
 	SETTINGS: 'settings.js', // general settings
+	WEBHOOKS: 'webhooks.js', // webhooks
 	USERS: 'users.js', // users, passwords ( encrypted ), tokens etc...
 	ADMINS: 'admins.js', // administrators list
 	PERMISSIONS: 'permissions.js' // permissions matrix
@@ -32,9 +33,7 @@ const SETTINGS = {
 	LOG_FILE_LOCATION: 'log-file-location',
 	LOG_LEVEL: 'log-level',
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
-	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
-
-	WEBHOOKS: 'webhooks'
+	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count'
 };
 
 const SETTINGS_GROUP = {

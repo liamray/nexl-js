@@ -87,3 +87,4 @@ UtilsService.prefixUrlObject(REST_URLS.GENERAL);
 UtilsService.prefixUrlObject(REST_URLS.STORAGE);
 UtilsService.prefixUrlObject(REST_URLS.PERMISSIONS);
 UtilsService.prefixUrlObject(REST_URLS.SETTINGS);
+UtilsService.prefixUrlObject(REST_URLS.WEBHOOKS);

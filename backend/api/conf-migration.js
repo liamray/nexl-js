@@ -9,19 +9,32 @@ const dateFormat = require('dateformat');
 const j79 = require('j79-utils');
 const schemas = require('../common/schemas');
 const schemaValidation = require('./schema-validation');
-const version = require('./../../package.json').version;
+const nexlInstanceVersion = require('./../../package.json').version;
 
 CONF_VERSIONS =
 	[
-		{
-			version: '3.3.0',
-			action: (data) => {
-				logger.log.info('Migrating a [setting.js] config to [3.3.0] version');
-				data['settings.js']['data']['webhooks'] = [];
-			}
-		}
-	]
-;
+		// example #1: adding a new [X] field to the [settings.js] file
+		/*
+				{
+					version: '3.5.0',
+					action: (data) => {
+						logger.log.info('Adding a [X] field to the [setting.js] file');
+						data['settings.js']['data']['x'] = [];
+					}
+				}
+		*/
+
+		// example #2: deleting a [settings.js] file
+		/*
+				{
+					version: '3.5.0',
+					action: (data) => {
+						logger.log.info('Removing a [settings.js] file, not in use anymore');
+						delete data['settings.js'];
+					}
+				}
+		*/
+	];
 
 function gatherConfFiles() {
 	const appDataDir = confMgmt.getNexlAppDataDir();
@@ -77,8 +90,6 @@ function validateFilesVersion(confFilesContent) {
 	let version;
 
 	for (let fileName in confFilesContent) {
-		let contentAsJson;
-
 		// resolving file version
 		const fileVersion = confFilesContent[fileName].version;
 
@@ -100,7 +111,7 @@ function validateFilesVersion(confFilesContent) {
 }
 
 function validateFilesVersionVsInstanceVersion(confFilesVersion) {
-	if (confFilesVersion <= version) {
+	if (confFilesVersion <= nexlInstanceVersion) {
 		// valid => conf files version is lower-equals to version
 		return;
 	}
@@ -108,19 +119,19 @@ function validateFilesVersionVsInstanceVersion(confFilesVersion) {
 	// nexl instance version is lower than conf files version
 	// it can be still valid if conf files version didn't change. checking...
 	const latestUpdateVersion = CONF_VERSIONS[CONF_VERSIONS.length - 1].version;
-	if (version > CONF_VERSIONS[CONF_VERSIONS.length - 1].version) {
+	if (nexlInstanceVersion > CONF_VERSIONS[CONF_VERSIONS.length - 1].version) {
 		// valid => no changes in JSON structure
 		return;
 	}
 
-	throw`The [${version}] nexl server instance cannot run with a [${confFilesVersion}] version of configuration files`;
+	throw`The [${nexlInstanceVersion}] nexl server instance cannot run with a [${confFilesVersion}] version of configuration files`;
 }
 
-function findMinVersionIndex2Migrate(confFileVersion) {
-	let versionIndex = CONF_VERSIONS.length;
+function findApproptiateVersion2StartMigration(confFileVersion) {
+	let versionIndex = -1;
 
 	for (let index = CONF_VERSIONS.length - 1; index >= 0; index--) {
-		if (confFileVersion < CONF_VERSIONS[index].version) {
+		if (confFileVersion < CONF_VERSIONS[index].version && CONF_VERSIONS[index].version <= nexlInstanceVersion) {
 			versionIndex = index;
 		}
 	}
@@ -139,33 +150,25 @@ function backUpAppDataDir(appDataDir) {
 	}
 }
 
-function performMigration(versionIndex2Migrate, confFilesList, confFilesContent) {
-	const appDataDir = confMgmt.getNexlAppDataDir();
 
-	// backing up an [app-dir] dir
-	backUpAppDataDir(appDataDir);
+function performSchemaValidation(confFilesContent) {
+	// running schema validation
+	for (let fileName in confFilesContent) {
+		const validationResult = schemaValidation(confFilesContent[fileName].data, schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
+		if (!validationResult.isValid) {
+			logger.log.error(`The [${fileName}] configuration file is broken or has invalid data structure. As a work around you can delete this file from the [${confMgmt.getNexlAppDataDir()}] dir ( don't forget to backup it before ) and start nexl server again.`);
+			throw validationResult.err;
+		}
+	}
+}
 
-	// migrating
-	logger.log.info(`Migrating configuration files in [${confMgmt.APP_DATA_DIR}] dir. Migrating from the [${CONF_VERSIONS[versionIndex2Migrate].version}]..[${CONF_VERSIONS[CONF_VERSIONS.length - 1].version}] version`);
+function migrateFiles(confFilesContent, confFilesList, versionIndex2Migrate) {
+	logger.log.info(`Migrating configuration files in [${confMgmt.getNexlAppDataDir()}] dir. Migrating from the [${CONF_VERSIONS[versionIndex2Migrate].version}]..[${CONF_VERSIONS[CONF_VERSIONS.length - 1].version}] version`);
 	for (let index = versionIndex2Migrate; index < CONF_VERSIONS.length; index++) {
 		CONF_VERSIONS[index].action(confFilesContent);
 	}
 
-	// tuning up
-	for (let fileName in confFilesContent) {
-		// updating version to the latest one
-		confFilesContent[fileName].version = CONF_VERSIONS[CONF_VERSIONS.length - 1].version;
-
-		// running schema validation
-		const validationResult = schemaValidation(confFilesContent[fileName]['data'], schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
-
-		if (!validationResult.isValid) {
-			logger.log.error(`Configuration files are migrated but something went wrong and the [${fileName}] file still has invalid JSON strcture. As a work around you can delete all files in the [${appDataDir}] dir ( don't forget to backup it before ) and start nexl server again.`);
-			throw validationResult.err;
-		}
-	}
-
-	// deleting unused file by comparing the initial and final state
+	// deleting unused files by comparing the initial and final state
 	// initial state is a [confFilesList] and final state is a [confFilesContent]
 	const newConfFilesList = Object.keys(confFilesContent);
 	for (let index in confFilesList) {
@@ -176,7 +179,7 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 		}
 
 		// deleting unused conf file
-		const fullPath = path.join(appDataDir, fileName);
+		const fullPath = path.join(confMgmt.getNexlAppDataDir(), fileName);
 		logger.log.info(`Deleting a [${fullPath}] conf file. It's not in use anymore`);
 		try {
 			fs.unlinkSync(fullPath);
@@ -185,10 +188,19 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 			throw e;
 		}
 	}
+}
 
+function upgradeConfFilesVersion(confFilesContent) {
+	for (let fileName in confFilesContent) {
+		// updating version to the latest one
+		confFilesContent[fileName].version = nexlInstanceVersion;
+	}
+}
+
+function overwriteFiles(confFilesContent) {
 	// overwriting config files
 	for (let fileName in confFilesContent) {
-		const fullPath = path.join(appDataDir, fileName);
+		const fullPath = path.join(confMgmt.getNexlAppDataDir(), fileName);
 		try {
 			fs.writeFileSync(fullPath, confMgmt.stringifyConfig(confFilesContent[fileName]), {encoding: confConsts.ENCODING_UTF8});
 		} catch (e) {
@@ -196,8 +208,6 @@ function performMigration(versionIndex2Migrate, confFilesList, confFilesContent)
 			throw e;
 		}
 	}
-
-	logger.log.info('Configuration migration performed successfully !!!');
 }
 
 function migrateAppDataInner() {
@@ -220,16 +230,38 @@ function migrateAppDataInner() {
 	validateFilesVersionVsInstanceVersion(confFilesVersion);
 
 	// searching for an appropriate version to migrate
-	const versionIndex2Migrate = findMinVersionIndex2Migrate(confFilesVersion);
+	const versionIndex2Migrate = findApproptiateVersion2StartMigration(confFilesVersion);
 
-	// should we migrate at all ?
-	if (versionIndex2Migrate >= CONF_VERSIONS.length) {
-		logger.log.debug(`Configuration files in [${confMgmt.APP_DATA_DIR}] dir are already updated to the latest version.`);
+	// should we overwrite files ?
+	let isOverwriteFiles = false;
+
+	// files migration
+	if (versionIndex2Migrate >= 0) {
+		isOverwriteFiles = true;
+		migrateFiles(confFilesContent, confFilesList, versionIndex2Migrate);
+	}
+
+	// version upgrade
+	if (confFilesVersion !== nexlInstanceVersion) {
+		isOverwriteFiles = true;
+		upgradeConfFilesVersion(confFilesContent);
+	}
+
+	// validating files content
+	performSchemaValidation(confFilesContent);
+
+	// should we overwrite files ?
+	if (!isOverwriteFiles) {
+		logger.log.debug('All configuration files are updated. Nothing to migrate');
 		return;
 	}
 
-	// back
-	performMigration(versionIndex2Migrate, confFilesList, confFilesContent);
+	// backing up an [app-dir] dir
+	backUpAppDataDir(confMgmt.getNexlAppDataDir());
+	// overwriting files
+	overwriteFiles(confFilesContent);
+
+	logger.log.info('Configuration migration performed successfully !!!');
 }
 
 function migrateAppData() {

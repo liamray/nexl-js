@@ -28,6 +28,7 @@ const general = require('../routes/general/general-route');
 const usersRoute = require('../routes/users/users-route');
 const permissionsRoute = require('../routes/permissions/permissions-route');
 const settingsRoute = require('../routes/settings/settings-route');
+const webhooksRoute = require('../routes/webhooks-route');
 const expressionsRoute = require('../routes/expressions/expressions-route');
 const reservedRoute = require('../routes/reserved/reserved-route');
 
@@ -85,6 +86,7 @@ function create(interceptors) {
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.USERS.PREFIX}/`, usersRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.PERMISSIONS.PREFIX}/`, permissionsRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.SETTINGS.PREFIX}/`, settingsRoute);
+	nexlApp.use(`/${restUrls.ROOT}/${restUrls.WEBHOOKS.PREFIX}/`, webhooksRoute);
 	nexlApp.use(`/${restUrls.ROOT}/${restUrls.GENERAL.PREFIX}/`, general);
 	nexlApp.use(`/${restUrls.ROOT}/`, reservedRoute);
 	nexlApp.use('/', expressionsRoute);

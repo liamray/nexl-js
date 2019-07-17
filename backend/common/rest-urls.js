@@ -55,7 +55,13 @@ REST_URLS.SETTINGS = {
 	PREFIX: 'settings',
 	URLS: {
 		SAVE_SETTINGS: '/save',
-		LOAD_SETTINGS: '/load',
+		LOAD_SETTINGS: '/load'
+	}
+};
+
+REST_URLS.WEBHOOKS = {
+	PREFIX: 'webhooks',
+	URLS: {
 		ADD_MODIFY_WEBHOOK: '/add-modify-webhook'
 	}
 };

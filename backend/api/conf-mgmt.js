@@ -201,7 +201,8 @@ function preloadConfs() {
 	return Promise.resolve()
 		.then(_ => load(confConsts.CONF_FILES.USERS, true))
 		.then(_ => load(confConsts.CONF_FILES.PERMISSIONS, true))
-		.then(_ => load(confConsts.CONF_FILES.ADMINS, true));
+		.then(_ => load(confConsts.CONF_FILES.ADMINS, true))
+		.then(_ => load(confConsts.CONF_FILES.WEBHOOKS, true));
 }
 
 function createStorageDirIfNeeded() {
