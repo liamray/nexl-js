@@ -124,7 +124,7 @@ function validateFilesVersionVsInstanceVersion(confFilesVersion) {
 		return;
 	}
 
-	throw`The [${nexlInstanceVersion}] nexl server instance cannot run with a [${confFilesVersion}] version of configuration files`;
+	throw`The [${nexlInstanceVersion}] nexl server instance cannot run with a [${confFilesVersion}] configuration files. As a work around you can delete all conf files from the [${confMgmt.getNexlAppDataDir()}] directory ( backup it before ) and restart nexl server.`;
 }
 
 function findApproptiateVersion2StartMigration(confFileVersion) {
@@ -167,7 +167,16 @@ function migrateFiles(confFilesContent, confFilesList, versionIndex2Migrate) {
 	for (let index = versionIndex2Migrate; index < CONF_VERSIONS.length; index++) {
 		CONF_VERSIONS[index].action(confFilesContent);
 	}
+}
 
+function upgradeConfFilesVersion(confFilesContent) {
+	for (let fileName in confFilesContent) {
+		// updating version to the latest one
+		confFilesContent[fileName].version = nexlInstanceVersion;
+	}
+}
+
+function removeDeletedConfFiles(confFilesContent, confFilesList) {
 	// deleting unused files by comparing the initial and final state
 	// initial state is a [confFilesList] and final state is a [confFilesContent]
 	const newConfFilesList = Object.keys(confFilesContent);
@@ -187,13 +196,6 @@ function migrateFiles(confFilesContent, confFilesList, versionIndex2Migrate) {
 			logger.log.error(`Failed to delete a [${fullPath}] file.`);
 			throw e;
 		}
-	}
-}
-
-function upgradeConfFilesVersion(confFilesContent) {
-	for (let fileName in confFilesContent) {
-		// updating version to the latest one
-		confFilesContent[fileName].version = nexlInstanceVersion;
 	}
 }
 
@@ -258,6 +260,10 @@ function migrateAppDataInner() {
 
 	// backing up an [app-dir] dir
 	backUpAppDataDir(confMgmt.getNexlAppDataDir());
+
+	// physically remove deleted conf files
+	removeDeletedConfFiles(confFilesContent, confFilesList);
+
 	// overwriting files
 	overwriteFiles(confFilesContent);
 
