@@ -170,7 +170,7 @@ function migrateFiles(confFilesContent, confFilesList, versionIndex2Migrate) {
 }
 
 function upgradeConfFilesVersion(confFilesContent, confFilesVersion) {
-	logger.log.info(`Updating configuration files from from the [${confFilesVersion}] version to the [${nexlInstanceVersion}] version`);
+	logger.log.info(`Updating configuration files from the [${confFilesVersion}] version to the [${nexlInstanceVersion}] version`);
 	for (let fileName in confFilesContent) {
 		// updating version to the latest one
 		confFilesContent[fileName].version = nexlInstanceVersion;
