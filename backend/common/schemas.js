@@ -216,6 +216,7 @@ SCHEMAS[confConsts.CONF_FILES.WEBHOOKS] = [{
 
 		return valid();
 	},
+	secret: valid,
 	isDisabled: (val) => mandatoryBool(val, 'Status is a mandatory')
 }];
 

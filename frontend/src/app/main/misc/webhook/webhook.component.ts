@@ -84,11 +84,8 @@ export class WebhookComponent implements OnInit {
     // loading data
     this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, 'json').subscribe(
       (data: any) => {
-        // this.permissions = data.body;
-        // this.globalComponentsService.loader.close();
-        // this.admins.set(this.permissions.admins);
-        // this.assignpermissions.set(this.permissions.assignPermissions);
-        // this.permissionsWindow.open();
+        this.globalComponentsService.loader.close();
+        this.window.close();
       },
       err => {
         this.globalComponentsService.loader.close();

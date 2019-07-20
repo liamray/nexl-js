@@ -30,6 +30,10 @@ function applyWebhooks(webhooks) {
 	return Promise.resolve();
 }
 
+function addId(webhooks, webhook) {
+	webhook.id = (webhooks.length < 1) ? 1 : webhooks[webhooks.length - 1].id + 1;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // add/modify webhook
 //////////////////////////////////////////////////////////////////////////////
@@ -53,13 +57,14 @@ router.post(restUrls.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, function (req, res) {
 
 	const existingWebhookIndex = findExistingWebhookIndex(existingWebhooks, webhook);
 	if (existingWebhookIndex < 0) {
+		addId(existingWebhooks, webhook);
 		existingWebhooks.push(webhook);
 	} else {
 		existingWebhooks[existingWebhookIndex] = webhook;
 	}
 
 	// saving
-	return confMgmt.save(confConsts.CONF_FILES.WEBHOOKS, existingWebhooks)
+	return confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
 		.then(_ => applyWebhooks(existingWebhooks))
 		.then(_ => {
 			res.send({});

@@ -1151,7 +1151,8 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_WEBHOOK_DIALOG, {
       relativePath: relativePath,
       url: '',
-      secret: ''
+      secret: '',
+      isDisabled: false
     });
   }
 
