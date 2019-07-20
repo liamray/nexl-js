@@ -119,4 +119,8 @@ export class MainMenuComponent implements AfterViewInit {
   openNexlDemo() {
     window.open('http://www.nexl-js.com/demo/3.1.0/demo.php', '_blank');
   }
+
+  webhooks() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_WEBHOOKS_DIALOG);
+  }
 }
