@@ -18,7 +18,7 @@ function findExistingWebhookIndex(webhooks, webhook) {
 	}
 
 	for (let index = 0; index < webhooks.length; index++) {
-		if (webhooks.id === webhook.id) {
+		if (webhooks[index].id === webhook.id) {
 			return index;
 		}
 	}
