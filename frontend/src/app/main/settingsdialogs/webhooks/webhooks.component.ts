@@ -179,15 +179,16 @@ export class WebhooksComponent {
     this.globalComponentsService.loader.open();
 
     // loading available values from server
-    this.http.post({}, REST_URLS.USERS.URLS.LIST_USERS, 'json').subscribe(
+    this.http.post({}, REST_URLS.WEBHOOKS.URLS.LOAD_WEBHOOKS, 'json').subscribe(
       (data: any) => {
+        console.log(data.body);
         this.globalComponentsService.loader.close();
         this.setGridData(data.body);
         this.webhooksWindow.open();
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load users list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load webhooks list. Reason : [${err.statusText}]`);
         console.log(err);
       }
     );

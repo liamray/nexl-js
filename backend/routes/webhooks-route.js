@@ -63,6 +63,8 @@ router.post(restUrls.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, function (req, res) {
 		existingWebhooks[existingWebhookIndex] = webhook;
 	}
 
+	// todo: take in account the secret
+
 	// saving
 	return confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
 		.then(_ => applyWebhooks(existingWebhooks))
@@ -75,6 +77,40 @@ router.post(restUrls.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, function (req, res) {
 				security.sendError(res, err);
 			});
 
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// load webhooks
+//////////////////////////////////////////////////////////////////////////////
+function loadWebhooks() {
+	let webhooks = confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS);
+	webhooks = clone(webhooks);
+
+	// not sending a secret to the client, iterating over webhooks and removing it
+	webhooks.forEach(item => {
+		if (item.secret !== undefined) {
+			item.secret = confConsts.PASSWORD_STUB;
+		}
+	});
+
+	return webhooks;
+}
+
+
+router.post(restUrls.WEBHOOKS.URLS.LOAD_WEBHOOKS, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+
+	logger.log.debug(`The [${username}] user is loading webhooks list`);
+
+	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to load webhooks', username);
+		security.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	const webhooks = loadWebhooks();
+	res.send(webhooks);
+	logger.log.log('verbose', `Webhooks list sent to the clientby [${username}] user`);
 });
 
 //////////////////////////////////////////////////////////////////////////////
