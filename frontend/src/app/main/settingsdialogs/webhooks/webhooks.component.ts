@@ -26,8 +26,8 @@ export class WebhooksComponent {
       localdata: [],
       datafields: [
         {name: 'relativePath', type: 'string'},
-        {name: 'url', type: 'boolean'},
-        {name: 'apiKey', type: 'string'},
+        {name: 'url', type: 'string'},
+        {name: 'disabled', type: 'boolean'}
       ],
       datatype: 'array'
     };
@@ -35,33 +35,61 @@ export class WebhooksComponent {
   webhooksColumns: any[] =
     [
       {
-        text: 'File path',
+        text: 'File|Dir path',
         datafield: 'relativePath',
         align: 'center',
-        width: '180px',
+        width: '160px',
+        editable: false,
         cellclassname: function (row, column, value, data) {
           return data.disabled ? 'disabledItem' : '';
-        },
-        cellendedit: (rowNr, b, c, oldValue, newValue, f) => {
-          this.onChange(rowNr, oldValue, newValue);
-          return true;
         }
       },
       {
         text: 'URL',
         datafield: 'url',
         align: 'center',
-        width: 80,
+        width: '160px',
         sortable: false,
-        editable: true
+        editable: false,
+        cellclassname: function (row, column, value, data) {
+          return data.disabled ? 'disabledItem' : '';
+        }
       },
       {
-        text: 'API Key',
-        datafield: 'apiKEY',
+        text: 'Edit',
         align: 'center',
-        width: 80,
         sortable: false,
-        editable: true
+        editable: false,
+        width: 80,
+        height: 50,
+        createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
+          let container = document.createElement('div');
+          let id = `argsEnableDisableButton${this.counter}`;
+          container.id = id;
+          container.style.border = 'none';
+          htmlElement.appendChild(container);
+
+          let options = {
+            width: '100%',
+            height: 27,
+            template: 'default',
+            imgSrc: './nexl/site/icons/edit.png',
+            imgWidth: 16,
+            imgHeight: 16,
+            imgPosition: 'center',
+            textPosition: 'center'
+          };
+
+          let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
+
+          toggleButton.addEventHandler('click', (): void => {
+            this.enableDisableUser(row);
+          });
+
+          this.counter++;
+        },
+        initwidget: (row: number, column: any, value: any, htmlElement: HTMLElement): void => {
+        }
       },
       {
         text: 'Enable/<br/>Disable',

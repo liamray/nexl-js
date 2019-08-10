@@ -3,7 +3,7 @@
            [autoOpen]="false"
            [isModal]="true"
            [resizable]="false"
-           [width]="460"
+           [width]="580"
            [height]="330"
            [initContent]="initContent"
            (onOpen)="onOpen()"
@@ -26,7 +26,7 @@
         <jqxTooltip
           [position]="'mouse'"
           [autoHideDelay]="999999999"
-          [content]="'<p style=\'text-align: left;\'></p>'">
+          [content]="'<p style=\'text-align: left;\'>You can also right click on a file or directory to create a webhook directly for selected path</p>'">
           <img src='./nexl/site/icons/info.png' style="position: relative; top: 3px;"/>
         </jqxTooltip>
       </div>
@@ -35,8 +35,8 @@
 
       <jqxGrid
         #webhooksGrid
-        [source]="usersDataAdapter"
-        [columns]="usersColumns"
+        [source]="webhooksDataAdapter"
+        [columns]="webhooksColumns"
         [width]="'100%'"
         [height]="200"
         [columnsheight]="55"
