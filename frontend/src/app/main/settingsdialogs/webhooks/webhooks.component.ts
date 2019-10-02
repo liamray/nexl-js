@@ -25,8 +25,8 @@ export class WebhooksComponent {
     {
       localdata: [],
       datafields: [
+        {name: 'id', type: 'number'},
         {name: 'relativePath', type: 'string'},
-        {name: 'url', type: 'string'},
         {name: 'disabled', type: 'boolean'}
       ],
       datatype: 'array'
@@ -38,19 +38,8 @@ export class WebhooksComponent {
         text: 'File|Dir path',
         datafield: 'relativePath',
         align: 'center',
-        width: '160px',
-        editable: false,
-        cellclassname: function (row, column, value, data) {
-          return data.disabled ? 'disabledItem' : '';
-        }
-      },
-      {
-        text: 'URL',
-        datafield: 'url',
-        align: 'center',
-        width: '160px',
-        sortable: false,
-        editable: false,
+        width: '330px',
+        editable: true,
         cellclassname: function (row, column, value, data) {
           return data.disabled ? 'disabledItem' : '';
         }
@@ -64,12 +53,12 @@ export class WebhooksComponent {
         height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
-          let id = `argsEnableDisableButton${this.counter}`;
+          let id = `argsEditButton${this.counter}`;
           container.id = id;
           container.style.border = 'none';
           htmlElement.appendChild(container);
 
-          let options = {
+          const options = {
             width: '100%',
             height: 27,
             template: 'default',
@@ -83,7 +72,7 @@ export class WebhooksComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            this.enableDisableUser(row);
+            alert('Editing');
           });
 
           this.counter++;
@@ -105,7 +94,7 @@ export class WebhooksComponent {
           container.style.border = 'none';
           htmlElement.appendChild(container);
 
-          let options = {
+          const options = {
             width: '100%',
             height: 27,
             template: 'default',
@@ -119,7 +108,7 @@ export class WebhooksComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            this.enableDisableUser(row);
+            this.enableDisableItem(row);
           });
 
           this.counter++;
@@ -140,7 +129,7 @@ export class WebhooksComponent {
           container.style.border = 'none';
           htmlElement.appendChild(container);
 
-          let options = {
+          const options = {
             width: '100%',
             height: 27,
             template: 'default',
@@ -209,7 +198,6 @@ export class WebhooksComponent {
     // loading available values from server
     this.http.post({}, REST_URLS.WEBHOOKS.URLS.LOAD_WEBHOOKS, 'json').subscribe(
       (data: any) => {
-        console.log(data.body);
         this.globalComponentsService.loader.close();
         this.setGridData(data.body);
         this.webhooksWindow.open();
@@ -269,31 +257,9 @@ export class WebhooksComponent {
     this.webhooksGrid.addrow(1, {});
   }
 
-  enableDisableUser(row: any) {
-    const username = this.webhooksGrid.getcellvalue(row.bounddata.uid, 'username');
-    const isDisabled = !row.bounddata.disabled;
-
-    if (username === undefined || username === null || username.length < 1) {
-      return;
-    }
-
-    this.globalComponentsService.loader.open();
-
-    // enabling/disabling user
-    this.http.post({
-      username: username,
-      isDisabled: isDisabled
-    }, REST_URLS.USERS.URLS.ENABLE_DISABLE_USER, 'json').subscribe(
-      (data: any) => {
-        row.bounddata.disabled = !row.bounddata.disabled;
-        this.webhooksGrid.refresh();
-        this.globalComponentsService.loader.close();
-      },
-      err => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to enable/disable [${username}] user. Reason : ${err.statusText}`);
-        console.log(err);
-      });
+  enableDisableItem(row: any) {
+    row.bounddata.disabled = !row.bounddata.disabled;
+    this.webhooksGrid.refresh();
   }
 
   removeUserUnner(rowNr: number, username: string) {

@@ -26,6 +26,7 @@ export class MainMenuComponent implements AfterViewInit {
         this.mainMenu.disable('main-menu-permissions', !status.isAdmin);
         this.mainMenu.disable('main-menu-settings', !status.isAdmin);
         this.mainMenu.disable('main-menu-users', !status.isAdmin);
+        this.mainMenu.disable('main-menu-webhooks', !status.isAdmin);
         this.hasReadPermission = status.hasReadPermission;
         this.hasWritePermission = status.hasWritePermission;
         this.updateSaveMenuItem();
@@ -57,6 +58,7 @@ export class MainMenuComponent implements AfterViewInit {
     this.mainMenu.disable('main-menu-permissions', true);
     this.mainMenu.disable('main-menu-settings', true);
     this.mainMenu.disable('main-menu-users', true);
+    this.mainMenu.disable('main-menu-webhooks', true);
     this.mainMenu.disable('main-menu-prettify', true);
   }
 
