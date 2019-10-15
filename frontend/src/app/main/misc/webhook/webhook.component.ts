@@ -7,6 +7,7 @@ import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput
 import {HttpRequestService} from "../../services/http.requests.service";
 import jqxPasswordInput = jqwidgets.jqxPasswordInput;
 import jqxValidator = jqwidgets.jqxValidator;
+import jqxCheckBox = jqwidgets.jqxCheckBox;
 
 export const ICONS = {
   INFO: {icon: 'msgBoxInfoIcon', title: 'Information'},
@@ -25,6 +26,7 @@ export class WebhookComponent implements OnInit {
   @ViewChild('relativePath') relativePath: jqxInputComponent;
   @ViewChild('url') url: jqxInputComponent;
   @ViewChild('secret') secret: jqxPasswordInput;
+  @ViewChild('isDisabled') isDisabled: jqxCheckBox;
   @ViewChild('webhookValidator') webhookValidator: jqxValidator;
 
   @ViewChild('okButton') okButton: jqxButtonComponent;
@@ -67,7 +69,7 @@ export class WebhookComponent implements OnInit {
 
   constructor(private globalComponentsService: GlobalComponentsService, private http: HttpRequestService, private messageService: MessageService) {
     this.messageService.getMessage().subscribe(message => {
-      if (message.type === MESSAGE_TYPE.OPEN_WEBHOOK_DIALOG) {
+      if (message.type === MESSAGE_TYPE.EDIT_WEBHOOK) {
         this.openWindow(message.data);
       }
     });
@@ -82,7 +84,7 @@ export class WebhookComponent implements OnInit {
     this.globalComponentsService.loader.open();
 
     // loading data
-    this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, 'json').subscribe(
+    this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.EDIT_WEBHOOK, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
         this.window.close();

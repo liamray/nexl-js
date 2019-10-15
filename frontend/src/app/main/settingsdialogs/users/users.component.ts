@@ -311,7 +311,7 @@ export class UsersComponent {
 
     // confirmation about unsaved data
     const opts = {
-      title: `Confirm user remove`,
+      title: `Confirm user removal`,
       label: `Are you sure you want to remove a [${username}] user ?`,
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {

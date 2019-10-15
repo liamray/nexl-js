@@ -6,7 +6,7 @@ export enum MESSAGE_TYPE {
   // webhooks
   OPEN_WEBHOOK_DIALOG, // single dialog window
   OPEN_WEBHOOKS_DIALOG, // all webhooks
-  WEBHOOK_UPDATED, // fired when when added/modified a webhook
+  EDIT_WEBHOOK,
 
   SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
   SET_TAB_CONTENT,

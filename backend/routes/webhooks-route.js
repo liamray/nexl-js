@@ -35,9 +35,9 @@ function addId(webhooks, webhook) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// add/modify webhook
+// edit a webhook
 //////////////////////////////////////////////////////////////////////////////
-router.post(restUrls.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, function (req, res) {
+router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 
 	logger.log.debug(`The [${username}] user is updating a webhook`);
@@ -69,11 +69,67 @@ router.post(restUrls.WEBHOOKS.URLS.ADD_MODIFY_WEBHOOK, function (req, res) {
 	return confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
 		.then(_ => applyWebhooks(existingWebhooks))
 		.then(_ => {
-			res.send({});
-			logger.log.log('verbose', `Webhook is updated and applied by [${username}] user`);
+			res.send({id: webhook.id});
+			logger.log.log('verbose', `Webhook is updated and applied by [${username}] user, [webhookId=${webhook.id}]`);
 		}).catch(
 			(err) => {
 				logger.log.error('Failed to update a webhook. Reason : [%s]', err);
+				security.sendError(res, err);
+			});
+
+});
+//////////////////////////////////////////////////////////////////////////////
+// delete a webhook
+//////////////////////////////////////////////////////////////////////////////
+
+function findWebhook2Delete(webhooks, webhook) {
+	let index = -1;
+	for (let i in webhooks) {
+		if (webhooks[i].id === webhook.id) {
+			index = i;
+			break;
+		}
+	}
+
+	return index;
+}
+
+router.post(restUrls.WEBHOOKS.URLS.DELETE_WEBHOOK, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+
+	logger.log.debug(`The [${username}] user is deleting a webhook`);
+
+	if (!security.isAdmin(username)) {
+		logger.log.error('The [%s] user doesn\'t have admin permissions to delete a webhook', username);
+		security.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	// web hook for update
+	const webhook = req.body;
+
+	// loading existing webhooks and cloning it
+	const webhooks = clone(confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS));
+	const index = findWebhook2Delete(webhooks, webhook);
+
+	if (index < 0) {
+		logger.log.error(`Trying to delete a webhook with unknown [id=${webhook.id}]`);
+		security.sendError(res, `Trying to delete a webhook with unknown [id=${webhook.id}]`);
+		return;
+	}
+
+	// removing a webhook
+	webhooks.splice(index, 1);
+
+	// saving
+	return confMgmt.save(webhooks, confConsts.CONF_FILES.WEBHOOKS)
+		.then(_ => applyWebhooks(webhooks))
+		.then(_ => {
+			res.send({id: webhook.id});
+			logger.log.log('verbose', `Webhook is deleted by [${username}] user, [id=${webhook.id}]`);
+		}).catch(
+			(err) => {
+				logger.log.error('Failed to delete a webhook [id=${webhook.id}]. Reason : [%s]', err);
 				security.sendError(res, err);
 			});
 
@@ -110,7 +166,7 @@ router.post(restUrls.WEBHOOKS.URLS.LOAD_WEBHOOKS, function (req, res) {
 
 	const webhooks = loadWebhooks();
 	res.send(webhooks);
-	logger.log.log('verbose', `Webhooks list sent to the clientby [${username}] user`);
+	logger.log.log('verbose', `Webhooks list sent to the client, requested by [${username}] user`);
 });
 
 //////////////////////////////////////////////////////////////////////////////

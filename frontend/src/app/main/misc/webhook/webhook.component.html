@@ -5,7 +5,7 @@
            [resizable]="false"
            [width]="500"
            (onClose)="onClose()"
-           [height]="220"
+           [height]="240"
            [initContent]="initContent"
 >
 
@@ -82,6 +82,30 @@
             [(ngModel)]="webhookData['secret']"
           >
           </jqxPasswordInput>
+        </div>
+        <div class="tooltip">
+          <jqxTooltip
+            [position]="'mouse'"
+            [autoHideDelay]="999999999"
+            [content]="'<p style=\'text-align: left;\'>Optional secret to secure the HTTP request ( see documentation for details )</p>'">
+            <img src='./nexl/site/icons/info.png'/>
+          </jqxTooltip>
+        </div>
+
+        <div style="clear: both"></div>
+
+        <!-- is disabled -->
+        <div class="item">
+          <jqxCheckBox
+            #isDisabled
+            [width]="width"
+            [height]="25"
+            id="isDisabled"
+            name="isDisabled"
+            [(ngModel)]="webhookData['isDisabled']"
+          >
+            Is disabled
+          </jqxCheckBox>
         </div>
         <div class="tooltip">
           <jqxTooltip

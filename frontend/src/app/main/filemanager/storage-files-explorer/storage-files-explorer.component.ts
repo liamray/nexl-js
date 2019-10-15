@@ -1148,7 +1148,7 @@ export class StorageExplorerComponent implements AfterViewInit {
 
     const relativePath = (this.rightClickSelectedElement === undefined) ? UtilsService.SERVER_INFO.SLASH : this.rightClickSelectedElement.value.relativePath;
 
-    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_WEBHOOK_DIALOG, {
+    this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, {
       relativePath: relativePath,
       url: '',
       secret: '',

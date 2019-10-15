@@ -62,7 +62,8 @@ REST_URLS.SETTINGS = {
 REST_URLS.WEBHOOKS = {
 	PREFIX: 'webhooks',
 	URLS: {
-		ADD_MODIFY_WEBHOOK: '/add-modify-webhook',
+		EDIT_WEBHOOK: '/edit-webhook',
+		DELETE_WEBHOOK: '/delete-webhook',
 		LOAD_WEBHOOKS: '/load-webhooks'
 
 	}

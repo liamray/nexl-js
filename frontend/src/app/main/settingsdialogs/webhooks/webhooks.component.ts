@@ -27,7 +27,7 @@ export class WebhooksComponent {
       datafields: [
         {name: 'id', type: 'number'},
         {name: 'relativePath', type: 'string'},
-        {name: 'disabled', type: 'boolean'}
+        {name: 'isDisabled', type: 'boolean'}
       ],
       datatype: 'array'
     };
@@ -39,9 +39,9 @@ export class WebhooksComponent {
         datafield: 'relativePath',
         align: 'center',
         width: '330px',
-        editable: true,
+        editable: false,
         cellclassname: function (row, column, value, data) {
-          return data.disabled ? 'disabledItem' : '';
+          return data.isDisabled ? 'disabledItem' : '';
         }
       },
       {
@@ -72,7 +72,13 @@ export class WebhooksComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            alert('Editing');
+            // todo: complete it
+            this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, {
+              relativePath: 'WTF',
+              url: '',
+              secret: '',
+              isDisabled: false
+            });
           });
 
           this.counter++;
@@ -143,8 +149,7 @@ export class WebhooksComponent {
           let deleteButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           deleteButton.addEventHandler('click', (): void => {
-            this.removeUser(row.bounddata.uid);
-
+            this.deleteWebhook(row.bounddata);
           });
 
           this.counter++;
@@ -178,8 +183,10 @@ export class WebhooksComponent {
 
     for (let key in data) {
       this.webhooksSource.localdata.push({
-        username: key,
-        disabled: data[key].disabled
+        id: data[key].id,
+        relativePath: data[key].relativePath,
+        url: data[key].url,
+        isDisabled: data[key].isDisabled
       });
     }
 
@@ -258,44 +265,37 @@ export class WebhooksComponent {
   }
 
   enableDisableItem(row: any) {
-    row.bounddata.disabled = !row.bounddata.disabled;
+    row.bounddata.isDisabled = !row.bounddata.isDisabled;
     this.webhooksGrid.refresh();
   }
 
-  removeUserUnner(rowNr: number, username: string) {
+  removeWebhookInner(item) {
     this.globalComponentsService.loader.open();
 
     // removing user
-    this.http.post({username: username}, REST_URLS.USERS.URLS.REMOVE_USER, 'json').subscribe(
+    this.http.post({id: item.id}, REST_URLS.WEBHOOKS.URLS.DELETE_WEBHOOK, 'json').subscribe(
       (data: any) => {
-        this.webhooksGrid.deleterow(rowNr);
+        this.webhooksGrid.deleterow(item.uid);
         this.globalComponentsService.loader.close();
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to remove a [${username}] user. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to remove a [${item.relativePath}] webhook. Reason : ${err.statusText}`);
         console.log(err);
       });
   }
 
-  removeUser(rowNr: any) {
-    const username = this.webhooksGrid.getcellvalue(rowNr, 'username');
-
-    if (username === undefined || username === null || username.length < 1) {
-      this.webhooksGrid.deleterow(rowNr);
-      return;
-    }
-
+  deleteWebhook(item: any) {
     // confirmation about unsaved data
     const opts = {
-      title: `Confirm user remove`,
-      label: `Are you sure you want to remove a [${username}] user ?`,
+      title: `Confirm webhook removal`,
+      label: `Are you sure you want to remove a [${item.relativePath}] webhook ?`,
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {
           return;
         }
 
-        this.removeUserUnner(rowNr, username);
+        this.removeWebhookInner(item);
       },
     };
 
