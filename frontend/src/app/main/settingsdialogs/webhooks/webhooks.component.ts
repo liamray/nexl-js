@@ -74,7 +74,13 @@ export class WebhooksComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, row.bounddata);
+            const data = {
+              id: row.bounddata.id,
+              relativePath: row.bounddata.relativePath,
+              url: row.bounddata.url,
+              isDisabled: row.bounddata.isDisabled
+            };
+            this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, data);
           });
 
           this.counter++;
@@ -169,6 +175,12 @@ export class WebhooksComponent {
           case MESSAGE_TYPE.OPEN_WEBHOOKS_DIALOG: {
             this.open();
             return;
+          }
+
+          case MESSAGE_TYPE.WEBHOOK_UPDATED: {
+            if (this.webhooksWindow.isOpen()) {
+              this.open();
+            }
           }
         }
       });

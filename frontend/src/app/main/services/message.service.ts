@@ -4,9 +4,9 @@ import {Subject} from 'rxjs/Subject';
 
 export enum MESSAGE_TYPE {
   // webhooks
-  OPEN_WEBHOOK_DIALOG, // single dialog window
   OPEN_WEBHOOKS_DIALOG, // all webhooks
   EDIT_WEBHOOK,
+  WEBHOOK_UPDATED,
 
   SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
   SET_TAB_CONTENT,

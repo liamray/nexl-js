@@ -98,6 +98,7 @@ export class WebhookComponent implements OnInit {
         this.globalComponentsService.loader.close();
         this.webhookData.secret = '';
         this.window.close();
+        this.messageService.sendMessage(MESSAGE_TYPE.WEBHOOK_UPDATED);
       },
       err => {
         this.globalComponentsService.loader.close();
@@ -115,6 +116,8 @@ export class WebhookComponent implements OnInit {
     this.isUpdating = false;
     this.webhookData = data;
     this.webhookData.secret = '';
+
+    this.isDisabled.val(this.webhookData.isDisabled);
 
     // this dialog window is being used to create and modify a webhook
     // new webhooks don't have a data.id
