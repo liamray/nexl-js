@@ -34,11 +34,20 @@ export class WebhookComponent implements OnInit {
 
 
   isUpdating = false;
-  webhookData = {};
+  webhookData: any = {};
   errorMsg: string;
 
   webhookValidationRules =
     [
+      {
+        input: '#relativePath',
+        message: 'Path cannot be empty',
+        action: 'keyup, blur',
+        rule: (): any => {
+          const val = this.relativePath.val();
+          return val.length > 0;
+        }
+      },
       {
         input: '#url',
         message: 'URL cannot be empty',
@@ -87,6 +96,7 @@ export class WebhookComponent implements OnInit {
     this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.EDIT_WEBHOOK, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
+        this.webhookData.secret = '';
         this.window.close();
       },
       err => {
@@ -104,6 +114,7 @@ export class WebhookComponent implements OnInit {
   private openWindow(data: any) {
     this.isUpdating = false;
     this.webhookData = data;
+    this.webhookData.secret = '';
 
     // this dialog window is being used to create and modify a webhook
     // new webhooks don't have a data.id

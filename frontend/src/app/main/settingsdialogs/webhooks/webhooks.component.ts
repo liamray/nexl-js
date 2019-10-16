@@ -6,6 +6,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import {jqxGridComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import {UtilsService} from "../../services/utils.service";
 
 
 @Component({
@@ -27,6 +28,7 @@ export class WebhooksComponent {
       datafields: [
         {name: 'id', type: 'number'},
         {name: 'relativePath', type: 'string'},
+        {name: 'url', type: 'string'},
         {name: 'isDisabled', type: 'boolean'}
       ],
       datatype: 'array'
@@ -72,13 +74,7 @@ export class WebhooksComponent {
           let toggleButton = jqwidgets.createInstance(`#${id}`, 'jqxButton', options);
 
           toggleButton.addEventHandler('click', (): void => {
-            // todo: complete it
-            this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, {
-              relativePath: 'WTF',
-              url: '',
-              secret: '',
-              isDisabled: false
-            });
+            this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, row.bounddata);
           });
 
           this.counter++;
@@ -261,12 +257,38 @@ export class WebhooksComponent {
   }
 
   addNewItem() {
-    this.webhooksGrid.addrow(1, {});
+    this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, {
+      relativePath: UtilsService.SERVER_INFO.SLASH,
+      url: '',
+      secret: '',
+      isDisabled: false
+    });
   }
 
   enableDisableItem(row: any) {
-    row.bounddata.isDisabled = !row.bounddata.isDisabled;
-    this.webhooksGrid.refresh();
+    const item = row.bounddata;
+    const data = {
+      id: item.id,
+      relativePath: item.relativePath,
+      url: item.url,
+      isDisabled: !item.isDisabled
+    };
+
+    // activating loading indicator
+    this.globalComponentsService.loader.open();
+
+    // removing user
+    this.http.post(data, REST_URLS.WEBHOOKS.URLS.EDIT_WEBHOOK, 'json').subscribe(
+      (data: any) => {
+        row.bounddata.isDisabled = !row.bounddata.isDisabled;
+        this.webhooksGrid.refresh();
+        this.globalComponentsService.loader.close();
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to disable a [${item.relativePath}] webhook. Reason : ${err.statusText}`);
+        console.log(err);
+      });
   }
 
   removeWebhookInner(item) {
