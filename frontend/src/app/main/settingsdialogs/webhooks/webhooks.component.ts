@@ -37,11 +37,23 @@ export class WebhooksComponent {
   webhooksColumns: any[] =
     [
       {
-        text: 'File|Dir path',
+        text: 'Target File|Dir path',
         datafield: 'relativePath',
         align: 'center',
-        width: '330px',
+        width: '310px',
         editable: false,
+        resizable: true,
+        cellclassname: function (row, column, value, data) {
+          return data.isDisabled ? 'disabledItem' : '';
+        }
+      },
+      {
+        text: 'URL',
+        datafield: 'url',
+        align: 'center',
+        width: '200px',
+        editable: false,
+        resizable: true,
         cellclassname: function (row, column, value, data) {
           return data.isDisabled ? 'disabledItem' : '';
         }
@@ -51,6 +63,7 @@ export class WebhooksComponent {
         align: 'center',
         sortable: false,
         editable: false,
+        resizable: false,
         width: 80,
         height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
@@ -93,6 +106,7 @@ export class WebhooksComponent {
         align: 'center',
         sortable: false,
         editable: false,
+        resizable: false,
         width: 80,
         height: 50,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
@@ -129,6 +143,7 @@ export class WebhooksComponent {
         align: 'center',
         width: 80,
         sortable: false,
+        resizable: false,
         editable: false,
         createwidget: (row: any, column: any, value: string, htmlElement: HTMLElement): void => {
           let container = document.createElement('div');
