@@ -29,7 +29,8 @@ export class WebhooksComponent {
         {name: 'id', type: 'number'},
         {name: 'relativePath', type: 'string'},
         {name: 'url', type: 'string'},
-        {name: 'isDisabled', type: 'boolean'}
+        {name: 'isDisabled', type: 'boolean'},
+        {name: 'secret', type: 'string'}
       ],
       datatype: 'array'
     };
@@ -91,7 +92,8 @@ export class WebhooksComponent {
               id: row.bounddata.id,
               relativePath: row.bounddata.relativePath,
               url: row.bounddata.url,
-              isDisabled: row.bounddata.isDisabled
+              isDisabled: row.bounddata.isDisabled,
+              secret: row.bounddata.secret
             };
             this.messageService.sendMessage(MESSAGE_TYPE.EDIT_WEBHOOK, data);
           });
@@ -209,7 +211,8 @@ export class WebhooksComponent {
         id: data[key].id,
         relativePath: data[key].relativePath,
         url: data[key].url,
-        isDisabled: data[key].isDisabled
+        isDisabled: data[key].isDisabled,
+        secret: data[key].secret
       });
     }
 

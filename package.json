@@ -78,8 +78,8 @@
   },
   "devDependencies": {
     "assert": "^1.4.1",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.4",
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
   }
 }

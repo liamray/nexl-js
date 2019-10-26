@@ -7,9 +7,10 @@ const confMgmt = require('../api/conf-mgmt');
 const confConsts = require('../common/conf-constants');
 const restUrls = require('../common/rest-urls');
 const logger = require('../api/logger');
+const utils = require('../api/utils');
 
 //////////////////////////////////////////////////////////////////////////////
-// add/modify webhook
+// edit a webhook
 //////////////////////////////////////////////////////////////////////////////
 
 function findExistingWebhookIndex(webhooks, webhook) {
@@ -26,17 +27,25 @@ function findExistingWebhookIndex(webhooks, webhook) {
 	return -1;
 }
 
-function applyWebhooks(webhooks) {
-	return Promise.resolve();
+function addNewWebhook(existingWebhooks, newWebhook) {
+	// calculating new id
+	newWebhook.id = (existingWebhooks.length < 1) ? 1 : existingWebhooks[existingWebhooks.length - 1].id + 1;
+
+	// adding a new webhook
+	existingWebhooks.push(newWebhook);
 }
 
-function addId(webhooks, webhook) {
-	webhook.id = (webhooks.length < 1) ? 1 : webhooks[webhooks.length - 1].id + 1;
+function updateExistingWebhook(existingWebhooks, existingWebhookIndex, webhook) {
+	// handling the secret
+	const secret = existingWebhooks[existingWebhookIndex].secret;
+	if (webhook.secret === confConsts.PASSWORD_STUB) {
+		webhook.secret = secret;
+	}
+
+	// updating...
+	existingWebhooks[existingWebhookIndex] = webhook;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// edit a webhook
-//////////////////////////////////////////////////////////////////////////////
 router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 	const username = security.getLoggedInUsername(req);
 
@@ -57,17 +66,13 @@ router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 
 	const existingWebhookIndex = findExistingWebhookIndex(existingWebhooks, webhook);
 	if (existingWebhookIndex < 0) {
-		addId(existingWebhooks, webhook);
-		existingWebhooks.push(webhook);
+		addNewWebhook(existingWebhooks, webhook);
 	} else {
-		existingWebhooks[existingWebhookIndex] = webhook;
+		updateExistingWebhook(existingWebhooks, existingWebhookIndex, webhook);
 	}
-
-	// todo: take in account the secret
 
 	// saving
 	return confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
-		.then(_ => applyWebhooks(existingWebhooks))
 		.then(_ => {
 			res.send({id: webhook.id});
 			logger.log.log('verbose', `Webhook is updated and applied by [${username}] user, [webhookId=${webhook.id}]`);
@@ -123,7 +128,6 @@ router.post(restUrls.WEBHOOKS.URLS.DELETE_WEBHOOK, function (req, res) {
 
 	// saving
 	return confMgmt.save(webhooks, confConsts.CONF_FILES.WEBHOOKS)
-		.then(_ => applyWebhooks(webhooks))
 		.then(_ => {
 			res.send({id: webhook.id});
 			logger.log.log('verbose', `Webhook is deleted by [${username}] user, [id=${webhook.id}]`);
@@ -144,7 +148,7 @@ function loadWebhooks() {
 
 	// not sending a secret to the client, iterating over webhooks and removing it
 	webhooks.forEach(item => {
-		if (item.secret !== undefined) {
+		if (!utils.isEmptyStr(item.secret)) {
 			item.secret = confConsts.PASSWORD_STUB;
 		}
 	});

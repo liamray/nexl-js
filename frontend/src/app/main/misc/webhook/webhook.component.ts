@@ -96,7 +96,6 @@ export class WebhookComponent implements OnInit {
     this.http.post(this.webhookData, REST_URLS.WEBHOOKS.URLS.EDIT_WEBHOOK, 'json').subscribe(
       (data: any) => {
         this.globalComponentsService.loader.close();
-        this.webhookData.secret = '';
         this.window.close();
         this.messageService.sendMessage(MESSAGE_TYPE.WEBHOOK_UPDATED);
       },
@@ -115,7 +114,6 @@ export class WebhookComponent implements OnInit {
   private openWindow(data: any) {
     this.isUpdating = false;
     this.webhookData = data;
-    this.webhookData.secret = '';
 
     this.isDisabled.val(this.webhookData.isDisabled);
 
