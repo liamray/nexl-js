@@ -8,9 +8,16 @@ const uiConsts = require('../common/ui-constants');
 const di = require('../common/data-interchange-constants');
 const resolveSearchFunc = require('../common/find-in-files');
 const utils = require('./utils');
+const webhooks = require('./webhooks');
 
 // todo : allow to configure
 const MAX_FIND_IN_FILES_OCCURRENCES = 1000;
+
+// files and directories manipulation actions ( applying in webhooks )
+const ACTION_UPDATE = 'update';
+const ACTION_DELETE = 'delete';
+const ACTION_RENAME = 'rename';
+const ACTION_MOVE = 'move';
 
 let TREE_ITEMS = [];
 
@@ -73,21 +80,29 @@ function loadFileFromStorage(relativePath) {
 	);
 }
 
-function saveFileToStorageInnerInner(fullPath, content) {
+function wrapWebhook(relativePath, action) {
+	return {
+		relativePath: relativePath,
+		action: action
+	};
+}
+
+function saveFileToStorageInnerInner(fullPath, relativePath, content) {
 	const data = {};
 
 	const encoding = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING];
 
 	return fsx.writeFile(fullPath, content, {encoding: encoding})
+		.then(webhooks.fireWebhooks(wrapWebhook(relativePath, ACTION_UPDATE)))
 		.then(_ => fsx.stat(fullPath))
 		.then(stat => Promise.resolve(data[di.FILE_LOAD_TIME] = stat.mtime.getTime()))
 		.then(cacheStorageFiles)
 		.then(_ => data);
 }
 
-function saveFileToStorageInner(fullPath, content, fileLoadTime) {
+function saveFileToStorageInner(fullPath, relativePath, content, fileLoadTime) {
 	if (fileLoadTime === undefined) {
-		return saveFileToStorageInnerInner(fullPath, content);
+		return saveFileToStorageInnerInner(fullPath, relativePath, content);
 	}
 
 	// comparing fileLoadTime to last file modification time
@@ -95,7 +110,7 @@ function saveFileToStorageInner(fullPath, content, fileLoadTime) {
 		.then(stat => {
 			if (fileLoadTime >= stat.mtime.getTime()) {
 				// file was modified on server before the fileLoadTime, just saving...
-				return saveFileToStorageInnerInner(fullPath, content);
+				return saveFileToStorageInnerInner(fullPath, relativePath, content);
 			}
 
 			// file on the server was modified after it was opened by client
@@ -114,7 +129,7 @@ function saveFileToStorageInner(fullPath, content, fileLoadTime) {
 function saveFileToStorage(relativePath, content, fileLoadTime) {
 	return assembleStorageFilePath(relativePath)
 		.then(fullPath => {
-			return saveFileToStorageInner(fullPath, content, fileLoadTime);
+			return saveFileToStorageInner(fullPath, relativePath, content, fileLoadTime);
 		});
 }
 
@@ -130,12 +145,14 @@ function mkdir(relativePath) {
 				return fsx.mkdir(fullPath);
 			});
 		})
+		.then(webhooks.fireWebhooks(wrapWebhook(relativePath, ACTION_UPDATE)))
 		.then(cacheStorageFiles);
 }
 
 function deleteItem(relativePath) {
 	return assembleStorageFilePath(relativePath)
 		.then(fsx.deleteItem)
+		.then(webhooks.fireWebhooks(wrapWebhook(relativePath, ACTION_DELETE)))
 		.then(cacheStorageFiles);
 }
 
@@ -159,6 +176,7 @@ function rename(oldRelativePath, newRelativePath) {
 			);
 		}
 	)
+		.then(webhooks.fireWebhooks(wrapWebhook(oldRelativePath, ACTION_RENAME)))
 		.then(cacheStorageFiles);
 }
 
@@ -194,6 +212,7 @@ function move(source, dest) {
 		.then(_ => assembleStorageDirPath(dest))
 		.then(destFullPath => Promise.resolve(data.destFullPath = destFullPath))
 		.then(_ => moveInner(data.sourceFullPath, data.destFullPath))
+		.then(webhooks.fireWebhooks(wrapWebhook(source, ACTION_MOVE)))
 		.then(cacheStorageFiles);
 }
 

@@ -4,6 +4,7 @@ const logger = require('./logger');
 const utils = require('./utils');
 const base64 = require('base-64');
 const rp = require('request-promise');
+const crypto = require('crypto');
 
 const sigHeaderName = 'X-Hub-Signature';
 
@@ -26,7 +27,7 @@ function postWebhook(webhook, target) {
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
-		reqOpts[sigHeaderName] = 'sha1=' + hmac.update(reqOpts.body).digest('hex');
+		reqOpts[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
 	}
 
 	rp(reqOpts)
@@ -40,15 +41,16 @@ function postWebhook(webhook, target) {
 
 function fireWebhook(webhook, target) {
 	// is exact match ?
-	if (webhook.relativePath === target.relativePath) {
+	if (webhook.relativePath === target.relativePath && webhook.isDisabled !== true) {
 		postWebhook(webhook, target);
 		return;
 	}
 
 	// is sub dir match ? ( the [webhook.relativePath] must be ended with slash for that )
-	if (webhook.relativePath.endsWith('/') && webhook.relativePath.indexOf(target.relativePath) === 0) {
-		postWebhook(webhook, target);
-		return;
+	if (webhook.relativePath.endsWith('/') || webhook.relativePath.endsWith('\\')) {
+		if (target.relativePath.indexOf(webhook.relativePath) === 0 && webhook.isDisabled !== true) {
+			postWebhook(webhook, target);
+		}
 	}
 }
 
