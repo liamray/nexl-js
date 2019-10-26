@@ -114,6 +114,7 @@ export class WebhookComponent implements OnInit {
   private openWindow(data: any) {
     this.isUpdating = false;
     this.webhookData = data;
+    this.webhookData.secret = (this.webhookData.secret === undefined ) ? '' : this.webhookData.secret;
 
     this.isDisabled.val(this.webhookData.isDisabled);
 
