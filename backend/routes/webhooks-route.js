@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clone = require('clone');
+const base64 = require('base-64');
 
 const security = require('../api/security');
 const confMgmt = require('../api/conf-mgmt');
@@ -69,6 +70,11 @@ router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 		addNewWebhook(existingWebhooks, webhook);
 	} else {
 		updateExistingWebhook(existingWebhooks, existingWebhookIndex, webhook);
+	}
+
+	// encrypting secret with base 64
+	if (!utils.isEmptyStr(webhook.secret)) {
+		webhook.secret = base64.encode(webhook.secret);
 	}
 
 	// saving

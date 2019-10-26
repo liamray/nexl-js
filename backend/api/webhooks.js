@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('./logger');
 const utils = require('./utils');
+const base64 = require('base-64');
 
 const sigHeaderName = 'X-Hub-Signature';
 
@@ -39,7 +40,8 @@ function postWebhook(webhook, target) {
 		json: true
 	};
 
-	if (webhook.secret) {
+	if (!utils.isEmptyStr(webhook.secret)) {
+		const secret = base64.decode(webhook.secret);
 		reqOpts[sigHeaderName] = '...';
 	}
 
