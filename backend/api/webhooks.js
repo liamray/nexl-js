@@ -1,36 +1,16 @@
 const confMgmt = require('../api/conf-mgmt');
 const confConsts = require('../common/conf-constants');
-const express = require('express');
-const bodyParser = require('body-parser');
 const logger = require('./logger');
 const utils = require('./utils');
 const base64 = require('base-64');
+const rp = require('request-promise');
 
 const sigHeaderName = 'X-Hub-Signature';
-
-const app = express();
-app.use(bodyParser.json());
-
-/*
-function verifyPostData(req, res, next) {
-	const payload = JSON.stringify(req.body);
-	if (!payload) {
-		return next('Request body empty')
-	}
-
-	const hmac = crypto.createHmac('sha1', secret);
-	const digest = 'sha1=' + hmac.update(payload).digest('hex');
-	const checksum = req.get(sigHeaderName);
-	if (!checksum || !digest || checksum !== digest) {
-		return next(`Request body digest (${digest}) did not match ${sigHeaderName} (${checksum})`)
-	}
-	return next()
-}
-*/
 
 function postWebhook(webhook, target) {
 	const reqOpts = {
 		method: 'POST',
+		resolveWithFullResponse: true,
 		uri: webhook.url,
 		body: {
 			webhook: webhook.relativePath,
@@ -41,18 +21,20 @@ function postWebhook(webhook, target) {
 	};
 
 	if (!utils.isEmptyStr(webhook.secret)) {
+		// decrypting the secret
 		const secret = base64.decode(webhook.secret);
-		reqOpts[sigHeaderName] = '...';
+
+		// encrypting the body with a secret
+		const hmac = crypto.createHmac('sha1', secret);
+		reqOpts[sigHeaderName] = 'sha1=' + hmac.update(reqOpts.body).digest('hex');
 	}
 
 	rp(reqOpts)
-		.then(function (parsedBody) {
-			// todo: Log the HTTP response code
-			logger.log.debug(`Webhook HTTP POST request failed. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}]. The reason is [${utils.formatErr(err)}]`);
+		.then(function (response) {
+			logger.log.info(`Successfully fired the webhook. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}], [httpResponse=${response.statusCode}]`);
 		})
 		.catch(function (err) {
-			// todo: Log the HTTP error code
-			logger.log.error(`Webhook HTTP POST request failed. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}]. The reason is [${utils.formatErr(err)}]`);
+			logger.log.error(`Webhook HTTP POST request failed. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}], [httpResponse=${err.statusCode}]. The reason is [${utils.formatErr(err)}]`);
 		});
 }
 
