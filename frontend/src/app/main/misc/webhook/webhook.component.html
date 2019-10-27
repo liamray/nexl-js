@@ -39,7 +39,7 @@
           <jqxTooltip
             [position]="'mouse'"
             [autoHideDelay]="999999999"
-            [content]="'<p style=\'text-align: left;\'>Relative path to the file or directory to listen for changes</p>'">
+            [content]="'<p style=\'text-align: left;\'>Relative path to the file or directory to listen for changes.<br/>If the directory name ends with a slash it will listen for changes under this directory including itself.<br/><br/>Examples:<br/>/mydir/subdir/test.js - listens for changes in the [test.js] file<br/>/mydir/subdir - webhook will be fired if the [subdir] is moved or renamed<br/>/mydir/subdir/ - same to the previous example plus all changes under the [subdir] directory</p>'">
             <img src='./nexl/site/icons/info.png'/>
           </jqxTooltip>
         </div>
@@ -87,7 +87,7 @@
           <jqxTooltip
             [position]="'mouse'"
             [autoHideDelay]="999999999"
-            [content]="'<p style=\'text-align: left;\'>Optional secret to secure the HTTP request ( see documentation for details )</p>'">
+            [content]="'<p style=\'text-align: left;\'>Optional secret to validate that the webhooks are been received from your real host.<br/>Secret validation mechanism is similar to Githubs</p>'">
             <img src='./nexl/site/icons/info.png'/>
           </jqxTooltip>
         </div>
@@ -107,15 +107,6 @@
             Is disabled
           </jqxCheckBox>
         </div>
-        <div class="tooltip">
-          <jqxTooltip
-            [position]="'mouse'"
-            [autoHideDelay]="999999999"
-            [content]="'<p style=\'text-align: left;\'>Optional secret to secure the HTTP request ( see documentation for details )</p>'">
-            <img src='./nexl/site/icons/info.png'/>
-          </jqxTooltip>
-        </div>
-
         <div style="clear: both"></div>
 
       </form>
