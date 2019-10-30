@@ -60,7 +60,6 @@
     "command-line-args": "^4.0.7",
     "cookie-parser": "~1.4.3",
     "cookies": "0.7.1",
-    "crypto": "^1.0.1",
     "dateformat": "^3.0.3",
     "express": "~4.16.3",
     "express-session": "^1.15.6",
@@ -75,12 +74,12 @@
     "serve-favicon": "~2.4.5",
     "url": "^0.11.0",
     "uuid": "3.2.1",
-    "winston": "2.4.4"
+    "winston": "2.4.4",
+    "request-promise": "^4.2.4",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "assert": "^1.4.1",
-    "deep-equal": "^1.0.1",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "deep-equal": "^1.0.1"
   }
 }
