@@ -22,6 +22,7 @@ function postWebhook(webhook, target) {
 			target: target.relativePath,
 			action: target.action // created | moved | deleted
 		},
+        headers: {},
 		json: true
 	};
 
@@ -31,7 +32,7 @@ function postWebhook(webhook, target) {
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
-		reqOpts[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
+        reqOpts.headers[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
 	}
 
 	rp(reqOpts)
