@@ -11,7 +11,7 @@ const os = require('os');
 const sigHeaderName = 'X-Hub-Signature';
 
 function postWebhook(webhook, target) {
-	logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] matches a [target=${target.relativePath}]. Firing this webhook.`);
+    logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] webhook matches a [target=${target.relativePath}] resource. Firing this webhook.`);
 
 	const reqOpts = {
 		method: 'POST',
