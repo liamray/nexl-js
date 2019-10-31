@@ -11,7 +11,7 @@ const os = require('os');
 const sigHeaderName = 'X-Hub-Signature';
 
 function postWebhook(webhook, target) {
-    logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] webhook matches a [target=${target.relativePath}] resource. Firing this webhook.`);
+	logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] webhook matches a [target=${target.relativePath}] resource. Firing this webhook.`);
 
 	const reqOpts = {
 		method: 'POST',
@@ -22,7 +22,7 @@ function postWebhook(webhook, target) {
 			target: target.relativePath,
 			action: target.action // created | moved | deleted
 		},
-        headers: {},
+		headers: {},
 		json: true
 	};
 
@@ -32,7 +32,7 @@ function postWebhook(webhook, target) {
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
-        reqOpts.headers[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
+		reqOpts.headers[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
 	}
 
 	rp(reqOpts)
@@ -42,21 +42,6 @@ function postWebhook(webhook, target) {
 		.catch(function (err) {
 			logger.log.error(`Webhook HTTP POST request failed. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}], [httpResponse=${err.statusCode}]. The reason is [${utils.formatErr(err)}]`);
 		});
-}
-
-function fireWebhook(webhook, target) {
-	// is exact match ?
-	if (webhook.relativePath === target.relativePath && webhook.isDisabled !== true) {
-		postWebhook(webhook, target);
-		return;
-	}
-
-	// is sub dir match ? ( the [webhook.relativePath] must be ended with slash for that )
-	if (webhook.relativePath.endsWith('/') || webhook.relativePath.endsWith('\\')) {
-		if (target.relativePath.indexOf(webhook.relativePath) === 0 && webhook.isDisabled !== true) {
-			postWebhook(webhook, target);
-		}
-	}
 }
 
 function fireWebhooks(target) {
