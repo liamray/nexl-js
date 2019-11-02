@@ -16,6 +16,14 @@ const webhooks = require('../../backend/api/webhooks');
 // --------------------------------------------------------------------------------
 // tests
 // --------------------------------------------------------------------------------
+function timeout() {
+	return new Promise((resolve, reject) => {
+		setTimeout(_ => {
+			resolve();
+		}, 2500);
+	});
+}
+
 function runTests() {
 	// adding a webhook
 	const existingWebhooks = confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS);
@@ -99,14 +107,27 @@ function run() {
 }
 
 function done() {
-	return new Promise((resolve, reject) => {
-		setTimeout(_ => {
-			if (webServer) {
-				webServer.close();
-			}
-			resolve();
-		}, 3000);
+	return timeout().then(_ => {
+		if (webServer) {
+			webServer.close();
+		}
+		return Promise.resolve();
 	});
 }
 
 testAPI.startNexlApp(init, run, done);
+
+/*
+Tests:
+
+*
+/common
+/common/
+/common*
+!/common
+*.js
+with right secret
+with wrong secret
+all actions for same file
+
+ */
