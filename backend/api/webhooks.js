@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const matcher = require('matcher');
 const os = require('os');
 
-const sigHeaderName = 'X-Hub-Signature';
+const SIG_HEADER = 'X-Hub-Signature';
 
 function postWebhook(webhook, target) {
 	logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] webhook matches a [target=${target.relativePath}] resource. Firing this webhook.`);
@@ -32,7 +32,7 @@ function postWebhook(webhook, target) {
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
-		reqOpts.headers[sigHeaderName] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
+		reqOpts.headers[SIG_HEADER] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
 	}
 
 	rp(reqOpts)
@@ -67,4 +67,5 @@ function fireWebhooks(target) {
 
 // --------------------------------------------------------------------------------
 module.exports.fireWebhooks = fireWebhooks;
+module.exports.SIG_HEADER = SIG_HEADER;
 // --------------------------------------------------------------------------------
