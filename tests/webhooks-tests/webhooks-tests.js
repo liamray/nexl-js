@@ -30,7 +30,7 @@ function runTests() {
 	existingWebhooks.push({
 		id: 1,
 		relativePath: '*',
-		url: 'http://localhost:8181',
+		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	});
 	confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
