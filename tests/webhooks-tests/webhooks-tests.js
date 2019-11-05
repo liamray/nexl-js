@@ -1,7 +1,8 @@
 const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const fs = require('fs');
+const path = require('path');
 const assert = require('assert');
 
 const testAPI = require('../test-api');
@@ -25,18 +26,7 @@ function timeout() {
 }
 
 function runTests() {
-	// adding a webhook
-	const existingWebhooks = confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS);
-	existingWebhooks.push({
-		id: 1,
-		relativePath: '*',
-		url: `http://localhost:${PORT}`,
-		isDisabled: false
-	});
-	confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
-		.then(storageUtils.saveFileToStorage('/test.js', '// hello'));
-
-	return Promise.resolve();
+	return storageUtils.saveFileToStorage('/test.js', '// hello');
 }
 
 // --------------------------------------------------------------------------------
@@ -98,6 +88,23 @@ function startWebhooksClient() {
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
+	try {
+		fs.mkdirSync(path.join(tmpNexlJSFilesDir, 'common'));
+		fs.writeFileSync(path.join(tmpNexlJSFilesDir, 'common', 'test.js'), '');
+	} catch (e) {
+		return Promise.reject(e);
+	}
+
+	// adding a webhook
+	const existingWebhooks = confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS);
+	existingWebhooks.push({
+		id: 1,
+		relativePath: '*',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	});
+	confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
+
 	return Promise.resolve();
 }
 
