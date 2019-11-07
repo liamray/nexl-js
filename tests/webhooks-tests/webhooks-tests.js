@@ -14,6 +14,78 @@ const storageUtils = require('../../backend/api/storage-utils');
 
 const webhooks = require('../../backend/api/webhooks');
 
+
+const PORT = 8181;
+const THE_SECRET = 'this is a secret !';
+
+const webhooks2Test = [
+	{
+		// everything
+		id: 1,
+		relativePath: '*',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		// disabled
+		id: 2,
+		relativePath: '*',
+		url: `http://localhost:${PORT}`,
+		isDisabled: true
+	},
+	{
+		// won't work, path must be started with a slash
+		id: 3,
+		relativePath: 'common',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 4,
+		relativePath: '/common',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 5,
+		relativePath: '/common*',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 6,
+		relativePath: '!/common',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 7,
+		relativePath: '*.js',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 8,
+		relativePath: '/common/test.js',
+		secret: 'wrong secret',
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	},
+	{
+		id: 9,
+		relativePath: '/common/test.js',
+		secret: THE_SECRET,
+		url: `http://localhost:${PORT}`,
+		isDisabled: false
+	}
+];
+
+const expectingResults = [
+	{webhook: '*', target: '/common', action: 'update'},
+	{webhook: '/common', target: '/common', action: 'update'},
+	{webhook: '/common*', target: '/common', action: 'update'}
+];
+
 // --------------------------------------------------------------------------------
 // tests
 // --------------------------------------------------------------------------------
@@ -21,21 +93,25 @@ function timeout() {
 	return new Promise((resolve, reject) => {
 		setTimeout(_ => {
 			resolve();
-		}, 2500);
+		}, 1000);
 	});
 }
 
 function runTests() {
-	return storageUtils.saveFileToStorage('/test.js', '// hello');
+	return storageUtils.mkdir('/common')
+		.then(timeout)
+		.then(_ => storageUtils.mkdir('/test'))
+		.then(_ => storageUtils.saveFileToStorage('/common/test.js', ''))
+		;
 }
 
 // --------------------------------------------------------------------------------
 // webhooks app
 // --------------------------------------------------------------------------------
 
-const PORT = 8181;
-const SECRET = 'nexl';
 let webServer;
+
+const webhookResults = [];
 
 const app = express();
 app.use(bodyParser.json());
@@ -51,7 +127,7 @@ function handleWebhook(req, res, next) {
 		return next();
 	}
 
-	const hmac = crypto.createHmac('sha1', SECRET);
+	const hmac = crypto.createHmac('sha1', THE_SECRET);
 	const digest = 'sha1=' + hmac.update(payload).digest('hex');
 	if (!checksum || !digest || checksum !== digest) {
 		return next(`Request body digest (${digest}) did not match ${webhooks.SIG_HEADER} (${checksum})`)
@@ -61,7 +137,8 @@ function handleWebhook(req, res, next) {
 }
 
 app.post('/', handleWebhook, function (req, res) {
-	res.status(200).send('Request body was signed')
+	webhookResults.push(req.body);
+	res.status(200).send('Ok');
 });
 
 app.use((err, req, res, next) => {
@@ -88,24 +165,8 @@ function startWebhooksClient() {
 // --------------------------------------------------------------------------------
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
-	try {
-		fs.mkdirSync(path.join(tmpNexlJSFilesDir, 'common'));
-		fs.writeFileSync(path.join(tmpNexlJSFilesDir, 'common', 'test.js'), '');
-	} catch (e) {
-		return Promise.reject(e);
-	}
-
-	// adding a webhook
-	const existingWebhooks = confMgmt.getCached(confConsts.CONF_FILES.WEBHOOKS);
-	existingWebhooks.push({
-		id: 1,
-		relativePath: '*',
-		url: `http://localhost:${PORT}`,
-		isDisabled: false
-	});
-	confMgmt.save(existingWebhooks, confConsts.CONF_FILES.WEBHOOKS)
-
-	return Promise.resolve();
+	// adding a webhooks
+	return confMgmt.save(webhooks2Test, confConsts.CONF_FILES.WEBHOOKS);
 }
 
 function run() {
@@ -114,6 +175,7 @@ function run() {
 }
 
 function done() {
+	console.log(webhookResults);
 	return timeout().then(_ => {
 		if (webServer) {
 			webServer.close();
@@ -123,18 +185,3 @@ function done() {
 }
 
 testAPI.startNexlApp(init, run, done);
-
-/*
-Tests:
-
-*
-/common
-/common/
-/common*
-!/common
-*.js
-with right secret
-with wrong secret
-all actions for same file
-
- */

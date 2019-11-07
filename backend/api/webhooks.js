@@ -28,7 +28,13 @@ function postWebhook(webhook, target) {
 
 	if (!utils.isEmptyStr(webhook.secret)) {
 		// decrypting the secret
-		const secret = base64.decode(webhook.secret);
+		let secret;
+		try {
+			secret = base64.decode(webhook.secret);
+		} catch (err) {
+			logger.log.error(`Failed to decrypt a secret for the [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}] webhook. Reason is [${utils.formatErr(err)}]`);
+			return;
+		}
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
