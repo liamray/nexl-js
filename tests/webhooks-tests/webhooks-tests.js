@@ -21,62 +21,61 @@ const THE_SECRET = 'this is a secret !';
 const webhooks2Test = [
 	{
 		// everything
-		id: 1,
+		id: 0,
 		relativePath: '*',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		// disabled
-		id: 2,
-		relativePath: '*',
-		url: `http://localhost:${PORT}`,
-		isDisabled: true
-	},
-	{
 		// won't work, path must be started with a slash
-		id: 3,
+		id: 1,
 		relativePath: 'common',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 4,
+		id: 2,
 		relativePath: '/common',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 5,
+		id: 3,
 		relativePath: '/common*',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 6,
+		id: 4,
 		relativePath: '!/common',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 7,
+		id: 5,
 		relativePath: '*.js',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 8,
+		id: 6,
 		relativePath: '/common/test.js',
-		secret: 'wrong secret',
 		url: `http://localhost:${PORT}`,
 		isDisabled: false
 	},
 	{
-		id: 9,
+		id: 7,
+		relativePath: '/common/test.js',
+		secret: 'wrong secret',
+		url: `http://localhost:${PORT}`,
+		isDisabled: true
+	},
+	{
+		id: 8,
 		relativePath: '/common/test.js',
 		secret: THE_SECRET,
 		url: `http://localhost:${PORT}`,
-		isDisabled: false
+		isDisabled: true
 	}
 ];
 
@@ -97,10 +96,21 @@ function timeout() {
 	});
 }
 
+function updateWebhooks(state) {
+	for (let index = 0; index < webhooks2Test.length; index++) {
+		webhooks2Test[index].isDisabled = state[index];
+	}
+
+	return confMgmt.save(webhooks2Test, confConsts.CONF_FILES.WEBHOOKS);
+}
+
 function runTests() {
 	return storageUtils.mkdir('/common')
 		.then(timeout)
 		.then(_ => storageUtils.mkdir('/test'))
+		.then(_ => storageUtils.saveFileToStorage('/common/test.js', ''))
+		//                           0     1     2     3     4     5     6    7      8
+		.then(_ => updateWebhooks([true, false, true, true, true, true, true, true, true]))
 		.then(_ => storageUtils.saveFileToStorage('/common/test.js', ''))
 		;
 }
