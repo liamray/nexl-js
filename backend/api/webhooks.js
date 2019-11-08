@@ -32,7 +32,7 @@ function postWebhook(webhook, target) {
 		try {
 			secret = base64.decode(webhook.secret);
 		} catch (err) {
-			logger.log.error(`Failed to decrypt a secret for the [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}] webhook. Reason is [${utils.formatErr(err)}]`);
+			logger.log.error(`Failed to decrypt a secret for the [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}] webhook. This webhook won't be fired ! Reason is [${utils.formatErr(err)}]`);
 			return;
 		}
 

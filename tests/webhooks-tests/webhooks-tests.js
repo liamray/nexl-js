@@ -1,15 +1,11 @@
 const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const assert = require('assert');
+const base64 = require('base-64');
 
 const testAPI = require('../test-api');
 const confConsts = require('../../backend/common/conf-constants');
 const confMgmt = require('../../backend/api/conf-mgmt');
-const security = require('../../backend/api/security');
-const securityConsts = require('../../backend/common/security-constants');
 const storageUtils = require('../../backend/api/storage-utils');
 
 const webhooks = require('../../backend/api/webhooks');
@@ -66,23 +62,39 @@ const webhooks2Test = [
 	{
 		id: 7,
 		relativePath: '/common/test.js',
-		secret: 'wrong secret',
+		secret: '111111111111111111111111111111111',
 		url: `http://localhost:${PORT}`,
 		isDisabled: true
 	},
 	{
 		id: 8,
 		relativePath: '/common/test.js',
-		secret: THE_SECRET,
+		secret: base64.encode('wrong secret'),
+		url: `http://localhost:${PORT}`,
+		isDisabled: true
+	},
+	{
+		id: 9,
+		relativePath: '/common/test.js',
+		secret: base64.encode(THE_SECRET),
 		url: `http://localhost:${PORT}`,
 		isDisabled: true
 	}
 ];
 
-const expectingResults = [
-	{webhook: '*', target: '/common', action: 'update'},
+const expectingResults = [{webhook: '*', target: '/common', action: 'update'},
 	{webhook: '/common', target: '/common', action: 'update'},
-	{webhook: '/common*', target: '/common', action: 'update'}
+	{webhook: '/common*', target: '/common', action: 'update'},
+	{webhook: '*', target: '/test', action: 'update'},
+	{webhook: '!/common', target: '/test', action: 'update'},
+	{webhook: '*', target: '/common/test.js', action: 'update'},
+	{webhook: '/common*', target: '/common/test.js', action: 'update'},
+	{webhook: '!/common', target: '/common/test.js', action: 'update'},
+	{webhook: '*.js', target: '/common/test.js', action: 'update'},
+	{webhook: '/common/test.js', target: '/common/test.js', action: 'update'},
+	{webhook: '/common/test.js', target: '/common/test.js', action: 'rename'},
+	{webhook: '/common/test.js', target: '/common/test.js', action: 'move'},
+	{webhook: '/common/test.js', target: '/common/test.js', action: 'delete'}
 ];
 
 // --------------------------------------------------------------------------------
@@ -109,10 +121,33 @@ function runTests() {
 		.then(timeout)
 		.then(_ => storageUtils.mkdir('/test'))
 		.then(_ => storageUtils.saveFileToStorage('/common/test.js', ''))
-		//                           0     1     2     3     4     5     6    7      8
-		.then(_ => updateWebhooks([true, false, true, true, true, true, true, true, true]))
+		//                           0     1     2     3     4     5     6      7     8      9
+		.then(_ => updateWebhooks([true, false, true, true, true, true, true, true, true, true]))
 		.then(_ => storageUtils.saveFileToStorage('/common/test.js', ''))
+		//                           0     1     2     3     4     5     6      7     8       9
+		.then(_ => updateWebhooks([true, false, true, true, true, true, false, true, true, true]))
+		.then(_ => storageUtils.rename('/common/test.js', '/common/test2.js'))
+		.then(_ => storageUtils.saveFileToStorage('/common/test2.js', ''))
+		.then(_ => storageUtils.rename('/common/test2.js', '/common/test.js'))
+		.then(_ => storageUtils.move('/common/test.js', '/'))
+		.then(_ => storageUtils.move('/test.js', '/common'))
+		//                           0     1     2     3     4     5     6       7      8     9
+		.then(_ => updateWebhooks([true, true, true, true, true, true, true, false, false, false]))
+		.then(_ => storageUtils.deleteItem('/common/test.js'))
 		;
+}
+
+function checkTestResults() {
+	let counter = 0;
+	webhookResults.forEach(outer => {
+		expectingResults.forEach(inner => {
+			if (JSON.stringify(outer) === JSON.stringify(inner)) {
+				counter++;
+			}
+		})
+	});
+
+	return counter === expectingResults.length ? Promise.resolve() : Promise.reject();
 }
 
 // --------------------------------------------------------------------------------
@@ -185,13 +220,13 @@ function run() {
 }
 
 function done() {
-	console.log(webhookResults);
-	return timeout().then(_ => {
-		if (webServer) {
-			webServer.close();
-		}
-		return Promise.resolve();
-	});
+	return checkTestResults()
+		.then(_ => {
+			if (webServer) {
+				webServer.close();
+			}
+			return Promise.resolve();
+		});
 }
 
 testAPI.startNexlApp(init, run, done);
