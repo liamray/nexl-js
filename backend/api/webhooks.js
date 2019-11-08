@@ -9,6 +9,7 @@ const matcher = require('matcher');
 const os = require('os');
 
 const SIG_HEADER = 'X-Hub-Signature';
+const WEBHOOKS_TIMEOUT = 5000;
 
 function postWebhook(webhook, target) {
 	logger.log.debug(`The [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] webhook matches a [target=${target.relativePath}] resource. Firing this webhook.`);
@@ -23,6 +24,7 @@ function postWebhook(webhook, target) {
 			action: target.action // created | moved | deleted
 		},
 		headers: {},
+		timeout: WEBHOOKS_TIMEOUT,
 		json: true
 	};
 
