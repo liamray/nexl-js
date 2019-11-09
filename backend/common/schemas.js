@@ -203,21 +203,21 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COU
 // --------------------------------------------------------------------------------
 // WEBHOOKS validations
 SCHEMAS[confConsts.CONF_FILES.WEBHOOKS] = [{
-	id: (val) => mandatoryInt(val, 'id is a mandatory'),
-	relativePath: (val) => mandatoryString(val, 'File or directory path is mandatory'),
+	id: (val) => mandatoryInt(val, '[id] is a mandatory'),
+	relativePath: (val) => mandatoryString(val, '[relativePath] is a mandatory'),
 	url: (val) => {
 		if (!j79.isString(val)) {
-			return invalid('URL must be a string');
+			return invalid('[url] must be a string');
 		}
 
 		if (!val.match(/^https?:\/\/.*/)) {
-			return invalid('Invalid URL');
+			return invalid('Invalid [url]');
 		}
 
 		return valid();
 	},
 	secret: valid,
-	isDisabled: (val) => mandatoryBool(val, 'Status is a mandatory')
+	isDisabled: (val) => mandatoryBool(val, '[isDisabled] is a mandatory')
 }];
 
 // --------------------------------------------------------------------------------
