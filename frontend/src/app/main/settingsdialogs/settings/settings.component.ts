@@ -4,10 +4,10 @@ import {jqxButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxbutt
 import {jqxRibbonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxribbon";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {HttpRequestService} from "../../services/http.requests.service";
-import jqxValidator = jqwidgets.jqxValidator;
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as LOG_LEVELS from '../../common/winston-log-levels.json';
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import jqxValidator = jqwidgets.jqxValidator;
 
 @Component({
   selector: 'app-settings',
@@ -38,6 +38,7 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
   @ViewChild('reindexFiles') reindexFiles: jqxButtonComponent;
+  @ViewChild('backupNow') backupNow: jqxButtonComponent;
 
   nexlHomeDirToolTip = `<p style=\'text-align: left;\'>nexl home dir contains nexl server configuration, logs and storage files<br/> By default nexl home dir located in your OS home dir ( $HOME or %userprofile% )<br/> Use [--nexl-home] command line argument to specify different nexl home :<br/><span style='margin-left:30px; font-style: italic'>nexl --${CONF_CONSTANTS.NEXL_HOME_DEF}=/path/to/nexl/home/dir</span><br/> This might be useful if you need to run multiple nexl server instances</p>`;
 
@@ -193,10 +194,14 @@ export class SettingsComponent {
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
     this.reindexFiles.createComponent();
+    this.backupNow.createComponent();
   };
 
   validate() {
     this.validator.validate(document.getElementById('validationForm'));
+
+    // todo: hack ! jqx framework doesn't positioning text in the center in the hidden tab, so doing it manually
+    this.backupNow.textPosition('center');
   }
 
   save() {
@@ -248,5 +253,9 @@ export class SettingsComponent {
         this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save settings. Reason : ${err.statusText}`);
         console.log(err);
       });
+  }
+
+  doBackupNow() {
+    this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Okay ;)');
   }
 }

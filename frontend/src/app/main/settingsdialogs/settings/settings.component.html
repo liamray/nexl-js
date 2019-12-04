@@ -40,6 +40,7 @@
             <li>LDAP</li>
             <li>Bindings & SSL</li>
             <li>Logger</li>
+            <li>Storage backup</li>
           </ul>
 
           <div>
@@ -575,7 +576,7 @@
 
               <!-- Log rotate files count-->
               <div class="item">
-                <label> Log rotate files count</label>
+                <label>Log rotate files count</label>
                 <jqxInput
                   #logRotateFilesCount
                   id="logRotateFilesCount"
@@ -595,6 +596,102 @@
               </div>
               <div style="clear: both"></div>
             </div>
+
+
+            <!-- ------------------------------------------------------------------------------ -->
+            <!--Storage Backup-->
+            <div>
+              <!--cron expression-->
+              <div class="item">
+                <label>Cron expression</label>
+                <jqxInput
+                  id="backupStorageCronExpression"
+                  name="backupStorageCronExpression"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>...</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!--backup output dir-->
+              <div class="item">
+                <label>Backup to dir</label>
+                <jqxInput
+                  id="backupStorage2Dir"
+                  name="backupStorage2Dir"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_2_DIR]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>...</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <!-- Max backups count-->
+              <div class="item">
+                <label>Max backups count</label>
+                <jqxInput
+                  #maxStorageBackupsCount
+                  id="maxStorageBackupsCount"
+                  name="maxStorageBackupsCount"
+                  [(ngModel)]="settings[SETTINGS.MAX_STORAGE_BACKUPS_COUNT]"
+                  [width]="width"
+                  [height]="25">
+                </jqxInput>
+              </div>
+              <div class="tooltip">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>...</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div style="clear: both"></div>
+
+              <div class="item">
+                <jqxButton [height]="28"
+                           [width]="120"
+                           [textImageRelation]='"imageBeforeText"'
+                           (click)="doBackupNow()"
+                           [imgSrc]='"./nexl/site/icons/backup.png"'
+                           [auto-create]="false"
+                           #backupNow
+                >
+                  Backup now
+                </jqxButton>
+
+              </div>
+              <div class="tooltip" style="float: left;">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>...</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+            </div>
+
           </div>
         </jqxRibbon>
 
