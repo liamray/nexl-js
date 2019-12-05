@@ -1,7 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
-import jqxGrid = jqwidgets.jqxGrid;
 import {UtilsService} from "../../../services/utils.service";
+import jqxGrid = jqwidgets.jqxGrid;
 
 
 @Component({
@@ -12,7 +12,7 @@ import {UtilsService} from "../../../services/utils.service";
 export class AdminsComponent implements AfterViewInit {
   adminsGrid: jqxGridComponent;
 
-  tooltipText = `<p style='text-align: left;'>User name mentioned in this table will have administrative permissions which grants full access to nexl server<br/>It's not recommended but you can add a [${SECURITY_CONSTANTS.GUEST_USER}] reserved user name here to be an admin.<br/>[${SECURITY_CONSTANTS.GUEST_USER}] users don't require authentication<br/>Use [Assign permissions] tab to grant particular permissions</p>`;
+  tooltipText = `<p style='text-align: left;'>Admin users have full access to nexl server.<br/>It's not recommended but you can add a [${SECURITY_CONSTANTS.GUEST_USER}] reserved user name here to be an admin.<br/>[${SECURITY_CONSTANTS.GUEST_USER}] users don't require authentication.<br/>Use [Assign permissions] tab to grant particular permissions.<br/>To create new users use [Users] dialog box.</p>`;
 
   constructor() {
   }

@@ -9,7 +9,7 @@ import {jqxGridComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxgrid';
 export class AssignPermissionsComponent implements AfterViewInit {
   assignPermissions: jqxGridComponent;
 
-  tooltipText = `<p style='text-align: left;'>Here you can grant read/write permission(s) to specific user(s)<br/> There are 2 reserved users you can apply here : <u>${SECURITY_CONSTANTS.GUEST_USER}</u> and <u>${SECURITY_CONSTANTS.AUTHENTICATED}</u><br/> [${SECURITY_CONSTANTS.GUEST_USER}] users don't require authentication<br/> [${SECURITY_CONSTANTS.AUTHENTICATED}] users are users who are successfully logged in</p>`;
+  tooltipText = `<p style='text-align: left;'>Here you can grant read/write permission(s) to specific user(s).<br/>There are 2 reserved users you can apply here : <u>${SECURITY_CONSTANTS.GUEST_USER}</u> and <u>${SECURITY_CONSTANTS.AUTHENTICATED}</u>.<br/>[${SECURITY_CONSTANTS.GUEST_USER}] users don't require authentication.<br/>[${SECURITY_CONSTANTS.AUTHENTICATED}] users are users who are successfully logged in.<br/>To create new users use [Users] dialog box.</p>`;
 
   constructor() {
   }
