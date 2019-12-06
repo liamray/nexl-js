@@ -1,5 +1,6 @@
 const j79 = require('j79-utils');
 const path = require('path');
+const CronJob = require('cron').CronJob;
 
 const confConsts = require('./conf-constants');
 const securityConsts = require('../common/security-constants');
@@ -40,6 +41,9 @@ DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = '
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = 0;
 
 // WebHooks default values
 DEF_VALUES[confConsts.CONF_FILES.WEBHOOKS] = [];
@@ -199,6 +203,22 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) =
 };
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => mandatoryInt(val, 'log rotate file size', 0);
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => mandatoryInt(val, 'Log rotate files count', 0);
+
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] = (val) => {
+	if (isNullOrEmpty(val)) {
+		return valid();
+	}
+
+	try {
+		new CronJob(val);
+	} catch (e) {
+		return invalid('Bad cron expression');
+	}
+
+	return valid();
+};
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = (val) => notMandatoryString(val, 'Backup storage directory');
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = (val) => mandatoryInt(val, 'Max storage backups count', 0);
 
 // --------------------------------------------------------------------------------
 // WEBHOOKS validations

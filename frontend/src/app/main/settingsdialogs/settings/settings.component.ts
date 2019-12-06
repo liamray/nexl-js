@@ -35,6 +35,7 @@ export class SettingsComponent {
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
+
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
   @ViewChild('reindexFiles') reindexFiles: jqxButtonComponent;
@@ -110,7 +111,17 @@ export class SettingsComponent {
         rule: (): any => {
           return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.LOG_ROTATE_FILES_COUNT, 0);
         }
-      }
+
+      },
+      {
+        input: '#backupStorageMaxBackups',
+        message: 'The max storage backups must be a valid integer',
+        action: 'keyup, blur',
+        rule: (): any => {
+          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS, 0);
+        }
+      },
+
     ];
 
   constructor(private http: HttpRequestService, private globalComponentsService: GlobalComponentsService, private messageService: MessageService) {
@@ -197,7 +208,7 @@ export class SettingsComponent {
     this.backupNow.createComponent();
   };
 
-  validate() {
+  onRibbonSelect() {
     this.validator.validate(document.getElementById('validationForm'));
 
     // todo: hack ! jqx framework doesn't positioning text in the center in the hidden tab, so doing it manually
@@ -206,7 +217,7 @@ export class SettingsComponent {
 
   save() {
     this.isSaving = true;
-    this.validate();
+    this.onRibbonSelect();
   }
 
   onValidationSuccess() {

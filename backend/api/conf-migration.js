@@ -13,6 +13,12 @@ const nexlInstanceVersion = require('./../../package.json').version;
 
 CONF_VERSIONS =
 	[
+		{
+			version: '3.3.0',
+			action: (data) => {
+				data['settings.js']['data'][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = 0;
+			}
+		}
 		// example #1: adding a new [X] field to the [settings.js] file
 		/*
 				{

@@ -33,7 +33,7 @@
                    [animationType]="'none'"
                    [selectionMode]="'click'"
                    [position]="'left'"
-                   (onSelect)="validate()"
+                   (onSelect)="onRibbonSelect()"
         >
           <ul id="header" style="width: 150px;">
             <li>General</li>
@@ -616,7 +616,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>The MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK cron expression to backup a storage.<br/>Seconds are not allowed.<br/>Example: 0 4 * * *<br/>Which means every day at 4:00 AM.<br/>Leave this field empty to disable an automatic backup.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>The SEC MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK cron expression to backup a storage.<br/>Example: 0 0 4 * * *<br/>Which means every day at 4:00 AM.<br/>Leave this field empty to disable an automatic backup.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -627,9 +627,9 @@
               <div class="item">
                 <label>Backup to dir</label>
                 <jqxInput
-                  id="backupStorage2Dir"
-                  name="backupStorage2Dir"
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_2_DIR]"
+                  id="backupStorageDir"
+                  name="backupStorageDir"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_DIR]"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -649,10 +649,10 @@
               <div class="item">
                 <label>Max backups count</label>
                 <jqxInput
-                  #maxStorageBackupsCount
-                  id="maxStorageBackupsCount"
-                  name="maxStorageBackupsCount"
-                  [(ngModel)]="settings[SETTINGS.MAX_STORAGE_BACKUPS_COUNT]"
+                  #backupStorageMaxBackups
+                  id="backupStorageMaxBackups"
+                  name="backupStorageMaxBackups"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_MAX_BACKUPS]"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -661,7 +661,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>The max amount of backup ZIP files to rotate.<br/>Empty field means unlimited ZIP files amount.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>The max amount of backup ZIP files to rotate.<br/>Zero means unlimited ZIP files amount.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
