@@ -1,4 +1,5 @@
 const path = require('path');
+const zipFolder = require('zip-folder');
 
 const fsx = require('./fsx');
 const logger = require('./logger');
@@ -335,6 +336,18 @@ function cacheStorageFiles() {
 	);
 }
 
+function backupStorage(destDir) {
+	const storageDir = confMgmt.getNexlStorageDir();
+	const destZipFile = path.join(destDir, 'nexl-storage-backup-');
+	logger.log.debug(`Backing up a [${storageDir}] directory`);
+
+	zipFolder('storageDir', destZipFile, function (err) {
+		if (err) {
+		} else {
+		}
+	});
+}
+
 function gatherFilesList(list, root) {
 	for (let index in root) {
 		const item = root[index];
@@ -489,5 +502,6 @@ module.exports.listDirsAndFiles = listDirsAndFiles;
 module.exports.gatherAllFiles = gatherAllFiles;
 
 module.exports.cacheStorageFiles = cacheStorageFiles;
+module.exports.backupStorage = backupStorage;
 module.exports.getTreeItems = () => TREE_ITEMS;
 // --------------------------------------------------------------------------------

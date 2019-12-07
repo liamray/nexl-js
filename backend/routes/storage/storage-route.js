@@ -11,6 +11,26 @@ const di = require('../../common/data-interchange-constants');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
+// backup storage now
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.REINDEX_FILES}] request`);
+
+	if (!security.isAdmin(username)) {
+		logger.log.error('Cannot backup a storage because the [%s] user doesn\'t have admin permissions', username);
+		security.sendError(res, 'admin permissions required');
+		return;
+	}
+
+	storageUtils.backupStorage().then(
+		result => res.send({})
+	);
+});
+
+
+//////////////////////////////////////////////////////////////////////////////
 // reindex files
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.STORAGE.URLS.REINDEX_FILES, function (req, res) {

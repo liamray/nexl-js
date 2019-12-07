@@ -78,7 +78,8 @@
     "serve-favicon": "~2.4.5",
     "url": "^0.11.0",
     "uuid": "3.2.1",
-    "winston": "2.4.4"
+    "winston": "2.4.4",
+    "zip-folder": "^1.0.0"
   },
   "devDependencies": {
     "assert": "^1.4.1",
