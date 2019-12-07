@@ -342,7 +342,7 @@ function backupStorage() {
 	const destZipFile = path.join(destDir, 'nexl-storage-backup-');
 	logger.log.debug(`Backing up a [${storageDir}] directory`);
 
-	zipFolder('storageDir', destZipFile, function (err) {
+	zipFolder(storageDir, destZipFile, function (err) {
 		if (err) {
 		} else {
 		}
