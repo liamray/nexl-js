@@ -336,8 +336,9 @@ function cacheStorageFiles() {
 	);
 }
 
-function backupStorage(destDir) {
+function backupStorage() {
 	const storageDir = confMgmt.getNexlStorageDir();
+	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 	const destZipFile = path.join(destDir, 'nexl-storage-backup-');
 	logger.log.debug(`Backing up a [${storageDir}] directory`);
 
