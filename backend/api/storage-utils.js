@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const zipFolder = require('zip-folder');
 
 const fsx = require('./fsx');
@@ -19,6 +20,9 @@ const ACTION_UPDATE = 'update';
 const ACTION_DELETE = 'delete';
 const ACTION_RENAME = 'rename';
 const ACTION_MOVE = 'move';
+
+const BACKUP_ZIP_PATTERN = 'nexl-storage-backup';
+const BACKUP_ZIP_REGEX_PATTERN = new RegExp(BACKUP_ZIP_PATTERN + '-\d{4}-\d{1,2}-\d{1,2}--\d{1,2}-\d{1,2}-\d{1,2}-\d{1,3}\.zip');
 
 let TREE_ITEMS = [];
 
@@ -337,22 +341,49 @@ function cacheStorageFiles() {
 }
 
 function shredStorageBackups(dir) {
+	// max storage backup files
 	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
+
+	// is unlimited ?
 	if (maxStorageBackups === 0) {
-		logger.log.debug(`Not shredding a storage backup because ( BACKUP_STORAGE_MAX_BACKUPS = ${maxStorageBackups} )`);
+		logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}]`);
 		return;
 	}
 
 	// reading files list
+	fs.readdir(dir, function (err, files) {
+		if (err) {
+			logger.log.error(`Failed to read files list in [${dir}] directory. Reason: [${err}]`);
+			return;
+		}
 
-	// sorting
+		// filtering and sorting
+		const zipFiles = files.filter(item => item.match(BACKUP_ZIP_REGEX_PATTERN)).sort();
+
+		// checking count
+		if (zipFiles.length < maxStorageBackups) {
+			logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}], [zipFilesCount=${zipFiles.length}]`);
+			return;
+		}
+
+		// shredding first files
+		for (let index = 0; index < zipFiles.length - maxStorageBackups; index++) {
+			const fileName = path.join(dir, zipFiles[index]);
+			logger.log.info(`Shredding a [${fileName}] backup file`);
+			fs.unlink(fileName, function (err) {
+				if (err) {
+					logger.log.error(`Failed to shred a [${fileName}]. Reason: [${utils.formatErr(err)}]`);
+				}
+			});
+		}
+	});
 }
 
 function backupStorage() {
 	const storageDir = confMgmt.getNexlStorageDir();
 	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 	const now = new Date();
-	const destZipFile = path.join(destDir, `nexl-storage-backup-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
+	const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
 
 	logger.log.debug(`Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 
