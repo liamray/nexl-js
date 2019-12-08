@@ -336,16 +336,34 @@ function cacheStorageFiles() {
 	);
 }
 
+function shredStorageBackups(dir) {
+	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
+	if (maxStorageBackups === 0) {
+		logger.log.debug(`Not shredding a storage backup because ( BACKUP_STORAGE_MAX_BACKUPS = ${maxStorageBackups} )`);
+		return;
+	}
+
+	// reading files list
+
+	// sorting
+}
+
 function backupStorage() {
 	const storageDir = confMgmt.getNexlStorageDir();
 	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
-	const destZipFile = path.join(destDir, 'nexl-storage-backup-');
-	logger.log.debug(`Backing up a [${storageDir}] directory`);
+	const now = new Date();
+	const destZipFile = path.join(destDir, `nexl-storage-backup-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
+
+	logger.log.debug(`Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 
 	zipFolder(storageDir, destZipFile, function (err) {
 		if (err) {
+			logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
 		} else {
+			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
 		}
+
+		shredStorageBackups(destDir);
 	});
 }
 
