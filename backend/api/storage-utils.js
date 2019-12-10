@@ -22,7 +22,7 @@ const ACTION_RENAME = 'rename';
 const ACTION_MOVE = 'move';
 
 const BACKUP_ZIP_PATTERN = 'nexl-storage-backup';
-const BACKUP_ZIP_REGEX_PATTERN = new RegExp(BACKUP_ZIP_PATTERN + '-\d{4}-\d{1,2}-\d{1,2}--\d{1,2}-\d{1,2}-\d{1,2}-\d{1,3}\.zip');
+const BACKUP_ZIP_REGEX_PATTERN = new RegExp(BACKUP_ZIP_PATTERN + '-\\d{4}-\\d{1,2}-\\d{1,2}--\\d{1,2}-\\d{1,2}-\\d{1,2}-\\d{1,3}\.zip');
 
 let TREE_ITEMS = [];
 

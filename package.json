@@ -83,6 +83,8 @@
   },
   "devDependencies": {
     "assert": "^1.4.1",
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "recursive-readdir": "^2.2.2",
+    "unzipper": "^0.10.5"
   }
 }
