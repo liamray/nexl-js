@@ -253,45 +253,13 @@ function startHTTPSServer() {
 	return assembleSSLCerts().then(startHTTPSServerInner);
 }
 
-function scheduleStorageBackup() {
-	// preparing
-	const settings = confMgmt.getNexlSettingsCached();
-	const cronExpression = settings[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION];
-	const destDir = settings[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
-
-	// is cron expression specified ?
-	if (utils.isEmptyStr(cronExpression)) {
-		logger.log.debug('Not starting automatic storage backup. Reason: cron expression is not specified');
-		return;
-	}
-
-	// is dest dir specified ?
-	if (utils.isEmptyStr(destDir)) {
-		logger.log.debug('Not starting automatic storage backup. Reason: backup output dir is not specified');
-		return;
-	}
-
-	// scheduling
-	try {
-		const job = new CronJob(cronExpression, function () {
-			storageUtils.backupStorage();
-		});
-		job.start();
-	} catch (e) {
-		logger.log.error(e);
-		return Promise.reject(`Failed to schedule a backup. Reason: [utils.formatErr(e)]`);
-	}
-
-	return Promise.resolve();
-}
-
 function start() {
 	return Promise.resolve()
 		.then(confMgmt.createStorageDirIfNeeded)
 		.then(storageUtils.cacheStorageFiles)
 		.then(startHTTPServer)
 		.then(startHTTPSServer)
-		.then(scheduleStorageBackup)
+		.then(storageUtils.scheduleStorageBackup)
 		.then(_ => {
 			logger.log.info(`nexl home dir is [${confMgmt.getNexlHomeDir()}]`);
 			logger.log.info(`nexl app data dir is [${confMgmt.getNexlAppDataDir()}]`);

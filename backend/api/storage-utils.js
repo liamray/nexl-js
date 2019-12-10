@@ -340,13 +340,14 @@ function cacheStorageFiles() {
 	);
 }
 
-function shredStorageBackups(dir) {
+function shredStorageBackups(dir, resolve, reject) {
 	// max storage backup files
 	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
 
 	// is unlimited ?
 	if (maxStorageBackups === 0) {
 		logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}]`);
+		resolve();
 		return;
 	}
 
@@ -354,6 +355,7 @@ function shredStorageBackups(dir) {
 	fs.readdir(dir, function (err, files) {
 		if (err) {
 			logger.log.error(`Failed to read files list in [${dir}] directory. Reason: [${err}]`);
+			reject();
 			return;
 		}
 
@@ -362,40 +364,90 @@ function shredStorageBackups(dir) {
 
 		// checking count
 		if (zipFiles.length < maxStorageBackups) {
-			logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}], [zipFilesCount=${zipFiles.length}]`);
+			logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: the [zipFilesCount=${zipFiles.length}] is less than [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}]`);
+			resolve();
 			return;
 		}
 
 		// shredding first files
+		let isSuccess = true;
 		for (let index = 0; index < zipFiles.length - maxStorageBackups; index++) {
 			const fileName = path.join(dir, zipFiles[index]);
 			logger.log.info(`Shredding a [${fileName}] backup file`);
 			fs.unlink(fileName, function (err) {
 				if (err) {
+					isSuccess = false;
 					logger.log.error(`Failed to shred a [${fileName}]. Reason: [${utils.formatErr(err)}]`);
 				}
 			});
+		}
+
+		if (isSuccess) {
+			resolve();
+		} else {
+			reject();
 		}
 	});
 }
 
 function backupStorage() {
-	const storageDir = confMgmt.getNexlStorageDir();
-	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
-	const now = new Date();
-	const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
+	return new Promise((resolve, reject) => {
+		const storageDir = confMgmt.getNexlStorageDir();
+		const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 
-	logger.log.debug(`Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
-
-	zipFolder(storageDir, destZipFile, function (err) {
-		if (err) {
-			logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
-		} else {
-			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
+		if (utils.isEmptyStr(destDir)) {
+			logger.log.info('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
+			resolve();
+			return;
 		}
 
-		shredStorageBackups(destDir);
+		const now = new Date();
+		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
+
+		logger.log.debug(`Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
+		zipFolder(storageDir, destZipFile, function (err) {
+			if (err) {
+				logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
+				reject();
+				return;
+			}
+
+			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
+			shredStorageBackups(destDir, resolve, reject);
+		});
 	});
+}
+
+function scheduleStorageBackup() {
+	// preparing
+	const settings = confMgmt.getNexlSettingsCached();
+	const cronExpression = settings[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION];
+	const destDir = settings[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
+
+	// is cron expression specified ?
+	if (utils.isEmptyStr(cronExpression)) {
+		logger.log.debug('Not starting automatic storage backup. Reason: cron expression is not specified');
+		return Promise.resolve();
+	}
+
+	// is dest dir specified ?
+	if (utils.isEmptyStr(destDir)) {
+		logger.log.debug('Not starting automatic storage backup. Reason: backup output dir is not specified');
+		return Promise.resolve();
+	}
+
+	// scheduling
+	try {
+		const job = new CronJob(cronExpression, function () {
+			backupStorage();
+		});
+		job.start();
+	} catch (e) {
+		logger.log.error(e);
+		return Promise.reject(`Failed to schedule a backup. Reason: [utils.formatErr(e)]`);
+	}
+
+	return Promise.resolve();
 }
 
 function gatherFilesList(list, root) {
@@ -544,6 +596,9 @@ module.exports.deleteItem = deleteItem;
 module.exports.rename = rename;
 module.exports.move = move;
 module.exports.findInFiles = findInFiles;
+
+module.exports.scheduleStorageBackup = scheduleStorageBackup;
+module.exports.backupStorage = backupStorage;
 
 module.exports.listFiles = listFiles;
 module.exports.listDirs = listDirs;
