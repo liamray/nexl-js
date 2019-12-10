@@ -449,7 +449,7 @@ function scheduleStorageBackup() {
 
 	// scheduling
 	try {
-		logger.log.log('verbose', `Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
+		logger.log.info(`Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
 		job = new CronJob(cronExpression, function () {
 			backupStorage();
 		});
