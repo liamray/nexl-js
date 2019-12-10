@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const zipFolder = require('zip-folder');
+const CronJob = require('cron').CronJob;
 
 const fsx = require('./fsx');
 const logger = require('./logger');
@@ -25,6 +26,7 @@ const BACKUP_ZIP_PATTERN = 'nexl-storage-backup';
 const BACKUP_ZIP_REGEX_PATTERN = new RegExp(BACKUP_ZIP_PATTERN + '-\\d{4}-\\d{1,2}-\\d{1,2}--\\d{1,2}-\\d{1,2}-\\d{1,2}-\\d{1,3}\.zip');
 
 let TREE_ITEMS = [];
+let job;
 
 function sortFilesFunc(a, b) {
 	if (a.label.toUpperCase() > b.label.toUpperCase()) {
@@ -396,7 +398,7 @@ function backupStorage() {
 		const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 
 		if (utils.isEmptyStr(destDir)) {
-			logger.log.info('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
+			logger.log.log('verbose', 'The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
 			resolve();
 			return;
 		}
@@ -404,7 +406,7 @@ function backupStorage() {
 		const now = new Date();
 		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
 
-		logger.log.debug(`Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
+		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 		zipFolder(storageDir, destZipFile, function (err) {
 			if (err) {
 				logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
@@ -418,33 +420,43 @@ function backupStorage() {
 	});
 }
 
+function stopStorageBackupIfNeeded() {
+	if (job !== undefined) {
+		job.stop();
+	}
+}
+
 function scheduleStorageBackup() {
 	// preparing
 	const settings = confMgmt.getNexlSettingsCached();
 	const cronExpression = settings[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION];
 	const destDir = settings[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 
+	// stopping previous job is scheduled
+	stopStorageBackupIfNeeded();
+
 	// is cron expression specified ?
 	if (utils.isEmptyStr(cronExpression)) {
-		logger.log.debug('Not starting automatic storage backup. Reason: cron expression is not specified');
+		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: cron expression is not specified');
 		return Promise.resolve();
 	}
 
 	// is dest dir specified ?
 	if (utils.isEmptyStr(destDir)) {
-		logger.log.debug('Not starting automatic storage backup. Reason: backup output dir is not specified');
+		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: backup output dir is not specified');
 		return Promise.resolve();
 	}
 
 	// scheduling
 	try {
-		const job = new CronJob(cronExpression, function () {
+		logger.log.log('verbose', `Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
+		job = new CronJob(cronExpression, function () {
 			backupStorage();
 		});
 		job.start();
 	} catch (e) {
 		logger.log.error(e);
-		return Promise.reject(`Failed to schedule a backup. Reason: [utils.formatErr(e)]`);
+		return Promise.reject(`Failed to schedule a backup. Reason: [${utils.formatErr(e)}]`);
 	}
 
 	return Promise.resolve();

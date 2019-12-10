@@ -68,6 +68,15 @@ function applyChanges(before) {
 			});
 	}
 
+	// is backup storage settings changed ?
+	if (
+		before[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] !== after[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]
+		||
+		before[confConsts.SETTINGS.BACKUP_STORAGE_DIR] !== after[confConsts.SETTINGS.BACKUP_STORAGE_DIR]
+	) {
+		storageUtils.scheduleStorageBackup();
+	}
+
 	return promise;
 }
 
