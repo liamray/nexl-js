@@ -54,7 +54,7 @@ function isFilePathValid(relativePath) {
 function generateNewToken() {
 	return {
 		token: uuidv4(),
-		created: commonUtils.formatDate()
+		created: commonUtils.formatDateAndTime()
 	};
 }
 

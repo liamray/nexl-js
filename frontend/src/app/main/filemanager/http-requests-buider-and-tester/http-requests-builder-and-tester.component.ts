@@ -9,11 +9,12 @@ import {ArgsComponent} from "./args/args.component";
 import {environment} from '../../../../environments/environment';
 import {
   ARGS,
-  EXPRESSION_SPLITTER_VERTICAL, EXPRESSIONS,
-  LocalStorageService, OPEN_URL_WARNING_MESSAGE,
+  EXPRESSION_SPLITTER_VERTICAL,
+  EXPRESSIONS,
+  LocalStorageService,
+  OPEN_URL_WARNING_MESSAGE,
   PRETTIFY_BUTTON_STATE
 } from "../../services/localstorage.service";
-import {jqxTooltipComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtooltip";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import {UtilsService} from "../../services/utils.service";
@@ -260,7 +261,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       this.executionHistoryListBox.removeAt(0);
     }
 
-    const date = COMMON_UTILS.formatDate();
+    const date = COMMON_UTILS.formatDateAndTime();
 
     if (httpStatus >= 200 && httpStatus < 300) {
       if (msg.length < 30) {
