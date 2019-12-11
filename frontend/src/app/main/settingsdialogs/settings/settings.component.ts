@@ -267,6 +267,15 @@ export class SettingsComponent {
   }
 
   doBackupNow() {
-    this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Okay ;)');
+    this.http.post(this.settings, REST_URLS.STORAGE.URLS.BACKUP_STORAGE, 'json').subscribe(
+      () => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Successfully performed a backup !');
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to backup the storage. Reason : ${err.statusText}`);
+        console.log(err);
+      });
   }
 }

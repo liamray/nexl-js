@@ -24,9 +24,13 @@ router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
 		return;
 	}
 
-	storageUtils.backupStorage().then(
-		result => res.send({})
-	);
+	storageUtils.backupStorage()
+		.then(
+			result => res.send({})
+		).catch(err => {
+		logger.log.error('Failed to backup a storage for [%s] user. Reason : [%s]', username, err);
+		security.sendError(res, err);
+	});
 });
 
 

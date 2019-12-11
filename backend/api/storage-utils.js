@@ -11,6 +11,7 @@ const uiConsts = require('../common/ui-constants');
 const di = require('../common/data-interchange-constants');
 const resolveSearchFunc = require('../common/find-in-files');
 const utils = require('./utils');
+const commonUtils = require('../common/common-utils');
 const webhooks = require('./webhooks');
 
 // todo : allow to configure
@@ -399,12 +400,12 @@ function backupStorage() {
 
 		if (utils.isEmptyStr(destDir)) {
 			logger.log.log('verbose', 'The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
-			resolve();
+			reject('Backup destination dir is not provided');
 			return;
 		}
 
 		const now = new Date();
-		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}--${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}.zip`);
+		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
 
 		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 		zipFolder(storageDir, destZipFile, function (err) {
