@@ -383,10 +383,9 @@ function shredStorageBackups(dir, resolve, reject) {
 	});
 }
 
-function backupStorage() {
+function backupStorage(destDir) {
 	return new Promise((resolve, reject) => {
 		const storageDir = confMgmt.getNexlStorageDir();
-		const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 
 		if (utils.isEmptyStr(destDir)) {
 			reject('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
@@ -441,7 +440,7 @@ function scheduleStorageBackup() {
 	try {
 		logger.log.info(`Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
 		job = new CronJob(cronExpression, function () {
-			backupStorage();
+			backupStorage(confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR]);
 		});
 		job.start();
 	} catch (e) {
@@ -609,6 +608,5 @@ module.exports.listDirsAndFiles = listDirsAndFiles;
 module.exports.gatherAllFiles = gatherAllFiles;
 
 module.exports.cacheStorageFiles = cacheStorageFiles;
-module.exports.backupStorage = backupStorage;
 module.exports.getTreeItems = () => TREE_ITEMS;
 // --------------------------------------------------------------------------------

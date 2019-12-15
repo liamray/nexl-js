@@ -27,17 +27,15 @@ router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
 		return;
 	}
 
-	const storageBackupDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
+	const storageBackupDir = req.body[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 	if (utils.isEmptyStr(storageBackupDir)) {
 		logger.log.error('The BACKUP_STORAGE_DIR is not specified, skipping storage backup for [%s] user');
 		security.sendError(res, 'The backup storage dir is not specified, skipping storage backup');
 		return;
 	}
 
-
-	storageUtils.backupStorage()
-		.then(
-			result => res.send({})
+	storageUtils.backupStorage(storageBackupDir)
+		.then(_ => res.send({})
 		)
 		.catch(err => {
 			logger.log.error('Failed to backup a storage for [%s] user. Reason : [%s]', username, utils.formatErr(err));

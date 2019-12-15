@@ -601,6 +601,19 @@
             <!-- ------------------------------------------------------------------------------ -->
             <!--Storage Backup-->
             <div>
+
+              <div class="item">
+                <label style="position: relative; top: -1px;">Enable storage backup</label>
+                <jqxCheckBox
+                  style="position:relative;left: -3px;"
+                  #backupStorageEnabled
+                  [boxSize]="'12px;'"
+                  id="backupStorageEnabled"
+                  name="backupStorageEnabled"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_ENABLE]"
+                ></jqxCheckBox>
+              </div>
+
               <!--cron expression-->
               <div class="item">
                 <label>Cron expression</label>
