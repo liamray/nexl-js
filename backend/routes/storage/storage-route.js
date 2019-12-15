@@ -7,6 +7,8 @@ const security = require('../../api/security');
 const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 const restUtls = require('../../common/rest-urls');
+const confConsts = require('../../common/conf-constants');
+const confMgmt = require('../../api/conf-mgmt');
 const di = require('../../common/data-interchange-constants');
 
 const router = express.Router();
@@ -24,6 +26,14 @@ router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
 		security.sendError(res, 'admin permissions required');
 		return;
 	}
+
+	const storageBackupDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
+	if (utils.isEmptyStr(storageBackupDir)) {
+		logger.log.error('The BACKUP_STORAGE_DIR is not specified, skipping storage backup for [%s] user');
+		security.sendError(res, 'The backup storage dir is not specified, skipping storage backup');
+		return;
+	}
+
 
 	storageUtils.backupStorage()
 		.then(
