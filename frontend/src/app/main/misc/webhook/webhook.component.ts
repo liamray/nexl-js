@@ -101,7 +101,7 @@ export class WebhookComponent implements OnInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to ${this.errorMsg} . Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }

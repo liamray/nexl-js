@@ -331,7 +331,7 @@ export class StorageExplorerComponent implements AfterViewInit {
           }, 100);
       },
       (err) => {
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to resolve JavaScript file list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       }
     );
@@ -493,7 +493,7 @@ export class StorageExplorerComponent implements AfterViewInit {
           this.renameInner(data);
         },
         (err) => {
-          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to rename item. Reason : [${err.statusText}]`);
+          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
           this.globalComponentsService.loader.close();
           console.log(err);
         }
@@ -585,7 +585,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to create a new directory. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       }
     );
   }
@@ -619,7 +619,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to delete an item. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       }
     );
   }
@@ -1135,8 +1135,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load a [${sourceRelativePath}] JavaScript file content. Reason : [${err.statusText}]`);
-        console.log(err);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       }
     );
   }

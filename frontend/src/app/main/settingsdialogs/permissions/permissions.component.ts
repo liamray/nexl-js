@@ -66,7 +66,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load permissions list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }
@@ -84,7 +84,7 @@ export class PermissionsComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to update permissions. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }

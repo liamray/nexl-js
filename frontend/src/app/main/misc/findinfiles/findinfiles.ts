@@ -131,7 +131,7 @@ export class FindInFilesComponent implements OnInit {
       err => {
         this.globalComponentsService.loader.close();
         console.log(err);
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Find in files failed. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       });
   }
 

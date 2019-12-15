@@ -4,7 +4,7 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {GlobalComponentsService} from "../../services/global-components.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as $ from 'jquery';
-import {LocalStorageService, CONFIRM_FILE_SAVE, TABS} from "../../services/localstorage.service";
+import {CONFIRM_FILE_SAVE, LocalStorageService, TABS} from "../../services/localstorage.service";
 import {UtilsService} from "../../services/utils.service";
 import {AppearanceService} from "../../services/appearance.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
@@ -470,7 +470,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
       },
       (err) => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to save a file. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       }
     );
@@ -623,7 +623,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
         },
         (err) => {
           this.globalComponentsService.loader.close();
-          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load a [${data.relativePath}] JavaScript file content. Reason : [${err.statusText}]`);
+          this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
           console.log(err);
           reject();
         }

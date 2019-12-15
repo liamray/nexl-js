@@ -205,7 +205,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to load users list. Reason : [${err.statusText}]`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       }
     );
@@ -249,7 +249,7 @@ export class UsersComponent {
       err => {
         this.setCellValueDelayed(rowNr, 'username', oldValue);
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to create a [${newValue}] user. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }
@@ -280,7 +280,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to enable/disable [${username}] user. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }
@@ -296,7 +296,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Failed to remove a [${username}] user. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }
@@ -342,7 +342,7 @@ export class UsersComponent {
       },
       err => {
         this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, `Operation failed. Reason : ${err.statusText}`);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
   }
