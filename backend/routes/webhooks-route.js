@@ -84,7 +84,7 @@ router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 			logger.log.log('verbose', `Webhook is updated and applied by [${username}] user, [webhookId=${webhook.id}]`);
 		}).catch(
 			(err) => {
-				logger.log.error('Failed to update a webhook. Reason : [%s]', err);
+				logger.log.error(`Failed to update a webhook. Reason : [${utils.formatErr(err)}]`);
 				security.sendError(res, 'Failed to update a webhook');
 			});
 
@@ -139,7 +139,7 @@ router.post(restUrls.WEBHOOKS.URLS.DELETE_WEBHOOK, function (req, res) {
 			logger.log.log('verbose', `Webhook is deleted by [${username}] user, [id=${webhook.id}]`);
 		}).catch(
 			(err) => {
-				logger.log.error('Failed to delete a webhook [id=${webhook.id}]. Reason : [%s]', err);
+				logger.log.error(`Failed to delete a webhook [id=${webhook.id}]. Reason : [${utils.formatErr(err)}]`);
 				security.sendError(res, 'Failed to delete a webhook');
 			});
 

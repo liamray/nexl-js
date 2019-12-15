@@ -54,7 +54,7 @@ router.post(restUrls.PERMISSIONS.URLS.SAVE_PERMISSIONS, function (req, res, next
 		});
 	}).catch(
 		(err) => {
-			logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, err);
+			logger.log.error('Failed to save permissions for [%s] user. Reason : [%s]', username, utils.formatErr(err));
 			security.sendError(res, 'Failed to save permissions');
 		});
 });

@@ -186,7 +186,7 @@ router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 		});
 	}).catch(
 		(err) => {
-			logger.log.error('Failed to change password for [%s] user. Reason : [%s]', loggedInUsername, err);
+			logger.log.error('Failed to change password for [%s] user. Reason : [%s]', loggedInUsername, utils.formatErr(err));
 			security.sendError(res, 'Failed to change password');
 		}
 	);
@@ -268,7 +268,7 @@ router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 		logger.log.log('verbose', `Logged in as [${username}] user`);
 
 	}).catch((err) => {
-		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, utils.formatErr(err));
 		security.sendError(res, 'Failed to log in');
 	});
 });
@@ -316,7 +316,7 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 			logger.log.log('verbose', `Registered/reset password for [${username}] user`);
 		})
 	}).catch((err) => {
-		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);
+		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, utils.formatErr(err));
 		security.sendError(res, 'Failed to register a user or token expired');
 	});
 });

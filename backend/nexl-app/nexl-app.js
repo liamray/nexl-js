@@ -218,7 +218,7 @@ function startHTTPSServerInner(sslCredentials) {
 		try {
 			httpsServer = https.createServer(sslCredentials, nexlApp);
 		} catch (err) {
-			logger.log.error('Failed to start HTTPS server. Reason : [%s]', utils.formatErr(e));
+			logger.log.error('Failed to start HTTPS server. Reason : [%s]', utils.formatErr(err));
 			reject(err);
 			return;
 		}

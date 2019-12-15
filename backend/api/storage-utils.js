@@ -347,7 +347,7 @@ function shredStorageBackups(dir, resolve, reject) {
 	// reading files list
 	fs.readdir(dir, function (err, files) {
 		if (err) {
-			logger.log.error(`Failed to read files list in [${dir}] directory. Reason: [${err}]`);
+			logger.log.error(`Failed to read files list in [${dir}] directory. Reason: [${utils.formatErr(err)}]`);
 			reject();
 			return;
 		}

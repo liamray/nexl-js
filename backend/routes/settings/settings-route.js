@@ -9,6 +9,7 @@ const storageUtils = require('../../api/storage-utils');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
 const restUrls = require('../../common/rest-urls');
+const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 
 //////////////////////////////////////////////////////////////////////////////
@@ -114,7 +115,7 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 			logger.log.log('verbose', `Saved nexl server settings by [${username}] user`);
 		}).catch(
 			(err) => {
-				logger.log.error('Failed to save settings. Reason : [%s]', err);
+				logger.log.error(`Failed to save settings. Reason : [${utils.formatErr(err)}]`);
 				security.sendError(res, 'Failed to save settings');
 			});
 });

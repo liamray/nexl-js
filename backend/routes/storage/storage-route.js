@@ -30,7 +30,7 @@ router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
 			result => res.send({})
 		)
 		.catch(err => {
-			logger.log.error('Failed to backup a storage for [%s] user. Reason : [%s]', username, err);
+			logger.log.error('Failed to backup a storage for [%s] user. Reason : [%s]', username, utils.formatErr(err));
 			security.sendError(res, 'Failed to backup a storage');
 		});
 });
@@ -160,7 +160,7 @@ router.post(restUtls.STORAGE.URLS.MOVE, function (req, res) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, err);
+				logger.log.error('Failed to move a [%s] file to [%s] for [%s] user. Reason : [%s]', source, dest, username, utils.formatErr(err));
 				security.sendError(res, 'Failed to move item');
 			});
 });
@@ -202,7 +202,7 @@ router.post(restUtls.STORAGE.URLS.RENAME, function (req, res) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, err);
+				logger.log.error('Failed to rename a [%s] file to [%s] for [%s] user. Reason : [%s]', relativePath, newRelativePath, username, utils.formatErr(err));
 				security.sendError(res, 'Failed to rename item');
 			});
 });
@@ -236,7 +236,7 @@ router.post(restUtls.STORAGE.URLS.DELETE, function (req, res) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, err);
+				logger.log.error('Failed to delete a [%s] item for [%s] user. Reason : [%s]', relativePath, username, utils.formatErr(err));
 				security.sendError(res, 'Failed to delete item');
 			});
 });
@@ -270,7 +270,7 @@ router.post(restUtls.STORAGE.URLS.MAKE_DIR, function (req, res, next) {
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, err);
+				logger.log.error('Failed to create a [%s] directory for [%s] user. Reason : [%s]', relativePath, username, utils.formatErr(err));
 				security.sendError(res, 'Failed to create a directory');
 			});
 });
@@ -406,7 +406,7 @@ router.post(restUtls.STORAGE.URLS.SAVE_FILE_TO_STORAGE, function (req, res, next
 		})
 		.catch(
 			(err) => {
-				logger.log.error('Failed to save a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, err);
+				logger.log.error('Failed to save a [%s] nexl JavaScript file for [%s] user. Reason : [%s]', relativePath, username, utils.formatErr(err));
 				security.sendError(res, 'Failed to save file');
 			});
 });
