@@ -85,7 +85,7 @@ router.post(restUrls.WEBHOOKS.URLS.EDIT_WEBHOOK, function (req, res) {
 		}).catch(
 			(err) => {
 				logger.log.error('Failed to update a webhook. Reason : [%s]', err);
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to update a webhook');
 			});
 
 });
@@ -140,7 +140,7 @@ router.post(restUrls.WEBHOOKS.URLS.DELETE_WEBHOOK, function (req, res) {
 		}).catch(
 			(err) => {
 				logger.log.error('Failed to delete a webhook [id=${webhook.id}]. Reason : [%s]', err);
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to delete a webhook');
 			});
 
 });

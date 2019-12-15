@@ -69,8 +69,7 @@ function loadInner(fullPath, fileName) {
 				try {
 					conf = JSON.parse(fileBody);
 				} catch (e) {
-					logger.log.error('The [%s] config file is damaged or broken. Reason : [%s]', fullPath, e.toString());
-					return Promise.reject('Config file is damaged or broken');
+					return Promise.reject(`The [${fullPath}] config file is damaged or broken. Reason : [${utils.formatErr(e)}]`);
 				}
 
 				const version = conf['version'];
@@ -109,8 +108,7 @@ function load(fileName, saveIfNotExists) {
 	logger.log.debug('Loading config from [%s] file', fileName);
 
 	if (!isConfFileDeclared(fileName)) {
-		logger.log.error('The [%s] file is undeclared and cannot be loaded');
-		return Promise.reject('Undeclared configuration file cannot be loaded');
+		return Promise.reject(`Unregistered [${fileName}] config file`);
 	}
 
 	const fullPath = getConfFileFullPath(fileName);
@@ -146,8 +144,7 @@ function save(data, fileName) {
 	logger.log.debug('Saving config to [%s] file', fileName);
 
 	if (!isConfFileDeclared(fileName)) {
-		logger.log.error('The [%s] file is undeclared and cannot be saved', fileName);
-		return Promise.reject('Undeclared configuration file cannot be saved');
+		return Promise.reject(`Unregistered [${fileName}] config file`);
 	}
 
 	const fullPath = getConfFileFullPath(fileName);
@@ -168,8 +165,7 @@ function save(data, fileName) {
 	try {
 		conf = stringifyConfig(conf);
 	} catch (e) {
-		logger.log.error('Failed to stringify object while saving the [%s] file. Reason : [%s]', fullPath, utils.formatErr(e));
-		return Promise.reject('Bad data format');
+		return Promise.reject(`Failed to stringify object while saving the [${fullPath}] file. Reason : [${utils.formatErr(e)}]`);
 	}
 
 	// saving...

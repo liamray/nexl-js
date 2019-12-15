@@ -51,7 +51,7 @@ router.post(restUrls.USERS.URLS.ENABLE_DISABLE_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to enable/disable user');
 			}
 		);
 
@@ -93,7 +93,7 @@ router.post(restUrls.USERS.URLS.RENAME_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to create a new user [%s]. Reason : [%s]', newUsername, utils.formatErr(err));
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to create a new user');
 			}
 		);
 
@@ -127,7 +127,7 @@ router.post(restUrls.USERS.URLS.REMOVE_USER, function (req, res) {
 		.catch(
 			(err) => {
 				logger.log.error('Failed to remove a [%s] user. Reason : [%s]', username, utils.formatErr(err));
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to remove a user');
 			}
 		);
 
@@ -187,7 +187,7 @@ router.post(restUrls.USERS.URLS.CHANGE_PASSWORD, function (req, res) {
 	}).catch(
 		(err) => {
 			logger.log.error('Failed to change password for [%s] user. Reason : [%s]', loggedInUsername, err);
-			security.sendError(res, err);
+			security.sendError(res, 'Failed to change password');
 		}
 	);
 });
@@ -211,7 +211,7 @@ router.post(restUrls.USERS.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res)
 	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 
 	if (users[username] === undefined) {
-		logger.log.error(`Failed to enable/disable a user [%s]. Reason : the [${username}] user doesn't exist`);
+		logger.log.error(`Failed to generate token. Reason : the [${username}] user doesn't exist`);
 		security.sendError(res, `User doesn't exist`);
 		return;
 	}
@@ -229,8 +229,8 @@ router.post(restUrls.USERS.URLS.GENERATE_REGISTRATION_TOKEN, function (req, res)
 		.catch(
 			(err) => {
 				users[username].token2ResetPassword = undefined;
-				logger.log.error('Failed to enable/disable a user [%s]. Reason : [%s]', username, utils.formatErr(err));
-				security.sendError(res, err);
+				logger.log.error('Failed generate token for the [%s] user. Reason : [%s]', username, utils.formatErr(err));
+				security.sendError(res, 'Failed to generate token');
 			}
 		);
 
@@ -258,7 +258,7 @@ router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 
 	security.isPasswordValid(username, req.body.password).then((isValid) => {
 		if (!isValid) {
-			logger.log.error('Bad credentials for login attempt');
+			logger.log.error(`Bad credentials for the [${username}] user`);
 			return Promise.reject('Bad credentials');
 		}
 
@@ -269,7 +269,7 @@ router.post(restUrls.USERS.URLS.LOGIN, function (req, res) {
 
 	}).catch((err) => {
 		logger.log.error('Failed to login with a [%s] user. Reason : [%s]', username, err);
-		security.sendError(res, err);
+		security.sendError(res, 'Failed to log in');
 	});
 });
 
@@ -317,7 +317,7 @@ router.post(restUrls.USERS.URLS.REGISTER, function (req, res) {
 		})
 	}).catch((err) => {
 		logger.log.error('Failed to register a [%s] user. Reason : [%s]', username, err);
-		security.sendError(res, err);
+		security.sendError(res, 'Failed to register a user or token expired');
 	});
 });
 

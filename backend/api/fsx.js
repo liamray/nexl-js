@@ -10,8 +10,7 @@ function join() {
 	try {
 		return Promise.resolve(path.join.apply(null, args));
 	} catch (e) {
-		logger.log.error('Failed to join path elements. Reason : [%s]', utils.formatErr(e));
-		return Promise.reject('Failed to join path elements');
+		return Promise.reject(`Failed to join path elements. Reason: [${utils.formatErr(e)}]`);
 	}
 }
 
@@ -19,8 +18,7 @@ function mkdir(fullPath) {
 	return new Promise((resolve, reject) => {
 		fs.mkdir(fullPath, (err) => {
 			if (err) {
-				logger.log.error('Failed to create a [%s] directory. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Internal FS error');
+				reject(`'Failed to create a [${fullPath}] directory. Reason : [${utils.formatErr(err)}]`);
 				return;
 			}
 
@@ -48,8 +46,7 @@ function readFile(fullPath, opts) {
 	return new Promise((resolve, reject) => {
 		fs.readFile(fullPath, opts, (err, data) => {
 			if (err) {
-				logger.log.error('Failed to read file content for [%s] file. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Internal FS error');
+				reject(`Failed to load the [${fullPath}] file. Reason : [${utils.formatErr(err)}]`);
 				return;
 			}
 
@@ -67,8 +64,7 @@ function writeFile(fullPath, data, opts) {
 	return new Promise((resolve, reject) => {
 		fs.writeFile(fullPath, data, opts, (err) => {
 			if (err) {
-				logger.log.error('Failed to write file content for [%s] file. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Internal FS error');
+				reject(`Failed to save the [${fullPath}] file. Reason : [${utils.formatErr(err)}]`);
 				return;
 			}
 
@@ -86,8 +82,7 @@ function stat(fullPath) {
 	return new Promise((resolve, reject) => {
 		fs.stat(fullPath, (err, stats) => {
 			if (err) {
-				logger.log.error('Failed to retrieve file stat for [%s]. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Failed to resolve file stat');
+				reject(`Failed to retrieve file stat for [${fullPath}]. Reason : [${utils.formatErr(err)}]`);
 				return;
 			}
 
@@ -101,8 +96,7 @@ function readdir(fullPath) {
 	return new Promise((resolve, reject) => {
 		fs.readdir(fullPath, (err, items) => {
 			if (err) {
-				logger.log.error('Failed to read directory items in [%s] path. Reason : [%s]', fullPath, utils.formatErr(err));
-				reject('Internal FS error');
+				reject(`Failed to list directory items in [${fullPath}] path. Reason : [${utils.formatErr(err)}]`);
 				return;
 			}
 
@@ -119,8 +113,7 @@ function deleteItem(fullPath) {
 			return Promise.resolve();
 		})
 		.catch(err => {
-			logger.log.error('Failed to delete the [%s] item. Reason : [%s]', fullPath, utils.formatErr(err));
-			return Promise.reject('Internal FS error');
+			return Promise.reject(`Failed to delete the [${fullPath}] item. Reason : [${utils.formatErr(err)}]`);
 		});
 }
 
@@ -129,8 +122,7 @@ function rename(oldName, newName) {
 		(resolve, reject) => {
 			fs.rename(oldName, newName, (err) => {
 				if (err) {
-					logger.log.error('Failed to rename a [%s] item to [%s]. Reason : [%s]', oldName, newName, utils.formatErr(err));
-					reject('Failed to rename item');
+					reject(`Failed to rename a [${oldName}] item to [${newName}]. Reason : [${utils.formatErr(err)}]`);
 					return;
 				}
 

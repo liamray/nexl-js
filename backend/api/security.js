@@ -99,8 +99,7 @@ function resetPassword(username, password, token) {
 	// is token expired ?
 	let tokenCreated = Date.parse(userObj.token2ResetPassword.created);
 	if (tokenCreated !== tokenCreated) { // is NaN ?
-		logger.log.error(`Failed to parse token creation date [${userObj.token2ResetPassword.created}] for [${username}] user`);
-		return Promise.reject('Internal error. Users settings file is damaged !');
+		return Promise.reject(`Failed to parse token creation date [${userObj.token2ResetPassword.created}] for [${username}] user`);
 	}
 
 	if (tokenCreated + REGISTRATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000 < new Date().getTime()) {
@@ -123,16 +122,14 @@ function changePassword(username, currentPassword, newPassword) {
 	const users = confMgmt.getCached(confConsts.CONF_FILES.USERS);
 	const user = users[username];
 	if (user === undefined) {
-		logger.log.error(`Change password action is rejected because [${username}] user doesn't exist`);
-		return Promise.reject('Bad credentials');
+		return Promise.reject(`Change password action is rejected because the [${username}] user doesn't exist`);
 	}
 
 	// checking for existing password
 	return bcrypt.compare(currentPassword, user.password)
 		.then((isValid) => {
 			if (!isValid) {
-				logger.log.error(`Change password action is rejected. Reason : bad existing password for [${username}] user`);
-				return Promise.reject('Bad existing password');
+				return Promise.reject(`Change password action is rejected. Reason : bad existing password for [${username}] user`);
 			}
 
 			// creating new hash

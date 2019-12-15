@@ -115,7 +115,7 @@ router.post(restUrls.SETTINGS.URLS.SAVE_SETTINGS, function (req, res, next) {
 		}).catch(
 			(err) => {
 				logger.log.error('Failed to save settings. Reason : [%s]', err);
-				security.sendError(res, err);
+				security.sendError(res, 'Failed to save settings');
 			});
 });
 
