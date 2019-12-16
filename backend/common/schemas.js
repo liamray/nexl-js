@@ -217,8 +217,8 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_
 
 	return valid();
 };
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = (val) => notMandatoryString(val, 'Backup storage directory');
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = (val) => mandatoryInt(val, 'Max storage backups count', 0);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = (val) => notMandatoryString(val, `Backup storage directory ( ${confConsts.SETTINGS.BACKUP_STORAGE_DIR} )`);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = (val) => notMandatoryInt(val, `Max storage backups count ( ${confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS} )`, 0);
 
 // --------------------------------------------------------------------------------
 // WEBHOOKS validations

@@ -338,8 +338,8 @@ function shredStorageBackups(dir, resolve, reject) {
 	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
 
 	// is unlimited ?
-	if (maxStorageBackups === 0) {
-		logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}]`);
+	if (maxStorageBackups === undefined || maxStorageBackups === null || maxStorageBackups === 0) {
+		logger.log.debug(`The [${confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS}] is not specified, not shredding a storage backup in the [${dir}] dir`);
 		resolve();
 		return;
 	}

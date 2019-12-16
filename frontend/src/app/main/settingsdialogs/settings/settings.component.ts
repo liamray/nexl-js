@@ -115,10 +115,10 @@ export class SettingsComponent {
       },
       {
         input: '#backupStorageMaxBackups',
-        message: 'The max storage backups must be a valid integer',
+        message: 'The max storage backups must be a valid positive integer',
         action: 'keyup, blur',
         rule: (): any => {
-          return this.validateMandatoryInt(CONF_CONSTANTS.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS, 0);
+          return this.validateNotMandatoryInt(CONF_CONSTANTS.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS, 0);
         }
       },
 
@@ -164,7 +164,7 @@ export class SettingsComponent {
 
   validateNotMandatoryInt(field: string, min?: number, max?: number) {
     const val = this.settings[field];
-    if (val === '') {
+    if (val === undefined || val === null || val === '') {
       return true;
     }
 

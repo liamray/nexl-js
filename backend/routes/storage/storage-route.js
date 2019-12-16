@@ -29,7 +29,7 @@ router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
 
 	const storageBackupDir = req.body[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
 	if (utils.isEmptyStr(storageBackupDir)) {
-		logger.log.error('The BACKUP_STORAGE_DIR is not specified, skipping storage backup for [%s] user');
+		logger.log.error('The BACKUP_STORAGE_DIR is not specified, skipping storage backup for [%s] user', username);
 		security.sendError(res, 'The backup storage dir is not specified, skipping storage backup');
 		return;
 	}
