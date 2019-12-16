@@ -7,7 +7,9 @@ import {HttpRequestService} from "../../services/http.requests.service";
 import {MESSAGE_TYPE, MessageService} from "../../services/message.service";
 import * as LOG_LEVELS from '../../common/winston-log-levels.json';
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import jqxValidator = jqwidgets.jqxValidator;
+import jqxTooltip = jqwidgets.jqxTooltip;
 
 @Component({
   selector: 'app-settings',
@@ -35,6 +37,12 @@ export class SettingsComponent {
   @ViewChild('logLevel') logLevel: any;
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
+
+  @ViewChild('backupStorageEnabled') backupStorageEnabled: any;
+  @ViewChild('backupStorageCronExpression') backupStorageCronExpression: jqxInputComponent;
+  @ViewChild('backupStorageDir') backupStorageDir: jqxInputComponent;
+  @ViewChild('backupStorageMaxBackups') backupStorageMaxBackups: jqxInputComponent;
+  @ViewChild('backupStorageMaxBackupsTooltip') backupStorageMaxBackupsTooltip: jqxTooltip;
 
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
@@ -189,7 +197,8 @@ export class SettingsComponent {
         this.globalComponentsService.loader.close();
         this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
         this.storageFilesEncoding.val(this.settings[this.SETTINGS.STORAGE_FILES_ENCODING]);
-        this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT]);
+        this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT] === true);
+        this.backupStorageEnabled.val(this.settings[this.SETTINGS.BACKUP_STORAGE_ENABLED] === true);
         this.storageFilesRootDirBefore = this.settings[this.SETTINGS.STORAGE_DIR];
         this.settingsWindow.open();
       },
@@ -248,6 +257,7 @@ export class SettingsComponent {
 
   onOpen() {
     this.isSaving = false;
+    this.toggleStorageBackup();
   }
 
   doReIndexFiles() {
@@ -267,6 +277,11 @@ export class SettingsComponent {
   }
 
   doBackupNow() {
+    // todo: jqwidgets bug - the button still clickable even when disabled ; remove it after framework upgrade
+    if (!this.backupStorageEnabled.val()) {
+      return;
+    }
+
     this.http.post(this.settings, REST_URLS.STORAGE.URLS.BACKUP_STORAGE, 'json').subscribe(
       () => {
         this.globalComponentsService.loader.close();
@@ -277,5 +292,13 @@ export class SettingsComponent {
         this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
         console.log(err);
       });
+  }
+
+  toggleStorageBackup() {
+    let isEnabled = this.backupStorageEnabled.val();
+    this.backupStorageCronExpression.disabled(!isEnabled);
+    this.backupStorageDir.disabled(!isEnabled);
+    this.backupStorageMaxBackups.disabled(!isEnabled);
+    this.backupNow.disabled(!isEnabled);
   }
 }

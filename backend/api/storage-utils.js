@@ -385,8 +385,15 @@ function shredStorageBackups(dir, resolve, reject) {
 
 function backupStorage(destDir) {
 	return new Promise((resolve, reject) => {
-		const storageDir = confMgmt.getNexlStorageDir();
+		// is backup storage enabled at all ?
+		const isBackupStorageEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED];
+		if (isBackupStorageEnabled !== true) {
+			logger.log.debug('Automatic storage backup is not enabled');
+			resolve();
+			return;
+		}
 
+		const storageDir = confMgmt.getNexlStorageDir();
 		if (utils.isEmptyStr(destDir)) {
 			reject('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
 			return;

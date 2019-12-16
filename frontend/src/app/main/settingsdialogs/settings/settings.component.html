@@ -603,14 +603,15 @@
             <div>
 
               <div class="item">
-                <label style="position: relative; top: -1px;">Enable storage backup</label>
+                <label style="position: relative; top: -1px;">Enable automatic storage backup</label>
                 <jqxCheckBox
                   style="position:relative;left: -3px;"
                   #backupStorageEnabled
                   [boxSize]="'12px;'"
                   id="backupStorageEnabled"
                   name="backupStorageEnabled"
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_ENABLE]"
+                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_ENABLED]"
+                  (onChange)="toggleStorageBackup()"
                 ></jqxCheckBox>
               </div>
 
@@ -620,6 +621,7 @@
                 <jqxInput
                   id="backupStorageCronExpression"
                   name="backupStorageCronExpression"
+                  #backupStorageCronExpression
                   [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]"
                   [width]="width"
                   [height]="25">
@@ -642,6 +644,7 @@
                 <jqxInput
                   id="backupStorageDir"
                   name="backupStorageDir"
+                  #backupStorageDir
                   [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_DIR]"
                   [width]="width"
                   [height]="25">
@@ -674,7 +677,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>The max amount of backup ZIP files to rotate.<br/>Zero means unlimited ZIP files amount.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>The max amount of backup ZIP files to rotate.<br/>Zero or empty field means unlimited ZIP files amount.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>

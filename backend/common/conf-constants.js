@@ -35,6 +35,7 @@ const SETTINGS = {
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
 	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
 
+	BACKUP_STORAGE_ENABLED: 'backup-storage-enabled',
 	BACKUP_STORAGE_CRON_EXPRESSION: 'backup-storage-cron-expression',
 	BACKUP_STORAGE_DIR: 'backup-storage-directory',
 	BACKUP_STORAGE_MAX_BACKUPS: 'backup-storage-max-backups-count'
