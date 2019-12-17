@@ -1,4 +1,3 @@
-const assert = require('assert');
 const os = require('os');
 const fs = require('fs');
 const fsx = require('fs-extra');
@@ -125,10 +124,47 @@ function maxBackupsTest() {
 		})
 }
 
+function nonExistingDirsTest() {
+	const randomDir = `c:\\xxx-${Math.random()}-${Math.random()}`;
+
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR] = randomDir;
+
+	let result;
+	return storageUtil.backupStorage()
+		.then(() => {
+			result = true;
+			return Promise.resolve();
+		})
+		.catch((err) => {
+			result = false;
+			return Promise.resolve();
+		})
+		.then(() => {
+			return result ? Promise.reject("ZIP destination dir doesn't exist, but got a positive test result") : Promise.resolve();
+		})
+		.then(() => {
+			confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR] = storageBackupDir;
+			confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = randomDir;
+			return storageUtil.backupStorage();
+		})
+		.then(() => {
+			result = true;
+			return Promise.resolve();
+		})
+		.catch((err) => {
+			result = false;
+			return Promise.resolve();
+		})
+		.then(() => {
+			return result ? Promise.reject("nexl home dir doesn't exist, but got a positive test result") : Promise.resolve();
+		});
+}
+
 function run() {
 	return Promise.resolve()
 		.then(zipUnZipTest)
-		.then(maxBackupsTest);
+		.then(maxBackupsTest)
+		.then(nonExistingDirsTest);
 }
 
 function done() {

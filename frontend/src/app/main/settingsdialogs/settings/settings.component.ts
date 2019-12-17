@@ -47,7 +47,6 @@ export class SettingsComponent {
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
   @ViewChild('reindexFiles') reindexFiles: jqxButtonComponent;
-  @ViewChild('backupNow') backupNow: jqxButtonComponent;
 
   nexlHomeDirToolTip = `<p style=\'text-align: left;\'>nexl home dir contains nexl server configuration, logs and storage files<br/> By default nexl home dir located in your OS home dir ( $HOME or %userprofile% )<br/> Use [--nexl-home] command line argument to specify different nexl home :<br/><span style='margin-left:30px; font-style: italic'>nexl --${CONF_CONSTANTS.NEXL_HOME_DEF}=/path/to/nexl/home/dir</span><br/> This might be useful if you need to run multiple nexl server instances</p>`;
 
@@ -214,14 +213,10 @@ export class SettingsComponent {
     this.saveButton.createComponent();
     this.cancelButton.createComponent();
     this.reindexFiles.createComponent();
-    this.backupNow.createComponent();
   };
 
   onRibbonSelect() {
     this.validator.validate(document.getElementById('validationForm'));
-
-    // todo: hack ! jqx framework doesn't positioning text in the center in the hidden tab, so doing it manually
-    this.backupNow.textPosition('center');
   }
 
   save() {
@@ -276,29 +271,10 @@ export class SettingsComponent {
       });
   }
 
-  doBackupNow() {
-    // todo: jqwidgets bug - the button still clickable even when disabled ; remove it after framework upgrade
-    if (!this.backupStorageEnabled.val()) {
-      return;
-    }
-
-    this.http.post(this.settings, REST_URLS.STORAGE.URLS.BACKUP_STORAGE, 'json').subscribe(
-      () => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Successfully performed a backup !');
-      },
-      err => {
-        this.globalComponentsService.loader.close();
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
-        console.log(err);
-      });
-  }
-
   toggleStorageBackup() {
     let isEnabled = this.backupStorageEnabled.val();
     this.backupStorageCronExpression.disabled(!isEnabled);
     this.backupStorageDir.disabled(!isEnabled);
     this.backupStorageMaxBackups.disabled(!isEnabled);
-    this.backupNow.disabled(!isEnabled);
   }
 }

@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const zipFolder = require('zip-folder');
+const zipFolder = require('zip-a-folder');
 const CronJob = require('cron').CronJob;
 
 const fsx = require('./fsx');
@@ -333,12 +333,9 @@ function cacheStorageFiles() {
 	);
 }
 
-function shredStorageBackups(dir, resolve, reject) {
-	// max storage backup files
-	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
-
+function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
 	// is unlimited ?
-	if (maxStorageBackups === undefined || maxStorageBackups === null || maxStorageBackups === 0) {
+	if (maxStorageBackups === undefined || maxStorageBackups === null || maxStorageBackups === '' || maxStorageBackups === 0) {
 		logger.log.debug(`The [${confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS}] is not specified, not shredding a storage backup in the [${dir}] dir`);
 		resolve();
 		return;
@@ -383,16 +380,11 @@ function shredStorageBackups(dir, resolve, reject) {
 	});
 }
 
-function backupStorage(destDir) {
-	return new Promise((resolve, reject) => {
-		// is backup storage enabled at all ?
-		const isBackupStorageEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED];
-		if (isBackupStorageEnabled !== true) {
-			logger.log.debug('Automatic storage backup is not enabled');
-			resolve();
-			return;
-		}
+function backupStorage() {
+	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
+	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
 
+	return new Promise((resolve, reject) => {
 		const storageDir = confMgmt.getNexlStorageDir();
 		if (utils.isEmptyStr(destDir)) {
 			reject('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
@@ -403,15 +395,15 @@ function backupStorage(destDir) {
 		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
 
 		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
-		zipFolder(storageDir, destZipFile, function (err) {
+		zipFolder.zipFolder(storageDir, destZipFile, function (err) {
 			if (err) {
 				logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
-				reject();
+				reject(err);
 				return;
 			}
 
 			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
-			shredStorageBackups(destDir, resolve, reject);
+			shredStorageBackups(destDir, maxStorageBackups, resolve, reject);
 		});
 	});
 }
@@ -431,6 +423,13 @@ function scheduleStorageBackup() {
 	// stopping previous job is scheduled
 	stopStorageBackupIfNeeded();
 
+	// is backup storage enabled ?
+	const isBackupStorageEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED];
+	if (isBackupStorageEnabled !== true) {
+		logger.log.debug('Automatic storage backup is not enabled');
+		return Promise.resolve();
+	}
+
 	// is cron expression specified ?
 	if (utils.isEmptyStr(cronExpression)) {
 		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: cron expression is not specified');
@@ -446,8 +445,9 @@ function scheduleStorageBackup() {
 	// scheduling
 	try {
 		logger.log.info(`Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
+
 		job = new CronJob(cronExpression, function () {
-			backupStorage(confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR]);
+			backupStorage();
 		});
 		job.start();
 	} catch (e) {
@@ -606,7 +606,6 @@ module.exports.move = move;
 module.exports.findInFiles = findInFiles;
 
 module.exports.scheduleStorageBackup = scheduleStorageBackup;
-module.exports.backupStorage = backupStorage;
 
 module.exports.listFiles = listFiles;
 module.exports.listDirs = listDirs;

@@ -14,37 +14,6 @@ const di = require('../../common/data-interchange-constants');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
-// backup storage now
-//////////////////////////////////////////////////////////////////////////////
-router.post(restUtls.STORAGE.URLS.BACKUP_STORAGE, function (req, res) {
-	const username = security.getLoggedInUsername(req);
-
-	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.REINDEX_FILES}] request`);
-
-	if (!security.isAdmin(username)) {
-		logger.log.error('Cannot backup a storage because the [%s] user doesn\'t have admin permissions', username);
-		security.sendError(res, 'admin permissions required');
-		return;
-	}
-
-	const storageBackupDir = req.body[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
-	if (utils.isEmptyStr(storageBackupDir)) {
-		logger.log.error('The BACKUP_STORAGE_DIR is not specified, skipping storage backup for [%s] user', username);
-		security.sendError(res, 'The backup storage dir is not specified, skipping storage backup');
-		return;
-	}
-
-	storageUtils.backupStorage(storageBackupDir)
-		.then(_ => res.send({})
-		)
-		.catch(err => {
-			logger.log.error('Failed to backup a storage for [%s] user. Reason : [%s]', username, utils.formatErr(err));
-			security.sendError(res, 'Failed to backup a storage');
-		});
-});
-
-
-//////////////////////////////////////////////////////////////////////////////
 // reindex files
 //////////////////////////////////////////////////////////////////////////////
 router.post(restUtls.STORAGE.URLS.REINDEX_FILES, function (req, res) {

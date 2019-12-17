@@ -74,6 +74,8 @@ function applyChanges(before) {
 		before[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] !== after[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]
 		||
 		before[confConsts.SETTINGS.BACKUP_STORAGE_DIR] !== after[confConsts.SETTINGS.BACKUP_STORAGE_DIR]
+		||
+		before[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED] !== after[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED]
 	) {
 		storageUtils.scheduleStorageBackup();
 	}

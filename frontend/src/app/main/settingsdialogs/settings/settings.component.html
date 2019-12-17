@@ -631,7 +631,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>The SEC MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK cron expression to backup a storage.<br/>Example: 0 0 4 * * *<br/>Which means every day at 4:00 AM.<br/>Leave this field empty to disable an automatic backup.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>The SEC MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK cron expression to backup a storage.<br/>Example: 0 0 4 * * *<br/>Which means every day at 4:00 AM.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -654,7 +654,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>Path to the directory to store a ZIP backup files.<br/>Leave this field empty to disable an automatic backup.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>Path to the directory to store a ZIP backup files.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -682,21 +682,6 @@
                 </jqxTooltip>
               </div>
 
-              <div style="clear: both"></div>
-
-              <div class="item">
-                <jqxButton [height]="28"
-                           [width]="120"
-                           [textImageRelation]='"imageBeforeText"'
-                           (click)="doBackupNow()"
-                           [imgSrc]='"./nexl/site/icons/backup.png"'
-                           [auto-create]="false"
-                           #backupNow
-                >
-                  Backup now
-                </jqxButton>
-
-              </div>
             </div>
 
           </div>
