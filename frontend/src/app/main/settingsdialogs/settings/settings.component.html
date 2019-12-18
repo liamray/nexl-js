@@ -615,6 +615,15 @@
                 ></jqxCheckBox>
               </div>
 
+              <div class="tooltip" style="top: 10px;">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>Here you can enable automatic backup for nexl JavaScript files ( nexl storage ).<br/>Automatic backup won\'t start until you fill a [Cron expression] and [Backup to dir] fields.</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
               <!--cron expression-->
               <div class="item">
                 <label>Cron expression</label>
