@@ -446,7 +446,7 @@ function scheduleStorageBackup() {
 	try {
 		logger.log.info(`Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
 
-		job = new CronJob(cronExpression, function () {
+		job = new CronJob('0 ' + cronExpression, function () {
 			backupStorage();
 		});
 		job.start();

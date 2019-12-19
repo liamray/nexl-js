@@ -211,7 +211,7 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_
 	}
 
 	try {
-		new CronJob(val);
+		new CronJob('0 ' + val);
 	} catch (e) {
 		return invalid('Bad cron expression');
 	}
