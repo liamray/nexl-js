@@ -606,6 +606,7 @@ module.exports.move = move;
 module.exports.findInFiles = findInFiles;
 
 module.exports.scheduleStorageBackup = scheduleStorageBackup;
+module.exports.backupStorage = backupStorage;
 
 module.exports.listFiles = listFiles;
 module.exports.listDirs = listDirs;
