@@ -1,17 +1,43 @@
 const express = require('express');
 const path = require('path');
 const j79 = require('j79-utils');
+const nexlEngine = require('nexl-engine');
 
 const storageUtils = require('../../api/storage-utils');
 const security = require('../../api/security');
 const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 const restUtls = require('../../common/rest-urls');
-const confConsts = require('../../common/conf-constants');
-const confMgmt = require('../../api/conf-mgmt');
 const di = require('../../common/data-interchange-constants');
 
 const router = express.Router();
+
+//////////////////////////////////////////////////////////////////////////////
+// md
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.METADATA, function (req, res) {
+	const username = security.getLoggedInUsername(req);
+	const relativePath = req.body['relativePath'] || path.sep;
+
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.METADATA}] request from the [${username}] user for [relativePath=${relativePath}]`);
+
+	if (!security.hasReadPermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have read permissions to load metadata', username);
+		security.sendError(res, 'No read permissions');
+		return;
+	}
+
+	// resolving metadata for [relativePath]
+	const src = {x: relativePath};
+	let md;
+	try {
+		md = nexlEngine.parseMD(src);
+	} catch (e) {
+		//...
+	}
+
+	// ...
+});
 
 //////////////////////////////////////////////////////////////////////////////
 // reindex files
