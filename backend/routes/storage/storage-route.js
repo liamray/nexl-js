@@ -9,6 +9,8 @@ const utils = require('../../api/utils');
 const logger = require('../../api/logger');
 const restUtls = require('../../common/rest-urls');
 const di = require('../../common/data-interchange-constants');
+const confMgmt = require('../../api/conf-mgmt');
+const confConsts = require('../../common/conf-constants');
 
 const router = express.Router();
 
@@ -27,16 +29,33 @@ router.post(restUtls.STORAGE.URLS.METADATA, function (req, res) {
 		return;
 	}
 
-	// resolving metadata for [relativePath]
-	const src = {x: relativePath};
-	let md;
-	try {
-		md = nexlEngine.parseMD(src);
-	} catch (e) {
-		//...
+	const fullPath = path.join(confMgmt.getNexlStorageDir(), relativePath);
+	if (!utils.isFilePathValid(fullPath)) {
+		logger.log.error(`The [relativePath=${relativePath}] is unacceptable, requested by [user=${username}]`);
+		security.sendError(res, 'Unacceptable path');
+		return;
 	}
 
-	// ...
+	// todo: take in account file content
+	const nexlSource = {
+		fileEncoding: confConsts.ENCODING_UTF8,
+		basePath: confMgmt.getNexlStorageDir(),
+		filePath: fullPath
+	};
+
+	// resolving metadata for [relativePath]
+	let md;
+	try {
+		md = nexlEngine.parseMD(nexlSource);
+	} catch (e) {
+		logger.log.error(`Failed to parse a [relativePath=${relativePath}] file. Requested by [user=${username}]. [reason=${utils.formatErr(e)}]`);
+		security.sendError(res, 'Failed to parse a file');
+		return;
+	}
+
+	res.send({
+		md: md
+	});
 });
 
 //////////////////////////////////////////////////////////////////////////////

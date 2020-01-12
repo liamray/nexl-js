@@ -16,11 +16,12 @@ import {
   PRETTIFY_BUTTON_STATE
 } from "../../services/localstorage.service";
 import {jqxToggleButtonComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxtogglebutton";
-import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
-import {UtilsService} from "../../services/utils.service";
+import {jqxComboBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxcombobox";
 import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter";
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 import {AppearanceService} from "../../services/appearance.service";
+import {UtilsService} from "../../services/utils.service";
+import {ICONS} from '../../misc/messagebox/messagebox.component';
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '55%', min: 400, collapsible: false},
@@ -76,7 +77,7 @@ const URL_TEMPLATE = `
 
 })
 export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
-  @ViewChild('nexlExpression') nexlExpression: jqxInputComponent;
+  @ViewChild('nexlExpression') nexlExpression: jqxComboBoxComponent;
   @ViewChild('outputArea') outputArea: jqxExpanderComponent;
   @ViewChild('expressionArea') expressionArea: jqxExpanderComponent;
 
@@ -96,6 +97,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   nexlExpressions: any = {};
   nexlArgs = {};
+  source = [{html: 'hello', title: 'hello'}];
 
   output: string = '';
   originalOutput: string = '';
@@ -619,5 +621,24 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     }
     LocalStorageService.storeObj(ARGS, this.nexlArgs);
     this.updateUrl();
+  }
+
+  nexlExpreessionOnOpen(event: any) {
+    // todo: send file content if faile was changed
+    this.http.post({relativePath: this.relativePath}, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
+      (result: any) => {
+        console.log(result);
+        this.globalComponentsService.loader.close();
+      },
+      err => {
+        this.globalComponentsService.loader.close();
+        console.log(err);
+        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
+      });
+
+    setTimeout(_ => {
+      // this.source = [{ html: 'hello', title: 'hello' }];
+      this.nexlExpression.addItem({html: 'test' + Math.random(), title: 'test' + Math.random()});
+    }, 3000);
   }
 }
