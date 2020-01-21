@@ -97,7 +97,8 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   nexlExpressions: any = {};
   nexlArgs = {};
-  source = ['Refreshing... Please wait...'];
+  REFRESHGING = ['Refreshing... Please wait...'];
+  source = this.REFRESHGING;
 
   output: string = '';
   originalOutput: string = '';
@@ -624,10 +625,15 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   nexlExpreessionOnOpen(event: any) {
+    this.source = this.REFRESHGING;
+
     // todo: send file content if faile was changed
     this.http.post({relativePath: this.relativePath}, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
       (result: any) => {
         this.source = result.body.md;
+        if (this.source.length < 1) {
+          this.source = ['No expression...'];
+        }
         setTimeout(() => {
           this.nexlExpression.disabled(false);
         }, 100);
