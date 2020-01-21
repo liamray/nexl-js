@@ -97,7 +97,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   nexlExpressions: any = {};
   nexlArgs = {};
-  source = [{html: 'hello', title: 'hello'}];
+  source = ['Refreshing... Please wait...'];
 
   output: string = '';
   originalOutput: string = '';
@@ -627,7 +627,10 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     // todo: send file content if faile was changed
     this.http.post({relativePath: this.relativePath}, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
       (result: any) => {
-        console.log(result);
+        this.source = result.body.md;
+        setTimeout(() => {
+          this.nexlExpression.disabled(false);
+        }, 100);
         this.globalComponentsService.loader.close();
       },
       err => {
@@ -635,10 +638,5 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
         console.log(err);
         this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       });
-
-    setTimeout(_ => {
-      // this.source = [{ html: 'hello', title: 'hello' }];
-      this.nexlExpression.addItem({html: 'test' + Math.random(), title: 'test' + Math.random()});
-    }, 3000);
   }
 }
