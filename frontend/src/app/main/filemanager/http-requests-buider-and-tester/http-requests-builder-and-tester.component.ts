@@ -21,54 +21,12 @@ import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsp
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 import {AppearanceService} from "../../services/appearance.service";
 import {UtilsService} from "../../services/utils.service";
-import {ICONS} from '../../misc/messagebox/messagebox.component';
+import {ICONS} from "../../misc/messagebox/messagebox.component";
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '55%', min: 400, collapsible: false},
   {size: '45%', min: 200}
 ];
-
-const URL_TEMPLATE = `
-<div style="text-align: left; display: block; padding: 10px;">
-    <span style="text-decoration: underline;" id="tooltipRootUrl"></span>
-    <span style="border: 2px dashed green; padding: 5px;" id="tooltipRelativePath"></span>
-    <span style="" id="tooltipQuestionChar">?</span>
-    <span style="border: 2px solid red; padding: 5px;" id="tooltipExpression"></span>
-    <span style="" id="tooltipAmpersand">&</span>
-    <span style="border: 2px dotted blue; padding: 5px;" id="tooltipArgs"></span>
-
-    <br/>
-    <br/>
-
-    <div
-            style="border: 2px dashed green; padding: 5px;width: 15px;height: 15px; float: left;"></div>
-    <div style="position: relative; top: 6px; left: 6px;float: left;"> - relative path to JavaScript file</div>
-    <div style="clear: both;"></div>
-
-    <div id="tooltipExpressionExplanation" style="padding-top: 10px;">
-        <div
-                style="border: 2px solid red; padding: 5px;width: 15px;height: 15px; float: left;"></div>
-        <div style="position: relative; top: 6px; left: 6px;float: left;"> - nexl expression</div>
-        <div style="clear: both;"></div>
-    </div>
-
-    <div id="tooltipArgsExplanation" style="padding-top: 10px;">
-        <div
-                style="border: 2px dotted blue; padding: 5px;width: 15px;height: 15px; float: left;"></div>
-        <div style="position: relative; top: 6px; left: 6px;float: left;"> - arguments</div>
-        <div style="clear: both;"></div>
-    </div>
-    
-    <div id="tooltipEmptyExpressionExplanation" style="padding-top: 15px;">
-        <img src='./nexl/site/icons/info.png' style="position: relative; top: 2px;"/>
-        Please note empty nexl expression is evaluated to undefined value.<br/>
-        <img src='./nexl/site/icons/info.png' style="position: relative; top: 2px;"/>
-        You can specify automatically executed nexl expression in your JavaScript file in the following way :<br/>
-        <span style="padding-top: 5px; padding-left: 150px; font-weight: bold;">nexl.defaultExpression = '\${myExpression...}';</span>  
-    </div>
-</div>
-   
-`;
 
 @Component({
   selector: '.app-http-requests-builder-and-tester',
@@ -93,12 +51,10 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   @ViewChild('executionHistoryListBox') executionHistoryListBox: jqxListBoxComponent;
 
-  urlTemplate: string = URL_TEMPLATE;
-
   nexlExpressions: any = {};
   nexlArgs = {};
   REFRESHGING = ['Refreshing... Please wait...'];
-  source = this.REFRESHGING;
+  source = [];
 
   output: string = '';
   originalOutput: string = '';
@@ -225,7 +181,12 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   tabSelected(relativePath: string) {
     this.relativePath = relativePath;
-    this.nexlExpression.val(this.nexlExpressions[this.relativePath] || '');
+    const value = this.nexlExpressions[this.relativePath] || '';
+    this.source = value === '' ? this.REFRESHGING : [value];
+    setTimeout(() => {
+      this.nexlExpression.val(value);
+      this.nexlExpression.disabled(false);
+    }, 100);
     this.messageService.sendMessage(MESSAGE_TYPE.SET_ARGS, this.nexlArgs[this.relativePath] || []);
     this.updateUrl();
   }
@@ -625,9 +586,10 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   nexlExpreessionOnOpen(event: any) {
+    const currentVal = this.nexlExpression.val();
     this.source = this.REFRESHGING;
 
-    // todo: send file content if faile was changed
+    // todo: send file content if file was changed
     this.http.post({relativePath: this.relativePath}, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
       (result: any) => {
         this.source = result.body.md;
@@ -636,6 +598,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
         }
         setTimeout(() => {
           this.nexlExpression.disabled(false);
+          this.nexlExpression.val(currentVal);
         }, 100);
         this.globalComponentsService.loader.close();
       },
@@ -644,5 +607,12 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
         console.log(err);
         this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
       });
+  }
+
+  onSelect() {
+  }
+
+  onChange() {
+    // alert(this.nexlExpression.val());
   }
 }

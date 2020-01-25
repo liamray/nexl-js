@@ -30,6 +30,9 @@
                 (onOpen)="nexlExpreessionOnOpen($event)"
                 [disabled]="true"
                 [source]="source"
+                [searchMode]="'none'"
+                (onSelect)="onSelect()"
+                (onChange)="onChange()"
               >
               </jqxComboBox>
             </div>
