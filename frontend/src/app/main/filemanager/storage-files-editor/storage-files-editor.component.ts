@@ -103,11 +103,6 @@ export class StorageFilesEditorComponent implements AfterViewInit {
         return;
       }
 
-      case MESSAGE_TYPE.REQUEST_CURRENT_TAB: {
-        this.sendCurrentTabInfo();
-        return;
-      }
-
       case MESSAGE_TYPE.UPDATE_UI: {
         this.updateUI();
         return;
@@ -257,12 +252,10 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     return $('#' + TITLE_TEXT + idSeqNr).text(text);
   }
 
-  sendCurrentTabInfo() {
+  getCurrentTabInfo() {
     const tabNr = this.tabs.val();
     if (tabNr < 0) {
-      // sending empty data
-      this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB);
-      return;
+      return undefined;
     }
 
     const data: any = {
@@ -275,7 +268,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
       data.fileContent = this.getTabContent(idSeqNr);
     }
 
-    this.messageService.sendMessage(MESSAGE_TYPE.GET_CURRENT_TAB, data);
+    return data;
   }
 
   fileMoved(data: any) {
@@ -636,6 +629,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
     this.tabs.scrollPosition('both');
     this.tabs.removeFirst();
     ace.config.set('basePath', 'nexl/site/ace');
+    this.globalComponentsService.storageFilesEditorComponent = this;
   }
 
   makeTitle(data: any) {

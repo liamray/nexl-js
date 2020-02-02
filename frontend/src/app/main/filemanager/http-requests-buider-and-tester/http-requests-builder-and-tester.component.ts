@@ -22,6 +22,7 @@ import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlis
 import {AppearanceService} from "../../services/appearance.service";
 import {UtilsService} from "../../services/utils.service";
 import {ICONS} from "../../misc/messagebox/messagebox.component";
+import * as $ from 'jquery';
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '55%', min: 400, collapsible: false},
@@ -80,11 +81,6 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
   handleMessages(msg: any) {
     switch (msg.type) {
-      case MESSAGE_TYPE.GET_CURRENT_TAB: {
-        this.evalInner(msg.data);
-        return;
-      }
-
       case MESSAGE_TYPE.AUTH_CHANGED: {
         this.updatePermissions(msg.data);
         return;
@@ -184,7 +180,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     const value = this.nexlExpressions[this.relativePath] || '';
     this.source = value === '' ? this.REFRESHGING : [value];
     setTimeout(() => {
-      this.nexlExpression.val(value);
+      this.setNexlExpression(value);
       this.nexlExpression.disabled(false);
     }, 100);
     this.messageService.sendMessage(MESSAGE_TYPE.SET_ARGS, this.nexlArgs[this.relativePath] || []);
@@ -198,16 +194,6 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
     this.hasReadPermission = data.hasReadPermission;
     this.updateComponentsState();
-  }
-
-
-  eval() {
-    if (this.isDisabled()) {
-      return;
-    }
-
-    this.globalComponentsService.loader.open();
-    this.messageService.sendMessage(MESSAGE_TYPE.REQUEST_CURRENT_TAB);
   }
 
   addExecutionHistoryItemInnerInner(icon: string, msg: string) {
@@ -259,9 +245,14 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     }, 100);
   }
 
-  evalInner(tabInfo: any) {
+  eval() {
+    if (this.isDisabled()) {
+      return;
+    }
+
+    const tabInfo = this.globalComponentsService.storageFilesEditorComponent.getCurrentTabInfo();
+
     if (tabInfo === undefined) {
-      this.globalComponentsService.loader.close();
       return;
     }
 
@@ -271,8 +262,9 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       data[DI_CONSTANTS.FILE_BODY] = tabInfo.fileContent;
     }
 
-    if (this.nexlExpression.val() !== '') {
-      data.expression = this.nexlExpression.val();
+    const expr = this.getNexlExpression();
+    if (expr !== '') {
+      data.expression = expr;
     }
 
     const currentArgs = this.resolveCurrentArgs();
@@ -283,6 +275,9 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     }
 
     data = queryString.stringify(data);
+    this.globalComponentsService.loader.open();
+
+    console.log(data);
 
     // evaluating nexl expression
     this.http.post2Root(data, tabInfo.relativePath, 'text').subscribe(
@@ -363,7 +358,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     const rootUrl = environment.rootUrl;
     const relativePathSlashed = this.relativePath.replace(/^[\\/]/, '/').replace(/\\/g, '/');
     const url = rootUrl + relativePathSlashed;
-    const expression = this.nexlExpression.val();
+    const expression = this.getNexlExpression();
     const argsAsArray = this.args2Array();
     const args4Tooltip = this.args2Str(argsAsArray, false);
 
@@ -477,7 +472,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
 
     //
     this.nexlExpression.elementRef.nativeElement.addEventListener('input', () => {
-      this.nexlExpressions[this.relativePath] = this.nexlExpression.val();
+      this.nexlExpressions[this.relativePath] = this.getNexlExpression();
       this.updateUrl();
     });
 
@@ -586,11 +581,18 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   nexlExpreessionOnOpen(event: any) {
-    const currentVal = this.nexlExpression.val();
+    const currentVal = this.getNexlExpression();
     this.source = this.REFRESHGING;
 
-    // todo: send file content if file was changed
-    this.http.post({relativePath: this.relativePath}, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
+    const tabInfo = this.globalComponentsService.storageFilesEditorComponent.getCurrentTabInfo();
+    const requestData = {
+      relativePath: this.relativePath
+    };
+    if (tabInfo !== undefined && tabInfo.fileContent !== undefined) {
+      requestData[DI_CONSTANTS.FILE_BODY] = tabInfo.fileContent;
+    }
+
+    this.http.post(requestData, REST_URLS.STORAGE.URLS.METADATA, 'json').subscribe(
       (result: any) => {
         this.source = result.body.md;
         if (this.source.length < 1) {
@@ -598,7 +600,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
         }
         setTimeout(() => {
           this.nexlExpression.disabled(false);
-          this.nexlExpression.val(currentVal);
+          this.setNexlExpression(currentVal);
         }, 100);
         this.globalComponentsService.loader.close();
       },
@@ -613,6 +615,13 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   onChange() {
-    // alert(this.nexlExpression.val());
+  }
+
+  getNexlExpression() {
+    return $(this.nexlExpression.elementRef.nativeElement).find('input').val();
+  }
+
+  setNexlExpression(val) {
+    $(this.nexlExpression.elementRef.nativeElement).find('input').val(val);
   }
 }

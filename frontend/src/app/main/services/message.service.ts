@@ -46,9 +46,7 @@ export enum MESSAGE_TYPE {
   TABS_COUNT_CHANGED,
   TAB_CLOSED,
   VIEW_EXAMPLES,
-  ITEM_MOVED,
-  REQUEST_CURRENT_TAB, // requests current tab's data
-  GET_CURRENT_TAB // returns currently opened tab's releativePath and tab content if tab changed
+  ITEM_MOVED
 }
 
 @Injectable()

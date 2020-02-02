@@ -11,6 +11,7 @@ const restUtls = require('../../common/rest-urls');
 const di = require('../../common/data-interchange-constants');
 const confMgmt = require('../../api/conf-mgmt');
 const confConsts = require('../../common/conf-constants');
+const diConsts = require('../../common/data-interchange-constants');
 
 const router = express.Router();
 
@@ -62,7 +63,8 @@ router.post(restUtls.STORAGE.URLS.METADATA, function (req, res) {
 	const nexlSource = {
 		fileEncoding: confConsts.ENCODING_UTF8,
 		basePath: confMgmt.getNexlStorageDir(),
-		filePath: fullPath
+		filePath: fullPath,
+		fileContent: req.body[diConsts.FILE_BODY]
 	};
 
 	// resolving metadata for [relativePath]
