@@ -21,8 +21,6 @@ import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsp
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 import {AppearanceService} from "../../services/appearance.service";
 import {UtilsService} from "../../services/utils.service";
-import {ICONS} from "../../misc/messagebox/messagebox.component";
-import * as $ from 'jquery';
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [
   {size: '55%', min: 400, collapsible: false},
@@ -153,8 +151,6 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       return;
     }
 
-    // for files
-
     // updating expressions
     const expression = this.nexlExpressions[this.relativePath];
     delete this.nexlExpressions[this.relativePath];
@@ -182,9 +178,9 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     setTimeout(() => {
       this.setNexlExpression(value);
       this.nexlExpression.disabled(false);
+      this.updateUrl();
     }, 100);
     this.messageService.sendMessage(MESSAGE_TYPE.SET_ARGS, this.nexlArgs[this.relativePath] || []);
-    this.updateUrl();
   }
 
   updatePermissions(data: any) {
@@ -360,7 +356,6 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     const url = rootUrl + relativePathSlashed;
     const expression = this.getNexlExpression();
     const argsAsArray = this.args2Array();
-    const args4Tooltip = this.args2Str(argsAsArray, false);
 
     if (expression !== '') {
       argsAsArray.unshift({
@@ -380,62 +375,6 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       this.url = url + '?' + argsAsStr;
       this.urlEncoded = url + '?' + argsAsStrEncoded;
     }
-
-    // updating tooltip
-    /*
-        $('#tooltipRootUrl').text(rootUrl);
-        $('#tooltipRelativePath').text(relativePathSlashed);
-        $('#tooltipExpression').text(`expression=${expression}`);
-        $('#tooltipArgs').text(args4Tooltip);
-
-        if (expression === '' && args4Tooltip === '') {
-          $('#tooltipQuestionChar').css('display', 'none');
-          $('#tooltipExpression').css('display', 'none');
-          $('#tooltipAmpersand').css('display', 'none');
-          $('#tooltipArgs').css('display', 'none');
-
-          $('#tooltipExpressionExplanation').css('display', 'none');
-          $('#tooltipArgsExplanation').css('display', 'none');
-          $('#tooltipEmptyExpressionExplanation').css('display', '');
-          return;
-        }
-
-        if (expression !== '' && args4Tooltip !== '') {
-          $('#tooltipQuestionChar').css('display', '');
-          $('#tooltipExpression').css('display', '');
-          $('#tooltipAmpersand').css('display', '');
-          $('#tooltipArgs').css('display', '');
-
-          $('#tooltipExpressionExplanation').css('display', '');
-          $('#tooltipArgsExplanation').css('display', '');
-          $('#tooltipEmptyExpressionExplanation').css('display', 'none');
-          return;
-        }
-
-        if (expression !== '') {
-          $('#tooltipQuestionChar').css('display', '');
-          $('#tooltipExpression').css('display', '');
-          $('#tooltipAmpersand').css('display', 'none');
-          $('#tooltipArgs').css('display', 'none');
-
-          $('#tooltipExpressionExplanation').css('display', '');
-          $('#tooltipArgsExplanation').css('display', 'none');
-          $('#tooltipEmptyExpressionExplanation').css('display', 'none');
-          return;
-        }
-
-        if (args4Tooltip !== '') {
-          $('#tooltipQuestionChar').css('display', '');
-          $('#tooltipExpression').css('display', 'none');
-          $('#tooltipAmpersand').css('display', 'none');
-          $('#tooltipArgs').css('display', '');
-
-          $('#tooltipExpressionExplanation').css('display', 'none');
-          $('#tooltipArgsExplanation').css('display', '');
-          $('#tooltipEmptyExpressionExplanation').css('display', '');
-          return;
-        }
-    */
   }
 
   args2Array() {
@@ -471,7 +410,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     this.prettifyButton.toggled(!this.isPrettify);
 
     //
-    this.nexlExpression.elementRef.nativeElement.addEventListener('input', () => {
+    this.getNexlExpressionNativeElement().on('input', () => {
       this.nexlExpressions[this.relativePath] = this.getNexlExpression();
       this.updateUrl();
     });
@@ -596,7 +535,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       (result: any) => {
         this.source = result.body.md;
         if (this.source.length < 1) {
-          this.source = ['No expression...'];
+          this.source = [''];
         }
         setTimeout(() => {
           this.nexlExpression.disabled(false);
@@ -612,16 +551,22 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   onSelect() {
+    this.nexlExpressions[this.relativePath] = this.getNexlExpression();
+    this.updateUrl();
   }
 
   onChange() {
   }
 
   getNexlExpression() {
-    return $(this.nexlExpression.elementRef.nativeElement).find('input').val();
+    return this.getNexlExpressionNativeElement().val();
   }
 
   setNexlExpression(val) {
-    $(this.nexlExpression.elementRef.nativeElement).find('input').val(val);
+    this.getNexlExpressionNativeElement().val(val);
+  }
+
+  getNexlExpressionNativeElement() {
+    return $(this.nexlExpression.elementRef.nativeElement).find('input');
   }
 }
