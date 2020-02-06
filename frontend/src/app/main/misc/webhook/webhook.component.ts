@@ -106,7 +106,7 @@ export class WebhookComponent implements OnInit {
       });
   }
 
-  private proceed() {
+  proceed() {
     this.isUpdating = true;
     this.webhookValidator.validate(document.getElementById('webhookForm'));
   }
