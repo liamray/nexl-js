@@ -59,7 +59,6 @@ router.post(restUtls.STORAGE.URLS.METADATA, function (req, res) {
 		return;
 	}
 
-	// todo: take in account file content
 	const nexlSource = {
 		fileEncoding: confConsts.ENCODING_UTF8,
 		basePath: confMgmt.getNexlStorageDir(),

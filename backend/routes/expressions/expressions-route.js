@@ -81,7 +81,7 @@ function nexlizeInner(httpParams, username) {
 	if (logger.isLogLevel('verbose')) {
 		const source = nexlParams.nexlSource.fileContent ? 'altered nexl source' : nexlParams.nexlSource.filePath;
 		const args = JSON.stringify(nexlParams.args || {});
-		logger.log.log('verbose', `Evaluating the following nexl [expression=${nexlParams.item}], from the [file=${source}], [arguments=${args}], [method=${httpParams.method}], [clientIP=${httpParams.ip}], [userName=${username}]`);
+		logger.log.log('verbose', `Evaluating the following nexl [expression=${nexlParams.item}], from the [file=${source}], [arguments=${args}], [method=${httpParams.method}], [clientIP=${httpParams.ip}], [userName=${username}] [url=${httpParams.url}]`);
 	}
 	return nexlEngine.nexlize(nexlParams.nexlSource, nexlParams.item, nexlParams.args);
 }
@@ -137,6 +137,7 @@ function nexlize(httpParams, req, res) {
 
 	httpParams.method = req.method;
 	httpParams.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	httpParams.url = req.protocol + '://' + req.get('host') + req.originalUrl;
 
 	const username = security.getLoggedInUsername(req);
 
