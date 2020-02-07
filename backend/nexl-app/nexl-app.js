@@ -115,11 +115,13 @@ function httpError(error) {
 	// handling specific listen errors with friendly messages
 	switch (error.code) {
 		case 'EACCES':
-			logger.log.importantMessage('info', 'Cannot start HTTP server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', settings[confConsts.SETTINGS.HTTP_BINDING], settings[confConsts.SETTINGS.HTTP_PORT], utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
+			logger.log.importantMessage('error', 'Cannot start HTTP server on [%s:%s]. Original error message : [%s]', settings[confConsts.SETTINGS.HTTP_BINDING], settings[confConsts.SETTINGS.HTTP_PORT], utils.formatErr(error));
+			logger.log.importantMessage('error', 'Open the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
 			process.exit(1);
 			break;
 		case 'EADDRINUSE':
-			logger.log.importantMessage('info', 'The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', settings[confConsts.SETTINGS.HTTP_PORT], settings[confConsts.SETTINGS.HTTP_BINDING], utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
+			logger.log.importantMessage('error', 'The [%s] port is already in use on [%s] interface. Original error message : [%s]', settings[confConsts.SETTINGS.HTTP_PORT], settings[confConsts.SETTINGS.HTTP_BINDING], utils.formatErr(error));
+			logger.log.importantMessage('error', 'Open the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTP_BINDING, confConsts.SETTINGS.HTTP_PORT);
 			process.exit(1);
 			break;
 		default:
@@ -199,11 +201,13 @@ function httpsError() {
 	// handling specific listen errors with friendly messages
 	switch (error.code) {
 		case 'EACCES':
-			logger.log.importantMessage('info', 'Cannot start HTTPS server on [%s:%s]. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', settings[confConsts.SETTINGS.HTTPS_BINDING], settings[confConsts.SETTINGS.HTTPS_PORT], utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
+			logger.log.importantMessage('error', 'Cannot start HTTPS server on [%s:%s]. Original error message : [%s]', settings[confConsts.SETTINGS.HTTPS_BINDING], settings[confConsts.SETTINGS.HTTPS_PORT], utils.formatErr(error));
+			logger.log.importantMessage('error', 'Open the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
 			process.exit(1);
 			break;
 		case 'EADDRINUSE':
-			logger.log.importantMessage('info', 'The [%s] port is already in use on [%s] interface. Original error message : [%s].\nOpen the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', settings[confConsts.SETTINGS.HTTPS_PORT], settings[confConsts.SETTINGS.HTTPS_BINDING], utils.formatErr(error), confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
+			logger.log.importantMessage('error', 'The [%s] port is already in use on [%s] interface. Original error message : [%s]', settings[confConsts.SETTINGS.HTTPS_PORT], settings[confConsts.SETTINGS.HTTPS_BINDING], utils.formatErr(error));
+			logger.log.importantMessage('error', 'Open the [%s] file located in [%s] directory and adjust the [%s] and [%s] properties for HTTP connector', confConsts.CONF_FILES.SETTINGS, confMgmt.getNexlAppDataDir(), confConsts.SETTINGS.HTTPS_BINDING, confConsts.SETTINGS.HTTPS_PORT);
 			process.exit(1);
 			break;
 		default:
