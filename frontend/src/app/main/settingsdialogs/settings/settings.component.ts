@@ -262,7 +262,7 @@ export class SettingsComponent {
       () => {
         this.globalComponentsService.loader.close();
         this.messageService.sendMessage(MESSAGE_TYPE.RELOAD_FILES);
-        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Successfully reindexed !');
+        this.globalComponentsService.messageBox.openSimple(ICONS.INFO, 'Reloaded successfully !');
       },
       err => {
         this.globalComponentsService.loader.close();
