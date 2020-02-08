@@ -37,6 +37,7 @@
             [width]="width"
             [height]="25"
             [(ngModel)]="appearanceData['font-size']"
+            (keypress)="onKeyPress($event)"
           >
           </jqxInput>
         </div>
@@ -88,6 +89,7 @@
             [width]="width"
             [height]="25"
             [(ngModel)]="appearanceData['max-execution-history-items']"
+            (keypress)="onKeyPress($event)"
           >
           </jqxInput>
         </div>

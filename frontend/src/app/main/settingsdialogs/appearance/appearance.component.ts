@@ -95,4 +95,11 @@ export class AppearanceComponent {
 
   onOpen() {
   }
+
+  onKeyPress(event) {
+    if (event.keyCode === 13) {
+      this.save();
+      return;
+    }
+  }
 }
