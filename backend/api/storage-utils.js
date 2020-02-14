@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const zipFolder = require('zip-a-folder');
+const zipFolder = require('./zip-a-folder');
 const CronJob = require('cron').CronJob;
 
 const fsx = require('./fsx');
@@ -395,7 +395,7 @@ function backupStorage() {
 		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
 
 		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
-		zipFolder.zipFolder(storageDir, destZipFile, function (err) {
+		zipFolder(storageDir, destZipFile, function (err) {
 			if (err) {
 				logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
 				reject(err);
