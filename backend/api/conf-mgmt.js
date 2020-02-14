@@ -190,7 +190,7 @@ function initNexlHomeDir() {
 	NEXL_HOME_DIR = cmdLineOpts[confConsts.NEXL_HOME_DEF] || path.join(osHomeDir(), '.nexl');
 
 	// create dir structure if needed, preload settings and save them if needed
-	return fse.mkdirs(getNexlAppDataDir()).then(confMigration).then(_ => loadSettings(true));
+	return fse.mkdirs(getNexlAppDataDir()).then(_ => loadSettings(true));
 }
 
 function preloadConfs() {
