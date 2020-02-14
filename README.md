@@ -14,6 +14,8 @@ Another use case is when you need a centralized place to manage different kind o
 * Viral [expressions interpolation](http://www.nexl-js.com/viral-expressions-interpolation.html) (i.e. you can inject expressions into your data which will be interpolated while retrieving it)
 * [Nested expressions](http://www.nexl-js.com/nested-expressions.html) with unlimited depth
 * External [arguments](http://www.nexl-js.com/arguments.html) to override existing data in JavaScript files
+* Webhooks
+* Automatic backup
 * Convenient [Web UI](http://www.nexl-js.com/the-main-screen.html) for configuration management and server administration
 * [Security](http://www.nexl-js.com/security.html) and [permissions](http://www.nexl-js.com/users-and-permissions.html) support
 * No agents needed on clients, nexl works via standard HTTP/HTTPS protocols

@@ -1,5 +1,10 @@
-3.1.0
-    - First stable version
+3.3.0
+    - Simple nexl expressions can be chosen from the combo box
+    - Added Webhooks to listen for JavaScript files and directories changes
+    - Automatic backup
+    - Different frontend and backend bugs fix
+    - Security fixes in vm2 sandbox module. Updated to 3.8.4 version ( see https://github.com/patriksimek/vm2/blob/master/CHANGELOG.md )
+
 
 3.2.0
     - Added "Find in files" dialog box
@@ -10,3 +15,7 @@
     - Added "ReIndex files" feature in [View -> Settings -> General] menu to reload files list cache on server
     - Different frontend and backend bugs fix
     - Security fixes in vm2 sandbox module. Updated to 3.6.10 version ( see https://github.com/patriksimek/vm2/blob/master/CHANGELOG.md )
+
+
+3.1.0
+    - First stable version
