@@ -547,8 +547,12 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       },
       err => {
         this.globalComponentsService.loader.close();
+        console.log('Failed to parse a file');
         console.log(err);
-        this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, err.statusText);
+        this.source = [''];
+        setTimeout(() => {
+          this.nexlExpression.disabled(false);
+        }, 100);
       });
   }
 
