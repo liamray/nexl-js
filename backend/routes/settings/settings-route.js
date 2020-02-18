@@ -71,11 +71,15 @@ function applyChanges(before) {
 
 	// is backup storage settings changed ?
 	if (
-		before[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] !== after[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]
+		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION]
 		||
-		before[confConsts.SETTINGS.BACKUP_STORAGE_DIR] !== after[confConsts.SETTINGS.BACKUP_STORAGE_DIR]
+		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR]
 		||
-		before[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED] !== after[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED]
+		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED]
+		||
+		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE]
+		||
+		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS]
 	) {
 		storageUtils.scheduleStorageBackup();
 	}

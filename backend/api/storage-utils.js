@@ -336,7 +336,7 @@ function cacheStorageFiles() {
 function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
 	// is unlimited ?
 	if (maxStorageBackups === undefined || maxStorageBackups === null || maxStorageBackups === '' || maxStorageBackups === 0) {
-		logger.log.debug(`The [${confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS}] is not specified, not shredding a storage backup in the [${dir}] dir`);
+		logger.log.debug(`The [${confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS}] is not specified, not shredding a storage backup in the [${dir}] dir`);
 		resolve();
 		return;
 	}
@@ -380,9 +380,10 @@ function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
 	});
 }
 
+// todo: 1) this method 2) shredding method 3) fix tests
 function backupStorage() {
-	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
-	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS];
+	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
+	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS];
 
 	return new Promise((resolve, reject) => {
 		const storageDir = confMgmt.getNexlStorageDir();
@@ -417,15 +418,15 @@ function stopStorageBackupIfNeeded() {
 function scheduleStorageBackup() {
 	// preparing
 	const settings = confMgmt.getNexlSettingsCached();
-	const cronExpression = settings[confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION];
-	const destDir = settings[confConsts.SETTINGS.BACKUP_STORAGE_DIR];
+	const cronExpression = settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION];
+	const destDir = settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
 
 	// stopping previous job is scheduled
 	stopStorageBackupIfNeeded();
 
 	// is backup storage enabled ?
-	const isBackupStorageEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_ENABLED];
-	if (isBackupStorageEnabled !== true) {
+	const automaticBackupEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED];
+	if (automaticBackupEnabled !== true) {
 		logger.log.debug('Automatic storage backup is not enabled');
 		return Promise.resolve();
 	}
@@ -439,6 +440,12 @@ function scheduleStorageBackup() {
 	// is dest dir specified ?
 	if (utils.isEmptyStr(destDir)) {
 		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: backup output dir is not specified');
+		return Promise.resolve();
+	}
+
+	// is there something to backup ?
+	if (settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] !== true && settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] !== true) {
+		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: not specified what is to backup');
 		return Promise.resolve();
 	}
 

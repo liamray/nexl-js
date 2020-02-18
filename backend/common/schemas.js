@@ -41,10 +41,12 @@ DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LDAP_FIND_BY] = '
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CERT_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_KEY_LOCATION] = '';
 DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.SSL_CA_LOCATION] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_ENABLED] = false;
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = '';
-DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = 0;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED] = false;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] = '';
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS] = 0;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] = true;
+DEF_VALUES[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] = false;
 
 // WebHooks default values
 DEF_VALUES[confConsts.CONF_FILES.WEBHOOKS] = [];
@@ -205,7 +207,7 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_LEVEL] = (val) =
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILE_SIZE] = (val) => mandatoryInt(val, 'log rotate file size', 0);
 SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.LOG_ROTATE_FILES_COUNT] = (val) => mandatoryInt(val, 'Log rotate files count', 0);
 
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION] = (val) => {
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION] = (val) => {
 	if (isNullOrEmpty(val)) {
 		return valid();
 	}
@@ -218,9 +220,11 @@ SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_CRON_
 
 	return valid();
 };
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_ENABLED] = (val) => notMandatoryBool(val, `Backup storage enabled ( ${confConsts.SETTINGS.BACKUP_STORAGE_ENABLED} )`);
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_DIR] = (val) => notMandatoryString(val, `Backup storage directory ( ${confConsts.SETTINGS.BACKUP_STORAGE_DIR} )`);
-SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = (val) => notMandatoryInt(val, `Max storage backups count ( ${confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS} )`, 0);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED] = (val) => notMandatoryBool(val, `Backup storage enabled ( ${confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED} )`);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] = (val) => notMandatoryString(val, `Backup storage directory ( ${confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR} )`);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS] = (val) => notMandatoryInt(val, `Max storage backups count ( ${confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS} )`, 0);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] = (val) => notMandatoryBool(val, `Backup a storage ( ${confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE} )`);
+SCHEMAS[confConsts.CONF_FILES.SETTINGS][confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] = (val) => notMandatoryBool(val, `Backup nexl settings ( ${confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS} )`);
 
 // --------------------------------------------------------------------------------
 // WEBHOOKS validations

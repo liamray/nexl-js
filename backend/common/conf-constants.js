@@ -35,10 +35,12 @@ const SETTINGS = {
 	LOG_ROTATE_FILE_SIZE: 'log-rotate-file-size-kb',
 	LOG_ROTATE_FILES_COUNT: 'log-rotate-files-count',
 
-	BACKUP_STORAGE_ENABLED: 'backup-storage-enabled',
-	BACKUP_STORAGE_CRON_EXPRESSION: 'backup-storage-cron-expression',
-	BACKUP_STORAGE_DIR: 'backup-storage-directory',
-	BACKUP_STORAGE_MAX_BACKUPS: 'backup-storage-max-backups-count'
+	AUTOMATIC_BACKUP_ENABLED: 'automatic-backup-enabled',
+	AUTOMATIC_BACKUP_CRON_EXPRESSION: 'automatic-cron-expression',
+	AUTOMATIC_BACKUP_DEST_DIR: 'automatic-backup-dest-dir',
+	AUTOMATIC_BACKUP_MAX_BACKUPS: 'automatic-backup-max-backups',
+	AUTOMATIC_BACKUP_STORAGE: 'automatic-backup-storage',
+	AUTOMATIC_BACKUP_NEXL_SETTINGS: 'automatic-backup-nexl-settings'
 };
 
 const SETTINGS_GROUP = {

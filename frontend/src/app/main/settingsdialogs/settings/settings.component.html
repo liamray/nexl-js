@@ -40,7 +40,7 @@
             <li>LDAP</li>
             <li>Bindings & SSL</li>
             <li>Logger</li>
-            <li>Storage backup</li>
+            <li>Automatic backup</li>
           </ul>
 
           <div>
@@ -69,7 +69,7 @@
 
               <div style="clear: both"></div>
 
-              <!--nexl storage dir dir-->
+              <!--nexl storage dir-->
               <div class="item">
                 <label>nexl storage dir</label>
                 <jqxInput
@@ -599,19 +599,19 @@
 
 
             <!-- ------------------------------------------------------------------------------ -->
-            <!--Storage Backup-->
+            <!--Automatic Backup-->
             <div>
 
               <div class="item">
-                <label style="position: relative; top: -1px;">Enable automatic storage backup</label>
+                <label style="position: relative; top: -1px;">Enable automatic backup</label>
                 <jqxCheckBox
                   style="position:relative;left: -3px;"
-                  #backupStorageEnabled
+                  #automaticBackupEnabled
                   [boxSize]="'12px;'"
-                  id="backupStorageEnabled"
-                  name="backupStorageEnabled"
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_ENABLED]"
-                  (onChange)="toggleStorageBackup()"
+                  id="automaticBackupEnabled"
+                  name="automaticBackupEnabled"
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_ENABLED]"
+                  (onChange)="toggleAutomaticBackup()"
                 ></jqxCheckBox>
               </div>
 
@@ -619,7 +619,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>Here you can enable automatic backup for nexl JavaScript files ( nexl storage ).<br/>Automatic backup won\'t start until you fill a [Cron expression] and [Backup to dir] fields.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>Here you can enable automatic backup.<br/>Automatic backup won\'t start until you specify a [Cron expression] and [Backup to dir] fields.<br/>Also you have to specify what is to backup: [Storage] and/or [nexl settings]</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -628,10 +628,10 @@
               <div class="item">
                 <label>Cron expression</label>
                 <jqxInput
-                  id="backupStorageCronExpression"
-                  name="backupStorageCronExpression"
-                  #backupStorageCronExpression
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_CRON_EXPRESSION]"
+                  id="automaticBackupCronExpression"
+                  name="automaticBackupCronExpression"
+                  #automaticBackupCronExpression
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION]"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -640,7 +640,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>The [MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK] cron expression to backup a storage ( without seconds ).<br/>Example: 0 4 * * *<br/>Which means every day at 4:00 AM.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>The [MIN HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK] cron expression for backup ( without seconds ).<br/>Example: 0 4 * * *<br/>Which means every day at 4:00 AM.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -651,10 +651,10 @@
               <div class="item">
                 <label>Backup to dir</label>
                 <jqxInput
-                  id="backupStorageDir"
-                  name="backupStorageDir"
-                  #backupStorageDir
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_DIR]"
+                  id="automaticBackupDestinationDir"
+                  name="automaticBackupDestinationDir"
+                  #automaticBackupDestinationDir
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_DEST_DIR]"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -663,7 +663,7 @@
                 <jqxTooltip
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
-                  [content]="'<p style=\'text-align: left;\'>Path to the directory to store a ZIP backup files.</p>'">
+                  [content]="'<p style=\'text-align: left;\'>Backup destination directory to storage ZIP files.</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>
@@ -674,10 +674,10 @@
               <div class="item">
                 <label>Max backups count</label>
                 <jqxInput
-                  #backupStorageMaxBackups
-                  id="backupStorageMaxBackups"
-                  name="backupStorageMaxBackups"
-                  [(ngModel)]="settings[SETTINGS.BACKUP_STORAGE_MAX_BACKUPS]"
+                  #automaticBackupMaxBackups
+                  id="automaticBackupMaxBackups"
+                  name="automaticBackupMaxBackups"
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS]"
                   [width]="width"
                   [height]="25">
                 </jqxInput>
@@ -687,6 +687,52 @@
                   [position]="'mouse'"
                   [autoHideDelay]="999999999"
                   [content]="'<p style=\'text-align: left;\'>The max amount of backup ZIP files to rotate.<br/>Zero or empty field means unlimited ZIP files amount.</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div class="item">
+                <hr/>
+              </div>
+
+              <div class="item">
+                <label style="position: relative; top: -1px;">Backup a storage</label>
+                <jqxCheckBox
+                  style="position:relative;left: -3px;"
+                  #automaticBackupStorage
+                  [boxSize]="'12px;'"
+                  id="automaticBackupStorage"
+                  name="automaticBackupStorage"
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_STORAGE]"
+                ></jqxCheckBox>
+              </div>
+
+              <div class="tooltip" style="top: 10px;">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>Backup a JavaScript files in the storage ( recommended )</p>'">
+                  <img src='./nexl/site/icons/info.png'/>
+                </jqxTooltip>
+              </div>
+
+              <div class="item">
+                <label style="position: relative; top: -1px;">Backup nexl settings</label>
+                <jqxCheckBox
+                  style="position:relative;left: -3px;"
+                  #automaticBackupNexlSettings
+                  [boxSize]="'12px;'"
+                  id="automaticBackupNexlSettings"
+                  name="automaticBackupNexlSettings"
+                  [(ngModel)]="settings[SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS]"
+                ></jqxCheckBox>
+              </div>
+
+              <div class="tooltip" style="top: 10px;">
+                <jqxTooltip
+                  [position]="'mouse'"
+                  [autoHideDelay]="999999999"
+                  [content]="'<p style=\'text-align: left;\'>Backup nexl server settings</p>'">
                   <img src='./nexl/site/icons/info.png'/>
                 </jqxTooltip>
               </div>

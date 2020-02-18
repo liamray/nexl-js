@@ -19,8 +19,8 @@ const storageBackupDir = path.join(os.tmpdir(), 'nexl-stroage-backup-test-' + Ma
 
 function init(predefinedNexlJSFIlesDir, tmpNexlJSFilesDir) {
 	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = predefinedNexlJSFIlesDir;
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR] = storageBackupDir;
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS] = MAX_BACKUPS;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] = storageBackupDir;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS] = MAX_BACKUPS;
 
 	return Promise.resolve();
 }
@@ -127,7 +127,7 @@ function maxBackupsTest() {
 function nonExistingDirsTest() {
 	const randomDir = `c:\\xxx-${Math.random()}-${Math.random()}`;
 
-	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR] = randomDir;
+	confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] = randomDir;
 
 	let result;
 	return storageUtil.backupStorage()
@@ -143,7 +143,7 @@ function nonExistingDirsTest() {
 			return result ? Promise.reject("ZIP destination dir doesn't exist, but got a positive test result") : Promise.resolve();
 		})
 		.then(() => {
-			confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.BACKUP_STORAGE_DIR] = storageBackupDir;
+			confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR] = storageBackupDir;
 			confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_DIR] = randomDir;
 			return storageUtil.backupStorage();
 		})

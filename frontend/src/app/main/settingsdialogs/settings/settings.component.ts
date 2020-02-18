@@ -9,7 +9,6 @@ import * as LOG_LEVELS from '../../common/winston-log-levels.json';
 import {ICONS} from "../../misc/messagebox/messagebox.component";
 import {jqxInputComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxinput";
 import jqxValidator = jqwidgets.jqxValidator;
-import jqxTooltip = jqwidgets.jqxTooltip;
 
 @Component({
   selector: 'app-settings',
@@ -38,11 +37,12 @@ export class SettingsComponent {
   @ViewChild('logRotateFileSize') logRotateFileSize: any;
   @ViewChild('logRotateFilesCount') logRotateFilesCount: any;
 
-  @ViewChild('backupStorageEnabled') backupStorageEnabled: any;
-  @ViewChild('backupStorageCronExpression') backupStorageCronExpression: jqxInputComponent;
-  @ViewChild('backupStorageDir') backupStorageDir: jqxInputComponent;
-  @ViewChild('backupStorageMaxBackups') backupStorageMaxBackups: jqxInputComponent;
-  @ViewChild('backupStorageMaxBackupsTooltip') backupStorageMaxBackupsTooltip: jqxTooltip;
+  @ViewChild('automaticBackupEnabled') automaticBackupEnabled: any;
+  @ViewChild('automaticBackupCronExpression') automaticBackupCronExpression: jqxInputComponent;
+  @ViewChild('automaticBackupDestinationDir') automaticBackupDestinationDir: jqxInputComponent;
+  @ViewChild('automaticBackupMaxBackups') automaticBackupMaxBackups: jqxInputComponent;
+  @ViewChild('automaticBackupStorage') automaticBackupStorage: any;
+  @ViewChild('automaticBackupNexlSettings') automaticBackupNexlSettings: any;
 
   @ViewChild('saveButton') saveButton: jqxButtonComponent;
   @ViewChild('cancelButton') cancelButton: jqxButtonComponent;
@@ -121,11 +121,11 @@ export class SettingsComponent {
 
       },
       {
-        input: '#backupStorageMaxBackups',
-        message: 'The max storage backups must be a valid positive integer',
+        input: '#automaticBackupMaxBackups',
+        message: 'The max backups must be a valid positive integer',
         action: 'keyup, blur',
         rule: (): any => {
-          return this.validateNotMandatoryInt(CONF_CONSTANTS.SETTINGS.BACKUP_STORAGE_MAX_BACKUPS, 0);
+          return this.validateNotMandatoryInt(CONF_CONSTANTS.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS, 0);
         }
       },
 
@@ -197,7 +197,9 @@ export class SettingsComponent {
         this.logLevel.val(this.settings[this.SETTINGS.LOG_LEVEL]);
         this.storageFilesEncoding.val(this.settings[this.SETTINGS.STORAGE_FILES_ENCODING]);
         this.rawOutput.val(this.settings[this.SETTINGS.RAW_OUTPUT] === true);
-        this.backupStorageEnabled.val(this.settings[this.SETTINGS.BACKUP_STORAGE_ENABLED] === true);
+        this.automaticBackupEnabled.val(this.settings[this.SETTINGS.AUTOMATIC_BACKUP_ENABLED] === true);
+        this.automaticBackupStorage.val(this.settings[this.SETTINGS.AUTOMATIC_BACKUP_STORAGE] === true);
+        this.automaticBackupNexlSettings.val(this.settings[this.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] === true);
         this.storageFilesRootDirBefore = this.settings[this.SETTINGS.STORAGE_DIR];
         this.settingsWindow.open();
       },
@@ -252,7 +254,7 @@ export class SettingsComponent {
 
   onOpen() {
     this.isSaving = false;
-    this.toggleStorageBackup();
+    this.toggleAutomaticBackup();
   }
 
   doReIndexFiles() {
@@ -271,10 +273,12 @@ export class SettingsComponent {
       });
   }
 
-  toggleStorageBackup() {
-    let isEnabled = this.backupStorageEnabled.val();
-    this.backupStorageCronExpression.disabled(!isEnabled);
-    this.backupStorageDir.disabled(!isEnabled);
-    this.backupStorageMaxBackups.disabled(!isEnabled);
+  toggleAutomaticBackup() {
+    let isEnabled = this.automaticBackupEnabled.val();
+    this.automaticBackupCronExpression.disabled(!isEnabled);
+    this.automaticBackupDestinationDir.disabled(!isEnabled);
+    this.automaticBackupMaxBackups.disabled(!isEnabled);
+    this.automaticBackupNexlSettings.disabled(!isEnabled);
+    this.automaticBackupStorage.disabled(!isEnabled);
   }
 }
