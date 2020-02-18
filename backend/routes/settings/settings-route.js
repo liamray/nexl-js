@@ -81,7 +81,7 @@ function applyChanges(before) {
 		||
 		before[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] !== after[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS]
 	) {
-		storageUtils.scheduleStorageBackup();
+		storageUtils.scheduleAutoamticBackup();
 	}
 
 	return promise;

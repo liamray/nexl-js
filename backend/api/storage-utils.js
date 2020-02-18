@@ -333,10 +333,10 @@ function cacheStorageFiles() {
 	);
 }
 
-function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
+function shredBackups(dir, maxBackups, resolve, reject) {
 	// is unlimited ?
-	if (maxStorageBackups === undefined || maxStorageBackups === null || maxStorageBackups === '' || maxStorageBackups === 0) {
-		logger.log.debug(`The [${confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS}] is not specified, not shredding a storage backup in the [${dir}] dir`);
+	if (maxBackups === undefined || maxBackups === null || maxBackups === '' || maxBackups === 0) {
+		logger.log.debug(`The [${confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS}] is not specified, not shredding a backup in the [${dir}] dir`);
 		resolve();
 		return;
 	}
@@ -353,15 +353,15 @@ function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
 		const zipFiles = files.filter(item => item.match(BACKUP_ZIP_REGEX_PATTERN)).sort();
 
 		// checking count
-		if (zipFiles.length < maxStorageBackups) {
-			logger.log.debug(`Not shredding a storage backup in the [${dir}] dir. Reason: the [zipFilesCount=${zipFiles.length}] is less than [BACKUP_STORAGE_MAX_BACKUPS=${maxStorageBackups}]`);
+		if (zipFiles.length < maxBackups) {
+			logger.log.debug(`Not shredding a backup in the [${dir}] dir. Reason: the [zipFilesCount=${zipFiles.length}] is less than [AUTOMATIC_BACKUP_MAX_BACKUPS=${maxBackups}]`);
 			resolve();
 			return;
 		}
 
 		// shredding first files
 		let isSuccess = true;
-		for (let index = 0; index < zipFiles.length - maxStorageBackups; index++) {
+		for (let index = 0; index < zipFiles.length - maxBackups; index++) {
 			const fileName = path.join(dir, zipFiles[index]);
 			logger.log.info(`Shredding a [${fileName}] backup file`);
 			fs.unlink(fileName, function (err) {
@@ -381,14 +381,14 @@ function shredStorageBackups(dir, maxStorageBackups, resolve, reject) {
 }
 
 // todo: 1) this method 2) shredding method 3) fix tests
-function backupStorage() {
+function makeABackup() {
 	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
-	const maxStorageBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS];
+	const maxBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS];
 
 	return new Promise((resolve, reject) => {
 		const storageDir = confMgmt.getNexlStorageDir();
 		if (utils.isEmptyStr(destDir)) {
-			reject('The BACKUP_STORAGE_DIR is not specified, skipping storage backup');
+			reject('The AUTOMATIC_BACKUP_DEST_DIR is not specified, skipping automatic backup');
 			return;
 		}
 
@@ -398,63 +398,63 @@ function backupStorage() {
 		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 		zipFolder(storageDir, destZipFile, function (err) {
 			if (err) {
-				logger.log.error('Failed to backup the storage. Reason: [%s]', utils.formatErr(err));
+				logger.log.error('Failed to backup. Reason: [%s]', utils.formatErr(err));
 				reject(err);
 				return;
 			}
 
 			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
-			shredStorageBackups(destDir, maxStorageBackups, resolve, reject);
+			shredBackups(destDir, maxBackups, resolve, reject);
 		});
 	});
 }
 
-function stopStorageBackupIfNeeded() {
+function stopAutomaticBackupIfNeeded() {
 	if (job !== undefined) {
 		job.stop();
 	}
 }
 
-function scheduleStorageBackup() {
+function scheduleAutoamticBackup() {
 	// preparing
 	const settings = confMgmt.getNexlSettingsCached();
 	const cronExpression = settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_CRON_EXPRESSION];
 	const destDir = settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
 
 	// stopping previous job is scheduled
-	stopStorageBackupIfNeeded();
+	stopAutomaticBackupIfNeeded();
 
-	// is backup storage enabled ?
+	// is automatic backup enabled ?
 	const automaticBackupEnabled = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_ENABLED];
 	if (automaticBackupEnabled !== true) {
-		logger.log.debug('Automatic storage backup is not enabled');
+		logger.log.debug('Automatic backup is not enabled');
 		return Promise.resolve();
 	}
 
 	// is cron expression specified ?
 	if (utils.isEmptyStr(cronExpression)) {
-		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: cron expression is not specified');
+		logger.log.log('verbose', 'Not starting automatic backup. Reason: cron expression is not specified');
 		return Promise.resolve();
 	}
 
 	// is dest dir specified ?
 	if (utils.isEmptyStr(destDir)) {
-		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: backup output dir is not specified');
+		logger.log.log('verbose', 'Not starting automatic backup. Reason: backup output dir is not specified');
 		return Promise.resolve();
 	}
 
 	// is there something to backup ?
 	if (settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] !== true && settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] !== true) {
-		logger.log.log('verbose', 'Not starting automatic storage backup. Reason: not specified what is to backup');
+		logger.log.log('verbose', 'Not starting automatic backup. Reason: not specified what is to backup');
 		return Promise.resolve();
 	}
 
 	// scheduling
 	try {
-		logger.log.info(`Scheduling an automatic storage backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
+		logger.log.info(`Scheduling an automatic backup according to the [${cronExpression}] cron expression to the [${destDir}] directory`);
 
 		job = new CronJob('0 ' + cronExpression, function () {
-			backupStorage();
+			makeABackup();
 		});
 		job.start();
 	} catch (e) {
@@ -612,8 +612,8 @@ module.exports.rename = rename;
 module.exports.move = move;
 module.exports.findInFiles = findInFiles;
 
-module.exports.scheduleStorageBackup = scheduleStorageBackup;
-module.exports.backupStorage = backupStorage;
+module.exports.scheduleAutoamticBackup = scheduleAutoamticBackup;
+module.exports.backupStorage = makeABackup;
 
 module.exports.listFiles = listFiles;
 module.exports.listDirs = listDirs;

@@ -263,7 +263,7 @@ function start() {
 		.then(storageUtils.cacheStorageFiles)
 		.then(startHTTPServer)
 		.then(startHTTPSServer)
-		.then(storageUtils.scheduleStorageBackup)
+		.then(storageUtils.scheduleAutoamticBackup)
 		.then(_ => {
 			logger.log.info(`nexl home dir is [${confMgmt.getNexlHomeDir()}]`);
 			logger.log.info(`nexl app data dir is [${confMgmt.getNexlAppDataDir()}]`);
