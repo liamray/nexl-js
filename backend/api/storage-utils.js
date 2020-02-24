@@ -333,7 +333,7 @@ function cacheStorageFiles() {
 	);
 }
 
-function shredBackups(dir, maxBackups, resolve, reject) {
+function shredBackupsInner(dir, maxBackups, resolve, reject) {
 	// is unlimited ?
 	if (maxBackups === undefined || maxBackups === null || maxBackups === '' || maxBackups === 0) {
 		logger.log.debug(`The [${confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS}] is not specified, not shredding a backup in the [${dir}] dir`);
@@ -380,33 +380,36 @@ function shredBackups(dir, maxBackups, resolve, reject) {
 	});
 }
 
+function shredBackups(dir, maxBackups) {
+	return new Promise((resolve, reject) => {
+		shredBackupsInner(dir, maxBackups, resolve, reject);
+	});
+}
+
 // todo: 1) this method 2) shredding method 3) fix tests
 function makeABackup() {
 	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
 	const maxBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS];
 
-	return new Promise((resolve, reject) => {
-		const storageDir = confMgmt.getNexlStorageDir();
-		if (utils.isEmptyStr(destDir)) {
-			reject('The AUTOMATIC_BACKUP_DEST_DIR is not specified, skipping automatic backup');
-			return;
-		}
+	const storageDir = confMgmt.getNexlStorageDir();
+	if (utils.isEmptyStr(destDir)) {
+		return Promise.reject('The AUTOMATIC_BACKUP_DEST_DIR is not specified, skipping automatic backup');
+	}
 
-		const now = new Date();
-		const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
+	const now = new Date();
+	const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
 
-		logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
-		zipFolder(storageDir, destZipFile, function (err) {
-			if (err) {
-				logger.log.error('Failed to backup. Reason: [%s]', utils.formatErr(err));
-				reject(err);
-				return;
-			}
+	logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
 
+	return zipFolder(storageDir, destZipFile)
+		.then(() => {
 			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
-			shredBackups(destDir, maxBackups, resolve, reject);
+			return shredBackups(destDir, maxBackups);
+		})
+		.catch(err => {
+			logger.log.error('Failed to backup. Reason: [%s]', utils.formatErr(err));
+			return Promise.reject();
 		});
-	});
 }
 
 function stopAutomaticBackupIfNeeded() {
