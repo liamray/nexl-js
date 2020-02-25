@@ -386,24 +386,32 @@ function shredBackups(dir, maxBackups) {
 	});
 }
 
-// todo: 1) this method 2) shredding method 3) fix tests
 function makeABackup() {
 	const destDir = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_DEST_DIR];
 	const maxBackups = confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.AUTOMATIC_BACKUP_MAX_BACKUPS];
 
-	const storageDir = confMgmt.getNexlStorageDir();
 	if (utils.isEmptyStr(destDir)) {
 		return Promise.reject('The AUTOMATIC_BACKUP_DEST_DIR is not specified, skipping automatic backup');
+	}
+
+	// what's is to backup
+	const dirs2Backup = [];
+	const settings = confMgmt.getNexlSettingsCached();
+	if (settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] === true) {
+		dirs2Backup.push(confMgmt.getNexlStorageDir());
+	}
+	if (settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] === true) {
+		dirs2Backup.push(confMgmt.getNexlAppDataDir());
 	}
 
 	const now = new Date();
 	const destZipFile = path.join(destDir, `${BACKUP_ZIP_PATTERN}-${commonUtils.formatDate(now, '-')}--${commonUtils.formatTimeMSec(now, '-')}.zip`);
 
-	logger.log.log('verbose', `Backing up a [${storageDir}] directory as a [${destZipFile}] file`);
+	logger.log.log('verbose', `Backing up a [${dirs2Backup.join(',')}] dir(s) to the [${destZipFile}] file`);
 
-	return zipFolder(storageDir, destZipFile)
+	return zipFolder(dirs2Backup, destZipFile)
 		.then(() => {
-			logger.log.debug(`Successfully backed up a [${storageDir}] dir as a [${destZipFile}]`);
+			logger.log.debug(`Successfully backed up a [${dirs2Backup.join(',')}] dir(s) to the [${destZipFile}]`);
 			return shredBackups(destDir, maxBackups);
 		})
 		.catch(err => {
@@ -443,12 +451,6 @@ function scheduleAutoamticBackup() {
 	// is dest dir specified ?
 	if (utils.isEmptyStr(destDir)) {
 		logger.log.log('verbose', 'Not starting automatic backup. Reason: backup output dir is not specified');
-		return Promise.resolve();
-	}
-
-	// is there something to backup ?
-	if (settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_STORAGE] !== true && settings[confConsts.SETTINGS.AUTOMATIC_BACKUP_NEXL_SETTINGS] !== true) {
-		logger.log.log('verbose', 'Not starting automatic backup. Reason: not specified what is to backup');
 		return Promise.resolve();
 	}
 
