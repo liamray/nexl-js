@@ -83,7 +83,7 @@ function loadInner(fullPath, fileName) {
 				// validating data
 				const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 				if (!validationResult.isValid) {
-					logger.log.error(`Config validation failed for [${fileName}] while loading. Reason : [${validationResult.err}]`);
+					logger.log.error(`Config validation failed for [${fileName}] while loading, [path=${getNexlAppDataDir()}]. Reason : [${validationResult.err}]`);
 					return Promise.reject(validationResult.err);
 				}
 
@@ -152,7 +152,7 @@ function save(data, fileName) {
 	// validating data before save
 	const validationResult = schemaValidation(data, schemas.SCHEMAS[fileName], schemas.GROUP_VALIDATIONS[fileName]);
 	if (!validationResult.isValid) {
-		logger.log.error(`Config validation failed for [${fileName}] while saving. Reason : [${validationResult.err}]`);
+		logger.log.error(`Config validation failed for [${fileName}] while saving, [path=${getNexlAppDataDir()}]. Reason : [${validationResult.err}]`);
 		return Promise.reject(validationResult.err);
 	}
 
