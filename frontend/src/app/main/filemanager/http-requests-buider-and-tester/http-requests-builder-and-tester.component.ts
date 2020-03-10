@@ -144,7 +144,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
     // after repositioning a combo it can lose a value, storing the value and restoring it after repositioning
     const val = this.getNexlExpression();
 
-    const dropDownHeight = data.height - 80;
+    const dropDownHeight = data.height - 90;
 
     if (dropDownHeight < 50) {
       this.nexlExpression.dropDownVerticalAlignment('top');

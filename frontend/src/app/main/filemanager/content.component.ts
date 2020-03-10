@@ -48,7 +48,10 @@ export class ContentComponent implements AfterViewInit {
   onHorizontalResized() {
     this.sendResizeMessage();
     this.saveHorizontal();
+    this.horizontalSplitterResized();
+  }
 
+  horizontalSplitterResized() {
     const height = $('.app-http-requests-builder-and-tester').height();
 
     this.messageService.sendMessage(MESSAGE_TYPE.HORIZONTAL_SLITTER_RESIZED, {
@@ -87,6 +90,7 @@ export class ContentComponent implements AfterViewInit {
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
     this.resized();
+    this.horizontalSplitterResized();
   }
 
   private resized() {
