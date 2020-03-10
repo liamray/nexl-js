@@ -569,6 +569,7 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   setNexlExpression(val) {
+    this.nexlExpression.val(val);
     this.getNexlExpressionNativeElement().val(val);
   }
 
