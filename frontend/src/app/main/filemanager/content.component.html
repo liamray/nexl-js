@@ -1,6 +1,7 @@
 <jqxSplitter
   #horizontalSplitter
   width="100%"
+  [height]="'100%'"
   [orientation]="'horizontal'"
   [panels]="[{ size: '65%', collapsible: false, min: 100 }, { size: '35%' }]"
   (onResize)="onHorizontalResized()"

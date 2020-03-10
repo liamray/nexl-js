@@ -83,7 +83,6 @@ export class ContentComponent implements AfterViewInit {
   }
 
   private resized() {
-    this.horizontalSplitter.height(window.innerHeight - 75);
     this.sendResizeMessage();
   }
 }
