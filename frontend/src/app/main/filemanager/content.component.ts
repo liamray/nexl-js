@@ -2,6 +2,7 @@ import {AfterViewInit, Component, HostListener, ViewChild} from '@angular/core';
 import {jqxSplitterComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxsplitter';
 import {MESSAGE_TYPE, MessageService} from "../services/message.service";
 import {LocalStorageService, MAIN_HORIZONTAL, MAIN_VERTICAL} from "../services/localstorage.service";
+import * as $ from 'jquery';
 
 const VERTICAL_DEF_VAL = [
   {size: '20%'},
@@ -47,6 +48,12 @@ export class ContentComponent implements AfterViewInit {
   onHorizontalResized() {
     this.sendResizeMessage();
     this.saveVertical();
+
+    const height = $('.app-http-requests-builder-and-tester').height();
+
+    this.messageService.sendMessage(MESSAGE_TYPE.HORIZONTAL_SLITTER_RESIZED, {
+      height: height
+    });
   }
 
   saveHorizontal() {

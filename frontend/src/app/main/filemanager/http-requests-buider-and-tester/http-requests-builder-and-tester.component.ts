@@ -132,7 +132,24 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
         this.argsChanged(msg.data);
         return;
       }
+
+      case MESSAGE_TYPE.HORIZONTAL_SLITTER_RESIZED: {
+        this.handleHorizontalSplitterResize(msg.data);
+        return;
+      }
     }
+  }
+
+  handleHorizontalSplitterResize(data: any) {
+    const dropDownHeight = data.height - 80;
+    if (dropDownHeight < 50) {
+      this.nexlExpression.dropDownVerticalAlignment('top');
+      this.nexlExpression.dropDownHeight(200);
+    } else {
+      this.nexlExpression.dropDownVerticalAlignment('bottom');
+      this.nexlExpression.dropDownHeight(dropDownHeight);
+    }
+
   }
 
   onTimer(timerCounter: number) {
