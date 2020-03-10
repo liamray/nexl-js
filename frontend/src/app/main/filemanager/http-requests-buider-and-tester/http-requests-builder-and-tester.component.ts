@@ -141,7 +141,11 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
   }
 
   handleHorizontalSplitterResize(data: any) {
+    // after repositioning a combo it can lose a value, storing the value and restoring it after repositioning
+    const val = this.getNexlExpression();
+
     const dropDownHeight = data.height - 80;
+
     if (dropDownHeight < 50) {
       this.nexlExpression.dropDownVerticalAlignment('top');
       this.nexlExpression.dropDownHeight(200);
@@ -149,6 +153,8 @@ export class HttpRequestsBuilderAndTesterComponent implements AfterViewInit {
       this.nexlExpression.dropDownVerticalAlignment('bottom');
       this.nexlExpression.dropDownHeight(dropDownHeight);
     }
+
+    this.setNexlExpression(val);
 
   }
 

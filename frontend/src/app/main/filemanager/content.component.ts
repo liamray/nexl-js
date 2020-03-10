@@ -47,7 +47,7 @@ export class ContentComponent implements AfterViewInit {
 
   onHorizontalResized() {
     this.sendResizeMessage();
-    this.saveVertical();
+    this.saveHorizontal();
 
     const height = $('.app-http-requests-builder-and-tester').height();
 
