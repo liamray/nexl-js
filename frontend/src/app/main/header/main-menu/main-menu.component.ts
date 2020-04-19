@@ -122,6 +122,10 @@ export class MainMenuComponent implements AfterViewInit {
     window.open('http://www.nexl-js.com/demo/3.1.0/demo.php', '_blank');
   }
 
+  openQuickStart() {
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_QUICK_START);
+  }
+
   webhooks() {
     this.messageService.sendMessage(MESSAGE_TYPE.OPEN_WEBHOOKS_DIALOG);
   }

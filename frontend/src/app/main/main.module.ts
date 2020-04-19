@@ -66,6 +66,7 @@ import {SearchResultsComponent} from "./misc/searchresults/searchresults";
 import {InformationComponent} from "./misc/showfiledirinfo/information";
 import {WebhooksComponent} from "./settingsdialogs/webhooks/webhooks.component";
 import {WebhookComponent} from "./misc/webhook/webhook.component";
+import {QuickStartComponent} from "./settingsdialogs/quickstart/quickstart.component";
 
 
 @NgModule({
@@ -113,6 +114,7 @@ import {WebhookComponent} from "./misc/webhook/webhook.component";
     WebhookComponent,
     WebhooksComponent,
     AppearanceComponent,
+    QuickStartComponent,
     RegisterComponent,
     InputBoxComponent,
     MessageBoxComponent,

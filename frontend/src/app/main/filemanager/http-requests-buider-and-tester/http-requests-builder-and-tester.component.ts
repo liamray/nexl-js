@@ -21,7 +21,6 @@ import {jqxSplitterComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxsp
 import {jqxListBoxComponent} from "jqwidgets-scripts/jqwidgets-ts/angular_jqxlistbox";
 import {AppearanceService} from "../../services/appearance.service";
 import {UtilsService} from "../../services/utils.service";
-import {ICONS} from "../../misc/messagebox/messagebox.component";
 import * as $ from 'jquery';
 
 const EXPRESSION_SPLITTER_DEF_VALUE = [

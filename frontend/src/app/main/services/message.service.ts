@@ -7,6 +7,7 @@ export enum MESSAGE_TYPE {
   OPEN_WEBHOOKS_DIALOG, // all webhooks
   EDIT_WEBHOOK,
   WEBHOOK_UPDATED,
+  OPEN_QUICK_START,
 
   SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
   SET_TAB_CONTENT,

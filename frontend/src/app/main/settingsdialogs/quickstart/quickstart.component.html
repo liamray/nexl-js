@@ -1,0 +1,41 @@
+<jqxWindow #quickStartWindow
+           class="first-level-dialog"
+           [autoOpen]="false"
+           [isModal]="false"
+           [resizable]="true"
+           [width]="810"
+           [height]="700"
+           [initContent]="initContent"
+           (onClose)="stopPlayingVideo()"
+>
+
+  <div>
+    <img src="./nexl/site/icons/rocket.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">How to start with nexl</span>
+  </div>
+
+  <div class="container">
+
+    <div style="height: calc( 100% - 45px )">
+      <iframe id="quickStartYoutubeIFrame" width="100%" height="100%" src="https://www.youtube.com/embed/_xQOzdXt35E"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <div class="buttons">
+      <div class="button">
+        <jqxButton [height]='32'
+                   [width]="94"
+                   [textImageRelation]='"imageBeforeText"'
+                   [textPosition]='"center"'
+                   (click)="quickStartWindow.close()"
+                   [imgSrc]='"./nexl/site/icons/ok.png"'
+                   [auto-create]="false"
+                   #okButton>
+          Ok
+        </jqxButton>
+      </div>
+    </div>
+
+  </div>
+</jqxWindow>
