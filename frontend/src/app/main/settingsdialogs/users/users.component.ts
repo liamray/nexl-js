@@ -313,6 +313,7 @@ export class UsersComponent {
     const opts = {
       title: `Confirm user removal`,
       label: `Are you sure you want to remove a [${username}] user ?`,
+      height: 100,
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {
           return;

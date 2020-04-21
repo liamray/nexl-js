@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {AuthService} from "./services/auth.service";
 import * as $ from 'jquery';
 import {MESSAGE_TYPE, MessageService} from "./services/message.service";
@@ -6,12 +6,12 @@ import {HttpRequestService} from "./services/http.requests.service";
 import {GlobalComponentsService} from "./services/global-components.service";
 import {UtilsService} from "./services/utils.service";
 import {ICONS} from "./misc/messagebox/messagebox.component";
+import {LocalStorageService} from "./services/localstorage.service";
+import {CONFIRM_SHOW_QUICK_START} from "./services/localstorage.service";
 
-export const CTRL_S = 'control+s';
 export const F9 = 'F9';
 export const F7 = 'F7';
 export const F8 = 'F8';
-export const ALT_F7 = 'ALT_F7';
 
 const F7_KEY = 118;
 const F8_KEY = 119;
@@ -22,7 +22,7 @@ const F9_KEY = 120;
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, AfterViewInit {
   timerCounter: number = 0;
 
   constructor(private authService: AuthService, private messageService: MessageService, private http: HttpRequestService, private globalComponentsService: GlobalComponentsService) {
@@ -100,5 +100,27 @@ export class MainComponent implements OnInit {
       }
     );
 
+  }
+
+  ngAfterViewInit() {
+    if (LocalStorageService.loadRaw(CONFIRM_SHOW_QUICK_START) === false.toString()) {
+      return;
+    }
+
+    // confirming...
+    const opts = {
+      title: 'Show quick start confirmation',
+      label: 'Do you want to watch a quick start?',
+      checkBoxText: 'Don\'t show it again',
+      height: 100,
+      callback: (callbackData: any) => {
+        LocalStorageService.storeRaw(CONFIRM_SHOW_QUICK_START, !callbackData.checkBoxVal);
+        if (callbackData.isConfirmed === true) {
+          this.messageService.sendMessage(MESSAGE_TYPE.OPEN_QUICK_START);
+        }
+      },
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
   }
 }

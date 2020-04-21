@@ -373,6 +373,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
       title: 'Confirm save',
       label: 'Please note you can test your changes without saving the file. If you save this file it will immediately affect all REST requests related to the file. Are you sure you want to save ?',
       checkBoxText: 'Don\'t show it again',
+      height: 135,
       callback: (callbackData: any) => {
         LocalStorageService.storeRaw(CONFIRM_FILE_SAVE, !callbackData.checkBoxVal);
         if (callbackData.isConfirmed === true) {
@@ -692,6 +693,7 @@ export class StorageFilesEditorComponent implements AfterViewInit {
       const opts = {
         label: 'The [' + relativePath + '] file contains unsaved data. Are you sure you want to close it and lose all changes ?',
         title: 'File close confirmation',
+        height: 135,
         callback: (callbackData: any) => {
           if (callbackData.isConfirmed === true) {
             const tabInfo = this.resolveTabInfoByRelativePath(relativePath);

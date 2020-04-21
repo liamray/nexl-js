@@ -776,6 +776,41 @@ export class StorageExplorerComponent implements AfterViewInit {
     return false;
   }
 
+  onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
+    // does use have write permissions ?
+    if (this.hasWritePermission !== true) {
+      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'No write permissions to move an item');
+      return false;
+    }
+
+    const dropPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
+
+    // are item and dropItem on same directory level ?
+    if (dropPath === UtilsService.resolvePathOnly(item2Move.value.label, item2Move.value.relativePath)) {
+      return false;
+    }
+
+    // is same item ?
+    if (dropPath === item2Move.value.relativePath) {
+      return false;
+    }
+
+    const opts = {
+      title: 'Confirm item move',
+      label: 'Are you sure you want to move a [' + item2Move.value.relativePath + '] to [' + dropPath + UtilsService.SERVER_INFO.SLASH + '] ?',
+      height: 140,
+      callback: (callbackData: any) => {
+        if (callbackData.isConfirmed === true) {
+          this.moveItem(item2Move, dropPath);
+        }
+      }
+    };
+
+    this.globalComponentsService.confirmBox.open(opts);
+
+    return false;
+  };
+
   deleteItemInner(targetItem: any) {
     if (!this.hasChanges(targetItem)) {
       this.deleteItemInnerInner(targetItem);
@@ -786,38 +821,13 @@ export class StorageExplorerComponent implements AfterViewInit {
     const opts = {
       title: 'Confirm delete',
       label: 'Item you are trying to delete contains unsaved data. Delete anyway ?',
+      height: 100,
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {
           return;
         }
 
         this.deleteItemInnerInner(targetItem);
-      },
-    };
-
-    this.globalComponentsService.confirmBox.open(opts);
-  }
-
-  deleteItem() {
-    if (this.rightClickSelectedElement === undefined) {
-      return;
-    }
-
-    if (!this.hasWritePermission) {
-      return;
-    }
-
-    const targetItem = this.rightClickSelectedElement;
-
-    const opts = {
-      title: 'Confirm delete',
-      label: 'Are you sure to delete the [' + targetItem.value.label + '] ' + this.itemType() + ' ?',
-      callback: (callbackData: any) => {
-        if (callbackData.isConfirmed !== true) {
-          return;
-        }
-
-        this.deleteItemInner(targetItem);
       },
     };
 
@@ -1032,39 +1042,32 @@ export class StorageExplorerComponent implements AfterViewInit {
     this.moveItemInner(data);
   }
 
-  onDragEnd: any = (item2Move, dropItem, args, dropPosition, tree) => {
-    // does use have write permissions ?
-    if (this.hasWritePermission !== true) {
-      this.globalComponentsService.messageBox.openSimple(ICONS.ERROR, 'No write permissions to move an item');
-      return false;
+  deleteItem() {
+    if (this.rightClickSelectedElement === undefined) {
+      return;
     }
 
-    const dropPath = this.resolveTargetPathForDragAndDrop(dropItem, dropPosition);
-
-    // are item and dropItem on same directory level ?
-    if (dropPath === UtilsService.resolvePathOnly(item2Move.value.label, item2Move.value.relativePath)) {
-      return false;
+    if (!this.hasWritePermission) {
+      return;
     }
 
-    // is same item ?
-    if (dropPath === item2Move.value.relativePath) {
-      return false;
-    }
+    const targetItem = this.rightClickSelectedElement;
 
     const opts = {
-      title: 'Confirm item move',
-      label: 'Are you sure you want to move a [' + item2Move.value.relativePath + '] to [' + dropPath + UtilsService.SERVER_INFO.SLASH + '] ?',
+      title: 'Confirm delete',
+      label: 'Are you sure to delete the [' + targetItem.value.label + '] ' + this.itemType() + ' ?',
+      height: 125,
       callback: (callbackData: any) => {
-        if (callbackData.isConfirmed === true) {
-          this.moveItem(item2Move, dropPath);
+        if (callbackData.isConfirmed !== true) {
+          return;
         }
-      }
+
+        this.deleteItemInner(targetItem);
+      },
     };
 
     this.globalComponentsService.confirmBox.open(opts);
-
-    return false;
-  };
+  }
 
   ngAfterViewInit(): void {
     this.tree.createComponent({

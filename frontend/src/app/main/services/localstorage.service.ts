@@ -1,3 +1,4 @@
+export const CONFIRM_SHOW_QUICK_START = 'nexl.confirmations.confirm-show-quick-start';
 export const CONFIRM_FILE_SAVE = 'nexl.confirmations.confirm-file-save';
 export const OPEN_URL_WARNING_MESSAGE = 'nexl.confirmations.url-warning-message';
 export const MAIN_HORIZONTAL = 'nexl.ui.splitters.main.horizontal';

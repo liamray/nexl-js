@@ -342,6 +342,7 @@ export class WebhooksComponent {
     const opts = {
       title: `Confirm webhook removal`,
       label: `Are you sure you want to remove a [${item.relativePath}] webhook ?`,
+      height: 125,
       callback: (callbackData: any) => {
         if (callbackData.isConfirmed !== true) {
           return;
