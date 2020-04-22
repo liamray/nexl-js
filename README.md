@@ -21,7 +21,7 @@ Another use case is when you need a centralized place to manage different kind o
 * No agents needed on clients, nexl works via standard HTTP/HTTPS protocols
 
 #### Installation
-First download and install [Node.js](https://nodejs.org/en/download/).  
+First download and install a [Node.js](https://nodejs.org/en/download/).  
 Node.js 6 or higher is required.  
 
 Uninstall previously installed nexl version if exists:
