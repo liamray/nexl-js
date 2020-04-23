@@ -41,7 +41,7 @@ module.exports.push({
 	result: {
 		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
-		expectedResult: 'Failed to read [file1.js] file content'
+		expectedResult: 'The [file1.js] file doesn\'t exist and cannot be included'
 	}
 });
 
@@ -161,7 +161,7 @@ module.exports.push({
 	result: {
 		expectedHeader: 'text/html; charset=utf-8',
 		expectedStatusCode: 500,
-		expectedResult: 'The [${*}] expression cannot be evaluated to undefined ( it has a mandatory value validator ). Probably you have to provide it as external arg or check why it calculated to undefined'
+		expectedResult: ' The [${*}] expression calculated as [undefined] value but has a [*] mandatory value validator'
 	}
 });
 
