@@ -16,6 +16,59 @@ const diConsts = require('../../common/data-interchange-constants');
 const router = express.Router();
 
 //////////////////////////////////////////////////////////////////////////////
+//  [/nexl/storage/set-var]
+//////////////////////////////////////////////////////////////////////////////
+router.post(restUtls.STORAGE.URLS.SET_VAR, function (req, res) {
+	// checking for permissions
+	const username = security.getLoggedInUsername(req);
+	if (!security.hasWritePermission(username)) {
+		logger.log.error('The [%s] user doesn\'t have write permission to update JavaScript files', username);
+		security.sendError(res, 'No write permissions');
+		return;
+	}
+
+	// resolving params
+	const relativePath = req.body['relativePath'];
+	const varName = req.body['varName'];
+	const newValue = req.body['newValue'];
+
+	logger.log.log('verbose', `Got a [${restUtls.STORAGE.URLS.SET_VAR}] request from the [${username}] user for [relativePath=${relativePath}] and [varName=${varName}]`);
+
+	// validating relativePath
+	if (!relativePath) {
+		logger.log.error(`The [relativePath] is not provided for [${restUtls.STORAGE.URLS.SET_VAR}] URL. Requested by [${username}]`);
+		security.sendError(res, 'The [relativePath] is not provided');
+		return;
+	}
+
+	// validating varName
+	if (!varName) {
+		logger.log.error(`The [varName] is not provided for [${restUtls.STORAGE.URLS.SET_VAR}] URL. Requested by [${username}]`);
+		security.sendError(res, 'The [varName] is not provided');
+		return;
+	}
+
+	// validating newValue
+	if (!newValue) {
+		logger.log.error(`The [newValue] is not provided for [${restUtls.STORAGE.URLS.SET_VAR}] URL. Requested by [${username}]`);
+		security.sendError(res, 'The [newValue] is not provided');
+		return;
+	}
+
+	return storageUtils.setVar(relativePath, varName, newValue)
+		.then(_ => {
+			res.send({});
+			logger.log.debug(`Updated a [varName=${varName}] in the [relativePath=${relativePath}] JavaScript file by [username=${username}]`);
+		})
+		.catch(
+			(err) => {
+				logger.log.error(`Failed to update a [varName=${varName}] in the [relativePath=${relativePath}] JavaScript file by [username=${username}]. Reason: [${ utils.formatErr(err)}]`);
+				security.sendError(res, 'Failed to update a JavaScript var');
+			});
+});
+
+
+//////////////////////////////////////////////////////////////////////////////
 // md
 //////////////////////////////////////////////////////////////////////////////
 function md2Expressions(md) {

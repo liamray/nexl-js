@@ -41,7 +41,8 @@ REST_URLS.STORAGE = {
 		LIST_FILES_AND_DIRS: '/list-files-and-dirs',
 		REINDEX_FILES: '/reindex-files',
 		BACKUP_STORAGE: '/backup-storage',
-		METADATA: '/md'
+		METADATA: '/md',
+		SET_VAR: '/set-var'
 	}
 };
 

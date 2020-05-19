@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const zipFolder = require('./zip-a-folder');
 const CronJob = require('cron').CronJob;
+const nexlEngine = require('nexl-engine');
 
 const fsx = require('./fsx');
 const logger = require('./logger');
@@ -608,6 +609,35 @@ function listDirsAndFiles(relativePath) {
 	return result;
 }
 
+function setVar(relativePath, varName, newValueAsStr) {
+	// new value is a JSON, trying to parse
+	let newValue;
+	try {
+		newValue = JSON.parse(newValueAsStr);
+	} catch (e) {
+		logger.log.error(`'Failed to parse a JavaScript variable value. Reason: [${utils.formatErr(e)}]`);
+		return Promise.reject('The [newValue] is not a valid JSON object');
+	}
+
+	// making a full path and validating it
+	return assembleStorageFilePath(relativePath).then(
+		fullPath => {
+			// calling for service
+			try {
+				nexlEngine.updateParticularVariable({
+					filePath: fullPath,
+					fileEncoding: confMgmt.getNexlSettingsCached()[confConsts.SETTINGS.STORAGE_FILES_ENCODING],
+					varName: varName,
+					varValue: newValue
+				});
+				return Promise.resolve();
+			} catch (e) {
+				return Promise.reject(e);
+			}
+		}
+	);
+}
+
 // --------------------------------------------------------------------------------
 module.exports.loadFileFromStorage = loadFileFromStorage;
 module.exports.saveFileToStorage = saveFileToStorage;
@@ -625,6 +655,8 @@ module.exports.listDirs = listDirs;
 module.exports.listDirsAndFiles = listDirsAndFiles;
 
 module.exports.gatherAllFiles = gatherAllFiles;
+
+module.exports.setVar = setVar;
 
 module.exports.cacheStorageFiles = cacheStorageFiles;
 module.exports.getTreeItems = () => TREE_ITEMS;
