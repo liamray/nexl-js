@@ -3,7 +3,7 @@ const confConsts = require('../common/conf-constants');
 const logger = require('./logger');
 const utils = require('./utils');
 const base64 = require('base-64');
-const rp = require('request-promise');
+const axios = require('axios');
 const crypto = require('crypto');
 const matcher = require('matcher');
 const os = require('os');
@@ -16,16 +16,15 @@ function postWebhook(webhook, target) {
 
 	const reqOpts = {
 		method: 'POST',
-		resolveWithFullResponse: true,
-		uri: webhook.url,
-		body: {
+		url: webhook.url,
+		data: {
 			webhook: webhook.relativePath,
 			target: target.relativePath,
 			action: target.action // created | moved | deleted
 		},
 		headers: {},
 		timeout: WEBHOOKS_TIMEOUT,
-		json: true
+		responseType: 'json'
 	};
 
 	if (!utils.isEmptyStr(webhook.secret)) {
@@ -40,10 +39,10 @@ function postWebhook(webhook, target) {
 
 		// encrypting the body with a secret
 		const hmac = crypto.createHmac('sha1', secret);
-		reqOpts.headers[SIG_HEADER] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.body)).digest('hex');
+		reqOpts.headers[SIG_HEADER] = 'sha1=' + hmac.update(JSON.stringify(reqOpts.data)).digest('hex');
 	}
 
-	rp(reqOpts)
+	axios(reqOpts)
 		.then(function (response) {
 			logger.log.debug(`Successfully fired the webhook. [id=${webhook.id}] [url=${webhook.url}] [relativePath=${webhook.relativePath}] [target=${target.relativePath}] [action=${target.action}], [httpResponse=${response.statusCode}]`);
 		})
