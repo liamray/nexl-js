@@ -37,7 +37,7 @@
       [auto-create]="false"
     ></jqxTree>
 
-    <jqxMenu #popupMenu [width]="150" [height]="214" [autoOpenPopup]="false"
+    <jqxMenu #popupMenu [width]="150" [height]="242" [autoOpenPopup]="false"
              [mode]="'popup'">
       <ul>
         <li (click)="newDir()" id="popup-new-dir">
@@ -58,7 +58,7 @@
         </li>
         <li (click)="makeACopy()" id="popup-make-a-copy">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/make-a-copy.png'/><span>Make a copy</span>
+               src='./nexl/site/icons/make-a-copy.png'/><span>Duplicate file</span>
         </li>
         <li (click)="findInFilesFromHere()" id="find-in-files-from-here">
           <img style='float: left; margin-right: 5px;'
@@ -68,9 +68,14 @@
           <img style='float: left; margin-right: 5px;'
                src='./nexl/site/icons/webhook.png'/><span>Add a Webhook</span>
         </li>
-        <li (click)="showInformation()" id="popup-show-information">
+        <li (click)="openHttpRequestsWindow()" id="popup-http-requests">
           <img style='float: left; margin-right: 5px;'
-               src='./nexl/site/icons/info.png'/><span>Information</span>
+               src='./nexl/site/icons/globe.png'/><span>HTTP requests</span>
+        </li>
+
+        <li (click)="copyRelativePath()" id="popup-copy-relative-path">
+          <img style='float: left; margin-right: 5px;'
+               src='./nexl/site/icons/clipboard.png'/><span>Copy path</span>
         </li>
 
       </ul>

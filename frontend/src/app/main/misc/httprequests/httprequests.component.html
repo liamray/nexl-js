@@ -10,26 +10,11 @@
 >
 
   <div>
-    <img src="./nexl/site/icons/info.png" style="position: relative; top: 2px; margin-left: 3px;">
-    <span style="position: relative; top: -1px;margin-left: 1px;">Information</span>
+    <img src="./nexl/site/icons/globe.png" style="position: relative; top: 2px; margin-left: 3px;">
+    <span style="position: relative; top: -1px;margin-left: 1px;">HTTP requests</span>
   </div>
 
   <div class="container">
-    <div class="item">
-      <label>Name:</label>
-      <span>{{ value.label }}</span>
-    </div>
-
-    <div class="item">
-      <label>Relative path:</label>
-      <span>{{ value.relativePath }}</span>
-    </div>
-
-    <div class="item" *ngIf="value.isDir !== true">
-      <label>File status:</label>
-      <span>{{ fileStatus }}</span>
-    </div>
-
     <div class="buttons">
       <div class="button">
         <jqxButton [height]='32'

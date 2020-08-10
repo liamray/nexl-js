@@ -4,6 +4,7 @@ export class UtilsService {
   static SERVER_INFO: any;
   static IS_WIN: boolean;
 
+
   static prefixUrlObject(urlObject) {
     for (let key in urlObject.URLS) {
       // replacing url with full url
@@ -79,6 +80,45 @@ export class UtilsService {
     path1 = path1 ? path1.toLocaleLowerCase() : path1;
     path2 = path2 ? path2.toLocaleLowerCase() : path2;
     return path1.indexOf(path2);
+  }
+
+  private static textArea: any;
+
+  static copy2Clipboard(txt: string) {
+    function isOS() {
+      return navigator.userAgent.match(/ipad|iphone/i);
+    }
+
+    function createTextArea(text) {
+      UtilsService.textArea = document.createElement('textArea');
+      UtilsService.textArea.value = text;
+      document.body.appendChild(UtilsService.textArea);
+    }
+
+    function selectText() {
+      var range,
+        selection;
+
+      if (isOS()) {
+        range = document.createRange();
+        range.selectNodeContents(UtilsService.textArea);
+        selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        UtilsService.textArea.setSelectionRange(0, 999999);
+      } else {
+        UtilsService.textArea.select();
+      }
+    }
+
+    function copyToClipboard() {
+      document.execCommand('copy');
+      document.body.removeChild(UtilsService.textArea);
+    }
+
+    createTextArea(txt);
+    selectText();
+    copyToClipboard();
   }
 }
 

@@ -9,7 +9,7 @@ export enum MESSAGE_TYPE {
   WEBHOOK_UPDATED,
   OPEN_QUICK_START,
 
-  SHOW_FILE_DIR_INFORMATION, // opens a popup window and show file/dir information
+  OPEN_HTTP_REQUESTS_WINDOW, // on file/dir right click
   SET_TAB_CONTENT,
   ARGS_CHANGED, // fired when args changed in args-window by user
   SET_ARGS, // instructs args-window to set arguments embedded to the message
