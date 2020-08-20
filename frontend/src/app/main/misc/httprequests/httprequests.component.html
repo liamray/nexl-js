@@ -1,12 +1,13 @@
 <jqxWindow #window
            class="first-level-dialog"
            [autoOpen]="false"
-           [width]="540"
-           [height]="160"
+           [width]="700"
+           [height]="550"
            [initContent]="initContent"
            [isModal]="true"
            [resizable]="false"
-           [showCloseButton]="false"
+           [showCloseButton]="true"
+           (onOpen)="onOpen()"
 >
 
   <div>
@@ -15,6 +16,10 @@
   </div>
 
   <div class="container">
+
+    <jqxNavigationBar [width]="690" [height]="450" #myNavigationBar [expandMode]="'toggle'">
+    </jqxNavigationBar>
+
     <div class="buttons">
       <div class="button">
         <jqxButton [height]='32'

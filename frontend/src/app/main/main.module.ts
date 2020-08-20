@@ -2,6 +2,7 @@ import {NgModule} from "@angular/core";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 
 import {jqxMenuComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxmenu';
+import {jqxNavigationBarComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxnavigationbar';
 import {jqxTreeComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtree';
 import {jqxExpanderComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxexpander';
 import {jqxTabsComponent} from 'jqwidgets-scripts/jqwidgets-ts/angular_jqxtabs';
@@ -72,6 +73,7 @@ import {HttpRequestsComponent} from "./misc/httprequests/httprequests";
 @NgModule({
   declarations: [
     jqxMenuComponent,
+    jqxNavigationBarComponent,
     jqxTreeComponent,
     jqxExpanderComponent,
     jqxTabsComponent,

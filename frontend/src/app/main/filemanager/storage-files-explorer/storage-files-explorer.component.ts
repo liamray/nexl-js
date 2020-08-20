@@ -288,6 +288,7 @@ export class StorageExplorerComponent implements AfterViewInit {
   updatePopupMenu() {
     this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
     this.popupMenu.disable('popup-copy-relative-path', !this.hasReadPermission);
+    this.popupMenu.disable('popup-http-requests', !this.hasReadPermission);
 
     this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission);
     this.popupMenu.disable('popup-new-dir', !this.hasWritePermission);
@@ -1196,6 +1197,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
       this.popupMenu.disable('popup-copy-relative-path', true);
+      this.popupMenu.disable('popup-http-requests', true);
       this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
       this.popupMenu.disable('popup-make-a-copy', true);
       this.rightClickSelectedElement = undefined;
@@ -1209,6 +1211,7 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
       this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission || this.rightClickSelectedElement.value.isDir === true);
       this.popupMenu.disable('popup-copy-relative-path', false);
+      this.popupMenu.disable('popup-http-requests', false);
       this.openPopup(event);
     }
   }
