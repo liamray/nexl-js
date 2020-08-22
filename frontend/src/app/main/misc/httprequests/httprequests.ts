@@ -66,39 +66,38 @@ export class HttpRequestsComponent {
     relativePath = encodeURI(relativePath);
     const hostAndPost = window.location.href.split('/')[2];
 
-    // + headers !!!
     const fileMapping = [
       {
         title: `To get an [X] variable from the [${file}] file`,
-        example: `wget -qO- "http://${hostAndPost}${relativePath}?expression=\${X}"`
+        example: `wget 'http://${hostAndPost}${relativePath}?expression=\${X}'`
 
       },
       {
         title: `To set a value for the [X] variable from the [${file}] file`,
-        example: `wget -qO- --post-data="relativePath=${relativePath}&varName=X&newValue=42" "http://${hostAndPost}/nexl/storage/set-var"`
+        example: `wget --post-data='relativePath=${relativePath}&varName=X&newValue=42' 'http://${hostAndPost}/nexl/storage/set-var'`
       },
       {
         title: `To get a [${file}] file content`,
-        example: `wget -qO- --post-data="relativePath=${relativePath}" "http://${hostAndPost}/nexl/storage/load-file-from-storage"`
+        example: `wget --post-data='relativePath=${relativePath}' 'http://${hostAndPost}/nexl/storage/load-file-from-storage'`
       },
       {
         title: `To update the [${file}] file content`,
-        example: `wget -qO- --post-data="relativePath=${relativePath}&content=// this is a new file content%0AmyVar = 79;" "http://${hostAndPost}/nexl/storage/save-file-to-storage"`
+        example: `wget --post-data='relativePath=${relativePath}&content=// this is a new file content%0AmyVar = 79;' 'http://${hostAndPost}/nexl/storage/save-file-to-storage'`
       }
     ];
 
     const dirMapping = [
       {
         title: `To list files and dirs in the [${file}] directory`,
-        example: `wget -qO- --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-files-and-dirs"`
+        example: `wget --post-data='relative-path=${relativePath}' 'http://${hostAndPost}/nexl/storage/list-files-and-dirs'`
       },
       {
         title: `To list files in the [${file}] directory`,
-        example: `wget -qO- --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-files"`
+        example: `wget --post-data='relative-path=${relativePath}' 'http://${hostAndPost}/nexl/storage/list-files'`
       },
       {
         title: `To list dirs in the [${file}] directory`,
-        example: `wget -qO- --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-dirs"`
+        example: `wget --post-data='relative-path=${relativePath}' 'http://${hostAndPost}/nexl/storage/list-dirs'`
       }
     ];
 
