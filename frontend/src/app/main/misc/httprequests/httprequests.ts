@@ -66,6 +66,7 @@ export class HttpRequestsComponent {
     relativePath = encodeURI(relativePath);
     const hostAndPost = window.location.href.split('/')[2];
 
+    // + headers !!!
     const fileMapping = [
       {
         title: `To get an [X] variable from the [${file}] file`,
@@ -74,19 +75,34 @@ export class HttpRequestsComponent {
       },
       {
         title: `To set a value for the [X] variable from the [${file}] file`,
-        example: `wget 2`
+        example: `wget --post-data="relativePath=${relativePath}&varName=X&newValue=42" "http://${hostAndPost}/nexl/storage/set-var"`
       },
       {
         title: `To get a [${file}] file content`,
-        example: `wget 3`
+        example: `wget --post-data="relativePath=${relativePath}" "http://${hostAndPost}/nexl/storage/load-file-from-storage"`
       },
       {
         title: `To update the [${file}] file content`,
-        example: `wget 4`
+        example: `wget --post-data="relativePath=${relativePath}&content=// this is a new file content%0AmyVar = 79;" "http://${hostAndPost}/nexl/storage/save-file-to-storager"`
       }
     ];
 
-    return fileMapping;
+    const dirMapping = [
+      {
+        title: `To list files and dirs in the [${file}] directory`,
+        example: `wget --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-files-and-dirs"`
+      },
+      {
+        title: `To list files in the [${file}] directory`,
+        example: `wget --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-files"`
+      },
+      {
+        title: `To list dirs in the [${file}] directory`,
+        example: `wget --post-data="relative-path=${relativePath}" "http://${hostAndPost}/nexl/storage/list-dirs"`
+      }
+    ];
+
+    return value.isDir === true ? dirMapping : fileMapping;
   }
 
   ngOnInit(): void {
