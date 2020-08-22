@@ -709,7 +709,11 @@ export class StorageExplorerComponent implements AfterViewInit {
   }
 
   openHttpRequestsWindow() {
-    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_HTTP_REQUESTS_WINDOW, this.rightClickSelectedElement.value);
+    const value2Send = this.rightClickSelectedElement === undefined ? {
+      isDir: true,
+      relativePath: '/'
+    } : this.rightClickSelectedElement.value;
+    this.messageService.sendMessage(MESSAGE_TYPE.OPEN_HTTP_REQUESTS_WINDOW, value2Send);
   }
 
   itemType() {
@@ -1191,13 +1195,13 @@ export class StorageExplorerComponent implements AfterViewInit {
 
   private handleRightClick(target: any, event: any) {
     this.popupMenu.disable('popup-add-web-hook', !this.isAdmin);
+    this.popupMenu.disable('popup-http-requests', !this.hasReadPermission);
 
     // is right click on empty area ?
     if (target === undefined) {
       this.popupMenu.disable('popup-delete-item', true);
       this.popupMenu.disable('popup-rename-item', true);
       this.popupMenu.disable('popup-copy-relative-path', true);
-      this.popupMenu.disable('popup-http-requests', true);
       this.popupMenu.disable('find-in-files-from-here', !this.hasReadPermission);
       this.popupMenu.disable('popup-make-a-copy', true);
       this.rightClickSelectedElement = undefined;
@@ -1211,7 +1215,6 @@ export class StorageExplorerComponent implements AfterViewInit {
       this.popupMenu.disable('find-in-files-from-here', this.rightClickSelectedElement.value.isDir !== true);
       this.popupMenu.disable('popup-make-a-copy', !this.hasWritePermission || this.rightClickSelectedElement.value.isDir === true);
       this.popupMenu.disable('popup-copy-relative-path', false);
-      this.popupMenu.disable('popup-http-requests', false);
       this.openPopup(event);
     }
   }
