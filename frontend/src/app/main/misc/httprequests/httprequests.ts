@@ -49,7 +49,7 @@ export class HttpRequestsComponent {
     });
     this.items = this.makeItems(value);
     this.makeItems(value).forEach(item => {
-      this.myNavigationBar.add(`<h4>${item.title}</h4>`, `<div style="padding: 10px;"><textarea rows="3" cols="79" readonly>${item.example}</textarea></div>`);
+      this.myNavigationBar.add(`<h4>${item.title}</h4>`, `<div style="padding: 10px;"><textarea title="Add a [--header 'Authorization: Basic dXNlcjphYmMxMjM='] for authenticated request" rows="4" cols="92" readonly>${item.example}</textarea></div>`);
       this.myNavigationBar.refresh();
     });
 
